@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:bpm="http://schemas.dcom.sk/integration/bpm/2.0" elementFormDefault="qualified" targetNamespace="http://schemas.dcom.sk/integration/bpm/2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="StartProcessInstanceResponse" type="bpm:StartProcessInstanceResponse" />
+  <xs:complexType name="StartProcessInstanceResponse">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="id" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>id nově založené procesní instance</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="processDefinitionId" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>identifikatro definice procesu</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="businessKey" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Jednoznačný identifikátor instance procesu, který byl vložen na vstupu
+                    </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="InvalidParameterFault" type="bpm:InvalidParameterFault" />
+  <xs:complexType name="InvalidParameterFault">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="unbounded" name="InvalidParameter" type="bpm:InvalidParameter" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="InvalidParameter" type="bpm:InvalidParameter" />
+  <xs:complexType name="InvalidParameter">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="parameterName" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>název parametru, který je chybný</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="errorMessage" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>popis chyby parametru</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="BpmFault" type="bpm:BpmFault" />
+  <xs:complexType name="BpmFault">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="message" type="xs:string" />
+      <xs:element minOccurs="1" maxOccurs="1" name="code" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="InvalidParameterFault" type="bpm:InvalidParameterFault" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="StartProcessInstanceRequest" type="bpm:StartProcessInstanceRequest" />
+  <xs:complexType name="StartProcessInstanceRequest">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="businessKey" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Bussiness klíč jednoznačně identifikující spuštěnou instanci procesu
+                    </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="modulName" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>název modulu, který spouští daný proces</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="Variables" type="bpm:Variables" />
+      <xs:element minOccurs="1" maxOccurs="1" name="ProcessDefinition" type="bpm:ProcessDefinition" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Variable" type="bpm:Variable" />
+  <xs:complexType name="Variable">
+    <xs:annotation>
+      <xs:documentation>při startu nové instatance procesu je povinná proměnná procesu
+
+                - ModulName - v rámci jakého modulu aktuálně daný proces pracuje (např správní řizení - ePodatelna)
+            </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="name" type="xs:string" />
+      <xs:element minOccurs="1" maxOccurs="1" name="value" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>hodnota proměnné</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="type" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ProcessDefinition" type="bpm:ProcessDefinition" />
+  <xs:complexType name="ProcessDefinition">
+    <xs:choice>
+      <xs:element minOccurs="1" maxOccurs="1" name="id" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>identifikátor procesu (přesné verze), který se má spustit</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="key" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>klíč definice procesu, jehož poslední verze se má spustit</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:choice>
+  </xs:complexType>
+  <xs:simpleType name="VariableType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Boolean" />
+      <xs:enumeration value="Short" />
+      <xs:enumeration value="Date" />
+      <xs:enumeration value="String" />
+      <xs:enumeration value="Integer" />
+      <xs:enumeration value="Long" />
+      <xs:enumeration value="Double" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="Task" type="bpm:Task" />
+  <xs:complexType name="Task">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="id" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>id tasku</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="name" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>název tasku</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="assignee" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>identifikátor uživatele přiřazeného k tasku</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="created" type="xs:date">
+        <xs:annotation>
+          <xs:documentation>Datum a čas vytvoření tasku, ve formátu yyyy-MM-dd'T'HH:mm:ss</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="due" type="xs:date">
+        <xs:annotation>
+          <xs:documentation>Termím pro vyřízení tasku ve formátu yyyy-MM-dd'T'HH:mm:ss</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="description" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>popis úlohy</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="executionId" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="owner" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="parentTaskId" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="priority" type="xs:int" />
+      <xs:element minOccurs="1" maxOccurs="1" name="processDefinitionId" type="xs:string" />
+      <xs:element minOccurs="1" maxOccurs="1" name="processInstanceId" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="taskDefinitionKey" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="SetAssigneeRequest" type="bpm:SetAssigneeRequest" />
+  <xs:complexType name="SetAssigneeRequest">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="taskId" type="xs:string" />
+      <xs:element minOccurs="1" maxOccurs="1" name="userId" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>DCOM id uživatele, kterému má být task přiřazen</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Variables" type="bpm:Variables" />
+  <xs:complexType name="Variables">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Variable" type="bpm:Variable" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="CompleteTaskRequest" type="bpm:CompleteTaskRequest" />
+  <xs:complexType name="CompleteTaskRequest">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="taskId" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Variables" type="bpm:Variables" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="GetProcessVariablesResponse" type="bpm:GetProcessVariablesResponse" />
+  <xs:complexType name="GetProcessVariablesResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="Variables" type="bpm:Variables" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="GetProcessVariablesRequest" type="bpm:GetProcessVariablesRequest" />
+  <xs:complexType name="GetProcessVariablesRequest">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="processInstanceId" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="GetSingleTaskResponse" type="bpm:GetSingleTaskResponse" />
+  <xs:complexType name="GetSingleTaskResponse">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="Task" type="bpm:Task" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="GetSingleTaskRequest" type="bpm:GetSingleTaskRequest" />
+  <xs:complexType name="GetSingleTaskRequest">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="taskId" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="SubmitTaskFormRequest" type="bpm:SubmitTaskFormRequest" />
+  <xs:complexType name="SubmitTaskFormRequest">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="taskId" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Variables" type="bpm:Variables" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="SendMessageRequest" type="bpm:SendMessageRequest" />
+  <xs:complexType name="SendMessageRequest">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="messageName" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="businessKey" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Variables" type="bpm:Variables" />
+      <xs:element minOccurs="0" maxOccurs="1" name="CorrelationKeys" type="bpm:Variables" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="UserAgendaItemDto" type="bpm:UserAgendaItemDto" />
+  <xs:complexType name="UserAgendaItemDto">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="name" type="xs:string" />
+      <xs:element minOccurs="1" maxOccurs="1" name="count" type="xs:int" />
+      <xs:element minOccurs="1" maxOccurs="1" name="tenantId" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="lastCreateDate" type="xs:date" />
+      <xs:element minOccurs="1" maxOccurs="1" name="url" type="xs:string" />
+      <xs:element minOccurs="1" maxOccurs="1" name="moduleId" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="aggregationCategory" type="bpm:AggregationCategory" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="UserAgendaRequestDto" type="bpm:UserAgendaRequestDto" />
+  <xs:complexType name="UserAgendaRequestDto">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="userId" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="tenantIds" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="UserAgendaResponseDto" type="bpm:UserAgendaResponseDto" />
+  <xs:complexType name="UserAgendaResponseDto">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="UserAgendaItemDto" type="bpm:UserAgendaItemDto" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="GetProcessInstancesResponseDto" type="bpm:GetProcessInstancesResponseDto" />
+  <xs:complexType name="GetProcessInstancesResponseDto">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ProcessInstanceDto" type="bpm:ProcessInstanceDto" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="TaskDto" type="bpm:TaskDto" />
+  <xs:complexType name="TaskDto">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="id" type="xs:string" />
+      <xs:element minOccurs="1" maxOccurs="1" name="name" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="assignee" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="url" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ProcessInstanceDto" type="bpm:ProcessInstanceDto" />
+  <xs:complexType name="ProcessInstanceDto">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="id" type="xs:string" />
+      <xs:element minOccurs="1" maxOccurs="1" name="businessKey" type="xs:string" />
+      <xs:element minOccurs="1" maxOccurs="1" name="isAlive" type="xs:boolean" />
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="TaskDto" type="bpm:TaskDto" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="GetProcessInstancesRequestDto" type="bpm:GetProcessInstancesRequestDto" />
+  <xs:complexType name="GetProcessInstancesRequestDto">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="processDefinitionKey" type="xs:string" />
+      <xs:element minOccurs="1" maxOccurs="unbounded" name="businessKeys" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="UserAgendaCountRequestDto" type="bpm:UserAgendaCountRequestDto" />
+  <xs:complexType name="UserAgendaCountRequestDto">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="daysOldThreshold" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="UserAgendaCountResponseDto" type="bpm:UserAgendaCountResponseDto" />
+  <xs:complexType name="UserAgendaCountResponseDto">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="myTaskCount" type="xs:long" />
+      <xs:element minOccurs="1" maxOccurs="1" name="myTaskCountOld" type="xs:long" />
+      <xs:element minOccurs="0" maxOccurs="1" name="myLastTaskTime" type="xs:dateTime" />
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="UserAgendaCountGroupTasksDto" type="bpm:UserAgendaCountGroupTasksDto" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="UserAgendaCountGroupTasksDto" type="bpm:UserAgendaCountGroupTasksDto" />
+  <xs:complexType name="UserAgendaCountGroupTasksDto">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="groupName" type="xs:string" />
+      <xs:element minOccurs="1" maxOccurs="1" name="taskCount" type="xs:long" />
+      <xs:element minOccurs="1" maxOccurs="1" name="taskCountOld" type="xs:long" />
+      <xs:element minOccurs="0" maxOccurs="1" name="lastTaskTime" type="xs:dateTime" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="AggregationCategory">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="userAgenda" />
+      <xs:enumeration value="nonProcessedSubmission" />
+      <xs:enumeration value="incorrectSubmission" />
+      <xs:enumeration value="openRecords" />
+      <xs:enumeration value="processedSubmission" />
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

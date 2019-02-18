@@ -1,0 +1,1469 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:tns="http://schemas.dcom.sk/integration/gw/upvs/2.0" xmlns:ns1="http://schemas.dcom.sk/fault/1.0" xmlns:ns2="http://schemas.xmlsoap.org/soap/http" xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsaws="http://www.w3.org/2005/08/addressing" xmlns:t="http://docs.oasis-open.org/ws-sx/ws-trust/200512" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" name="UpvsGwServices" targetNamespace="http://schemas.dcom.sk/integration/gw/upvs/2.0" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:documentation>Služba zabezpečuje kompletní komunikaci s UPVS</wsdl:documentation>
+  <wsp:Policy xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsaws="http://www.w3.org/2005/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:t="http://docs.oasis-open.org/ws-sx/ws-trust/200512" xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702" wsu:Id="WS2007FederationHttpBinding_IService_policy">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <sp:TransportBinding>
+          <wsp:Policy>
+            <sp:TransportToken>
+              <wsp:Policy>
+                <sp:HttpsToken />
+              </wsp:Policy>
+            </sp:TransportToken>
+            <sp:AlgorithmSuite>
+              <wsp:Policy>
+                <sp:Basic256 />
+              </wsp:Policy>
+            </sp:AlgorithmSuite>
+            <sp:Layout>
+              <wsp:Policy>
+                <sp:Lax />
+              </wsp:Policy>
+            </sp:Layout>
+            <sp:IncludeTimestamp />
+          </wsp:Policy>
+        </sp:TransportBinding>
+        <sp:EndorsingSupportingTokens>
+          <wsp:Policy>
+            <sp:IssuedToken sp:IncludeToken="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702/IncludeToken/AlwaysToRecipient">
+              <sp:RequestSecurityTokenTemplate>
+                <t:TokenType>http://docs.oasis-open.org/wss/oasis-wss-saml-token-profile-1.1#SAMLV1.1
+                            </t:TokenType>
+                <t:KeyType>http://docs.oasis-open.org/ws-sx/ws-trust/200512/SymmetricKey</t:KeyType>
+                <t:KeySize>256</t:KeySize>
+              </sp:RequestSecurityTokenTemplate>
+              <wsp:Policy>
+                <sp:RequireInternalReference />
+              </wsp:Policy>
+              <sp:Issuer>
+                <wsaws:Address>
+                                https://lbsts.intra.dcom.sk:49443/adfs/services/trust/13/certificatetransport
+                            </wsaws:Address>
+                <wsaws:Metadata xmlns:wsdli="http://www.w3.org/2006/01/wsdl-instance" wsdli:wsdlLocation="http://lbsts.intra.dcom.sk/adfs/services/trust/mex">
+                  <wsaw:ServiceName xmlns:stsns="http://docs.oasis-open.org/ws-sx/ws-trust/200512/" EndpointName="CertificateWSTrustBinding_IWSTrust13Async2">
+                                    stsns:SecurityTokenService
+                                </wsaw:ServiceName>
+                </wsaws:Metadata>
+              </sp:Issuer>
+            </sp:IssuedToken>
+          </wsp:Policy>
+        </sp:EndorsingSupportingTokens>
+        <sp:Wss11>
+          <wsp:Policy />
+        </sp:Wss11>
+        <sp:Trust13>
+          <wsp:Policy>
+            <sp:MustSupportIssuedTokens />
+            <sp:RequireClientEntropy />
+            <sp:RequireServerEntropy />
+          </wsp:Policy>
+        </sp:Trust13>
+        <wsaw:UsingAddressing />
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsdl:types>
+    <xs:schema xmlns:tns="http://schemas.gov.sk/core/MessageContainer/1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://schemas.gov.sk/core/MessageContainer/1.0" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:import namespace="http://www.w3.org/2001/XMLSchema" />
+      <xs:element name="MessageContainer">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="MessageId" type="xs:string" />
+            <xs:element name="SenderId" type="xs:anyURI" />
+            <xs:element name="RecipientId" type="xs:anyURI" />
+            <xs:element name="MessageType" type="xs:string" />
+            <xs:element minOccurs="0" name="MessageSubject" type="xs:string" />
+            <xs:element minOccurs="0" name="SenderBusinessReference" type="xs:string" />
+            <xs:element minOccurs="0" name="RecipientBusinessReference" type="xs:string" />
+            <xs:element maxOccurs="unbounded" name="Object" type="tns:object" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:complexType name="object" mixed="true">
+        <xs:sequence>
+          <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax" />
+        </xs:sequence>
+        <xs:attribute name="Id" type="xs:string" use="required" />
+        <xs:attribute name="Name" type="xs:string" />
+        <xs:attribute name="Description" type="xs:string" />
+        <xs:attribute name="Class" type="xs:string" use="required" />
+        <xs:attribute name="IsSigned" type="xs:boolean" />
+        <xs:attribute name="MimeType" type="xs:string" use="required" />
+        <xs:attribute name="Encoding" type="tns:encoding" use="required" />
+      </xs:complexType>
+      <xs:simpleType name="encoding">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="XML" />
+          <xs:enumeration value="Base64" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:schema>
+    <xs:schema xmlns:ns1="http://schemas.gov.sk/core/MessageContainer/1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://schemas.dcom.sk/integration/gw/upvs/2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:import namespace="http://schemas.gov.sk/core/MessageContainer/1.0" />
+      <xs:complexType name="GetUpvsIdentityRolesType">
+        <xs:sequence>
+          <xs:element name="personId" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="UpvsIdentityRolesType">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="identityRoles" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="OutgoingMessageListType">
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" name="OutgoingMessage" type="tns:OutgoingMessage" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="OutgoingMessage">
+        <xs:sequence>
+          <xs:element name="messageId" type="tns:UUID" />
+          <xs:element minOccurs="0" name="referenceId" type="tns:UUID" />
+          <xs:element minOccurs="0" name="correlationId" type="tns:UUID" />
+          <xs:element name="recipientId" type="tns:UUID" />
+          <xs:element name="senderId" type="tns:UUID" />
+          <xs:element minOccurs="0" name="subject" type="xs:string" />
+          <xs:element minOccurs="0" name="senderBusinessReference" type="xs:string" />
+          <xs:element minOccurs="0" name="recipientBusinessReference" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="MessagePart" type="tns:MessagePart" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="MessagePart">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="name" type="xs:string" />
+          <xs:element minOccurs="0" name="description" type="xs:string" />
+          <xs:element name="mimeType" type="xs:string" />
+          <xs:element name="partClass" type="tns:MessagePartClass" />
+          <xs:element name="encoding" type="tns:Encoding" />
+          <xs:element minOccurs="0" name="formId" type="xs:string" />
+          <xs:element minOccurs="0" name="isSigned" type="xs:boolean" />
+          <xs:element minOccurs="0" name="content" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="GetEdeskHistoryRequestType">
+        <xs:sequence>
+          <xs:element name="personId" type="xs:string" />
+          <xs:element minOccurs="0" name="dateFrom" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="dateTo" type="xs:dateTime" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="GetEdeskHistoryResponseType">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="IdentityHistory" type="tns:IdentityHistory" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="IdentityHistory">
+        <xs:sequence>
+          <xs:element name="name" type="xs:string" />
+          <xs:element minOccurs="0" name="oldValue" type="xs:string" />
+          <xs:element name="newValue" type="xs:string" />
+          <xs:element name="type" type="xs:string" />
+          <xs:element name="date" type="xs:date" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="UpvsMessageContainerType">
+        <xs:sequence>
+          <xs:element ref="ns1:MessageContainer" />
+          <xs:element name="MessageInfo" type="tns:MessageInfo" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="MessageInfo">
+        <xs:sequence>
+          <xs:element name="messageId" type="xs:string" />
+          <xs:element name="class" type="xs:string" />
+          <xs:element name="correlationID" type="xs:string" />
+          <xs:element name="referenceID" nillable="true" type="xs:string" />
+          <xs:element name="businessID" nillable="true" type="xs:string" />
+          <xs:element name="pospID" nillable="true" type="xs:string" />
+          <xs:element name="pospVersion" nillable="true" type="xs:string" />
+          <xs:element name="senderId" type="xs:string" />
+          <xs:element minOccurs="0" name="oboToken" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="FetchFormTemplateType">
+        <xs:sequence>
+          <xs:element name="FormTemplateList" type="tns:FormTemplateListType" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="FormTemplateListType">
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" name="formId" type="tns:FormTemplateID" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="FormTemplateID">
+        <xs:sequence>
+          <xs:element name="identifier" nillable="true" type="xs:string" />
+          <xs:element name="version" nillable="true" type="tns:EFormVersion" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="EFormVersion">
+        <xs:sequence>
+          <xs:element name="major" type="xs:int" />
+          <xs:element name="minor" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="UpvsMessageContainerWrapperWithTimeoutType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Timeout" type="xs:int" />
+          <xs:element name="UpvsMessageContainer" type="tns:UpvsMessageContainerType" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="SendNotificationType">
+        <xs:sequence>
+          <xs:element name="recepientPersonId" type="xs:string" />
+          <xs:element name="senderTenantId" type="xs:string" />
+          <xs:element name="notification" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="UpvsCustomMessageType">
+        <xs:sequence>
+          <xs:element name="MessageInfo" type="tns:MessageInfo" />
+          <xs:any namespace="##other" processContents="lax" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="InternetAddressType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Address" type="xs:anyURI" />
+          <xs:element minOccurs="0" name="DsigKeyInfo" type="xs:base64Binary" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="AffixType">
+        <xs:simpleContent>
+          <xs:extension base="xs:string">
+            <xs:attribute name="type" type="tns:EAffixType" />
+            <xs:attribute name="position" type="tns:EAffixPosition" />
+          </xs:extension>
+        </xs:simpleContent>
+      </xs:complexType>
+      <xs:complexType name="HolderType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="PersonName" type="tns:PersonNameType" />
+          <xs:element minOccurs="0" name="CorporateBodyName" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PersonNameType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="FormattedName" type="xs:string" />
+          <xs:element minOccurs="0" name="LegalName" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="GivenName" type="xs:string" />
+          <xs:element minOccurs="0" name="PreferredGivenName" type="xs:string" />
+          <xs:element minOccurs="0" name="OtherName" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="FamilyName" type="tns:FamilyNameType" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="GivenFamilyName" type="tns:FamilyNameType" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="Affix" type="tns:AffixType" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="FamilyNameType">
+        <xs:simpleContent>
+          <xs:extension base="xs:string">
+            <xs:attribute name="primary" type="xs:boolean" />
+            <xs:attribute name="prefix" type="xs:string" />
+          </xs:extension>
+        </xs:simpleContent>
+      </xs:complexType>
+      <xs:complexType name="UPVSAttributesType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Location" type="xs:string" />
+          <xs:element minOccurs="0" name="LocationActivated" type="xs:boolean" />
+          <xs:element minOccurs="0" name="eDeskStatus" type="xs:string" />
+          <xs:element minOccurs="0" name="eDeskDeliveryLimited" type="xs:boolean" />
+          <xs:element minOccurs="0" name="eDeskCuetEnabled" type="xs:boolean" />
+          <xs:element minOccurs="0" name="eDeskNumber" type="xs:string" />
+          <xs:element minOccurs="0" name="IdentityStatus" type="xs:string" />
+          <xs:element minOccurs="0" name="PreferredLanguage" type="xs:string" />
+          <xs:element minOccurs="0" name="RE_IdentityID" type="xs:string" />
+          <xs:element minOccurs="0" name="eNotifyEmailAllowed" type="xs:boolean" />
+          <xs:element minOccurs="0" name="eNotifySmsAllowed" type="xs:boolean" />
+          <xs:element minOccurs="0" name="eNotifyEmergencyAllowed" type="xs:boolean" />
+          <xs:element minOccurs="0" name="eNotifyPreferredChannel" type="xs:string" />
+          <xs:element minOccurs="0" name="eNotifyPreferredCalendar" type="xs:string" />
+          <xs:element minOccurs="0" name="eDeskRemoteUri" type="xs:anyURI" />
+          <xs:element minOccurs="0" name="OrganizacnaZlozkaOVM" type="xs:boolean" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="TelephoneAddressType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="TelephoneType" type="tns:CodeListType" />
+          <xs:element minOccurs="0" name="TelephoneNumber" type="tns:TelephoneNumberType" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="CodeListType">
+        <xs:sequence>
+          <xs:element name="Id" type="xs:string" />
+          <xs:element name="TitleSk" type="xs:string" />
+          <xs:element minOccurs="0" name="Desc" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="TelephoneNumberType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="FormattedNumber" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="InternationalCountryCode" type="xs:string" />
+          <xs:element minOccurs="0" name="NationalNumber" type="xs:string" />
+          <xs:element minOccurs="0" name="AreaCityCode" type="xs:string" />
+          <xs:element minOccurs="0" name="SubscriberNumber" type="xs:string" />
+          <xs:element minOccurs="0" name="Extension" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="EquityType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Currency" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="EquityValue" type="xs:float" />
+          <xs:element minOccurs="0" name="EquityValuePaid" type="xs:float" />
+          <xs:element minOccurs="0" name="EquityValueApproved" type="xs:float" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PhysicalPersonType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="PersonName" type="tns:PersonNameType" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="AlternativeName" type="xs:string" />
+          <xs:element minOccurs="0" default="0" name="MaritalStatus" type="xs:string" />
+          <xs:element minOccurs="0" name="Sex" type="tns:CodeListType" />
+          <xs:element minOccurs="0" name="Birth" type="tns:BirthType" />
+          <xs:element minOccurs="0" name="Death" type="tns:DeathType" />
+          <xs:element minOccurs="0" name="Nationality" type="tns:CodeListType" />
+          <xs:element minOccurs="0" name="Confession" type="xs:string" />
+          <xs:element minOccurs="0" name="Occupation" type="tns:CodeListType" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="RelatedPerson" type="tns:RelatedPersonType" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="BankConnection" type="tns:BankConnectionType" />
+          <xs:element minOccurs="0" name="IdentityTypeDetail" type="tns:CodeListType" />
+          <xs:element minOccurs="0" name="PCO" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="BirthType">
+        <xs:sequence>
+          <xs:element name="DateOfBirth" type="xs:date" />
+          <xs:element minOccurs="0" name="County" type="tns:CodeListType" />
+          <xs:element minOccurs="0" name="Municipality" type="tns:CodeListType" />
+          <xs:element minOccurs="0" name="District" type="xs:string" />
+          <xs:element minOccurs="0" name="Country" type="tns:CodeListType" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="DeathType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="DateOfDeath" type="xs:date" />
+          <xs:element minOccurs="0" name="County" type="tns:CodeListType" />
+          <xs:element minOccurs="0" name="Municipality" type="tns:CodeListType" />
+          <xs:element minOccurs="0" name="District" type="xs:string" />
+          <xs:element minOccurs="0" name="Country" type="tns:CodeListType" />
+          <xs:element name="Status" type="tns:CodeListType" />
+          <xs:element minOccurs="0" name="DateOfStatusChange" type="xs:date" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="RelatedPersonType">
+        <xs:sequence>
+          <xs:element name="TypeOfRelation" type="tns:CodeListType" />
+          <xs:element minOccurs="0" name="PhysicalPerson" type="tns:PhysicalPersonType" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="ID" type="tns:IDType" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="IDType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="IdentifierType" type="tns:CodeListType" />
+          <xs:element minOccurs="0" name="IdentifierValue" type="xs:string" />
+        </xs:sequence>
+        <xs:attribute name="specified" type="xs:boolean" />
+      </xs:complexType>
+      <xs:complexType name="BankConnectionType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Holder" type="tns:HolderType" />
+          <xs:element minOccurs="0" name="BankName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DomesticBankConnection" type="tns:DomesticBankConnectionType" />
+          <xs:element minOccurs="0" name="InternationalBankConnection" type="tns:InternationalBankConnectionType" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="DomesticBankConnectionType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="FormattedDomesticBankConnection" type="xs:string" />
+          <xs:element minOccurs="0" name="AccountNumberPrefix" type="xs:string" />
+          <xs:element minOccurs="0" name="AccountNumber" type="xs:string" />
+          <xs:element minOccurs="0" name="BankCode" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="InternationalBankConnectionType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="IBAN" type="xs:string" />
+          <xs:element minOccurs="0" name="BIC" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="StakeholderType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="StakeholderForm" type="xs:string" />
+          <xs:element minOccurs="0" name="PhysicalPerson" type="tns:PhysicalPersonType" />
+          <xs:element minOccurs="0" name="CorporateBody" type="tns:CorporateBodyType" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="ID" type="tns:IDType" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="CorporateBodyType">
+        <xs:sequence>
+          <xs:element name="CorporateBodyName" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="CorporateBodyAlternativeName" type="xs:string" />
+          <xs:element name="LegalForm" type="tns:CodeListType" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="OrganizationUnit" type="xs:string" />
+          <xs:element minOccurs="0" name="Establishment" type="xs:date" />
+          <xs:element minOccurs="0" name="Termination" type="xs:date" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="BankConnection" type="tns:BankConnectionType" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="Activities" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="OtherLegalFacts" type="xs:string" />
+          <xs:element minOccurs="0" name="Equity" type="tns:EquityType" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="Stakeholder" type="tns:StakeholderType" />
+          <xs:element minOccurs="0" name="Sid" type="xs:string" />
+          <xs:element minOccurs="0" name="OrgId" type="xs:int" />
+          <xs:element minOccurs="0" name="Suspension" type="tns:SuspensionType" />
+          <xs:element minOccurs="0" name="DateOfStatusChange" type="xs:date" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="SuspensionType">
+        <xs:sequence>
+          <xs:element name="DateFrom" type="xs:date" />
+          <xs:element minOccurs="0" name="DateTo" type="xs:date" />
+          <xs:element name="Reason" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="IdentityData">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="PhysicalPerson" type="tns:PhysicalPersonType" />
+          <xs:element minOccurs="0" name="CorporateBody" type="tns:CorporateBodyType" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="PhysicalAddress" type="tns:PhysicalAddressType" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="TelephoneAddress" type="tns:TelephoneAddressType" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="InternetAddress" type="tns:InternetAddressType" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="ID" type="tns:IDType" />
+          <xs:element minOccurs="0" name="GeneralData" type="tns:GeneralDataType" />
+          <xs:element minOccurs="0" name="UPVSAttributes" type="tns:UPVSAttributesType" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PhysicalAddressType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="AddressLine" type="xs:string" />
+          <xs:element minOccurs="0" name="Country" type="tns:CodeListType" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="Region" type="xs:string" />
+          <xs:element minOccurs="0" name="County" type="tns:CodeListType" />
+          <xs:element minOccurs="0" name="Municipality" type="tns:CodeListType" />
+          <xs:element minOccurs="0" name="District" type="xs:string" />
+          <xs:element minOccurs="0" name="StreetName" type="xs:string" />
+          <xs:element minOccurs="0" name="BuildingNumber" type="xs:string" />
+          <xs:element minOccurs="0" name="PropertyRegistrationNumber" type="xs:integer" />
+          <xs:element minOccurs="0" name="Unit" type="xs:string" />
+          <xs:element minOccurs="0" name="AddressRegisterEntry" type="xs:string" />
+          <xs:element minOccurs="0" name="AddressPoint" type="tns:AddressPointType" />
+          <xs:element minOccurs="0" name="BuildingIndex" type="xs:integer" />
+          <xs:element minOccurs="0" name="DeliveryAddress" type="tns:DeliveryAddressType" />
+        </xs:sequence>
+        <xs:attribute name="type" type="tns:EPhysicalAddressType" />
+        <xs:attribute name="specified" type="xs:boolean" />
+      </xs:complexType>
+      <xs:complexType name="AddressPointType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="XYH" type="tns:XYHType" />
+          <xs:element minOccurs="0" name="BLH" type="tns:BLHType" />
+          <xs:element minOccurs="0" name="AddressPointID" type="xs:float" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="XYHType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="AxisX" type="xs:float" />
+          <xs:element minOccurs="0" name="AxisY" type="xs:float" />
+          <xs:element minOccurs="0" name="HeightH" type="xs:float" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="BLHType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="AxisB" type="xs:float" />
+          <xs:element minOccurs="0" name="AxisL" type="xs:float" />
+          <xs:element minOccurs="0" name="AxisH" type="xs:float" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="DeliveryAddressType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="PostalCode" type="xs:string" />
+          <xs:element minOccurs="0" name="PostOfficeBox" type="xs:string" />
+          <xs:element minOccurs="0" name="Recipient" type="tns:RecipientType" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="RecipientType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="PersonName" type="tns:PersonNameType" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="AdditionalText" type="xs:string" />
+          <xs:element minOccurs="0" name="OrganizationUnit" type="xs:string" />
+          <xs:element minOccurs="0" name="CorporateBodyName" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="GeneralDataType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="FormattedName" type="xs:string" />
+          <xs:element name="IdentityType" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="EGovIdentifier" type="tns:EGovIdentifierType" />
+          <xs:element minOccurs="0" name="Uri" type="xs:string" />
+          <xs:element minOccurs="0" name="Suffix" type="xs:integer" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="EGovIdentifierType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="SectorIdentifier" type="xs:string" />
+          <xs:element minOccurs="0" name="Identifier" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="MdurzSearchRequestType">
+        <xs:sequence>
+          <xs:element name="accessibility" nillable="true" type="xs:string" />
+          <xs:element name="firstIndex" type="xs:int" />
+          <xs:element name="maxCntInPage" type="xs:int" />
+          <xs:element minOccurs="0" name="sortBy" type="xs:string" />
+          <xs:element name="sortAscending" type="xs:boolean" />
+          <xs:element name="MdurzSearchCriteria" type="tns:MdurzSearchCriteria" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="MdurzSearchCriteria">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="IdContains" type="xs:string" />
+          <xs:element minOccurs="0" name="titleContains" type="xs:string" />
+          <xs:element minOccurs="0" name="descriptionContains" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="MdurzSearchResultType">
+        <xs:sequence>
+          <xs:element name="totalCount" type="xs:int" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="RecordInfo" type="tns:RecordInfo" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="RecordInfo">
+        <xs:sequence>
+          <xs:element name="mdurzId" type="xs:string" />
+          <xs:element name="title" nillable="true" type="xs:string" />
+          <xs:element name="Id" nillable="true" type="xs:string" />
+          <xs:element name="description" nillable="true" type="xs:string" />
+          <xs:element name="accessibility" type="xs:string" />
+          <xs:element name="dateInserted" nillable="true" type="xs:dateTime" />
+          <xs:element name="dateExpire" nillable="true" type="xs:dateTime" />
+          <xs:element name="netSize" nillable="true" type="xs:long" />
+          <xs:element name="attachementsCount" nillable="true" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="UpvsIdentifierType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Id" type="xs:string" />
+          <xs:element minOccurs="0" name="Uri" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="SearchUpvsIdentitiesRequestType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="identityType" type="xs:string" />
+          <xs:element minOccurs="0" name="corporatePerson" type="tns:CorporatePersonRequestType" />
+          <xs:element minOccurs="0" name="physicalPerson" type="tns:PhysicalPersonRequestType" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="CorporatePersonRequestType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="companyRegistrationNumber" type="xs:string" />
+          <xs:element minOccurs="0" name="corporateBodyName" type="xs:string" />
+          <xs:element minOccurs="0" name="legalForm" type="xs:string" />
+          <xs:element minOccurs="0" name="sid" type="xs:string" />
+          <xs:element minOccurs="0" name="vatNumber" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PhysicalPersonRequestType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="birthDay" type="xs:date" />
+          <xs:element minOccurs="0" name="familyName" type="xs:string" />
+          <xs:element minOccurs="0" name="givenName" type="xs:string" />
+          <xs:element minOccurs="0" name="pco" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="SearchUpvsIdentitiesResponseType">
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" name="SearchIdentitiesResponse" type="tns:SearchIdentitiesResponse" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="SearchIdentitiesResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="upvsID" type="xs:string" />
+          <xs:element minOccurs="0" name="upvsURI" type="xs:string" />
+          <xs:element minOccurs="0" name="isDeliverable" type="xs:boolean" />
+          <xs:element minOccurs="0" name="identityType" type="xs:string" />
+          <xs:element minOccurs="0" name="corporateBody" type="tns:CorporatePersonResponseType" />
+          <xs:element minOccurs="0" name="physicalPerson" type="tns:PhysicalPersonRequestType" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="CorporatePersonResponseType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="companyRegistrationNumber" type="xs:string" />
+          <xs:element minOccurs="0" name="corporateBodyName" type="xs:string" />
+          <xs:element minOccurs="0" name="legalForm" type="tns:CodeListType" />
+          <xs:element minOccurs="0" name="sid" type="xs:string" />
+          <xs:element minOccurs="0" name="vatNumber" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="IsEdeskDeliverableType">
+        <xs:sequence>
+          <xs:element name="PersonId" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="GetDelegationsRequestType">
+        <xs:sequence>
+          <xs:element name="delegationOwnerId" nillable="true" type="xs:string" />
+          <xs:element name="delegationRecipientId" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="GetDelegationsResponseType">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="Delegation" type="tns:Delegation" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Delegation">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="delegationId" type="xs:integer" />
+          <xs:element minOccurs="0" name="ownerUpvsId" type="xs:string" />
+          <xs:element minOccurs="0" name="recipientUpvsId" type="xs:string" />
+          <xs:element minOccurs="0" name="ownerName" type="xs:string" />
+          <xs:element minOccurs="0" name="recipientName" type="xs:string" />
+          <xs:element name="validFrom" type="xs:date" />
+          <xs:element name="validTo" nillable="true" type="xs:date" />
+          <xs:element name="type" type="xs:string" />
+          <xs:element name="typeCode" type="xs:integer" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="IsUpvsIdentityInRoleType">
+        <xs:sequence>
+          <xs:element name="PersonId" type="xs:string" />
+          <xs:element name="UpvsRoleName" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="IsEdeskDeliverableWithUpvsIdentifierType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="UPVSIdentifier" type="xs:string" />
+          <xs:element minOccurs="0" name="UPVSUri" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:simpleType name="MessagePartClass">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="FORM" />
+          <xs:enumeration value="ATTACHMENT" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="Encoding">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="XML" />
+          <xs:enumeration value="Base64" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="EEntityType">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="ATTRIBUTE" />
+          <xs:enumeration value="ROLE" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="EAffixType">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="AristocraticTitle" />
+          <xs:enumeration value="FormOfAddress" />
+          <xs:enumeration value="Generation" />
+          <xs:enumeration value="Qualification" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="EAffixPosition">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="Prefix" />
+          <xs:enumeration value="Postfix" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="EeDeskStatus">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="NONEXISTENT" />
+          <xs:enumeration value="CREATED" />
+          <xs:enumeration value="ACTIVE" />
+          <xs:enumeration value="DELIVERABLE" />
+          <xs:enumeration value="DISABLED" />
+          <xs:enumeration value="DELETED" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="EStates">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="REGISTERED" />
+          <xs:enumeration value="ACTIVATED" />
+          <xs:enumeration value="VERIFIED" />
+          <xs:enumeration value="BLOCKED" />
+          <xs:enumeration value="DEACTIVATED" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="EPreferredLanguages">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="SK" />
+          <xs:enumeration value="EN" />
+          <xs:enumeration value="PL" />
+          <xs:enumeration value="CZ" />
+          <xs:enumeration value="HU" />
+          <xs:enumeration value="RU" />
+          <xs:enumeration value="DE" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="EPreferredChannel">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="SMS" />
+          <xs:enumeration value="EMAIL" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="EPhysicalAddressType">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="StreetAddress" />
+          <xs:enumeration value="ContactAddress" />
+          <xs:enumeration value="PostOfficeBoxAddress" />
+          <xs:enumeration value="MilitaryAddress" />
+          <xs:enumeration value="Undefined" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="EIdentityType">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="NATURAL_PERSON" />
+          <xs:enumeration value="LEGAL_ENTITY" />
+          <xs:enumeration value="TECHNICAL_ACCOUNT" />
+          <xs:enumeration value="ADMINISTRATOR_CPAP" />
+          <xs:enumeration value="EMPLOYEE_OF_PUBLIC_ADMINISTRATION" />
+          <xs:enumeration value="INSTITUTION_OF_PUBLIC_ADMINISTRATION" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="SearchAccesibility">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="OWN" />
+          <xs:enumeration value="PUBLIC" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="SortAttribute">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="TITLE" />
+          <xs:enumeration value="CUSTOM_ID" />
+          <xs:enumeration value="DESCRIPTION" />
+          <xs:enumeration value="IS_PUBLIC" />
+          <xs:enumeration value="NET_SIZE" />
+          <xs:enumeration value="DATE_INSERTED" />
+          <xs:enumeration value="PLANNED_RETENTION" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="accessibility">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="PRIVATE" />
+          <xs:enumeration value="PUBLIC" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:complexType name="PDFConversionValidationRequest">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="b64Data" type="xs:string" />
+          <xs:element minOccurs="1" maxOccurs="1" name="conformanceLevel" type="tns:PDFConformanceLevel" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:simpleType name="PDFConformanceLevel">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="e_Level1A" />
+          <xs:enumeration value="e_Level1B" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:complexType name="ConvertPDFResponse">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="b64Data" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ValidatePDFResponse">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="valid" type="xs:boolean" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="SignObjectsRequest">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="signTogether" type="xs:boolean" />
+          <xs:element minOccurs="1" maxOccurs="1" name="outputType" type="tns:SignObjectsOutputType" />
+          <xs:element minOccurs="1" maxOccurs="unbounded" name="objectsToSign" type="tns:ObjectToSign" />
+          <xs:element minOccurs="0" maxOccurs="1" name="omitPdfConformanceValidation" type="xs:boolean" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:simpleType name="SignObjectsOutputType">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="ASiC" />
+          <xs:enumeration value="PAdES" />
+          <xs:enumeration value="XAdES" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:complexType name="ObjectToSign">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="id" type="tns:UUID" />
+          <xs:element minOccurs="1" maxOccurs="1" name="b64Data" type="xs:string" />
+          <xs:element minOccurs="1" maxOccurs="1" name="type" type="tns:ObjectToSignType" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:simpleType name="UUID">
+        <xs:restriction base="xs:string">
+          <xs:pattern value="[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}" />
+          <xs:length value="36" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="ObjectToSignType">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="PDF" />
+          <xs:enumeration value="PNG" />
+          <xs:enumeration value="TXT" />
+          <xs:enumeration value="XML" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:complexType name="SignObjectsResponse">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="unbounded" name="signedObjects" type="tns:SignedObject" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="SignedObject">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="id" type="tns:UUID" />
+          <xs:element minOccurs="1" maxOccurs="1" name="b64Data" type="xs:string" />
+          <xs:element minOccurs="1" maxOccurs="1" name="mimeType" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="GetObjectsFromSignedContainerRequest">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="b64Data" type="xs:string" />
+          <xs:element minOccurs="1" maxOccurs="1" name="containerType" type="tns:SignedDataContainerType" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="GetObjectsFromSignedContainerResponse">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="unbounded" name="objects" type="tns:ObjectFromSignedContainer" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ObjectFromSignedContainer">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="id" type="xs:string" />
+          <xs:element minOccurs="1" maxOccurs="1" name="b64Data" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="mimeType" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="GetSignCertificateMetadataRequest">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="validityDate" type="xs:dateTime" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="GetSignCertificateMetadataResponse">
+        <xs:sequence>
+          <xs:element name="validSigningCertificate" type="xs:boolean" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="certificateMetadata" type="tns:CertificateMetadataType" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="CertificateMetadataType">
+        <xs:sequence>
+          <xs:element name="serialNumber" type="xs:string" />
+          <xs:element name="subjectName" type="xs:string" />
+          <xs:element name="signatureAlgorithm" type="xs:string" />
+          <xs:element name="keyUsage" type="xs:string" />
+          <xs:element name="issuer" type="xs:string" />
+          <xs:element name="validFrom" type="xs:dateTime" />
+          <xs:element name="validTo" type="xs:dateTime" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:simpleType name="SignedDataContainerType">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="ASiC" />
+          <xs:enumeration value="XAdES" />
+          <xs:enumeration value="CAdES" />
+          <xs:enumeration value="PAdES" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:element name="GetUpvsIdentityRolesRequest" nillable="true" type="tns:GetUpvsIdentityRolesType" />
+      <xs:element name="GetUpvsIdentityRolesResponse" nillable="true" type="tns:UpvsIdentityRolesType" />
+      <xs:element name="SendMessagesRequest" nillable="true" type="tns:OutgoingMessageListType" />
+      <xs:element name="GetEdeskHistoryRequest" nillable="true" type="tns:GetEdeskHistoryRequestType" />
+      <xs:element name="GetEdeskHistoryResponse" nillable="true" type="tns:GetEdeskHistoryResponseType" />
+      <xs:element name="CurrentTimeResponse" nillable="true" type="xs:dateTime" />
+      <xs:element name="UpvsMessageContainerRequest" nillable="true" type="tns:UpvsMessageContainerType" />
+      <xs:element name="FetchFormTemplateRequest" nillable="true" type="tns:FetchFormTemplateType" />
+      <xs:element name="EchoStringRequest" nillable="true" type="xs:string" />
+      <xs:element name="EchoStringResponse" nillable="true" type="xs:string" />
+      <xs:element name="SendUpvsMessageContainerWithTimeoutRequest" nillable="true" type="tns:UpvsMessageContainerWrapperWithTimeoutType" />
+      <xs:element name="SendNotificationRequest" nillable="true" type="tns:SendNotificationType" />
+      <xs:element name="FormTemplateIDRequest" nillable="true" type="tns:FormTemplateID" />
+      <xs:element name="SendEformRequest" nillable="true" type="tns:UpvsCustomMessageType" />
+      <xs:element name="SearchRecordInMdurzRequest" nillable="true" type="tns:MdurzSearchRequestType" />
+      <xs:element name="SearchRecordInMdurzResponse" nillable="true" type="tns:MdurzSearchResultType" />
+      <xs:element name="GetUpvsIdentityRequest" nillable="true" type="tns:UpvsIdentifierType" />
+      <xs:element name="IdentityDataResponse" nillable="true" type="tns:IdentityData" />
+      <xs:element name="SearchUpvsIdentitiesRequest" nillable="true" type="tns:SearchUpvsIdentitiesRequestType" />
+      <xs:element name="SearchUpvsIdentitiesResponse" nillable="true" type="tns:SearchUpvsIdentitiesResponseType" />
+      <xs:element name="IsEdeskDeliverableRequest" nillable="true" type="tns:IsEdeskDeliverableType" />
+      <xs:element name="isDeliverable" nillable="true" type="xs:boolean" />
+      <xs:element name="GetDelegationsRequest" nillable="true" type="tns:GetDelegationsRequestType" />
+      <xs:element name="GetDelegationsResponse" nillable="true" type="tns:GetDelegationsResponseType" />
+      <xs:element name="IsUpvsIdentityInRoleRequest" nillable="true" type="tns:IsUpvsIdentityInRoleType" />
+      <xs:element name="IsUpvsIdentityInRoleResponse" nillable="true" type="xs:boolean" />
+      <xs:element name="IsEdeskDeliverableWithUpvsIdentifierRequest" nillable="true" type="tns:IsEdeskDeliverableWithUpvsIdentifierType" />
+      <xs:element name="IsEdeskDeliverableWithUpvsIdentifierResponse" nillable="true" type="xs:boolean" />
+      <xs:element name="PDFConversionRequest" type="tns:PDFConversionValidationRequest" />
+      <xs:element name="PDFValidationRequest" type="tns:PDFConversionValidationRequest" />
+      <xs:element name="ConvertPDFResponse" type="tns:ConvertPDFResponse" />
+      <xs:element name="ValidatePDFResponse" type="tns:ValidatePDFResponse" />
+      <xs:element name="SignObjectsRequest" type="tns:SignObjectsRequest" />
+      <xs:element name="SignObjectsResponse" type="tns:SignObjectsResponse" />
+      <xs:element name="GetObjectsFromSignedContainerRequest" type="tns:GetObjectsFromSignedContainerRequest" />
+      <xs:element name="GetObjectsFromSignedContainerResponse" type="tns:GetObjectsFromSignedContainerResponse" />
+      <xs:element name="GetSignCertificateMetadataRequest" type="tns:GetSignCertificateMetadataRequest" />
+      <xs:element name="GetSignCertificateMetadataResponse" type="tns:GetSignCertificateMetadataResponse" />
+    </xs:schema>
+    <xs:schema xmlns:tns="http://schemas.dcom.sk/fault/1.0" xmlns:ns1="http://schemas.dcom.sk/fault/1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://schemas.dcom.sk/fault/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:element name="dcomFault" type="tns:DcomFaultType" />
+      <xs:complexType name="DcomFaultType">
+        <xs:sequence>
+          <xs:element name="faultCode" type="xs:int" />
+          <xs:element name="faultMessage" type="xs:string" />
+          <xs:element minOccurs="0" name="faultCause" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="invalidParameter" type="tns:InvalidParameterType" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="InvalidParameterType">
+        <xs:sequence>
+          <xs:element name="parameterName" type="xs:string" />
+          <xs:element name="errorMessage" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="DcomFaultMessage" nillable="true" type="tns:DcomFaultType" />
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="SearchUpvsIdentities">
+    <wsdl:part name="searchUpvsIdentitiesRequest" element="tns:SearchUpvsIdentitiesRequest" />
+  </wsdl:message>
+  <wsdl:message name="FetchFormTemplateResponse" />
+  <wsdl:message name="IsEdeskDeliverableResponse">
+    <wsdl:part name="isDeliverable" element="tns:isDeliverable" />
+  </wsdl:message>
+  <wsdl:message name="SendUpvsMessageContainerWithTimeout">
+    <wsdl:part name="sendUpvsMessageContainerWithTimeoutRequest" element="tns:SendUpvsMessageContainerWithTimeoutRequest" />
+  </wsdl:message>
+  <wsdl:message name="GetObjectsFromSignedContainerReponse">
+    <wsdl:part name="GetObjectsFromSignedContainerReponse" element="tns:GetObjectsFromSignedContainerResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetUpvsIdentityResponse">
+    <wsdl:part name="identityDataResponse" element="tns:IdentityDataResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetCurrentTime" />
+  <wsdl:message name="ValidatePDFRequest">
+    <wsdl:part name="validatePDFRequest" element="tns:PDFValidationRequest" />
+  </wsdl:message>
+  <wsdl:message name="GetEdeskHistoryResponse">
+    <wsdl:part name="getEdeskHistoryResponse" element="tns:GetEdeskHistoryResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetUpvsIdentityRolesResponse">
+    <wsdl:part name="getUpvsIdentityRolesResponse" element="tns:GetUpvsIdentityRolesResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetObjectsFromSignedContainerRequest">
+    <wsdl:part name="GetObjectsFromSignedContainerRequest" element="tns:GetObjectsFromSignedContainerRequest" />
+  </wsdl:message>
+  <wsdl:message name="GetUpvsIdentityRoles">
+    <wsdl:part name="getUpvsIdentityRolesRequest" element="tns:GetUpvsIdentityRolesRequest" />
+  </wsdl:message>
+  <wsdl:message name="IsEdeskDeliverable">
+    <wsdl:part name="isEdeskDeliverableRequest" element="tns:IsEdeskDeliverableRequest" />
+  </wsdl:message>
+  <wsdl:message name="GetUpvsIdentityDelegations">
+    <wsdl:part name="getDelegationRequest" element="tns:GetDelegationsRequest" />
+  </wsdl:message>
+  <wsdl:message name="ValidatePDFResponse">
+    <wsdl:part name="validatePDFResponse" element="tns:ValidatePDFResponse" />
+  </wsdl:message>
+  <wsdl:message name="Echo">
+    <wsdl:documentation>INPUT_MESSAGE doc</wsdl:documentation>
+    <wsdl:part name="echoStringRequest" element="tns:EchoStringRequest" />
+  </wsdl:message>
+  <wsdl:message name="SendEformRequestResponse" />
+  <wsdl:message name="GetUpvsIdentityDelegationsResponse">
+    <wsdl:part name="getDelegationsResponse" element="tns:GetDelegationsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IsEdeskDeliverableWithUpvsIdentifier">
+    <wsdl:part name="isEdeskDeliverableWithUpvsIdentifierRequest" element="tns:IsEdeskDeliverableWithUpvsIdentifierRequest" />
+  </wsdl:message>
+  <wsdl:message name="GetUpvsIdentity">
+    <wsdl:part name="getUpvsIdentityRequest" element="tns:GetUpvsIdentityRequest" />
+  </wsdl:message>
+  <wsdl:message name="SendMessages">
+    <wsdl:part name="sendMessagesRequest" element="tns:SendMessagesRequest" />
+  </wsdl:message>
+  <wsdl:message name="SendMessagesResponse" />
+  <wsdl:message name="ConvertPDFResponse">
+    <wsdl:part name="convertPDFResponse" element="tns:ConvertPDFResponse" />
+  </wsdl:message>
+  <wsdl:message name="IsUpvsIdentityInRole">
+    <wsdl:part name="isUpvsIdentityInRoleRequest" element="tns:IsUpvsIdentityInRoleRequest" />
+  </wsdl:message>
+  <wsdl:message name="IsEdeskDeliverableWithUpvsIdentifierResponse">
+    <wsdl:part name="isEdeskDeliverableWithUpvsIdentifierResponse" element="tns:IsEdeskDeliverableWithUpvsIdentifierResponse" />
+  </wsdl:message>
+  <wsdl:message name="SendUpvsMessageContainer">
+    <wsdl:part name="upvsMessageContainerRequest" element="tns:UpvsMessageContainerRequest" />
+  </wsdl:message>
+  <wsdl:message name="SendUpvsMessageContainerResponse" />
+  <wsdl:message name="ConvertPDFRequest">
+    <wsdl:part name="convertPdfRequest" element="tns:PDFConversionRequest" />
+  </wsdl:message>
+  <wsdl:message name="IsUpvsIdentityInRoleResponse">
+    <wsdl:part name="isUpvsIdentityInRoleResponse" element="tns:IsUpvsIdentityInRoleResponse" />
+  </wsdl:message>
+  <wsdl:message name="SendEformRequest">
+    <wsdl:part name="sendEformRequest" element="tns:SendEformRequest" />
+  </wsdl:message>
+  <wsdl:message name="GetCurrentTimeResponse">
+    <wsdl:part name="currentTimeResponse" element="tns:CurrentTimeResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetSignCertificateMetadataResponse">
+    <wsdl:part name="GetSignCertificateMetadataResponse" element="tns:GetSignCertificateMetadataResponse" />
+  </wsdl:message>
+  <wsdl:message name="SendNotification">
+    <wsdl:part name="sendNotificationRequest" element="tns:SendNotificationRequest" />
+  </wsdl:message>
+  <wsdl:message name="DcomFaultMessage">
+    <wsdl:part name="DcomFaultMessage" element="ns1:DcomFaultMessage" />
+  </wsdl:message>
+  <wsdl:message name="SearchRecordInMdurzResponse">
+    <wsdl:part name="searchRecordInMdurzResponse" element="tns:SearchRecordInMdurzResponse" />
+  </wsdl:message>
+  <wsdl:message name="SendUpvsMessageContainerWithTimeoutResponse" />
+  <wsdl:message name="EchoResponse">
+    <wsdl:part name="echoStringResponse" element="tns:EchoStringResponse" />
+  </wsdl:message>
+  <wsdl:message name="ValidateFormStatus">
+    <wsdl:documentation>Form template ID formulára na validáciu.</wsdl:documentation>
+    <wsdl:part name="formTemplateIDRequest" element="tns:FormTemplateIDRequest" />
+  </wsdl:message>
+  <wsdl:message name="SignObjectsReponse">
+    <wsdl:part name="signObjectsResponse" element="tns:SignObjectsResponse" />
+  </wsdl:message>
+  <wsdl:message name="ValidateFormStatusResponse" />
+  <wsdl:message name="SendNotificationResponse" />
+  <wsdl:message name="FetchFormTemplate">
+    <wsdl:part name="fetchFormTemplateRequest" element="tns:FetchFormTemplateRequest" />
+  </wsdl:message>
+  <wsdl:message name="GetEdeskHistory">
+    <wsdl:part name="getEdeskHistoryRequest" element="tns:GetEdeskHistoryRequest" />
+  </wsdl:message>
+  <wsdl:message name="SearchRecordInMdurz">
+    <wsdl:part name="searchRecordInMdurzRequest" element="tns:SearchRecordInMdurzRequest" />
+  </wsdl:message>
+  <wsdl:message name="GetSignCertificateMetadataRequest">
+    <wsdl:part name="GetSignCertificateMetadataRequest" element="tns:GetSignCertificateMetadataRequest" />
+  </wsdl:message>
+  <wsdl:message name="SearchUpvsIdentitiesResponse">
+    <wsdl:part name="searchUpvsIdentitiesResponse" element="tns:SearchUpvsIdentitiesResponse" />
+  </wsdl:message>
+  <wsdl:message name="SignObjectsRequest">
+    <wsdl:part name="signObjectsRequest" element="tns:SignObjectsRequest" />
+  </wsdl:message>
+  <wsdl:portType name="UpvsGwServices">
+    <wsdl:operation name="GetUpvsIdentityRoles">
+      <wsdl:documentation>Metoda volá UPVS IAM synchronní metodu GetRolesForIdentity</wsdl:documentation>
+      <wsdl:input name="GetUpvsIdentityRoles" message="tns:GetUpvsIdentityRoles" />
+      <wsdl:output name="GetUpvsIdentityRolesResponse" message="tns:GetUpvsIdentityRolesResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SendMessages">
+      <wsdl:documentation>Služba zabezpečuje odoslanie správ cez UPVS do elektronických schránok adresátov.</wsdl:documentation>
+      <wsdl:input name="SendMessages" message="tns:SendMessages" />
+      <wsdl:output name="SendMessagesResponse" message="tns:SendMessagesResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetEdeskHistory">
+      <wsdl:documentation>Metoda volá UPVS IAM GetEdeskHistory z UPVS</wsdl:documentation>
+      <wsdl:input name="GetEdeskHistory" message="tns:GetEdeskHistory" />
+      <wsdl:output name="GetEdeskHistoryResponse" message="tns:GetEdeskHistoryResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetCurrentTime">
+      <wsdl:documentation>Systémová funkce, slouží pro synchronizaci času DCOM modulu eForm s časem UPVS Gateway</wsdl:documentation>
+      <wsdl:input name="GetCurrentTime" message="tns:GetCurrentTime" />
+      <wsdl:output name="GetCurrentTimeResponse" message="tns:GetCurrentTimeResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SendUpvsMessageContainer">
+      <wsdl:documentation>Jedná se o asynchronní službu, která volá G2G rozhraní a odesílá technické zprávy na UPVS. Slouží pro odeslání zpráv, které musí být podepsané uživatelem a musí jej tak připravit podpůrný modul DCOM eForm, případně pro zprávy u kterých klient má již připravený messageContainer k odeslání.Slouží např pro:- Odesílání dokumentu k vystavení na  CUET UPVS- Zrušení vystavení dokumentu na CUET UPVS- Práci s MDURZMetoda dostane jako vstupní parametr všechny potřebné údaje pro vytvoření messageInfo SkTalku.SenderId přeloží na identifikáttor UPVS a vyžádá si pro něj příslušný token. Vytvoří SkTalk zprávu a vloží do něj MessageContainer a odešle do UPVS na G2G rozhraní. Pokud je návratová hodnota volání jiná než 0, vrátí fault s popisem dané chyby na UPVS.Pokud je návratový kod z UPVS 0, zapíše pro všechna volání, která vyžadují odpověď do DB údaje o odeslané zprávě do tabulky SentUpvsAsyncRequest.</wsdl:documentation>
+      <wsdl:input name="SendUpvsMessageContainer" message="tns:SendUpvsMessageContainer" />
+      <wsdl:output name="SendUpvsMessageContainerResponse" message="tns:SendUpvsMessageContainerResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="FetchFormTemplate">
+      <wsdl:documentation>Metoda zaradí formulár s požadovaným id do fronty formulárov, ktoré sa majú stiahnuť</wsdl:documentation>
+      <wsdl:input name="FetchFormTemplate" message="tns:FetchFormTemplate" />
+      <wsdl:output name="FetchFormTemplateResponse" message="tns:FetchFormTemplateResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Echo">
+      <wsdl:documentation>Systémová služba, slouží pouze pro ověření zda služba odpovídá a případně k nastartování všech potřebných komponent služby.</wsdl:documentation>
+      <wsdl:input name="Echo" message="tns:Echo" />
+      <wsdl:output name="EchoResponse" message="tns:EchoResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SendUpvsMessageContainerWithTimeout">
+      <wsdl:documentation>Vid. {@link #sendUpvsMessageContainer(UpvsMessageContainer)} akurat s nastavenym timeout pre connection a message</wsdl:documentation>
+      <wsdl:input name="SendUpvsMessageContainerWithTimeout" message="tns:SendUpvsMessageContainerWithTimeout" />
+      <wsdl:output name="SendUpvsMessageContainerWithTimeoutResponse" message="tns:SendUpvsMessageContainerWithTimeoutResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SendNotification">
+      <wsdl:documentation>Metoda volá UPVS eNotify SendNotification</wsdl:documentation>
+      <wsdl:input name="SendNotification" message="tns:SendNotification" />
+      <wsdl:output name="SendNotificationResponse" message="tns:SendNotificationResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ValidateFormStatus">
+      <wsdl:documentation>Služba slúži pre overenie účinnosti formulára, v prípade, ak je volaná nad neúčinným formulárom vráti fault a zavolá audit service s príznakom requires human intervention.</wsdl:documentation>
+      <wsdl:input name="ValidateFormStatus" message="tns:ValidateFormStatus" />
+      <wsdl:output name="ValidateFormStatusResponse" message="tns:ValidateFormStatusResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SendEformRequest">
+      <wsdl:documentation>Služba slouží pro odeslání zprávy UPVS, která vůbec není ve formátu messageContainer. Jedná se např. o služby pracující s UPVS eForm. - Přidání nové  vzoru eformuláře - Zneplatnění vzoru eformuláře - Změnu dat  vzoru eformuláře Metoda dostane jako vstupní parametr všechny potřebné údaje pro vytvoření messageInfo SkTalku. SenderId přeloží na identifikáttor UPVS a vyžádá si pro něj příslušný token. Vytvoří SkTalk zprávu a do body vloží zaslanou CustomMessage (bez jakýchkoliv změn) a odešle do UPVS na G2G rozhraní. Pokud je návratová hodnota volání jiná než 0, vrátí fault s popisem dané chyby na UPVS. Pokud je návratový kod z UPVS 0, zapíše pro všechna volání, která vyžadují odpověď do DB údaje o odeslané zprávě do tabulky SentUpvsAsyncRequest.</wsdl:documentation>
+      <wsdl:input name="SendEformRequest" message="tns:SendEformRequest" />
+      <wsdl:output name="SendEformRequestResponse" message="tns:SendEformRequestResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SearchRecordInMdurz">
+      <wsdl:documentation>Synchronní operace, volá se metoda UPVS modulu MDURZ - AdvancedSearch</wsdl:documentation>
+      <wsdl:input name="SearchRecordInMdurz" message="tns:SearchRecordInMdurz" />
+      <wsdl:output name="SearchRecordInMdurzResponse" message="tns:SearchRecordInMdurzResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetUpvsIdentity">
+      <wsdl:documentation>Metoda volá UPVS synchronní metodu IAM, výsledkem je stažení údajů o identitě z uPVS</wsdl:documentation>
+      <wsdl:input name="GetUpvsIdentity" message="tns:GetUpvsIdentity" />
+      <wsdl:output name="GetUpvsIdentityResponse" message="tns:GetUpvsIdentityResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SearchUpvsIdentities">
+      <wsdl:documentation>Metoda volá UPVS synchrónnu metódu IAM, výsledkom je zoznam identít ktorú vyhovujú vyhľadávacím kriteriam</wsdl:documentation>
+      <wsdl:input name="SearchUpvsIdentities" message="tns:SearchUpvsIdentities" />
+      <wsdl:output name="SearchUpvsIdentitiesResponse" message="tns:SearchUpvsIdentitiesResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="IsEdeskDeliverable">
+      <wsdl:documentation>Služba overí, či uvedený subjekt (občan, firma) má elektronickú schránku aktívnu na doručovanie.&lt;p/&gt;Metoda podle personId vyhledá v Datahubu údaje osoby podle zadaného Id. Získá URI, buď z hodnoty Osoba.URI, nebo pokud je null si jej složí podle evidovaných údajů osoby (FO a PO) podle pravidel URI.S takto získaným URI zavolá metodu GetUpvsIdentity.- Pokud se v UPVS podle URI nenajde identita vrátí metoda false- Pokud se najde identita, a sk.dcom.integration.upvs atribut eDeskStatus je DELIVERABLE tak true- jinak falsePersonId je referencia na osobu v rámci zdieľanej dátovej vrstvy.Vyjimka:- podle personId musí být dohledatelná osoba v evidenci DCOM</wsdl:documentation>
+      <wsdl:input name="IsEdeskDeliverable" message="tns:IsEdeskDeliverable" />
+      <wsdl:output name="IsEdeskDeliverableResponse" message="tns:IsEdeskDeliverableResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetUpvsIdentityDelegations">
+      <wsdl:documentation>Metoda volá UPVS IAM synchronní metodu getDelegations. metoda přeloží DCOM id (owner a recipient) na UPVS Id- vyhledá osobu v Datahubu podle DCOM id, pokud má osoba vyplněné pole UPVSId nebo UPVSUri použije jej, pokud ne vyskládá si URI podle údajů osoby, zavolá metodu UPVS getIdentity a získá UPVS idValidace:- musí být zadána alespoň jedna z hodnot owner a recipient</wsdl:documentation>
+      <wsdl:input name="GetUpvsIdentityDelegations" message="tns:GetUpvsIdentityDelegations" />
+      <wsdl:output name="GetUpvsIdentityDelegationsResponse" message="tns:GetUpvsIdentityDelegationsResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="IsUpvsIdentityInRole">
+      <wsdl:documentation> se o volání metody IsIdentityInRole na UPVS. Metoda přeloží identifikátor osoby na identifikátor používaný v UPVS (UPVSId nebo UPVSUri) a zavolá příslušnou metodu ÚPVS.</wsdl:documentation>
+      <wsdl:input name="IsUpvsIdentityInRole" message="tns:IsUpvsIdentityInRole" />
+      <wsdl:output name="IsUpvsIdentityInRoleResponse" message="tns:IsUpvsIdentityInRoleResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="IsEdeskDeliverableWithUpvsIdentifier">
+      <wsdl:input name="IsEdeskDeliverableWithUpvsIdentifier" message="tns:IsEdeskDeliverableWithUpvsIdentifier" />
+      <wsdl:output name="IsEdeskDeliverableWithUpvsIdentifierResponse" message="tns:IsEdeskDeliverableWithUpvsIdentifierResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ValidatePDF">
+      <wsdl:input name="ValidatePDFRequest" message="tns:ValidatePDFRequest" />
+      <wsdl:output name="ValidatePDFResponse" message="tns:ValidatePDFResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ConvertPDF">
+      <wsdl:input name="ConvertPDFRequest" message="tns:ConvertPDFRequest" />
+      <wsdl:output name="ConvertPDFResponse" message="tns:ConvertPDFResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SignObjects">
+      <wsdl:input name="SignObjectsRequest" message="tns:SignObjectsRequest" />
+      <wsdl:output name="SignObjectsReponse" message="tns:SignObjectsReponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetObjectsFromSignedContainer">
+      <wsdl:input name="GetObjectsFromSignedContainerRequest" message="tns:GetObjectsFromSignedContainerRequest" />
+      <wsdl:output name="GetObjectsFromSignedContainerReponse" message="tns:GetObjectsFromSignedContainerReponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetSignCertificateMetadata">
+      <wsdl:input name="GetSignCertificateMetadataRequest" message="tns:GetSignCertificateMetadataRequest" />
+      <wsdl:output name="GetSignCertificateMetadataResponse" message="tns:GetSignCertificateMetadataResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="UpvsGwServicesSoapBinding" type="tns:UpvsGwServices">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <PolicyReference xmlns="http://schemas.xmlsoap.org/ws/2004/09/policy" URI="#WS2007FederationHttpBinding_IService_policy" />
+    <wsdl:operation name="GetUpvsIdentityRoles">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="GetUpvsIdentityRoles">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetUpvsIdentityRolesResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetEdeskHistory">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="GetEdeskHistory">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetEdeskHistoryResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="SendMessages">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="SendMessages">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SendMessagesResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCurrentTime">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="GetCurrentTime">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetCurrentTimeResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="Echo">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="Echo">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="EchoResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="FetchFormTemplate">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="FetchFormTemplate">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="FetchFormTemplateResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="SendUpvsMessageContainer">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="SendUpvsMessageContainer">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SendUpvsMessageContainerResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="SendUpvsMessageContainerWithTimeout">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="SendUpvsMessageContainerWithTimeout">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SendUpvsMessageContainerWithTimeoutResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="SendNotification">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="SendNotification">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SendNotificationResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetUpvsIdentity">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="GetUpvsIdentity">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetUpvsIdentityResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="SearchRecordInMdurz">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="SearchRecordInMdurz">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SearchRecordInMdurzResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="SendEformRequest">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="SendEformRequest">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SendEformRequestResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="ValidateFormStatus">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="ValidateFormStatus">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="ValidateFormStatusResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="SearchUpvsIdentities">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="SearchUpvsIdentities">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SearchUpvsIdentitiesResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="IsEdeskDeliverable">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="IsEdeskDeliverable">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="IsEdeskDeliverableResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetUpvsIdentityDelegations">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="GetUpvsIdentityDelegations">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetUpvsIdentityDelegationsResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="IsUpvsIdentityInRole">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="IsUpvsIdentityInRole">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="IsUpvsIdentityInRoleResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="IsEdeskDeliverableWithUpvsIdentifier">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="IsEdeskDeliverableWithUpvsIdentifier">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="IsEdeskDeliverableWithUpvsIdentifierResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="ConvertPDF">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="ConvertPDFRequest">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="ConvertPDFResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="SignObjects">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="SignObjectsRequest">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SignObjectsReponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="ValidatePDF">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="ValidatePDFRequest">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="ValidatePDFResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetObjectsFromSignedContainer">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="GetObjectsFromSignedContainerRequest">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetObjectsFromSignedContainerReponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetSignCertificateMetadata">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="GetSignCertificateMetadataRequest">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetSignCertificateMetadataResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="UpvsGwServices">
+    <wsdl:port name="UpvsGwServicesSOAP" binding="tns:UpvsGwServicesSoapBinding">
+      <soap12:address location="https://lbsoa.intra.dcom.sk/soa/upvs/2.0/upvsGwServices" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

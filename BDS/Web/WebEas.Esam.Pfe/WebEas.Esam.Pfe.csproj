@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{77DB987D-0093-4D33-A0B8-4AB2DD0D4ED3}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WebEas.Esam.Pfe</RootNamespace>
+    <AssemblyName>WebEas.Esam.Pfe</AssemblyName>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <UseIISExpress>false</UseIISExpress>
+    <Use64BitIISExpress />
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Ninject.Web.Common">
+      <HintPath>..\..\..\Core\Libraries\Ninject.Web.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="WebEas.Core.Common">
+      <HintPath>..\..\..\Core\Libraries\WebEas.Core.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="WebEas.Core.Interface">
+      <HintPath>..\..\..\Core\Libraries\WebEas.Core.Interface.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Global.asax" />
+    <Content Include="Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AppHost.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\PublishProfiles\DevelopProfile.pubxml" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Develop.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform">
+      <Version>2.0.0</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Core\WebEas\ServiceInterface\WebEas.ServiceInterface\WebEas.ServiceInterface.csproj">
+      <Project>{e2a6581b-c2d4-42e4-a5d6-14ea0753ee7d}</Project>
+      <Name>WebEas.ServiceInterface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Core\WebEas\ServiceModel\WebEas.ServiceModel\WebEas.ServiceModel.csproj">
+      <Project>{1b40e5ee-7311-46e7-8241-d9f0c443905d}</Project>
+      <Name>WebEas.ServiceModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ServiceInterface\WebEas.Esam.ServiceInterface.Office.Cfe\WebEas.Esam.ServiceInterface.Office.Cfe.csproj">
+      <Project>{b85ea2d5-ab2b-425e-be89-42bc75df01f6}</Project>
+      <Name>WebEas.Esam.ServiceInterface.Office.Cfe</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ServiceInterface\WebEas.Esam.ServiceInterface.Office.Rzp\WebEas.Esam.ServiceInterface.Office.Rzp.csproj">
+      <Project>{e85ea2d5-bb2b-425e-be89-d2bc75df04f9}</Project>
+      <Name>WebEas.Esam.ServiceInterface.Office.Rzp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ServiceInterface\WebEas.Esam.ServiceInterface.Office\WebEas.Esam.ServiceInterface.Office.csproj">
+      <Project>{a0b8a0db-8ac5-47e8-925a-862529231d16}</Project>
+      <Name>WebEas.Esam.ServiceInterface.Office</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ServiceInterface\WebEas.Esam.ServiceInterface.Pfe\WebEas.Esam.ServiceInterface.Pfe.csproj">
+      <Project>{F73F656C-593F-47A1-84A6-855EA5474A3E}</Project>
+      <Name>WebEas.Esam.ServiceInterface.Pfe</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ServiceModel\WebEas.Esam.ServiceModel.Office.Cfe\WebEas.Esam.ServiceModel.Office.Cfe.csproj">
+      <Project>{034e196c-9754-4ae6-86f7-c05de96b6913}</Project>
+      <Name>WebEas.Esam.ServiceModel.Office.Cfe</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ServiceModel\WebEas.Esam.ServiceModel.Office.Rzp\WebEas.Esam.ServiceModel.Office.Rzp.csproj">
+      <Project>{630888ec-7671-47df-aecd-18bad4ec52ac}</Project>
+      <Name>WebEas.Esam.ServiceModel.Office.Rzp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ServiceModel\WebEas.Esam.ServiceModel.Office\WebEas.Esam.ServiceModel.Office.csproj">
+      <Project>{b368a929-aa16-4823-87ec-69e90901d0ed}</Project>
+      <Name>WebEas.Esam.ServiceModel.Office</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Develop|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;DEVELOP</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>58473</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:82/esam/api/pfe</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

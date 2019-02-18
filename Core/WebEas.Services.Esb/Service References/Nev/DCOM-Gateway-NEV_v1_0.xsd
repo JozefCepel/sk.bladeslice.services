@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:nev="http://schemas.dcom.sk/integration/nev/1.0" elementFormDefault="qualified" targetNamespace="http://schemas.dcom.sk/integration/nev/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="SearchCriteria" type="nev:SearchCriteria" />
+  <xs:complexType name="SearchCriteria">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="VehicleRegistrationNumber" type="xs:string" />
+      <xs:element minOccurs="1" maxOccurs="1" name="DcomID" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="DossierID" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="FindOwner" type="xs:boolean" />
+      <xs:element minOccurs="0" maxOccurs="1" name="FindHolder" type="xs:boolean" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="TechnicalInfo" type="nev:TechnicalInfo" />
+  <xs:complexType name="TechnicalInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="VehicleType" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="VehicleCategory" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="FactoryMark" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="VehicleManufacturer" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="EngineManufacturer" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="EngineType" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="EngineMaxPower" type="xs:decimal" />
+      <xs:element minOccurs="0" maxOccurs="1" name="EngineRotationSpeed" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="EngineNumber" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="GearsNumber" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="BodyShellType" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="ColorPrimary" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="ColorSecondary" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="BodyShellManufacturer" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="BodyShellSerialNumber" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="SeatsCount" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Length" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Width" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Height" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="TotalWeight" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="AxlesNumber" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="MaxSpeed" nillable="true" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="GeneralInfo" type="nev:GeneralInfo" />
+  <xs:complexType name="GeneralInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="FirstRegistrationDate" type="xs:date" />
+      <xs:element minOccurs="0" maxOccurs="1" name="FirstRegistrationDateSR" type="xs:date" />
+      <xs:element minOccurs="0" maxOccurs="1" name="VehicleRegistrationNumber" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="VehicleIdentificationNumber" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="YearOfProduction" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="IndividualImport" nillable="true" type="xs:boolean" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Blocked" nillable="true" type="xs:boolean" />
+      <xs:element minOccurs="0" maxOccurs="1" name="NewVehicle" nillable="true" type="xs:boolean" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Leasing" nillable="true" type="xs:boolean" />
+      <xs:element minOccurs="0" maxOccurs="1" name="RegistrationCertificate" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="RegistrationCertificateDate" type="xs:date" />
+      <xs:element minOccurs="0" maxOccurs="1" name="RegistrationCertificateIssuer" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="RegistrationCertificateInvalid" nillable="true" type="xs:boolean" />
+      <xs:element minOccurs="0" maxOccurs="1" name="VehicleRegistrationCertificate" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="VehicleRegistrationCertificateDate" type="xs:date" />
+      <xs:element minOccurs="0" maxOccurs="1" name="VehicleRegistrationCertificateInvalid" nillable="true" type="xs:boolean" />
+      <xs:element minOccurs="0" maxOccurs="1" name="VehicleRegisteredTill" type="xs:date" />
+      <xs:element minOccurs="0" maxOccurs="1" name="VehicleIdentificationCard" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="VehicleIdentificationCardDate" type="xs:date" />
+      <xs:element minOccurs="0" maxOccurs="1" name="VehicleIdentificationCardIssuer" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="VehicleIdentificationCardInvalid" nillable="true" type="xs:boolean" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="VehicleInfo" type="nev:VehicleInfo" />
+  <xs:complexType name="VehicleInfo">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="VehicleID" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="RecordID" type="xs:long">
+        <xs:annotation>
+          <xs:documentation>Číslo záznamu v epodatelni, vracia sa len v prípade volania v kontexte úradníka, ak bol zadaný vstupný element DossierID</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="Owner" type="nev:Person" />
+      <xs:element minOccurs="1" maxOccurs="1" name="GeneralInfo" type="nev:GeneralInfo" />
+      <xs:element minOccurs="1" maxOccurs="1" name="Holder" type="nev:Person" />
+      <xs:element minOccurs="1" maxOccurs="1" name="TechnicalInfo" type="nev:TechnicalInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Person" type="nev:Person" />
+  <xs:complexType name="Person">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="PublicationLevelID" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="ResidenceTypeID" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Type" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="TypeID" nillable="true" type="xs:int" />
+      <xs:element minOccurs="1" maxOccurs="1" name="Address" type="nev:Address" />
+      <xs:element minOccurs="1" maxOccurs="1" name="PhysicalPerson" type="nev:PhysicalPerson" />
+      <xs:element minOccurs="1" maxOccurs="1" name="LegalPerson" type="nev:LegalPerson" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Address" type="nev:Address" />
+  <xs:complexType name="Address">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="CountryID" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="County" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="EntranceID" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="InventoryNumber" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="OrientationNumber" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="OutlandAddress" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="OutlandCountryCode" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Street" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Town" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="PhysicalPerson" type="nev:PhysicalPerson" />
+  <xs:complexType name="PhysicalPerson">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="BirthDate" type="xs:date" />
+      <xs:element minOccurs="0" maxOccurs="1" name="FirstName" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="PersonalID" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="ID" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="LastName" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Nationality" nillable="true" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="LegalPerson" type="nev:LegalPerson" />
+  <xs:complexType name="LegalPerson">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="Name" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="OrganizationID" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="GetVehicleInfoRes" type="nev:VehicleInfo" />
+  <xs:element name="GetVehicleInfoReq" type="nev:SearchCriteria" />
+</xs:schema>

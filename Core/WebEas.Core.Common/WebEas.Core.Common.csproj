@@ -1,0 +1,188 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{362E3C3F-9257-4CE5-8522-2C50A1B1D044}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WebEas</RootNamespace>
+    <AssemblyName>WebEas.Core.Common</AssemblyName>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
+    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Libraries\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Libraries\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'BA_Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\BA_Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Develop|AnyCPU'">
+    <OutputPath>bin\Develop\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Int|AnyCPU'">
+    <OutputPath>bin\Int\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>none</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Test|AnyCPU'">
+    <OutputPath>bin\Test\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AppStatus\Full.cs" />
+    <Compile Include="AppStatus\HealthCheck.cs" />
+    <Compile Include="AppStatus\HealthCheckDto.cs" />
+    <Compile Include="AppStatus\Monitoring.cs" />
+    <Compile Include="Auth\IRoleList.cs" />
+    <Compile Include="Auth\IWebEasSessionProvider.cs" />
+    <Compile Include="Auth\Role.cs" />
+    <Compile Include="Auth\WebEasAccessType.cs" />
+    <Compile Include="Auth\WebEasAuthenticateAttribute.cs" />
+    <Compile Include="Auth\WebEasRequiredRoleAttribute.cs" />
+    <Compile Include="Auth\WebEasRequiresAnyRole.cs" />
+    <Compile Include="Auth\IWebEasSession.cs" />
+    <Compile Include="Auth\WebEasUserType.cs" />
+    <Compile Include="Client\Encoder\ConfigurationStrings.cs" />
+    <Compile Include="Client\Encoder\EmptyActionBehaviour.cs" />
+    <Compile Include="Client\Encoder\EmptyActionBehaviourElement.cs" />
+    <Compile Include="Client\Encoder\EmptyActionInspector.cs" />
+    <Compile Include="Client\Encoder\MessageVersionConverter.cs" />
+    <Compile Include="Client\Encoder\WebEasDispatchOperationSelector.cs" />
+    <Compile Include="Client\Encoder\WebEasDispatchOperationSelectorBehaviorAttribute.cs" />
+    <Compile Include="Client\Encoder\WebEasTextMessageBindingElement.cs" />
+    <Compile Include="Client\Encoder\WebEasTextMessageEncoder.cs" />
+    <Compile Include="Client\Encoder\WebEasTextMessageEncoderElement.cs" />
+    <Compile Include="Client\Encoder\WebEasTextMessageEncoderFactory.cs" />
+    <Compile Include="Config\WebEasLogElement.cs" />
+    <Compile Include="Config\WebEasSettings.cs" />
+    <Compile Include="Context\Current.cs" />
+    <Compile Include="Context\EndpointType.cs" />
+    <Compile Include="Context\Info.cs" />
+    <Compile Include="Exceptions\FaultCodeType.cs" />
+    <Compile Include="Exceptions\WebEasUnprocessableException.cs" />
+    <Compile Include="IWebEasCoreRepositoryBase.cs" />
+    <Compile Include="IWebEasCoreServiceBase.cs" />
+    <Compile Include="Log\CorrelationMessageHeader.cs" />
+    <Compile Include="Log\WebEasNLogConfig.cs" />
+    <Compile Include="Log\WebEasNLogFactory.cs" />
+    <Compile Include="Log\WebEasNLogLogger.cs" />
+    <Compile Include="Sts\CachedClientCredentials.cs" />
+    <Compile Include="Sts\CachedClientCredentialsSecurityTokenManager.cs" />
+    <Compile Include="Sts\CachedIssuedSecurityTokenProvider.cs" />
+    <Compile Include="Sts\CustomMessageFormatter.cs" />
+    <Compile Include="Sts\SamlMessageInspector.cs" />
+    <Compile Include="Sts\SamlMessageInspectorBehavior.cs" />
+    <Compile Include="Sts\SecurityTokenCache.cs" />
+    <Compile Include="Sts\SecurityTokenServiceClient.cs" />
+    <Compile Include="Sts\SecurityTokenServiceHelper.cs" />
+    <Compile Include="Util\StreamResult.cs" />
+    <Compile Include="Validation\IValidateConstraint.cs" />
+    <Compile Include="Exceptions\WebEasAuthenticationException.cs" />
+    <Compile Include="Exceptions\WebEasException.cs" />
+    <Compile Include="Exceptions\WebEasExceptionExtensions.cs" />
+    <Compile Include="Exceptions\WebEasFaultException.cs" />
+    <Compile Include="Exceptions\WebEasNotFoundException.cs" />
+    <Compile Include="Exceptions\WebEasProxyException.cs" />
+    <Compile Include="Exceptions\WebEasResponseStatus.cs" />
+    <Compile Include="Exceptions\WebEasSoapException.cs" />
+    <Compile Include="Exceptions\WebEasSqlException.cs" />
+    <Compile Include="Exceptions\WebEasUnauthorizedAccessException.cs" />
+    <Compile Include="Exceptions\WebEasValidationException.cs" />
+    <Compile Include="Log\OptionalAttribute.cs" />
+    <Compile Include="Log\RequiredParametersBehaviorAttribute.cs" />
+    <Compile Include="Log\WebEasErrorHandler.cs" />
+    <Compile Include="Log\WebEasErrorHandlerBehaviour.cs" />
+    <Compile Include="Log\WebEasLogExtension.cs" />
+    <Compile Include="Log\WebEasLogMessageInspector.cs" />
+    <Compile Include="Log\WebEasNLogExtensions.cs" />
+    <Compile Include="Ninject\NinjectServiceLocator.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\StringExtensions.cs" />
+    <Compile Include="Validation\IValidate.cs" />
+    <Compile Include="Validation\NotEmptyOrDefaultAttribute.cs" />
+    <Compile Include="Web\Mime.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="EasyGelf.NLog">
+      <Version>0.5.1.100</Version>
+    </PackageReference>
+    <PackageReference Include="Ninject">
+      <Version>3.2.2</Version>
+    </PackageReference>
+    <PackageReference Include="NLog">
+      <Version>4.4.12</Version>
+    </PackageReference>
+    <PackageReference Include="ServiceStack">
+      <Version>4.5.12</Version>
+    </PackageReference>
+    <PackageReference Include="ServiceStack.Client">
+      <Version>4.5.12</Version>
+    </PackageReference>
+    <PackageReference Include="ServiceStack.Common">
+      <Version>4.5.12</Version>
+    </PackageReference>
+    <PackageReference Include="ServiceStack.Interfaces">
+      <Version>4.5.12</Version>
+    </PackageReference>
+    <PackageReference Include="ServiceStack.Redis">
+      <Version>4.5.12</Version>
+    </PackageReference>
+    <PackageReference Include="ServiceStack.Text">
+      <Version>4.5.12</Version>
+    </PackageReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,655 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:tns="http://schemas.dcom.sk/integration/lokalneRegistre/adresa/1.0" xmlns:ns1="http://schemas.dcom.sk/integration/lokalneRegistre/fault/1.0" xmlns:ns2="http://schemas.xmlsoap.org/soap/http" xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsaws="http://www.w3.org/2005/08/addressing" xmlns:t="http://docs.oasis-open.org/ws-sx/ws-trust/200512" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" name="AddressServices" targetNamespace="http://schemas.dcom.sk/integration/lokalneRegistre/adresa/1.0" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:documentation>Služba zabezpečuje ...</wsdl:documentation>
+  <wsp:Policy xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsaws="http://www.w3.org/2005/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:t="http://docs.oasis-open.org/ws-sx/ws-trust/200512" xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702" wsu:Id="WS2007FederationHttpBinding_IService_policy">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <sp:TransportBinding>
+          <wsp:Policy>
+            <sp:TransportToken>
+              <wsp:Policy>
+                <sp:HttpsToken />
+              </wsp:Policy>
+            </sp:TransportToken>
+            <sp:AlgorithmSuite>
+              <wsp:Policy>
+                <sp:Basic256 />
+              </wsp:Policy>
+            </sp:AlgorithmSuite>
+            <sp:Layout>
+              <wsp:Policy>
+                <sp:Lax />
+              </wsp:Policy>
+            </sp:Layout>
+            <sp:IncludeTimestamp />
+          </wsp:Policy>
+        </sp:TransportBinding>
+        <sp:EndorsingSupportingTokens>
+          <wsp:Policy>
+            <sp:IssuedToken sp:IncludeToken="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702/IncludeToken/AlwaysToRecipient">
+              <sp:RequestSecurityTokenTemplate>
+                <t:TokenType>http://docs.oasis-open.org/wss/oasis-wss-saml-token-profile-1.1#SAMLV1.1
+                            </t:TokenType>
+                <t:KeyType>http://docs.oasis-open.org/ws-sx/ws-trust/200512/SymmetricKey</t:KeyType>
+                <t:KeySize>256</t:KeySize>
+              </sp:RequestSecurityTokenTemplate>
+              <wsp:Policy>
+                <sp:RequireInternalReference />
+              </wsp:Policy>
+              <sp:Issuer>
+                <wsaws:Address>
+                                https://lbsts.intra.dcom.sk:49443/adfs/services/trust/13/certificatetransport
+                            </wsaws:Address>
+                <wsaws:Metadata xmlns:wsdli="http://www.w3.org/2006/01/wsdl-instance" wsdli:wsdlLocation="http://lbsts.intra.dcom.sk/adfs/services/trust/mex">
+                  <wsaw:ServiceName xmlns:stsns="http://docs.oasis-open.org/ws-sx/ws-trust/200512/" EndpointName="CertificateWSTrustBinding_IWSTrust13Async2">
+                                    stsns:SecurityTokenService
+                                </wsaw:ServiceName>
+                </wsaws:Metadata>
+              </sp:Issuer>
+            </sp:IssuedToken>
+          </wsp:Policy>
+        </sp:EndorsingSupportingTokens>
+        <sp:Wss11>
+          <wsp:Policy />
+        </sp:Wss11>
+        <sp:Trust13>
+          <wsp:Policy>
+            <sp:MustSupportIssuedTokens />
+            <sp:RequireClientEntropy />
+            <sp:RequireServerEntropy />
+          </wsp:Policy>
+        </sp:Trust13>
+        <wsaw:UsingAddressing />
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsdl:types>
+    <xs:schema xmlns:tns="http://schemas.dcom.sk/integration/lokalneRegistre/fault/1.0" xmlns:ns1="http://schemas.dcom.sk/integration/lokalneRegistre/fault/1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://schemas.dcom.sk/integration/lokalneRegistre/fault/1.0" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:element name="LokalneRegistreFault" type="tns:LokalneRegistreFault" />
+      <xs:complexType name="LokalneRegistreFault">
+        <xs:sequence>
+          <xs:element form="qualified" name="message" type="xs:string" />
+          <xs:element form="qualified" name="code" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="InvalidParameterFault">
+        <xs:complexContent mixed="false">
+          <xs:extension base="tns:LokalneRegistreFault">
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" form="qualified" name="InvalidParameter" type="tns:InvalidParameter" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="InvalidParameter">
+        <xs:sequence>
+          <xs:element form="qualified" name="parameterName" type="xs:string" />
+          <xs:element form="qualified" name="errorMessage" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ObjectNotFoundFault">
+        <xs:complexContent mixed="false">
+          <xs:extension base="tns:LokalneRegistreFault">
+            <xs:sequence>
+              <xs:element form="qualified" name="objectIdentifier" type="xs:string" />
+              <xs:element form="qualified" name="objectName" type="xs:string" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+    </xs:schema>
+    <xs:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://schemas.dcom.sk/integration/lokalneRegistre/adresa/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:element name="Adresa" type="tns:Adresa" />
+      <xs:element name="AdresaKUlozeni" type="tns:AdresaKUlozeni" />
+      <xs:element name="Budova" type="tns:Budova" />
+      <xs:element name="Byt" type="tns:Byt" />
+      <xs:element name="CastObce" type="tns:CastObce" />
+      <xs:element name="GetAddressRequest" type="tns:GetAddressRequest" />
+      <xs:element name="Kraj" type="tns:Kraj" />
+      <xs:element name="Obec" type="tns:Obec" />
+      <xs:element name="ObjektAdresy" type="tns:ObjektAdresy" />
+      <xs:element name="ObjektAdresyHistorie" type="tns:ObjektAdresyHistorie" />
+      <xs:element name="ObjektAdresyHistorieList" type="tns:ObjektAdresyHistorieList" />
+      <xs:element name="ObjektAdresyList" type="tns:ObjektAdresyList" />
+      <xs:element name="Okres" type="tns:Okres" />
+      <xs:element name="SearchSlovakAddressObjectRequest" type="tns:SearchSlovakAddressObjectRequest" />
+      <xs:element name="SlovenskaAdresa" type="tns:SlovenskaAdresa" />
+      <xs:element name="SlovenskaAdresaList" type="tns:SlovenskaAdresaList" />
+      <xs:element name="TypObjektuAdresy" type="tns:TypObjektuAdresy" />
+      <xs:element name="Ulica" type="tns:Ulica" />
+      <xs:element name="Vchod" type="tns:Vchod" />
+      <xs:element name="VyhledavaciKriteria" type="tns:VyhledavaciKriteria" />
+      <xs:complexType name="VyhledavaciKriteria">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ObecId" type="xs:long" />
+          <xs:element minOccurs="0" name="Obec" type="xs:string" />
+          <xs:element minOccurs="0" name="OsobitneMesto" type="xs:string" />
+          <xs:element minOccurs="0" name="CastObceId" type="xs:long" />
+          <xs:element minOccurs="0" name="CastObce" type="xs:string" />
+          <xs:element minOccurs="0" name="OkresId" type="xs:long" />
+          <xs:element minOccurs="0" name="Okres" type="xs:string" />
+          <xs:element minOccurs="0" name="PSC" type="xs:string" />
+          <xs:element minOccurs="0" name="SupisneCislo" type="xs:string" />
+          <xs:element minOccurs="0" name="UlicaId" type="xs:long" />
+          <xs:element minOccurs="0" name="Ulica" type="xs:string" />
+          <xs:element minOccurs="0" name="OrientacneCislo" type="xs:string" />
+          <xs:element minOccurs="0" name="OrientacneCisloZnak" type="xs:string" />
+          <xs:element minOccurs="0" name="KrajId" type="xs:long" />
+          <xs:element minOccurs="0" name="Kraj" type="xs:string" />
+          <xs:element minOccurs="0" name="PCD" type="xs:string" />
+          <xs:element minOccurs="0" name="Datum" type="xs:date" />
+          <xs:element minOccurs="0" name="ObecKodSU" type="xs:string" />
+          <xs:element minOccurs="0" name="OkresKodSU" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="SlovenskaAdresaList">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="SlovenskaAdresa" type="tns:SlovenskaAdresa" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="SlovenskaAdresa">
+        <xs:sequence>
+          <xs:element name="Id" type="xs:long" />
+          <xs:element minOccurs="0" name="ObecId" type="xs:long" />
+          <xs:element minOccurs="0" name="Obec" type="xs:string" />
+          <xs:element minOccurs="0" name="CastObceId" type="xs:long" />
+          <xs:element minOccurs="0" name="CastObce" type="xs:string" />
+          <xs:element minOccurs="0" name="OkresId" type="xs:long" />
+          <xs:element minOccurs="0" name="Okres" type="xs:string" />
+          <xs:element minOccurs="0" name="PSC" type="xs:string" />
+          <xs:element minOccurs="0" name="DorucovaciaPosta" type="xs:string" />
+          <xs:element minOccurs="0" name="SupisneCislo" type="xs:string" />
+          <xs:element minOccurs="0" name="UlicaId" type="xs:long" />
+          <xs:element minOccurs="0" name="Ulica" type="xs:string" />
+          <xs:element minOccurs="0" name="OrientacneCislo" type="xs:string" />
+          <xs:element minOccurs="0" name="OrientacneCisloZnak" type="xs:string" />
+          <xs:element minOccurs="0" name="KrajId" type="xs:long" />
+          <xs:element minOccurs="0" name="Kraj" type="xs:string" />
+          <xs:element minOccurs="0" name="PCD" type="xs:string" />
+          <xs:element minOccurs="0" name="ObecKodSU" type="xs:string" />
+          <xs:element minOccurs="0" name="OkresKodSU" type="xs:string" />
+          <xs:element minOccurs="0" name="AddressPointId" type="xs:string" />
+          <xs:element minOccurs="0" name="AxisB" type="xs:double" />
+          <xs:element minOccurs="0" name="AxisL" type="xs:double" />
+          <xs:element minOccurs="0" name="AxisH" type="xs:double" />
+          <xs:element minOccurs="0" name="ObsahujeByty" type="xs:boolean" />
+          <xs:element minOccurs="0" name="JeObyvatelna" type="xs:boolean" />
+          <xs:element minOccurs="0" name="FormatovanaAdresa" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="PostovaAdresa" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="FormatProblem" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="GetAddressRequest">
+        <xs:sequence>
+          <xs:element name="addressId" type="xs:long" />
+          <xs:element minOccurs="0" name="date" type="xs:date" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Adresa">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Id" type="xs:long" />
+          <xs:element minOccurs="0" name="RequestedId" type="xs:long" />
+          <xs:element minOccurs="0" name="VchodId" type="xs:long" />
+          <xs:element minOccurs="0" name="ObecId" type="xs:long" />
+          <xs:element minOccurs="0" name="Obec" type="xs:string" />
+          <xs:element minOccurs="0" name="ObecKod" type="xs:string" />
+          <xs:element minOccurs="0" name="CastObce" type="xs:string" />
+          <xs:element minOccurs="0" name="CastObceId" type="xs:long" />
+          <xs:element minOccurs="0" name="OkresId" type="xs:long" />
+          <xs:element minOccurs="0" name="Okres" type="xs:string" />
+          <xs:element minOccurs="0" name="OkresKod" type="xs:string" />
+          <xs:element minOccurs="0" name="PSC" type="xs:string" />
+          <xs:element minOccurs="0" name="DorucovaciaPosta" type="xs:string" />
+          <xs:element minOccurs="0" name="SupisneCislo" type="xs:string" />
+          <xs:element minOccurs="0" name="UlicaId" type="xs:long" />
+          <xs:element minOccurs="0" name="Ulica" type="xs:string" />
+          <xs:element minOccurs="0" name="OrientacneCislo" type="xs:string" />
+          <xs:element minOccurs="0" name="OrientacneCisloZnak" type="xs:string" />
+          <xs:element minOccurs="0" name="KrajId" type="xs:long" />
+          <xs:element minOccurs="0" name="Kraj" type="xs:string" />
+          <xs:element minOccurs="0" name="KrajKod" type="xs:string" />
+          <xs:element minOccurs="0" name="Region" type="xs:string" />
+          <xs:element minOccurs="0" name="POBox" type="xs:string" />
+          <xs:element minOccurs="0" name="NestrukturovaneUdaje" type="xs:string" />
+          <xs:element minOccurs="0" name="PCD" type="xs:string" />
+          <xs:element name="StatId" type="xs:long" />
+          <xs:element name="Stat" type="xs:string" />
+          <xs:element minOccurs="0" name="pobytNaObci" type="xs:boolean" />
+          <xs:element name="FormatovanaAdresa" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="PostovaAdresa" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="FormatProblem" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="DorucovaciaPostaResult">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="unqualified" name="Id" type="xs:long" />
+          <xs:element minOccurs="0" form="unqualified" name="PSC" type="xs:string" />
+          <xs:element minOccurs="0" form="unqualified" name="Posta" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="UlicaNazovList">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="Ulice" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="BytList">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="Byty" type="tns:Byt" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Byt">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Id" type="xs:long" />
+          <xs:element minOccurs="0" name="RaId" type="xs:long" />
+          <xs:element minOccurs="0" name="CisloBytu" type="xs:string" />
+          <xs:element minOccurs="0" name="Poschodie" type="xs:int" />
+          <xs:element minOccurs="0" name="AdresaId" type="xs:long" />
+          <xs:element minOccurs="0" name="VchodId" type="xs:long" />
+          <xs:element minOccurs="0" name="FormatovanaAdresa" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="SearchSlovakAddressObjectRequest">
+        <xs:sequence>
+          <xs:element name="VyhledavaciKriteria" type="tns:VyhledavaciKriteria" />
+          <xs:element name="TypObjektuAdresy" type="tns:TypObjektuAdresy" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="GetFlatAddressRequest">
+        <xs:sequence>
+          <xs:element name="flatId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ObjektAdresyList">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="ObjektAdresy" type="tns:ObjektAdresy" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ObjektAdresy">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Id" type="xs:long" />
+          <xs:element minOccurs="0" name="DatumUcinnosti" type="xs:date" />
+          <xs:element minOccurs="0" name="Budova" type="tns:Budova" />
+          <xs:element minOccurs="0" name="Byt" type="tns:Byt" />
+          <xs:element minOccurs="0" name="CastObce" type="tns:CastObce" />
+          <xs:element minOccurs="0" name="Kraj" type="tns:Kraj" />
+          <xs:element minOccurs="0" name="Obec" type="tns:Obec" />
+          <xs:element minOccurs="0" name="Okres" type="tns:Okres" />
+          <xs:element minOccurs="0" name="Ulica" type="tns:Ulica" />
+          <xs:element minOccurs="0" name="Vchod" type="tns:Vchod" />
+          <xs:element minOccurs="0" name="PSC" type="tns:PSC" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Budova">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ObsahujeByty" type="xs:boolean" />
+          <xs:element name="SupisneCislo" type="xs:int" />
+          <xs:element minOccurs="0" name="CastObceId" type="xs:long" />
+          <xs:element minOccurs="0" name="ObecId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="CastObce">
+        <xs:sequence>
+          <xs:element name="Nazov" type="xs:string" />
+          <xs:element minOccurs="0" name="Skratka" type="xs:string" />
+          <xs:element name="ObecId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Kraj">
+        <xs:sequence>
+          <xs:element name="Nazov" type="xs:string" />
+          <xs:element minOccurs="0" name="Skratka" type="xs:string" />
+          <xs:element minOccurs="0" name="KodSU" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Obec">
+        <xs:sequence>
+          <xs:element name="Nazov" type="xs:string" />
+          <xs:element minOccurs="0" name="Skratka" type="xs:string" />
+          <xs:element minOccurs="0" name="KodSU" type="xs:string" />
+          <xs:element minOccurs="0" name="OkresId" type="xs:long" />
+          <xs:element minOccurs="0" name="OkresNazov" type="xs:string" />
+          <xs:element minOccurs="0" name="KrajId" type="xs:long" />
+          <xs:element minOccurs="0" name="KrajNazov" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Okres">
+        <xs:sequence>
+          <xs:element name="Nazov" type="xs:string" />
+          <xs:element minOccurs="0" name="Skratka" type="xs:string" />
+          <xs:element minOccurs="0" name="KodSU" type="xs:string" />
+          <xs:element name="KrajId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Ulica">
+        <xs:sequence>
+          <xs:element name="Nazov" type="xs:string" />
+          <xs:element minOccurs="0" name="CastObceId" type="xs:long" />
+          <xs:element minOccurs="0" name="CastObceNazov" type="xs:string" />
+          <xs:element minOccurs="0" name="ObecId" type="xs:long" />
+          <xs:element minOccurs="0" name="ObecNazov" type="xs:string" />
+          <xs:element minOccurs="0" name="OkresId" type="xs:long" />
+          <xs:element minOccurs="0" name="OkresNazov" type="xs:string" />
+          <xs:element minOccurs="0" name="KrajId" type="xs:long" />
+          <xs:element minOccurs="0" name="KrajNazov" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="UlicaVObci" type="xs:long" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="UlicaVCastiObce" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Vchod">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ObsahujeByty" type="xs:boolean" />
+          <xs:element minOccurs="0" name="OrientacneCislo" type="xs:string" />
+          <xs:element minOccurs="0" name="OrientacneCisloZnak" type="xs:string" />
+          <xs:element minOccurs="0" name="PSC" type="xs:string" />
+          <xs:element minOccurs="0" name="Overene" type="xs:date" />
+          <xs:element minOccurs="0" name="PCD" type="xs:string" />
+          <xs:element minOccurs="0" name="UlicaId" type="xs:long" />
+          <xs:element name="BudovaId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PSC">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="psc" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="AdresaKUlozeni">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="CastObce" type="xs:string" />
+          <xs:element minOccurs="0" name="Obec" type="xs:string" />
+          <xs:element minOccurs="0" name="Okres" type="xs:string" />
+          <xs:element minOccurs="0" name="PSC" type="xs:string" />
+          <xs:element minOccurs="0" name="SupisneCislo" type="xs:string" />
+          <xs:element minOccurs="0" name="Ulica" type="xs:string" />
+          <xs:element minOccurs="0" name="OrientacneCislo" type="xs:string" />
+          <xs:element minOccurs="0" name="OrientacneCisloZnak" type="xs:string" />
+          <xs:element minOccurs="0" name="Kraj" type="xs:string" />
+          <xs:element minOccurs="0" name="Region" type="xs:string" />
+          <xs:element minOccurs="0" name="POBox" type="xs:string" />
+          <xs:element minOccurs="0" name="NestrukturovaneUdaje" type="xs:string" />
+          <xs:element minOccurs="0" name="PCD" type="xs:string" />
+          <xs:element minOccurs="0" name="hladajVRAPodlaPCD" type="xs:boolean" />
+          <xs:element name="StatId" type="xs:long" />
+          <xs:element minOccurs="0" name="SlovenskaAdresaId" type="xs:long" />
+          <xs:element minOccurs="0" name="BytRaId" type="xs:long" />
+          <xs:element minOccurs="0" name="CisloBytu" type="xs:string" />
+          <xs:element minOccurs="0" name="PoschodieBytu" type="xs:int" />
+          <xs:element minOccurs="0" name="Poznamka" type="xs:string" />
+          <xs:element minOccurs="0" name="PocetBytov" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="AddAddressResult">
+        <xs:sequence>
+          <xs:element name="AdresaId" type="xs:long" />
+          <xs:element minOccurs="0" name="BytId" type="xs:long" />
+          <xs:element minOccurs="0" name="VchodRaId" type="xs:long" />
+          <xs:element minOccurs="0" name="BytRaId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ObjektAdresyHistorieList">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="ObjektAdresyHistorie" type="tns:ObjektAdresyHistorie" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ObjektAdresyHistorie">
+        <xs:sequence>
+          <xs:element name="Verzia" type="xs:int" />
+          <xs:element name="PlatnostOd" type="xs:date" />
+          <xs:element minOccurs="0" name="PlatnostDo" type="xs:date" />
+          <xs:element name="ObjektAdresy" type="tns:ObjektAdresy" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:simpleType name="TypObjektuAdresy">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="KRAJ" />
+          <xs:enumeration value="OKRES" />
+          <xs:enumeration value="OBEC" />
+          <xs:enumeration value="CAST_OBCE" />
+          <xs:enumeration value="ULICA" />
+          <xs:enumeration value="BUDOVA" />
+          <xs:enumeration value="VCHOD" />
+          <xs:enumeration value="PSC" />
+          <xs:enumeration value="BYT" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:element name="PSC" nillable="true" type="xs:string" />
+      <xs:element name="DorucovaciaPostaResult" nillable="true" type="tns:DorucovaciaPostaResult" />
+      <xs:element name="VyhledavaciKriteriaSpecial" nillable="true" type="tns:VyhledavaciKriteria" />
+      <xs:element name="SpecialTownStreetsList" nillable="true" type="tns:UlicaNazovList" />
+      <xs:element name="AdresaId" nillable="true" type="xs:long" />
+      <xs:element name="BytList" nillable="true" type="tns:BytList" />
+      <xs:element name="addAddressResult" nillable="true" type="tns:AddAddressResult" />
+      <xs:element name="GetFlatAddressRequest" nillable="true" type="tns:GetFlatAddressRequest" />
+      <xs:element name="VchodId" nillable="true" type="xs:long" />
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="GetFlatAddress">
+    <wsdl:part name="flatAddressRequest" element="tns:GetFlatAddressRequest" />
+  </wsdl:message>
+  <wsdl:message name="ListRaFlatsResponse">
+    <wsdl:part name="flats" element="tns:BytList" />
+  </wsdl:message>
+  <wsdl:message name="SearchSpecialTownStreets">
+    <wsdl:part name="searchSpecialTownStreetsCriteria" element="tns:VyhledavaciKriteriaSpecial" />
+  </wsdl:message>
+  <wsdl:message name="ListRaFlats">
+    <wsdl:part name="vchodId" element="tns:VchodId" />
+  </wsdl:message>
+  <wsdl:message name="AddAddressResponse">
+    <wsdl:part name="addAddressResult" element="tns:addAddressResult" />
+  </wsdl:message>
+  <wsdl:message name="SearchSlovakAddress">
+    <wsdl:part name="searchCriteria" element="tns:VyhledavaciKriteria" />
+  </wsdl:message>
+  <wsdl:message name="AddAddress">
+    <wsdl:part name="addressToAdd" element="tns:AdresaKUlozeni" />
+  </wsdl:message>
+  <wsdl:message name="LokalneRegistreFault_Exception">
+    <wsdl:part name="LokalneRegistreFault_Exception" element="ns1:LokalneRegistreFault" />
+  </wsdl:message>
+  <wsdl:message name="GetDorucovaciaPostaResponse">
+    <wsdl:part name="DorucovaciaPostaResult" element="tns:DorucovaciaPostaResult" />
+  </wsdl:message>
+  <wsdl:message name="SearchSpecialTownStreetsResponse">
+    <wsdl:part name="specialTownStreetsList" element="tns:SpecialTownStreetsList" />
+  </wsdl:message>
+  <wsdl:message name="GetFlatAddressResponse">
+    <wsdl:part name="flatAddress" element="tns:Byt" />
+  </wsdl:message>
+  <wsdl:message name="GetDorucovaciaPosta">
+    <wsdl:part name="PSC" element="tns:PSC" />
+  </wsdl:message>
+  <wsdl:message name="SearchSlovakAddressResponse">
+    <wsdl:part name="slovakAddressList" element="tns:SlovenskaAdresaList" />
+  </wsdl:message>
+  <wsdl:message name="SearchSlovakAddressObject">
+    <wsdl:part name="searchSlovakAddressObjectRequest" element="tns:SearchSlovakAddressObjectRequest" />
+  </wsdl:message>
+  <wsdl:message name="GetAddressResponse">
+    <wsdl:part name="address" element="tns:Adresa" />
+  </wsdl:message>
+  <wsdl:message name="SearchSlovakAddressObjectResponse">
+    <wsdl:part name="slovakAddressObjectList" element="tns:ObjektAdresyList" />
+  </wsdl:message>
+  <wsdl:message name="ListFlatsResponse">
+    <wsdl:part name="flats" element="tns:BytList" />
+  </wsdl:message>
+  <wsdl:message name="ListFlats">
+    <wsdl:part name="adresaId" element="tns:AdresaId" />
+  </wsdl:message>
+  <wsdl:message name="GetAddress">
+    <wsdl:part name="addressToAdd" element="tns:GetAddressRequest" />
+  </wsdl:message>
+  <wsdl:portType name="AddressServices">
+    <wsdl:documentation>My portType documentation</wsdl:documentation>
+    <wsdl:operation name="SearchSlovakAddress">
+      <wsdl:documentation>Služba vrací seznam adres (vchodů) stažených z RA (pouze slovenské adresy, které jsou v lokální kopii RA v DCOM), odpovídajících zadaným vyhledávacím kritériím.&lt;p/&gt;Vyhledávání je možné pomocí ID (RaId) nebo řetězce. Hledání podle řetězce probíhá na základě prefixu = hledají se záznamy začínající zadaným řetězcem. Služba bere v potaz zadané datum a hledá pouze ve verzích objketů adres, které jsou platné k danému datu. Pokud je datum null, hledá se k aktuálnímu dni.&lt;p/&gt;Hledání adres spočívá v nalezení všech vchodů (s unikátním RaId = služba nevrací více verzí stejného objektu), odpovídajích vyhledávácím kritériím a k nim doplní údaje všetkých naviazaných objektov. Služba vráti vždy maximálne 20 prvých záznamov.&lt;p/&gt;Validace:&lt;ul&gt;&lt;li&gt;Alespoň jedno vyhledávací kritérium se musí nerovnat null&lt;/li&gt;&lt;/ul&gt;</wsdl:documentation>
+      <wsdl:input name="SearchSlovakAddress" message="tns:SearchSlovakAddress" />
+      <wsdl:output name="SearchSlovakAddressResponse" message="tns:SearchSlovakAddressResponse" />
+      <wsdl:fault name="LokalneRegistreFault_Exception" message="tns:LokalneRegistreFault_Exception" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAddress">
+      <wsdl:documentation>Služba vracia údaje adresy podľa zadaného ID adresy v DCOM.&lt;p/&gt;Ak nie je požiadavka na platnosť ku konkrétnemu dátumu, služba vráti aktuálne údaje z COM_Adresa, čo zahŕňa aj aktuálne údaje z Registra adries pre adresy naviazané na RA vchod.&lt;p/&gt;Ak sú požadované údaje ku konkrétnemu dátumu a adresa je naviazaná na vchod z RA, údaje sú dotiahnuté z RA tabuliek k danému dátumu platnosti (alebo prvý/posledný záznam, ak je dátum príliš malý/veľký.&lt;p/&gt;Validácie:&lt;ul&gt;&lt;li&gt;vstupný dátum nesmie byť v budúcnosti&lt;/li&gt;&lt;li&gt;addressId nesmí být null&lt;/li&gt;&lt;/ul&gt;&lt;p/&gt;Výnimka:&lt;ul&gt;&lt;li&gt;ak záznam pre addressId neexistuje&lt;/li&gt;&lt;/ul&gt;</wsdl:documentation>
+      <wsdl:input name="GetAddress" message="tns:GetAddress" />
+      <wsdl:output name="GetAddressResponse" message="tns:GetAddressResponse" />
+      <wsdl:fault name="LokalneRegistreFault_Exception" message="tns:LokalneRegistreFault_Exception" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDorucovaciaPosta">
+      <wsdl:input name="GetDorucovaciaPosta" message="tns:GetDorucovaciaPosta" />
+      <wsdl:output name="GetDorucovaciaPostaResponse" message="tns:GetDorucovaciaPostaResponse" />
+      <wsdl:fault name="LokalneRegistreFault_Exception" message="tns:LokalneRegistreFault_Exception" />
+    </wsdl:operation>
+    <wsdl:operation name="SearchSpecialTownStreets">
+      <wsdl:documentation>Sluzba vracia zoznam nazvov ulic (deduplikovany, DISTINCT) pre specialne pripady miest zlozenych z viacerych obci (Bratislava/Kosice). Vyhladavacie kriteria maju mat vyplnene osobitneMesto a ulica (prefix).</wsdl:documentation>
+      <wsdl:input name="SearchSpecialTownStreets" message="tns:SearchSpecialTownStreets" />
+      <wsdl:output name="SearchSpecialTownStreetsResponse" message="tns:SearchSpecialTownStreetsResponse" />
+      <wsdl:fault name="LokalneRegistreFault_Exception" message="tns:LokalneRegistreFault_Exception" />
+    </wsdl:operation>
+    <wsdl:operation name="ListFlats">
+      <wsdl:input name="ListFlats" message="tns:ListFlats" />
+      <wsdl:output name="ListFlatsResponse" message="tns:ListFlatsResponse" />
+      <wsdl:fault name="LokalneRegistreFault_Exception" message="tns:LokalneRegistreFault_Exception" />
+    </wsdl:operation>
+    <wsdl:operation name="GetFlatAddress">
+      <wsdl:documentation>
+				Služba vracia údaje bytu podľa zadaného ID bytu v DCOM.<p />Výnimka:<ul><li>ak záznam pre addressId neexistuje</li></ul></wsdl:documentation>
+      <wsdl:input name="GetFlatAddress" message="tns:GetFlatAddress" />
+      <wsdl:output name="GetFlatAddressResponse" message="tns:GetFlatAddressResponse" />
+      <wsdl:fault name="LokalneRegistreFault_Exception" message="tns:LokalneRegistreFault_Exception" />
+    </wsdl:operation>
+    <wsdl:operation name="SearchSlovakAddressObject">
+      <wsdl:documentation>Služba vrací seznam objektů adresy stažených z RA (pouze slovenské adresy, které jsou v lokální kopii RA v DCOM), odpovídajících zadaným vyhledávacím kritériím.&lt;p/&gt;Vyhledávání je možné pomocí ID (RaId) nebo řetězce. Hledání podle řetězce probíhá na základě prefixu = hledají se záznamy začínající zadaným řetězcem. Služba bere v potaz zadané datum a hledá pouze ve verzích objketů adres, které jsou platné k danému datu. Pokud je datum null, hledá se k aktuálnímu dni.&lt;p/&gt;Hledání objektů adres spočívá v nalezení všech entit daného typu (s unikátním RaId = služba nevrací více verzí stejného objektu), odpovídajích vyhledávácím kritériímSlužba vrací vždy maximálně prvních 20 záznamů.&lt;p/&gt;Validace:&lt;ul&gt;&lt;li&gt;Alespoň jedno vyhledávací kritérium se musí nerovnat null&lt;/li&gt;&lt;li&gt;Typ objektu nesmí být null a musí odpovídat číselníku&lt;/li&gt;&lt;/ul&gt;</wsdl:documentation>
+      <wsdl:input name="SearchSlovakAddressObject" message="tns:SearchSlovakAddressObject" />
+      <wsdl:output name="SearchSlovakAddressObjectResponse" message="tns:SearchSlovakAddressObjectResponse" />
+      <wsdl:fault name="LokalneRegistreFault_Exception" message="tns:LokalneRegistreFault_Exception" />
+    </wsdl:operation>
+    <wsdl:operation name="AddAddress">
+      <wsdl:documentation>Pridanie adresy do Evidencie adries DCOMu, voliteľne aj s informáciami o byte. Umožňuje uložiť domácu aj zahraničnú adresu vrátane neštruktúrovaných adries a POBoxov. Metóda nevytvorí duplicitnú adresu, tzn. ak se zadá už existujúca adresa (rovnaké dáta), operácia vrátí ID existujúcej adresy. Kontrola duplicity sa realizuje podľa položiek pcd, SlovenskaAdresaId, ako aj jednotlivých textových údajov.&lt;p/&gt;Postup vyhodnotenia adresy:&lt;p/&gt;&lt;ol&gt;&lt;li&gt;Ak je uvedené slovenskaAdresaId, adresa je definovaná daným vchodom z RA, ostatné údaje sa ignorujú.&lt;/li&gt;&lt;li&gt;Ak je uvedené pcd a nastavený príznak hladajVRaPodlaPcd, vyhľadá sa v RA podľa PČD, ostatné údaje sa ignorujú.&lt;/li&gt;&lt;li&gt;Adresa sa zapíše so všetkými údajmi do lokálnej evidencie, žiadna väzba na RA. Platí aj pre zahraničné a neštruktúrované adresy. Ak existuje daný záznam (všetky relevantné údaje musia súhlasiť), vráti sa existujúci záznam a nová adresa sa nevytvorí.&lt;/li&gt;&lt;/ol&gt;V druhom kroku sa zapíšu údaje o byte, ak je vyplnené cisloBytu alebo bytRaId. Podobne ako pri adresách, ani tu sa nevytvoria duplicity. Ak je zadané bytRaId, použije sa byt z RA, inak sa vytvorí byt v lokálnej evidencii.&lt;/p&gt;Validácie (neaktualizované):&lt;ul&gt;&lt;li&gt;pokud je stát adresy jiný než SR, nesmí být vyplněno PCD ani SlovenskaAdresaID&lt;/li&gt;&lt;/ul&gt;Výnimky:&lt;ul&gt;&lt;li&gt;Podle slovenskaAdresaId nelze najít vchod z RA s daným RAId&lt;/li&gt;&lt;li&gt;Podle PCD  nelze najít vchod z RA s daným PCD&lt;/li&gt;&lt;li&gt;Adresa je v SR, nemá vazbu na vchod, nebo PCD a podle hodnot adresy se dá najít více jak jeden vchod v RA&lt;/li&gt;&lt;/ul&gt;</wsdl:documentation>
+      <wsdl:input name="AddAddress" message="tns:AddAddress" />
+      <wsdl:output name="AddAddressResponse" message="tns:AddAddressResponse" />
+      <wsdl:fault name="LokalneRegistreFault_Exception" message="tns:LokalneRegistreFault_Exception" />
+    </wsdl:operation>
+    <wsdl:operation name="ListRaFlats">
+      <wsdl:input name="ListRaFlats" message="tns:ListRaFlats" />
+      <wsdl:output name="ListRaFlatsResponse" message="tns:ListRaFlatsResponse" />
+      <wsdl:fault name="LokalneRegistreFault_Exception" message="tns:LokalneRegistreFault_Exception" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="AddressServicesSoapBinding" type="tns:AddressServices">
+    <wsdl:documentation>My binding doc</wsdl:documentation>
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <PolicyReference xmlns="http://schemas.xmlsoap.org/ws/2004/09/policy" URI="#WS2007FederationHttpBinding_IService_policy" />
+    <wsdl:operation name="SearchSlovakAddress">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="SearchSlovakAddress">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SearchSlovakAddressResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="LokalneRegistreFault_Exception">
+        <soap12:fault use="literal" name="LokalneRegistreFault_Exception" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetAddress">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="GetAddress">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetAddressResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="LokalneRegistreFault_Exception">
+        <soap12:fault use="literal" name="LokalneRegistreFault_Exception" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetDorucovaciaPosta">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="GetDorucovaciaPosta">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetDorucovaciaPostaResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="LokalneRegistreFault_Exception">
+        <soap12:fault use="literal" name="LokalneRegistreFault_Exception" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="SearchSpecialTownStreets">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="SearchSpecialTownStreets">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SearchSpecialTownStreetsResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="LokalneRegistreFault_Exception">
+        <soap12:fault use="literal" name="LokalneRegistreFault_Exception" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="ListFlats">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="ListFlats">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="ListFlatsResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="LokalneRegistreFault_Exception">
+        <soap12:fault use="literal" name="LokalneRegistreFault_Exception" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="AddAddress">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="AddAddress">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="AddAddressResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="LokalneRegistreFault_Exception">
+        <soap12:fault use="literal" name="LokalneRegistreFault_Exception" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetFlatAddress">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="GetFlatAddress">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetFlatAddressResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="LokalneRegistreFault_Exception">
+        <soap12:fault use="literal" name="LokalneRegistreFault_Exception" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="SearchSlovakAddressObject">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="SearchSlovakAddressObject">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SearchSlovakAddressObjectResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="LokalneRegistreFault_Exception">
+        <soap12:fault use="literal" name="LokalneRegistreFault_Exception" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="ListRaFlats">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="ListRaFlats">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="ListRaFlatsResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="LokalneRegistreFault_Exception">
+        <soap12:fault use="literal" name="LokalneRegistreFault_Exception" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="AddressServices">
+    <wsdl:port name="AddressServicesSOAP" binding="tns:AddressServicesSoapBinding">
+      <soap12:address location="https://lbsoa.intra.dcom.sk/soa/address/1.0/address" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

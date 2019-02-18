@@ -1,0 +1,338 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{1B40E5EE-7311-46E7-8241-D9F0C443905D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WebEas.ServiceModel</RootNamespace>
+    <AssemblyName>WebEas.ServiceModel</AssemblyName>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\</SolutionDir>
+    <TargetFrameworkProfile />
+    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\Libraries\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\Libraries\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Develop|AnyCPU'">
+    <OutputPath>..\..\..\Libraries\</OutputPath>
+    <DefineConstants>TRACE;DEVELOP</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Int|AnyCPU'">
+    <OutputPath>..\..\..\Libraries\</OutputPath>
+    <DefineConstants>TRACE;INT</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>none</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'BA_Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\..\Libraries\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Test|AnyCPU'">
+    <OutputPath>..\..\..\Libraries\</OutputPath>
+    <DefineConstants>TRACE;TEST</DefineConstants>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Prod|AnyCPU'">
+    <OutputPath>..\..\..\Libraries\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Edu|AnyCPU'">
+    <OutputPath>..\..\..\Libraries\</OutputPath>
+    <DefineConstants>TRACE;TEST</DefineConstants>
+    <Optimize>true</Optimize>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WebEas.Core.Common, Version=1.0.0.4, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Libraries\WebEas.Core.Common.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Adresy.cs" />
+    <Compile Include="BaseDto.cs" />
+    <Compile Include="BaseListComboDto.cs" />
+    <Compile Include="BaseListDto.cs" />
+    <Compile Include="BaseServiceModel.cs" />
+    <Compile Include="BaseTenantEntityNullable.cs" />
+    <Compile Include="CachedAttribute.cs" />
+    <Compile Include="CachedFile.cs" />
+    <Compile Include="Cis\Types\ExistencnyStav.cs" />
+    <Compile Include="Cis\Types\Jazyk.cs" />
+    <Compile Include="Cis\Types\Mena.cs" />
+    <Compile Include="CodeListCodeAttribute.cs" />
+    <Compile Include="Dto\BaseChangeStateDto.cs" />
+    <Compile Include="Dto\ParovanieOsob.cs" />
+    <Compile Include="Dto\DataChanges.cs" />
+    <Compile Include="Dto\KatastralnyUrad.cs" />
+    <Compile Include="HelpTypes\FormIdPolozkaStromu.cs" />
+    <Compile Include="IAccessFlag.cs" />
+    <Compile Include="LocaleFunctionAttribute.cs" />
+    <Compile Include="Pfe\PfeMessage.cs" />
+    <Compile Include="Pfe\PfeRule.cs" />
+    <Compile Include="Pfe\PfeValidator.cs" />
+    <Compile Include="Pfe\PfeSummaryRow.cs" />
+    <Compile Include="Pfe\PfeMessageType.cs" />
+    <Compile Include="Pfe\PfeValidatorType.cs" />
+    <Compile Include="Reg\Roles.cs" />
+    <Compile Include="Reg\Types\AdresnyStitokVymerVyzvaView.cs" />
+    <Compile Include="Reg\Types\BiznisEntita.cs" />
+    <Compile Include="Reg\Types\EntitaHistoriaStavov.cs" />
+    <Compile Include="Reg\Types\EntitaHistoriaStavovView.cs" />
+    <Compile Include="Reg\Types\EpodCase.cs" />
+    <Compile Include="Reg\Types\EpodDocument.cs" />
+    <Compile Include="Reg\Types\EpodFormTextationView.cs" />
+    <Compile Include="Reg\Types\Formular.cs" />
+    <Compile Include="Reg\Types\FormularElement.cs" />
+    <Compile Include="Reg\Types\FormularPoleFormularaView.cs" />
+    <Compile Include="Reg\Types\FormularView.cs" />
+    <Compile Include="Reg\Types\HistoriaPodaniaView.cs" />
+    <Compile Include="Reg\Types\KatBytView.cs" />
+    <Compile Include="Reg\Types\KatPozView.cs" />
+    <Compile Include="Reg\Types\KatStaView.cs" />
+    <Compile Include="Reg\Types\Kontakt.cs" />
+    <Compile Include="Reg\Types\LoggingConfig.cs" />
+    <Compile Include="Reg\Types\NasledovnyStavEntity.cs" />
+    <Compile Include="Reg\Types\Parcela.cs" />
+    <Compile Include="Reg\Types\Podanie.cs" />
+    <Compile Include="Reg\Types\PodanieEpodSpisView.cs" />
+    <Compile Include="Reg\Types\PodanieEpodView.cs" />
+    <Compile Include="Reg\Types\PodanieView.cs" />
+    <Compile Include="Reg\Types\PoleFormulara.cs" />
+    <Compile Include="Reg\Types\PoleFormularaDefaultTextRozhodnutiaView.cs" />
+    <Compile Include="Reg\Types\PostovaPoukazkaVymerVyzvaView.cs" />
+    <Compile Include="Reg\Types\SpisInfo.cs" />
+    <Compile Include="Reg\Types\StavEntity.cs" />
+    <Compile Include="Reg\Types\StavEntityStavEntity.cs" />
+    <Compile Include="Reg\Types\StavEntityStavEntityView.cs" />
+    <Compile Include="Reg\Types\StavEntityView.cs" />
+    <Compile Include="Reg\Types\StavovyPriestor.cs" />
+    <Compile Include="Reg\Types\TypBiznisEntity.cs" />
+    <Compile Include="SingleModeActionEnum.cs" />
+    <Compile Include="SortAttribute.cs" />
+    <Compile Include="SourceTableAttribute.cs" />
+    <Compile Include="DialEntity.cs" />
+    <Compile Include="DialKindType.cs" />
+    <Compile Include="DniVTyzdni.cs" />
+    <Compile Include="Dto\GetTreeCounts.cs" />
+    <Compile Include="Dto\Info.cs" />
+    <Compile Include="Dto\InternePoplatky.cs" />
+    <Compile Include="Dto\LongOperation.cs" />
+    <Compile Include="Dto\NotEmptyOrDefaultAttribute.cs" />
+    <Compile Include="Filter\IFilterElement.cs" />
+    <Compile Include="IChangeIdentifier.cs" />
+    <Compile Include="IChangeState.cs" />
+    <Compile Include="IDialEntity.cs" />
+    <Compile Include="IDto.cs" />
+    <Compile Include="IgnoreInsertOrUpdateAttribute.cs" />
+    <Compile Include="IListComboDto.cs" />
+    <Compile Include="IListDto.cs" />
+    <Compile Include="IPrilohy.cs" />
+    <Compile Include="ILocale.cs" />
+    <Compile Include="ICasovaPlatnost.cs" />
+    <Compile Include="IPublicModel.cs" />
+    <Compile Include="Pfe\FixedFilterAttribute.cs" />
+    <Compile Include="Pfe\PfeColumnAttributeFlag.cs" />
+    <Compile Include="PublicReferenceAttribute.cs" />
+    <Compile Include="ServicesHelperClasses.cs" />
+    <Compile Include="ITenantFilter.cs" />
+    <Compile Include="IValidate.cs" />
+    <Compile Include="NodeActionExtensions.cs" />
+    <Compile Include="NodeActionIcons.cs" />
+    <Compile Include="PaggingParameters.cs" />
+    <Compile Include="NodeActionIconAttribute.cs" />
+    <Compile Include="Pfe\DatabaseHierarchyNode.cs" />
+    <Compile Include="Pfe\Dto\ColumnTranslationDto.cs" />
+    <Compile Include="Pfe\HierarchyNodeFlag.cs" />
+    <Compile Include="Pfe\HierarchyNodeParameterAttribute.cs" />
+    <Compile Include="Pfe\IPfeCustomize.cs" />
+    <Compile Include="Pfe\IPfeCustomizeActions.cs" />
+    <Compile Include="Pfe\IPfeCustomizeDefaultValue.cs" />
+    <Compile Include="Pfe\LayoutDependency.cs" />
+    <Compile Include="Pfe\LayoutDependencyRelations.cs" />
+    <Compile Include="Pfe\PfeLayoutDependencyAttribute.cs" />
+    <Compile Include="Pfe\PfeLayoutRepair.cs" />
+    <Compile Include="Pfe\PfeOriginalAliasAttribute.cs" />
+    <Compile Include="Pfe\TranslateByAttribute.cs" />
+    <Compile Include="Pfe\SearchColumnAttribute.cs" />
+    <Compile Include="Pfe\PfeOriginalSchemaAttribute.cs" />
+    <Compile Include="Pfe\PfePageSerialization.cs" />
+    <Compile Include="Pfe\PfeRelationType.cs" />
+    <Compile Include="Pfe\PfeLayoutPages.cs" />
+    <Compile Include="ReplacementsDictionary.cs" />
+    <Compile Include="Sort.cs" />
+    <Compile Include="TenantUpdatableAttribute.cs" />
+    <Compile Include="SyncHelper.cs" />
+    <Compile Include="Types\ComboResult.cs" />
+    <Compile Include="Types\CisKataster.cs" />
+    <Compile Include="Types\ComboSablony.cs" />
+    <Compile Include="Types\CreateDecission.cs" />
+    <Compile Include="Types\DbEnvironment.cs" />
+    <Compile Include="Types\User.cs" />
+    <Compile Include="Types\InternalPayment.cs" />
+    <Compile Include="Types\KodRokOstatneDane.cs" />
+    <Compile Include="Types\LoggingView.cs" />
+    <Compile Include="Types\CisSadzba.cs" />
+    <Compile Include="Types\LogView.cs" />
+    <Compile Include="UseThisTypeAttribute.cs" />
+    <Compile Include="Validator.cs" />
+    <Compile Include="Wcf\CodeType.cs" />
+    <Compile Include="Wcf\DcomFaultType.cs" />
+    <Compile Include="Filter\WebEasFilterExpression.cs" />
+    <Compile Include="HelpTypes\StavovyPriestorStav.cs" />
+    <Compile Include="IBaseTenantEntityNullable.cs" />
+    <Compile Include="IBusinessEntity.cs" />
+    <Compile Include="IHasStateId.cs" />
+    <Compile Include="IServiceModel.cs" />
+    <Compile Include="ITenantEntity.cs" />
+    <Compile Include="ITenantEntityNullable.cs" />
+    <Compile Include="ModelDefinitionEgov.cs" />
+    <Compile Include="NodeActionFlag.cs" />
+    <Compile Include="NodeFieldDefaultValue.cs" />
+    <Compile Include="Operation.cs" />
+    <Compile Include="Pfe\PfeFilterUrl.cs" />
+    <Compile Include="Pfe\PfeFilter.cs" />
+    <Compile Include="Pfe\PfeLayoutDependenceView.cs" />
+    <Compile Include="Pfe\PfeLayoutType.cs" />
+    <Compile Include="Pfe\PfeLayoutWidgetType.cs" />
+    <Compile Include="Pfe\PfeLayout.cs" />
+    <Compile Include="Pfe\PfeSelection.cs" />
+    <Compile Include="Translation\TranslationDictionary.cs" />
+    <Compile Include="Translation\TranslationColumnEntity.cs" />
+    <Compile Include="BaseEntity.cs" />
+    <Compile Include="BaseResponse.cs" />
+    <Compile Include="BaseTenantEntity.cs" />
+    <Compile Include="Loggers\ColumnLogger.cs" />
+    <Compile Include="Translation\ColumnTranslation.cs" />
+    <Compile Include="DialAttribute.cs" />
+    <Compile Include="DialType.cs" />
+    <Compile Include="DummyCombo.cs" />
+    <Compile Include="DummyComboStav.cs" />
+    <Compile Include="DummyData.cs" />
+    <Compile Include="Loggers\EgovLogFactory.cs" />
+    <Compile Include="Loggers\EgovLogger.cs" />
+    <Compile Include="Filter\Filter.cs" />
+    <Compile Include="Filter\FilterElement.cs" />
+    <Compile Include="Filter\FilterExtension.cs" />
+    <Compile Include="Filter\FilterOperator.cs" />
+    <Compile Include="Pfe\HierarchyNode.cs" />
+    <Compile Include="Pfe\HierarchyNodeExtensions.cs" />
+    <Compile Include="Pfe\HierarchyNodeType.cs" />
+    <Compile Include="IBaseEntity.cs" />
+    <Compile Include="IBaseTenantEntity.cs" />
+    <Compile Include="IHybridMultitenant.cs" />
+    <Compile Include="IMultitenant.cs" />
+    <Compile Include="INoMultitenant.cs" />
+    <Compile Include="Pfe\IPohlad.cs" />
+    <Compile Include="IWebEasRepositoryBase.cs" />
+    <Compile Include="IResult.cs" />
+    <Compile Include="Pfe\MergeDataModelExtensions.cs" />
+    <Compile Include="NodeAction.cs" />
+    <Compile Include="NodeActionType.cs" />
+    <Compile Include="Pfe\PfeAligment.cs" />
+    <Compile Include="Pfe\PfeCaptionAttribute.cs" />
+    <Compile Include="Pfe\PfeColumnAttribute.cs" />
+    <Compile Include="Pfe\PfeComboAttribute.cs" />
+    <Compile Include="Pfe\PfeDataModel.cs" />
+    <Compile Include="Pfe\PfeDataModelAttribute.cs" />
+    <Compile Include="Pfe\PfeDataType.cs" />
+    <Compile Include="Pfe\PfeFilterAttribute.cs" />
+    <Compile Include="Pfe\PfeGroupAttribute.cs" />
+    <Compile Include="Pfe\PfeIgnoreAttribute.cs" />
+    <Compile Include="Pfe\PfeModelType.cs" />
+    <Compile Include="Pfe\PfeOrder.cs" />
+    <Compile Include="Pfe\PfePage.cs" />
+    <Compile Include="Pfe\PfePageFieldAttribute.cs" />
+    <Compile Include="Pfe\PfePageFieldGroup.cs" />
+    <Compile Include="Pfe\PfeRow.cs" />
+    <Compile Include="Pfe\PfeSortAttribute.cs" />
+    <Compile Include="Pfe\PfeValueColumnAttribute.cs" />
+    <Compile Include="Pfe\PfeXType.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Filter\DefaultFilterAttribute .cs" />
+    <Compile Include="ResultExtension.cs" />
+    <Compile Include="ResultResponse.cs" />
+    <Compile Include="Roles.cs" />
+    <Compile Include="Translation\TranslationAttribute.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Ninject">
+      <Version>3.2.2</Version>
+    </PackageReference>
+    <PackageReference Include="ServiceStack">
+      <Version>4.5.12</Version>
+    </PackageReference>
+    <PackageReference Include="ServiceStack.Client">
+      <Version>4.5.12</Version>
+    </PackageReference>
+    <PackageReference Include="ServiceStack.Common">
+      <Version>4.5.12</Version>
+    </PackageReference>
+    <PackageReference Include="ServiceStack.Interfaces">
+      <Version>4.5.12</Version>
+    </PackageReference>
+    <PackageReference Include="ServiceStack.OrmLite">
+      <Version>4.5.12</Version>
+    </PackageReference>
+    <PackageReference Include="ServiceStack.Text">
+      <Version>4.5.12</Version>
+    </PackageReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

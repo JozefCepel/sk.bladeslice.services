@@ -1,0 +1,145 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{630888EC-7671-47DF-AECD-18BAD4EC52AC}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WebEas.Esam.ServiceModel.Office.Rzp</RootNamespace>
+    <AssemblyName>WebEas.Esam.ServiceModel.Office.Rzp</AssemblyName>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Develop|AnyCPU'">
+    <OutputPath>bin\Develop\</OutputPath>
+    <DefineConstants>TRACE;DEVELOP</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ServiceStack">
+      <HintPath>..\..\..\Core\Libraries\ServiceStack.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Interfaces">
+      <HintPath>..\..\..\Core\Libraries\ServiceStack.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WebEas.Core.Common">
+      <HintPath>..\..\..\Core\Libraries\WebEas.Core.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="WebEas.Core.Interface">
+      <HintPath>..\..\..\Core\Libraries\WebEas.Core.Interface.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Dto\ChangeStateDto.cs" />
+    <Compile Include="Dto\CieleUkazDto.cs" />
+    <Compile Include="Dto\DataChangesRequest.cs" />
+    <Compile Include="Dto\DefPrrProgramovyRozpocetDto.cs" />
+    <Compile Include="Dto\CieleDto.cs" />
+    <Compile Include="Dto\DennikRzpDto.cs" />
+    <Compile Include="Dto\GetTreeCountsDto.cs" />
+    <Compile Include="Dto\IntDokladDto.cs" />
+    <Compile Include="Dto\ListComboDto.cs" />
+    <Compile Include="Dto\ListDto.cs" />
+    <Compile Include="Dto\LongOperations.cs" />
+    <Compile Include="Dto\NastavenieDto.cs" />
+    <Compile Include="Dto\ZmenyRzpValDto.cs" />
+    <Compile Include="Dto\NavrhyRzpValDto.cs" />
+    <Compile Include="Dto\NavrhZmenyRzpDto.cs" />
+    <Compile Include="Dto\RowDefaultValues.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Dto\RzpPolozkyDto.cs" />
+    <Compile Include="ServiceModel.cs" />
+    <Compile Include="Types\DennikRzp.cs" />
+    <Compile Include="Types\DennikRzpView.cs" />
+    <Compile Include="Types\Fin1.cs" />
+    <Compile Include="Types\Fin1Base.cs" />
+    <Compile Include="Types\Fin1Pol.cs" />
+    <Compile Include="Types\Fin1Vykaz.cs" />
+    <Compile Include="Types\IntDokladView.cs" />
+    <Compile Include="Types\IntDoklad.cs" />
+    <Compile Include="Types\Nastavenie.cs" />
+    <Compile Include="Types\TypRzpCis.cs" />
+    <Compile Include="Types\ZmenyRzpVal.cs" />
+    <Compile Include="Types\ZmenyRzpValView.cs" />
+    <Compile Include="Types\NavrhyRzpValView.cs" />
+    <Compile Include="Types\NavrhyRzpVal.cs" />
+    <Compile Include="Types\NavrhRzpView.cs" />
+    <Compile Include="Types\ZmenyRzpView.cs" />
+    <Compile Include="Types\NavrhZmenyRzp.cs" />
+    <Compile Include="Types\RzpPolozkyVydView.cs" />
+    <Compile Include="Types\RzpPolozkyPrijView.cs" />
+    <Compile Include="Types\RzpPolozky.cs" />
+    <Compile Include="Types\Ciele.cs" />
+    <Compile Include="Types\CieleUkaz.cs" />
+    <Compile Include="Types\CieleUkazView.cs" />
+    <Compile Include="Types\RzpPolozkyView.cs" />
+    <Compile Include="Types\CieleView.cs" />
+    <Compile Include="Types\FREKView.cs" />
+    <Compile Include="Types\FRFKView.cs" />
+    <Compile Include="Types\FRZdrojView.cs" />
+    <Compile Include="Types\Combos\CmbOsobaView.cs" />
+    <Compile Include="Types\ProgramovyRozpocetProgramView.cs" />
+    <Compile Include="Types\ProgramovyRozpocetPrvokView.cs" />
+    <Compile Include="Types\ProgramovyRozpocetPodprogramView.cs" />
+    <Compile Include="Types\ProgramView.cs" />
+    <Compile Include="Types\FREKCis.cs" />
+    <Compile Include="Types\FRFKCis.cs" />
+    <Compile Include="Types\FRZdrojCis.cs" />
+    <Compile Include="Types\Program.cs" />
+    <Compile Include="Types\RzpDummyView.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Core\WebEas\ServiceInterface\WebEas.ServiceInterface\WebEas.ServiceInterface.csproj">
+      <Project>{e2a6581b-c2d4-42e4-a5d6-14ea0753ee7d}</Project>
+      <Name>WebEas.ServiceInterface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Core\WebEas\ServiceModel\WebEas.ServiceModel\WebEas.ServiceModel.csproj">
+      <Project>{1b40e5ee-7311-46e7-8241-d9f0c443905d}</Project>
+      <Name>WebEas.ServiceModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ServiceInterface\WebEas.Esam.ServiceInterface.Office\WebEas.Esam.ServiceInterface.Office.csproj">
+      <Project>{a0b8a0db-8ac5-47e8-925a-862529231d16}</Project>
+      <Name>WebEas.Esam.ServiceInterface.Office</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WebEas.Esam.ServiceModel.Office\WebEas.Esam.ServiceModel.Office.csproj">
+      <Project>{b368a929-aa16-4823-87ec-69e90901d0ed}</Project>
+      <Name>WebEas.Esam.ServiceModel.Office</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

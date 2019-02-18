@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://schemas.dcom.sk/public/egov/wcf/1.0" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:t="http://docs.oasis-open.org/ws-sx/ws-trust/200512" xmlns:q1="http://schemas.dcom.sk/fault/1.0" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="IapService" targetNamespace="http://schemas.dcom.sk/public/egov/wcf/1.0" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsp:Policy wsu:Id="Soap12_IIapService_CreateAutomatichPublish_policy">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <oletx:OleTxAssertion xmlns:wsp1="http://schemas.xmlsoap.org/ws/2002/12/policy" xmlns:oletx="http://schemas.microsoft.com/ws/2006/02/tx/oletx" wsp1:Optional="true" wsp:Optional="true" />
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsp:Policy wsu:Id="Soap12_IIapService_CreateManualtPublish_policy">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <oletx:OleTxAssertion xmlns:wsp1="http://schemas.xmlsoap.org/ws/2002/12/policy" xmlns:oletx="http://schemas.microsoft.com/ws/2006/02/tx/oletx" wsp1:Optional="true" wsp:Optional="true" />
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsp:Policy wsu:Id="Soap12_IIapService_Test_policy">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <oletx:OleTxAssertion xmlns:oletx="http://schemas.microsoft.com/ws/2006/02/tx/oletx" />
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsp:Policy xmlns:wsaws="http://www.w3.org/2005/08/addressing" xmlns:t="http://docs.oasis-open.org/ws-sx/ws-trust/200512" xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702" wsu:Id="WS2007FederationHttpBinding_IService_policy">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <sp:TransportBinding>
+          <wsp:Policy>
+            <sp:TransportToken>
+              <wsp:Policy>
+                <sp:HttpsToken />
+              </wsp:Policy>
+            </sp:TransportToken>
+            <sp:AlgorithmSuite>
+              <wsp:Policy>
+                <sp:Basic256 />
+              </wsp:Policy>
+            </sp:AlgorithmSuite>
+            <sp:Layout>
+              <wsp:Policy>
+                <sp:Lax />
+              </wsp:Policy>
+            </sp:Layout>
+            <sp:IncludeTimestamp />
+          </wsp:Policy>
+        </sp:TransportBinding>
+        <sp:EndorsingSupportingTokens>
+          <wsp:Policy>
+            <sp:IssuedToken sp:IncludeToken="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702/IncludeToken/AlwaysToRecipient">
+              <sp:RequestSecurityTokenTemplate>
+                <t:TokenType>http://docs.oasis-open.org/wss/oasis-wss-saml-token-profile-1.1#SAMLV1.1
+                            </t:TokenType>
+                <t:KeyType>http://docs.oasis-open.org/ws-sx/ws-trust/200512/SymmetricKey</t:KeyType>
+                <t:KeySize>256</t:KeySize>
+              </sp:RequestSecurityTokenTemplate>
+              <wsp:Policy>
+                <sp:RequireInternalReference />
+              </wsp:Policy>
+              <sp:Issuer>
+                <wsaws:Address>
+                                https://lbsts.intra.dcom.sk:49443/adfs/services/trust/13/certificatetransport
+                            </wsaws:Address>
+                <wsaws:Metadata xmlns:wsdli="http://www.w3.org/2006/01/wsdl-instance" wsdli:wsdlLocation="http://lbsts.intra.dcom.sk/adfs/services/trust/mex">
+                  <wsaw:ServiceName xmlns:stsns="http://docs.oasis-open.org/ws-sx/ws-trust/200512/" EndpointName="CertificateWSTrustBinding_IWSTrust13Async2">
+                                    stsns:SecurityTokenService
+                                </wsaw:ServiceName>
+                </wsaws:Metadata>
+              </sp:Issuer>
+            </sp:IssuedToken>
+          </wsp:Policy>
+        </sp:EndorsingSupportingTokens>
+        <sp:Wss11>
+          <wsp:Policy />
+        </sp:Wss11>
+        <sp:Trust13>
+          <wsp:Policy>
+            <sp:MustSupportIssuedTokens />
+            <sp:RequireClientEntropy />
+            <sp:RequireServerEntropy />
+          </wsp:Policy>
+        </sp:Trust13>
+        <wsaw:UsingAddressing />
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsdl:types>
+    <xs:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://schemas.dcom.sk/public/egov/wcf/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:import namespace="http://schemas.datacontract.org/2004/07/WebEas.ServiceModel.Office.Egov.Iap.Types" />
+      <xs:element name="CreateAutomatichPublish">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/WebEas.ServiceModel.Office.Egov.Iap.Types" minOccurs="0" name="buffer" nillable="true" type="q1:Zasobnik" />
+            <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/WebEas.ServiceModel.Office.Egov.Iap.Types" minOccurs="0" name="confirmation" nillable="true" type="q2:PotvrdeniePublikovania" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="CreateAutomatichPublishResponse">
+        <xs:complexType>
+          <xs:sequence />
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="CreateManualtPublish">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/WebEas.ServiceModel.Office.Egov.Iap.Types" minOccurs="0" name="insertData" nillable="true" type="q3:ArrayOfZasobnik" />
+            <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/WebEas.ServiceModel.Office.Egov.Iap.Types" minOccurs="0" name="updateData" nillable="true" type="q4:ArrayOfZasobnik" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="CreateManualtPublishResponse">
+        <xs:complexType>
+          <xs:sequence />
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="Test">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="text" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="TestResponse">
+        <xs:complexType>
+          <xs:sequence />
+        </xs:complexType>
+      </xs:element>
+    </xs:schema>
+    <xs:schema xmlns:tns="http://schemas.microsoft.com/2003/10/Serialization/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://schemas.microsoft.com/2003/10/Serialization/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:element name="anyType" nillable="true" type="xs:anyType" />
+      <xs:element name="anyURI" nillable="true" type="xs:anyURI" />
+      <xs:element name="base64Binary" nillable="true" type="xs:base64Binary" />
+      <xs:element name="boolean" nillable="true" type="xs:boolean" />
+      <xs:element name="byte" nillable="true" type="xs:byte" />
+      <xs:element name="dateTime" nillable="true" type="xs:dateTime" />
+      <xs:element name="decimal" nillable="true" type="xs:decimal" />
+      <xs:element name="double" nillable="true" type="xs:double" />
+      <xs:element name="float" nillable="true" type="xs:float" />
+      <xs:element name="int" nillable="true" type="xs:int" />
+      <xs:element name="long" nillable="true" type="xs:long" />
+      <xs:element name="QName" nillable="true" type="xs:QName" />
+      <xs:element name="short" nillable="true" type="xs:short" />
+      <xs:element name="string" nillable="true" type="xs:string" />
+      <xs:element name="unsignedByte" nillable="true" type="xs:unsignedByte" />
+      <xs:element name="unsignedInt" nillable="true" type="xs:unsignedInt" />
+      <xs:element name="unsignedLong" nillable="true" type="xs:unsignedLong" />
+      <xs:element name="unsignedShort" nillable="true" type="xs:unsignedShort" />
+      <xs:element name="char" nillable="true" type="tns:char" />
+      <xs:simpleType name="char">
+        <xs:restriction base="xs:int" />
+      </xs:simpleType>
+      <xs:element name="duration" nillable="true" type="tns:duration" />
+      <xs:simpleType name="duration">
+        <xs:restriction base="xs:duration">
+          <xs:pattern value="\-?P(\d*D)?(T(\d*H)?(\d*M)?(\d*(\.\d*)?S)?)?" />
+          <xs:minInclusive value="-P10675199DT2H48M5.4775808S" />
+          <xs:maxInclusive value="P10675199DT2H48M5.4775807S" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:element name="guid" nillable="true" type="tns:guid" />
+      <xs:simpleType name="guid">
+        <xs:restriction base="xs:string">
+          <xs:pattern value="[\da-fA-F]{8}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{12}" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:attribute name="FactoryType" type="xs:QName" />
+      <xs:attribute name="Id" type="xs:ID" />
+      <xs:attribute name="Ref" type="xs:IDREF" />
+    </xs:schema>
+    <xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/WebEas.ServiceModel.Office.Egov.Iap.Types" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/WebEas.ServiceModel.Office.Egov.Iap.Types" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:import namespace="http://schemas.datacontract.org/2004/07/WebEas.ServiceModel" />
+      <xs:complexType name="Zasobnik">
+        <xs:complexContent mixed="false">
+          <xs:extension xmlns:q1="http://schemas.datacontract.org/2004/07/WebEas.ServiceModel" base="q1:BaseTenantEntity">
+            <xs:sequence>
+              <xs:element minOccurs="0" name="C_Modul_Id" nillable="true" type="xs:short" />
+              <xs:element minOccurs="0" name="C_Operacie_Id" nillable="true" type="xs:int" />
+              <xs:element minOccurs="0" name="C_SledovanaPolozka_Id" nillable="true" type="xs:int" />
+              <xs:element minOccurs="0" name="C_Sluzba_Id" nillable="true" type="xs:int" />
+              <xs:element minOccurs="0" name="C_StavEntity_Id" type="xs:int" />
+              <xs:element minOccurs="0" name="C_StavZverejnenia_Id_Facebook" type="xs:short" />
+              <xs:element minOccurs="0" name="C_StavZverejnenia_Id_Portal" type="xs:short" />
+              <xs:element minOccurs="0" name="C_StavZverejnenia_Id_Rozhlas" type="xs:short" />
+              <xs:element minOccurs="0" name="C_StavZverejnenia_Id_Tlac" type="xs:short" />
+              <xs:element minOccurs="0" name="C_StavZverejnenia_Id_UrTabula" type="xs:short" />
+              <xs:element minOccurs="0" name="C_StavovyPriestor_Id" type="xs:int" />
+              <xs:element minOccurs="0" name="D_DataBuffer_Id" type="xs:int" />
+              <xs:element minOccurs="0" name="D_Pohlad_Id" nillable="true" type="xs:int" />
+              <xs:element minOccurs="0" name="Popis" nillable="true" type="xs:string" />
+              <xs:element minOccurs="0" name="Zaznam_Id" nillable="true" type="xs:long" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:element name="Zasobnik" nillable="true" type="tns:Zasobnik" />
+      <xs:complexType name="PotvrdeniePublikovania">
+        <xs:complexContent mixed="false">
+          <xs:extension xmlns:q2="http://schemas.datacontract.org/2004/07/WebEas.ServiceModel" base="q2:BaseTenantEntity">
+            <xs:sequence>
+              <xs:element minOccurs="0" name="C_InformacnyKanal_Id" type="xs:int" />
+              <xs:element minOccurs="0" name="D_DataBuffer_Id" nillable="true" type="xs:int" />
+              <xs:element minOccurs="0" name="D_PotvrdeniePublikovania_Id" type="xs:int" />
+              <xs:element minOccurs="0" name="D_Pouzivatel_Id" nillable="true" type="xs:string" />
+              <xs:element minOccurs="0" name="D_Priloha_Id" nillable="true" type="xs:long" />
+              <xs:element minOccurs="0" name="DatumPublikovania" type="xs:dateTime" />
+              <xs:element minOccurs="0" name="PredmetOznamu" nillable="true" type="xs:string" />
+              <xs:element minOccurs="0" name="TextOznamu" nillable="true" type="xs:string" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:element name="PotvrdeniePublikovania" nillable="true" type="tns:PotvrdeniePublikovania" />
+      <xs:complexType name="ArrayOfZasobnik">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="Zasobnik" nillable="true" type="tns:Zasobnik" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ArrayOfZasobnik" nillable="true" type="tns:ArrayOfZasobnik" />
+    </xs:schema>
+    <xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/WebEas.ServiceModel" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/WebEas.ServiceModel" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:complexType name="BaseTenantEntity">
+        <xs:complexContent mixed="false">
+          <xs:extension base="tns:BaseEntity">
+            <xs:sequence />
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:element name="BaseTenantEntity" nillable="true" type="tns:BaseTenantEntity" />
+      <xs:complexType name="BaseEntity">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="AccessFlag" type="xs:long" />
+          <xs:element minOccurs="0" name="DatumVytvorenia" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="DatumZmeny" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="Poznamka" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="ci" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="BaseEntity" nillable="true" type="tns:BaseEntity" />
+    </xs:schema>
+    <xs:schema xmlns:tns="http://schemas.dcom.sk/fault/1.0" xmlns:q1="http://schemas.dcom.sk/fault/1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://schemas.dcom.sk/fault/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:complexType name="dcomFault">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="faultCause" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="faultCode" type="xs:int" />
+          <xs:element minOccurs="0" name="faultMessage" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="invalidParameter" nillable="true" type="tns:ArrayOfInvalidParameterType" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="dcomFault" nillable="true" type="tns:dcomFault" />
+      <xs:complexType name="ArrayOfInvalidParameterType">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="InvalidParameterType" nillable="true" type="tns:InvalidParameterType" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ArrayOfInvalidParameterType" nillable="true" type="tns:ArrayOfInvalidParameterType" />
+      <xs:complexType name="InvalidParameterType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="errorMessage" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="parameterName" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="InvalidParameterType" nillable="true" type="tns:InvalidParameterType" />
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="IIapService_Test_OutputMessage">
+    <wsdl:part name="parameters" element="tns:TestResponse" />
+  </wsdl:message>
+  <wsdl:message name="IIapService_CreateAutomatichPublish_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CreateAutomatichPublishResponse" />
+  </wsdl:message>
+  <wsdl:message name="IIapService_CreateManualtPublish_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CreateManualtPublishResponse" />
+  </wsdl:message>
+  <wsdl:message name="IIapService_Test_InputMessage">
+    <wsdl:part name="parameters" element="tns:Test" />
+  </wsdl:message>
+  <wsdl:message name="IIapService_CreateManualtPublish_DcomFaultTypeFault_FaultMessage">
+    <wsdl:part name="detail" element="q1:dcomFault" />
+  </wsdl:message>
+  <wsdl:message name="IIapService_CreateAutomatichPublish_InputMessage">
+    <wsdl:part name="parameters" element="tns:CreateAutomatichPublish" />
+  </wsdl:message>
+  <wsdl:message name="IIapService_Test_DcomFaultTypeFault_FaultMessage">
+    <wsdl:part name="detail" element="q1:dcomFault" />
+  </wsdl:message>
+  <wsdl:message name="IIapService_CreateManualtPublish_InputMessage">
+    <wsdl:part name="parameters" element="tns:CreateManualtPublish" />
+  </wsdl:message>
+  <wsdl:message name="IIapService_CreateAutomatichPublish_DcomFaultTypeFault_FaultMessage">
+    <wsdl:part name="detail" element="q1:dcomFault" />
+  </wsdl:message>
+  <wsdl:portType name="IIapService">
+    <wsdl:operation name="CreateAutomatichPublish">
+      <wsdl:input wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IIapService/CreateAutomatichPublish" message="tns:IIapService_CreateAutomatichPublish_InputMessage" />
+      <wsdl:output wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IIapService/CreateAutomatichPublishResponse" message="tns:IIapService_CreateAutomatichPublish_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IIapService/CreateAutomatichPublish/Fault/SoapFault" name="DcomFaultTypeFault" message="tns:IIapService_CreateAutomatichPublish_DcomFaultTypeFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateManualtPublish">
+      <wsdl:input wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IIapService/CreateManualtPublish" message="tns:IIapService_CreateManualtPublish_InputMessage" />
+      <wsdl:output wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IIapService/CreateManualtPublishResponse" message="tns:IIapService_CreateManualtPublish_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IIapService/CreateManualtPublish/Fault/SoapFault" name="DcomFaultTypeFault" message="tns:IIapService_CreateManualtPublish_DcomFaultTypeFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Test">
+      <wsdl:input wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IIapService/Test" message="tns:IIapService_Test_InputMessage" />
+      <wsdl:output wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IIapService/TestResponse" message="tns:IIapService_Test_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IIapService/Test/Fault/SoapFault" name="DcomFaultTypeFault" message="tns:IIapService_Test_DcomFaultTypeFault_FaultMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="Soap12_IIapService" type="tns:IIapService">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <PolicyReference xmlns="http://schemas.xmlsoap.org/ws/2004/09/policy" URI="#WS2007FederationHttpBinding_IService_policy" />
+    <wsdl:operation name="CreateAutomatichPublish">
+      <wsp:PolicyReference URI="#Soap12_IIapService_CreateAutomatichPublish_policy" />
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultTypeFault">
+        <soap12:fault use="literal" name="DcomFaultTypeFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="CreateManualtPublish">
+      <wsp:PolicyReference URI="#Soap12_IIapService_CreateManualtPublish_policy" />
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultTypeFault">
+        <soap12:fault use="literal" name="DcomFaultTypeFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="Test">
+      <wsp:PolicyReference URI="#Soap12_IIapService_Test_policy" />
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultTypeFault">
+        <soap12:fault use="literal" name="DcomFaultTypeFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="IapService">
+    <wsdl:port name="Soap12_IIapService" binding="tns:Soap12_IIapService">
+      <soap12:address location="https://st1soa01.test.dcom.sk:8443/soa/egov/iap/1.0/iap" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

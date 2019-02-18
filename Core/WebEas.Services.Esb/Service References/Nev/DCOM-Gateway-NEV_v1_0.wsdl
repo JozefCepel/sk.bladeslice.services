@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fault="http://schemas.dcom.sk/fault/1.0" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:t="http://docs.oasis-open.org/ws-sx/ws-trust/200512" xmlns:wsaws="http://www.w3.org/2005/08/addressing" xmlns:st="http://schemas.dcom.sk/soa/claims/public/1.0" xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:nev="http://schemas.dcom.sk/integration/nev/1.0" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" name="DCOM-Gateway-NEV_v1_0" targetNamespace="http://schemas.dcom.sk/integration/nev/1.0" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsp:Policy xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsaws="http://www.w3.org/2005/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:t="http://docs.oasis-open.org/ws-sx/ws-trust/200512" xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702" wsu:Id="WS2007FederationHttpBinding_IService_policy">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <sp:TransportBinding>
+          <wsp:Policy>
+            <sp:TransportToken>
+              <wsp:Policy>
+                <sp:HttpsToken />
+              </wsp:Policy>
+            </sp:TransportToken>
+            <sp:AlgorithmSuite>
+              <wsp:Policy>
+                <sp:Basic256 />
+              </wsp:Policy>
+            </sp:AlgorithmSuite>
+            <sp:Layout>
+              <wsp:Policy>
+                <sp:Lax />
+              </wsp:Policy>
+            </sp:Layout>
+            <sp:IncludeTimestamp />
+          </wsp:Policy>
+        </sp:TransportBinding>
+        <sp:EndorsingSupportingTokens>
+          <wsp:Policy>
+            <sp:IssuedToken sp:IncludeToken="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702/IncludeToken/AlwaysToRecipient">
+              <sp:RequestSecurityTokenTemplate>
+                <t:TokenType>http://docs.oasis-open.org/wss/oasis-wss-saml-token-profile-1.1#SAMLV1.1
+                            </t:TokenType>
+                <t:KeyType>http://docs.oasis-open.org/ws-sx/ws-trust/200512/SymmetricKey</t:KeyType>
+                <t:KeySize>256</t:KeySize>
+              </sp:RequestSecurityTokenTemplate>
+              <wsp:Policy>
+                <sp:RequireInternalReference />
+              </wsp:Policy>
+              <sp:Issuer>
+                <wsaws:Address>
+                                https://lbsts.intra.dcom.sk:49443/adfs/services/trust/13/certificatetransport
+                            </wsaws:Address>
+                <wsaws:Metadata xmlns:wsdli="http://www.w3.org/2006/01/wsdl-instance" wsdli:wsdlLocation="http://lbsts.intra.dcom.sk/adfs/services/trust/mex">
+                  <wsaw:ServiceName xmlns:stsns="http://docs.oasis-open.org/ws-sx/ws-trust/200512/" EndpointName="CertificateWSTrustBinding_IWSTrust13Async2">
+                                    stsns:SecurityTokenService
+                                </wsaw:ServiceName>
+                </wsaws:Metadata>
+              </sp:Issuer>
+            </sp:IssuedToken>
+          </wsp:Policy>
+        </sp:EndorsingSupportingTokens>
+        <sp:Wss11>
+          <wsp:Policy />
+        </sp:Wss11>
+        <sp:Trust13>
+          <wsp:Policy>
+            <sp:MustSupportIssuedTokens />
+            <sp:RequireClientEntropy />
+            <sp:RequireServerEntropy />
+          </wsp:Policy>
+        </sp:Trust13>
+        <wsaw:UsingAddressing />
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsdl:types>
+    <xs:schema>
+      <xs:import schemaLocation="https://lbsoa.intra.dcom.sk/soa/nev/1.0/vehicleService?xsd=../schemas/DCOM-Gateway-NEV_v1_0.xsd" namespace="http://schemas.dcom.sk/integration/nev/1.0" />
+      <xs:import schemaLocation="https://lbsoa.intra.dcom.sk/soa/nev/1.0/vehicleService?xsd=../schemas/DCOM-Fault_v1_0.xsd" namespace="http://schemas.dcom.sk/fault/1.0" />
+      <xs:import schemaLocation="https://lbsoa.intra.dcom.sk/soa/nev/1.0/vehicleService?xsd=../schemas/DCOM-SOA-Claims-Public_v1_0.xsd" namespace="http://schemas.dcom.sk/soa/claims/public/1.0" />
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="DcomFaultMessage">
+    <wsdl:part name="DcomFaultMessage" element="fault:DcomFaultMessage" />
+  </wsdl:message>
+  <wsdl:message name="ResGetVehicleInfoMsg">
+    <wsdl:part name="ResponseParams" element="nev:GetVehicleInfoRes" />
+  </wsdl:message>
+  <wsdl:message name="ReqGetVehicleInfoMsg">
+    <wsdl:part name="RequestParams" element="nev:GetVehicleInfoReq" />
+  </wsdl:message>
+  <wsdl:portType name="NEVGateway">
+    <wsdl:operation name="GetVehicleInfo">
+      <wsdl:input name="getVehicleInfoReq" message="nev:ReqGetVehicleInfoMsg" />
+      <wsdl:output name="getVehicleInfoRes" message="nev:ResGetVehicleInfoMsg" />
+      <wsdl:fault name="DcomFaultMessage" message="nev:DcomFaultMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="NEVGatewayBinding" type="nev:NEVGateway">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <PolicyReference xmlns="http://schemas.xmlsoap.org/ws/2004/09/policy" URI="#WS2007FederationHttpBinding_IService_policy" />
+    <wsdl:operation name="GetVehicleInfo">
+      <soap:operation soapAction="GetVehicleInfo" style="document" />
+      <wsdl:input name="getVehicleInfoReq">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getVehicleInfoRes">
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="NEVGatewayService">
+    <wsdl:port name="NEVGateway" binding="nev:NEVGatewayBinding">
+      <soap:address location="https://lbsoa.intra.dcom.sk/soa/nev/1.0/vehicleService" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://sk.anext.mdfx.v_001.webservice.namespace" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:t="http://docs.oasis-open.org/ws-sx/ws-trust/200512" xmlns:wsaws="http://www.w3.org/2005/08/addressing" xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:ns1="http://sk.anext.mdfx.v_002" targetNamespace="http://sk.anext.mdfx.v_001.webservice.namespace" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsp:Policy xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsaws="http://www.w3.org/2005/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:t="http://docs.oasis-open.org/ws-sx/ws-trust/200512" xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702" wsu:Id="WS2007FederationHttpBinding_IService_policy">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <sp:TransportBinding>
+          <wsp:Policy>
+            <sp:TransportToken>
+              <wsp:Policy>
+                <sp:HttpsToken />
+              </wsp:Policy>
+            </sp:TransportToken>
+            <sp:AlgorithmSuite>
+              <wsp:Policy>
+                <sp:Basic256 />
+              </wsp:Policy>
+            </sp:AlgorithmSuite>
+            <sp:Layout>
+              <wsp:Policy>
+                <sp:Lax />
+              </wsp:Policy>
+            </sp:Layout>
+            <sp:IncludeTimestamp />
+          </wsp:Policy>
+        </sp:TransportBinding>
+        <sp:EndorsingSupportingTokens>
+          <wsp:Policy>
+            <sp:IssuedToken sp:IncludeToken="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702/IncludeToken/AlwaysToRecipient">
+              <sp:RequestSecurityTokenTemplate>
+                <t:TokenType>http://docs.oasis-open.org/wss/oasis-wss-saml-token-profile-1.1#SAMLV1.1
+                            </t:TokenType>
+                <t:KeyType>http://docs.oasis-open.org/ws-sx/ws-trust/200512/SymmetricKey</t:KeyType>
+                <t:KeySize>256</t:KeySize>
+              </sp:RequestSecurityTokenTemplate>
+              <wsp:Policy>
+                <sp:RequireInternalReference />
+              </wsp:Policy>
+              <sp:Issuer>
+                <wsaws:Address>
+                                https://lbsts.intra.dcom.sk:49443/adfs/services/trust/13/certificatetransport
+                            </wsaws:Address>
+                <wsaws:Metadata xmlns:wsdli="http://www.w3.org/2006/01/wsdl-instance" wsdli:wsdlLocation="http://lbsts.intra.dcom.sk/adfs/services/trust/mex">
+                  <wsaw:ServiceName xmlns:stsns="http://docs.oasis-open.org/ws-sx/ws-trust/200512/" EndpointName="CertificateWSTrustBinding_IWSTrust13Async2">
+                                    stsns:SecurityTokenService
+                                </wsaw:ServiceName>
+                </wsaws:Metadata>
+              </sp:Issuer>
+            </sp:IssuedToken>
+          </wsp:Policy>
+        </sp:EndorsingSupportingTokens>
+        <sp:Wss11>
+          <wsp:Policy />
+        </sp:Wss11>
+        <sp:Trust13>
+          <wsp:Policy>
+            <sp:MustSupportIssuedTokens />
+            <sp:RequireClientEntropy />
+            <sp:RequireServerEntropy />
+          </wsp:Policy>
+        </sp:Trust13>
+        <wsaw:UsingAddressing />
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsdl:types>
+    <xs:schema xmlns:mdfx="http://sk.anext.mdfx.v_002" xmlns:ns="http://sk.anext.mdfx.v_002" xmlns:xsi="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://sk.anext.mdfx.v_002" elementFormDefault="qualified" targetNamespace="http://sk.anext.mdfx.v_002">
+      <xsi:element name="getFormTransformationReq">
+        <xsi:complexType>
+          <xsi:complexContent mixed="false">
+            <xsi:extension base="ns:getFormTransformationReq_type" />
+          </xsi:complexContent>
+        </xsi:complexType>
+      </xsi:element>
+      <xsi:element name="getFormTransformationRes" type="ns:getFormTransformationRes_type" />
+      <xsi:element name="getFormTransformationFault" type="xsi:string" />
+      <xsi:element name="getFormDetailReq" type="ns:getFormDetailReq_type" />
+      <xsi:element name="getFormDetailRes" type="ns:getFormDetailRes_type" />
+      <xsi:element name="getFormDetailFault" type="xsi:string" />
+      <xsi:element name="getClerkFormsReq" type="ns:getClerkFormsReq_type" />
+      <xsi:element name="getClerkFormsRes" type="ns:getClerkFormsRes_type" />
+      <xsi:element name="getClerkFormsFault" type="xsi:string" />
+      <xsi:element name="findServiceByFormNamespaceReq" type="ns:findServiceByFormNamespaceReq_type" />
+      <xsi:element name="findServiceByFormNamespaceRes" type="ns:findServiceByFormNamespaceRes_type" />
+      <xsi:element name="findServiceByFormNamespaceFault" type="xsi:string" />
+      <xsi:element name="prefetchRequiredFormsReq" type="ns:prefetchRequiredFormsReq_type" />
+      <xsi:element name="prefetchRequiredFormsRes" type="ns:prefetchRequiredFormsRes_type" />
+      <xsi:element name="prefetchRequiredFormsFault" type="xsi:string" />
+      <xsi:element name="validateFormDataReq" type="ns:validateFormDataReq_type" />
+      <xsi:element name="validateFormDataRes" type="ns:validateFormDataRes_type" />
+      <xsi:element name="validateFormDataFault" type="xsi:string" />
+      <xsi:element name="getLatestFormVersionReq" type="ns:getLatestFormVersionReq_type" />
+      <xsi:element name="getLatestFormVersionRes" type="ns:getLatestFormVersionRes_type" />
+      <xsi:element name="getLatestFormVersionFault" type="xsi:string" />
+      <xsi:complexType name="getFormTransformationReq_type">
+        <xsi:sequence>
+          <xsi:element name="xmlData" type="xsi:base64Binary" />
+        </xsi:sequence>
+        <xsi:attribute name="transformationType" use="required">
+          <xsi:simpleType>
+            <xsi:restriction base="xsi:string">
+              <xsi:enumeration value="HTML" />
+              <xsi:enumeration value="PDF" />
+            </xsi:restriction>
+          </xsi:simpleType>
+        </xsi:attribute>
+      </xsi:complexType>
+      <xsi:complexType name="getFormTransformationRes_type">
+        <xsi:sequence>
+          <xsi:element name="out" type="xsi:base64Binary" />
+        </xsi:sequence>
+      </xsi:complexType>
+      <xsi:complexType name="getFormDetailReq_type">
+        <xsi:sequence>
+          <xsi:element name="formNamespace" type="xsi:anyURI" />
+        </xsi:sequence>
+      </xsi:complexType>
+      <xsi:complexType name="getFormDetailRes_type">
+        <xsi:sequence>
+          <xsi:element minOccurs="0" name="formDto" nillable="true" type="ns:formDto_type" />
+        </xsi:sequence>
+      </xsi:complexType>
+      <xsi:complexType name="formDto_type">
+        <xsi:sequence>
+          <xsi:element name="validFrom" nillable="true" type="xsi:date" />
+          <xsi:element minOccurs="0" name="validTo" nillable="true" type="xsi:date" />
+          <xsi:element name="externalId" nillable="true" type="xsi:string" />
+          <xsi:element name="version" nillable="true" type="xsi:string" />
+          <xsi:element name="editModeUrl" nillable="true" type="xsi:string" />
+          <xsi:element name="name" type="xsi:string" />
+          <xsi:element name="langCode" type="xsi:string" />
+          <xsi:element name="namespace" type="xsi:string" />
+          <xsi:element minOccurs="0" name="clerkFormPospAttributes" type="ns:clerkFormPospAttributes_type" />
+        </xsi:sequence>
+      </xsi:complexType>
+      <xsi:complexType name="clerkFormPospAttributes_type">
+        <xsi:sequence>
+          <xsi:element minOccurs="0" name="delivery" type="xsi:boolean" />
+          <xsi:element minOccurs="0" name="period" type="xsi:long" />
+          <xsi:element minOccurs="0" name="fiction" type="xsi:boolean" />
+          <xsi:element name="addresseeOnly" type="xsi:boolean" />
+          <xsi:element name="sign" type="xsi:boolean" />
+        </xsi:sequence>
+      </xsi:complexType>
+      <xsi:complexType name="getClerkFormsReq_type">
+        <xsi:sequence>
+          <xsi:element name="tenant" type="xsi:string" />
+          <xsi:element minOccurs="0" name="language" type="xsi:string" />
+          <xsi:element minOccurs="0" name="service" type="xsi:string" />
+          <xsi:element minOccurs="0" default="false" name="fillPospAttributes" type="xsi:boolean" />
+        </xsi:sequence>
+      </xsi:complexType>
+      <xsi:complexType name="getClerkFormsRes_type">
+        <xsi:sequence>
+          <xsi:element minOccurs="0" maxOccurs="unbounded" name="formDto" type="ns:formDto_type" />
+        </xsi:sequence>
+      </xsi:complexType>
+      <xsi:complexType name="findServiceByFormNamespaceReq_type">
+        <xsi:sequence>
+          <xsi:element name="formURI" type="xsi:anyURI" />
+        </xsi:sequence>
+      </xsi:complexType>
+      <xsi:complexType name="findServiceByFormNamespaceRes_type">
+        <xsi:sequence>
+          <xsi:element minOccurs="0" maxOccurs="unbounded" name="service" type="xsi:string" />
+        </xsi:sequence>
+      </xsi:complexType>
+      <xsi:complexType name="prefetchRequiredFormsReq_type">
+        <xsi:sequence>
+          <xsi:element maxOccurs="unbounded" name="formURI" type="xsi:anyURI" />
+        </xsi:sequence>
+      </xsi:complexType>
+      <xsi:complexType name="prefetchRequiredFormsRes_type" />
+      <xsi:complexType name="validateFormDataReq_type">
+        <xsi:sequence>
+          <xsi:element name="xmlData" type="xsi:base64Binary" />
+        </xsi:sequence>
+      </xsi:complexType>
+      <xsi:complexType name="validateFormDataRes_type">
+        <xsi:sequence>
+          <xsi:element name="isValid" type="xsi:boolean" />
+        </xsi:sequence>
+      </xsi:complexType>
+      <xsi:complexType name="getLatestFormVersionReq_type">
+        <xsi:sequence>
+          <xsi:element name="oldFormURI" type="xsi:anyURI" />
+        </xsi:sequence>
+      </xsi:complexType>
+      <xsi:complexType name="getLatestFormVersionRes_type">
+        <xsi:sequence>
+          <xsi:element minOccurs="0" maxOccurs="unbounded" name="newFormURI" type="xsi:anyURI" />
+        </xsi:sequence>
+      </xsi:complexType>
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="getClerkFormsRequest">
+    <wsdl:part name="parameter" element="ns1:getClerkFormsReq" />
+  </wsdl:message>
+  <wsdl:message name="prefetchRequiredFormsResponse">
+    <wsdl:part name="parameter" element="ns1:prefetchRequiredFormsRes" />
+  </wsdl:message>
+  <wsdl:message name="prefetchRequiredFormsRequest">
+    <wsdl:part name="parameter" element="ns1:prefetchRequiredFormsReq" />
+  </wsdl:message>
+  <wsdl:message name="validateFormDataFault">
+    <wsdl:part name="parameter" element="ns1:validateFormDataFault" />
+  </wsdl:message>
+  <wsdl:message name="getLatestFormVersionFault">
+    <wsdl:part name="parameter" element="ns1:getLatestFormVersionFault" />
+  </wsdl:message>
+  <wsdl:message name="findServiceByFormNamespaceResponse">
+    <wsdl:part name="parameter" element="ns1:findServiceByFormNamespaceRes" />
+  </wsdl:message>
+  <wsdl:message name="getClerkFormsFault">
+    <wsdl:part name="parameter" element="ns1:getClerkFormsFault" />
+  </wsdl:message>
+  <wsdl:message name="getFormDetailResponse">
+    <wsdl:part name="parameter" element="ns1:getFormDetailRes" />
+  </wsdl:message>
+  <wsdl:message name="getFormTransformationResponse">
+    <wsdl:part name="parameter" element="ns1:getFormTransformationRes" />
+  </wsdl:message>
+  <wsdl:message name="getLatestFormVersionResponse">
+    <wsdl:part name="parameter" element="ns1:getLatestFormVersionRes" />
+  </wsdl:message>
+  <wsdl:message name="getFormTransformationRequest">
+    <wsdl:part name="parameter" element="ns1:getFormTransformationReq" />
+  </wsdl:message>
+  <wsdl:message name="validateFormDataResponse">
+    <wsdl:part name="parameter" element="ns1:validateFormDataRes" />
+  </wsdl:message>
+  <wsdl:message name="getFormDetailFault">
+    <wsdl:part name="parameter" element="ns1:getClerkFormsFault" />
+  </wsdl:message>
+  <wsdl:message name="findServiceByFormNamespaceFault">
+    <wsdl:part name="parameter" element="ns1:findServiceByFormNamespaceFault" />
+  </wsdl:message>
+  <wsdl:message name="getFormDetailRequest">
+    <wsdl:part name="parameter" element="ns1:getFormDetailReq" />
+  </wsdl:message>
+  <wsdl:message name="validateFormDataRequest">
+    <wsdl:part name="parameter" element="ns1:validateFormDataReq" />
+  </wsdl:message>
+  <wsdl:message name="getFormTransformationFault">
+    <wsdl:part name="parameter" element="ns1:getFormTransformationFault" />
+  </wsdl:message>
+  <wsdl:message name="findServiceByFormNamespaceRequest">
+    <wsdl:part name="parameter" element="ns1:findServiceByFormNamespaceReq" />
+  </wsdl:message>
+  <wsdl:message name="getLatestFormVersionRequest">
+    <wsdl:part name="parameter" element="ns1:getLatestFormVersionReq" />
+  </wsdl:message>
+  <wsdl:message name="getClerkFormsResponse">
+    <wsdl:part name="parameter" element="ns1:getClerkFormsRes" />
+  </wsdl:message>
+  <wsdl:message name="prefetchRequiredFormsFault">
+    <wsdl:part name="parameter" element="ns1:prefetchRequiredFormsFault" />
+  </wsdl:message>
+  <wsdl:portType name="MDFXPortType">
+    <wsdl:operation name="getFormTransformation">
+      <wsdl:input message="tns:getFormTransformationRequest" />
+      <wsdl:output message="tns:getFormTransformationResponse" />
+      <wsdl:fault name="FaultgetFormTransformation" message="tns:getFormTransformationFault" />
+    </wsdl:operation>
+    <wsdl:operation name="getFormDetail">
+      <wsdl:input message="tns:getFormDetailRequest" />
+      <wsdl:output message="tns:getFormDetailResponse" />
+      <wsdl:fault name="FaultgetFormDetail" message="tns:getFormDetailFault" />
+    </wsdl:operation>
+    <wsdl:operation name="getClerkForms">
+      <wsdl:input message="tns:getClerkFormsRequest" />
+      <wsdl:output message="tns:getClerkFormsResponse" />
+      <wsdl:fault name="FaultgetClerkForms" message="tns:getClerkFormsFault" />
+    </wsdl:operation>
+    <wsdl:operation name="findServiceByFormNamespace">
+      <wsdl:input message="tns:findServiceByFormNamespaceRequest" />
+      <wsdl:output message="tns:findServiceByFormNamespaceResponse" />
+      <wsdl:fault name="FaultfindServiceByFormNamespace" message="tns:findServiceByFormNamespaceFault" />
+    </wsdl:operation>
+    <wsdl:operation name="prefetchRequiredForms">
+      <wsdl:input message="tns:prefetchRequiredFormsRequest" />
+      <wsdl:output message="tns:prefetchRequiredFormsResponse" />
+      <wsdl:fault name="FaultprefetchRequiredForms" message="tns:prefetchRequiredFormsFault" />
+    </wsdl:operation>
+    <wsdl:operation name="validateFormData">
+      <wsdl:input message="tns:validateFormDataRequest" />
+      <wsdl:output message="tns:validateFormDataResponse" />
+      <wsdl:fault name="FaultvalidateFormData" message="tns:validateFormDataFault" />
+    </wsdl:operation>
+    <wsdl:operation name="getLatestFormVersion">
+      <wsdl:input message="tns:getLatestFormVersionRequest" />
+      <wsdl:output message="tns:getLatestFormVersionResponse" />
+      <wsdl:fault name="FaultgetLatestFormVersion" message="tns:getLatestFormVersionFault" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="MDFXBinding" type="tns:MDFXPortType">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <PolicyReference xmlns="http://schemas.xmlsoap.org/ws/2004/09/policy" URI="#WS2007FederationHttpBinding_IService_policy" />
+    <wsdl:operation name="getFormTransformation">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="FaultgetFormTransformation">
+        <soap12:fault use="literal" name="FaultgetFormTransformation" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getFormDetail">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="FaultgetFormDetail">
+        <soap12:fault use="literal" name="FaultgetFormDetail" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getClerkForms">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="FaultgetClerkForms">
+        <soap12:fault use="literal" name="FaultgetClerkForms" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="findServiceByFormNamespace">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="FaultfindServiceByFormNamespace">
+        <soap12:fault use="literal" name="FaultfindServiceByFormNamespace" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="prefetchRequiredForms">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="FaultprefetchRequiredForms">
+        <soap12:fault use="literal" name="FaultprefetchRequiredForms" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="validateFormData">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="FaultvalidateFormData">
+        <soap12:fault use="literal" name="FaultvalidateFormData" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getLatestFormVersion">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="FaultgetLatestFormVersion">
+        <soap12:fault use="literal" name="FaultgetLatestFormVersion" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="MDFXService">
+    <wsdl:port name="MDFXPort" binding="tns:MDFXBinding">
+      <soap12:address location="https://lbsoa.intra.dcom.sk/soa/mdfx/1.0/mdfx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

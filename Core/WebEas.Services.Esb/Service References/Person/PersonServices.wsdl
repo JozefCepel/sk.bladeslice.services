@@ -1,0 +1,1049 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:ns2="http://schemas.dcom.sk/fault/1.0" xmlns:ns3="http://schemas.xmlsoap.org/soap/http" xmlns:tns="http://schemas.dcom.sk/integration/person/2.0" xmlns:t="http://docs.oasis-open.org/ws-sx/ws-trust/200512" xmlns:wsaws="http://www.w3.org/2005/08/addressing" xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:ns1="http://schemas.dcom.sk/integration/lokalneRegistre/person/2.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="PersonServices" targetNamespace="http://schemas.dcom.sk/integration/person/2.0" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsp:Policy xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsaws="http://www.w3.org/2005/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:t="http://docs.oasis-open.org/ws-sx/ws-trust/200512" xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702" wsu:Id="WS2007FederationHttpBinding_IService_policy">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <sp:TransportBinding>
+          <wsp:Policy>
+            <sp:TransportToken>
+              <wsp:Policy>
+                <sp:HttpsToken />
+              </wsp:Policy>
+            </sp:TransportToken>
+            <sp:AlgorithmSuite>
+              <wsp:Policy>
+                <sp:Basic256 />
+              </wsp:Policy>
+            </sp:AlgorithmSuite>
+            <sp:Layout>
+              <wsp:Policy>
+                <sp:Lax />
+              </wsp:Policy>
+            </sp:Layout>
+            <sp:IncludeTimestamp />
+          </wsp:Policy>
+        </sp:TransportBinding>
+        <sp:EndorsingSupportingTokens>
+          <wsp:Policy>
+            <sp:IssuedToken sp:IncludeToken="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702/IncludeToken/AlwaysToRecipient">
+              <sp:RequestSecurityTokenTemplate>
+                <t:TokenType>http://docs.oasis-open.org/wss/oasis-wss-saml-token-profile-1.1#SAMLV1.1
+                            </t:TokenType>
+                <t:KeyType>http://docs.oasis-open.org/ws-sx/ws-trust/200512/SymmetricKey</t:KeyType>
+                <t:KeySize>256</t:KeySize>
+              </sp:RequestSecurityTokenTemplate>
+              <wsp:Policy>
+                <sp:RequireInternalReference />
+              </wsp:Policy>
+              <sp:Issuer>
+                <wsaws:Address>
+                                https://lbsts.intra.dcom.sk:49443/adfs/services/trust/13/certificatetransport
+                            </wsaws:Address>
+                <wsaws:Metadata xmlns:wsdli="http://www.w3.org/2006/01/wsdl-instance" wsdli:wsdlLocation="http://lbsts.intra.dcom.sk/adfs/services/trust/mex">
+                  <wsaw:ServiceName xmlns:stsns="http://docs.oasis-open.org/ws-sx/ws-trust/200512/" EndpointName="CertificateWSTrustBinding_IWSTrust13Async2">
+                                    stsns:SecurityTokenService
+                                </wsaw:ServiceName>
+                </wsaws:Metadata>
+              </sp:Issuer>
+            </sp:IssuedToken>
+          </wsp:Policy>
+        </sp:EndorsingSupportingTokens>
+        <sp:Wss11>
+          <wsp:Policy />
+        </sp:Wss11>
+        <sp:Trust13>
+          <wsp:Policy>
+            <sp:MustSupportIssuedTokens />
+            <sp:RequireClientEntropy />
+            <sp:RequireServerEntropy />
+          </wsp:Policy>
+        </sp:Trust13>
+        <wsaw:UsingAddressing />
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsdl:types>
+    <xs:schema xmlns="http://schemas.dcom.sk/integration/person/2.0" xmlns:ns0="http://schemas.dcom.sk/integration/lokalneRegistre/personData/2.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://schemas.dcom.sk/integration/person/2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:import namespace="http://schemas.dcom.sk/integration/lokalneRegistre/person/2.0" />
+      <xs:import namespace="http://schemas.dcom.sk/integration/lokalneRegistre/personData/2.0" />
+      <xs:complexType name="getPersonInMunicByUpvsIdRequest">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="tenantId" type="xs:string" />
+          <xs:element minOccurs="0" name="upvsIdentifiers" type="ns1:UpvsIdentifiers" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:simpleType name="personValidationErrorType">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="OTHER" />
+          <xs:enumeration value="REQUIRED_FIELD" />
+          <xs:enumeration value="INVALID_FIELD" />
+          <xs:enumeration value="MAX_LENGTH" />
+          <xs:enumeration value="DATE_CANNOT_BE_IN_FUTURE" />
+          <xs:enumeration value="AT_LEAST_ONE_VALUE_MUST_BE_SPECIFIED" />
+          <xs:enumeration value="MUST_BE_LESS_THAN" />
+          <xs:enumeration value="MUST_BE_LESS_EQUAL_THAN" />
+          <xs:enumeration value="MUST_BE_HIGHER_THAN" />
+          <xs:enumeration value="MUST_BE_HIGHER_EQUAL_THAN" />
+          <xs:enumeration value="MUST_BE_NUMBER" />
+          <xs:enumeration value="PERSON_ALREADY_EXIST" />
+          <xs:enumeration value="INVALID_PHONE_FORMAT" />
+          <xs:enumeration value="RODNE_CISLO_IS_NOT_VALID_FOR_SEX" />
+          <xs:enumeration value="RODNE_CISLO_IS_NOT_VALID_FOR_BIRTHDATE" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:element name="CheckElectronicDeliveryPossibleResponse" nillable="true" type="ns1:CheckElectronicDeliveryPossibleResponse" />
+      <xs:element name="getPersonCentralByUpvsIdentifiers" nillable="true" type="ns1:UpvsIdentifiers" />
+      <xs:element name="getPersonCentralByUpvsIdentifiersResponse" nillable="true" type="ns1:PersonIdentifiers" />
+      <xs:element name="bankAccount" nillable="true" type="ns1:BankoveSpojenieNaZapis" />
+      <xs:element name="AddPersonBankAccountResponse" nillable="true" type="xs:long" />
+      <xs:element name="GetPersonInMunicipalityByUpvsIdentifiersResponse" nillable="true" type="ns1:PersonIdentifiers" />
+      <xs:element name="ValidateAddressResponse" nillable="true" type="ns0:PersonValidationErrorList" />
+      <xs:element name="ListNaturalPersonsForAddressResponse" nillable="true" type="ns1:PobytyNaAdreseResponse" />
+      <xs:element name="FindPersonComboResponse" nillable="true" type="ns1:findPersonComboResponse" />
+    </xs:schema>
+    <xs:schema xmlns="http://schemas.dcom.sk/integration/person-internal/1.0" xmlns:ns1="http://schemas.dcom.sk/integration/person/2.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://schemas.dcom.sk/integration/person-internal/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:import namespace="http://schemas.dcom.sk/integration/person/2.0" />
+      <xs:complexType name="PersonValidationError">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="field" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="type" type="ns1:personValidationErrorType" />
+          <xs:element minOccurs="0" form="qualified" name="message" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" form="qualified" name="arguments" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+    </xs:schema>
+    <xs:schema xmlns="http://schemas.dcom.sk/integration/lokalneRegistre/personData/2.0" xmlns:ns2="http://schemas.dcom.sk/integration/person-internal/1.0" xmlns:ns1="http://schemas.dcom.sk/integration/person/2.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://schemas.dcom.sk/integration/lokalneRegistre/personData/2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:import namespace="http://schemas.dcom.sk/integration/person/2.0" />
+      <xs:import namespace="http://schemas.dcom.sk/integration/person-internal/1.0" />
+      <xs:complexType name="PersonValidationErrorList">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" form="qualified" name="personValidationError" type="ns2:PersonValidationError" />
+        </xs:sequence>
+      </xs:complexType>
+    </xs:schema>
+    <xs:schema xmlns:tns="http://schemas.dcom.sk/integration/lokalneRegistre/person/2.0" xmlns:ns0="http://schemas.dcom.sk/integration/person/2.0" xmlns:ns1="http://schemas.dcom.sk/integration/lokalneRegistre/person/2.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://schemas.dcom.sk/integration/lokalneRegistre/person/2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:import namespace="http://schemas.dcom.sk/integration/person/2.0" />
+      <xs:complexType name="VyhladavacieKriteria">
+        <xs:sequence>
+          <xs:element form="qualified" name="VyhledatVEvidenciTenanta" type="xs:boolean" />
+          <xs:element form="qualified" name="VyhladavacieKriteriaOsoby" type="tns:VyhladavacieKriteriaOsoby" />
+          <xs:element minOccurs="0" form="qualified" name="Strankovanie" type="tns:Strankovanie" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="VyhladavacieKriteriaOsoby">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="VyhladavacieKriteriaPravnickejOsoby" type="tns:VyhladavacieKriteriaPravnickejOsoby" />
+          <xs:element minOccurs="0" form="qualified" name="VyhladavacieKriteriaFyzickejOsoby" type="tns:VyhladavacieKriteriaFyzickejOsoby" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="VyhladavacieKriteriaPravnickejOsoby">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="Ico" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="ObchodneMeno" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="PravnaFormaId" type="xs:long" />
+          <xs:element minOccurs="0" form="qualified" name="AdresaId" type="xs:long" />
+          <xs:element minOccurs="0" form="qualified" name="BytId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="VyhladavacieKriteriaFyzickejOsoby">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="IFO" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="RodneCislo" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="IdentifikatorCudzinca" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="DatumNarozeniOd" type="xs:date" />
+          <xs:element minOccurs="0" form="qualified" name="DatumNarozeniDo" type="xs:date" />
+          <xs:element minOccurs="0" form="qualified" name="PohlavieId" type="xs:long" />
+          <xs:element minOccurs="0" form="qualified" name="Meno" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="Priezvisko" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="RodnePriezvisko" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="CisloDokladu" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="AdresaId" type="xs:long" />
+          <xs:element minOccurs="0" form="qualified" name="BytId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Strankovanie">
+        <xs:sequence>
+          <xs:element form="qualified" name="PocetZaznamu" type="xs:int" />
+          <xs:element form="qualified" name="CisloStranky" type="xs:int" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" form="qualified" name="Radenie" type="tns:Radenie" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Radenie">
+        <xs:sequence>
+          <xs:element form="qualified" name="Vzestupne" type="xs:boolean" />
+          <xs:element form="qualified" name="RaditPodla" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="OsobaList">
+        <xs:sequence>
+          <xs:element form="qualified" name="CelkovyPocetNalezenychOsob" type="xs:long" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" form="qualified" name="Osoba" type="tns:Osoba" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Osoba">
+        <xs:sequence>
+          <xs:element form="qualified" name="Id" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="FormatovanaAdresa" type="xs:string" />
+          <xs:element form="qualified" name="UpvsIdentifikaciaOsoby" type="tns:UpvsIdentifikaciaOsoby" />
+          <xs:element minOccurs="0" form="qualified" name="FyzickaOsoba" type="tns:FyzickaOsoba" />
+          <xs:element minOccurs="0" form="qualified" name="PravnickaOsoba" type="tns:PravnickaOsoba" />
+          <xs:element minOccurs="0" form="qualified" name="Dic" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="UpvsIdentifikaciaOsoby">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="Id" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="Uri" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="FyzickaOsoba">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="FormatovaneMeno" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="IdentifikatorCudzinca" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="Meno" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="Priezvisko" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="RodneCislo" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="RodnePriezvisko" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="IFO" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="DatumNarodenia" type="xs:date" />
+          <xs:element minOccurs="0" form="qualified" name="RokNarodenia" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PravnickaOsoba">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="Ico" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="ObchodneMeno" type="xs:string" />
+          <xs:element form="qualified" name="PravnaForma" type="xs:string" />
+          <xs:element form="qualified" name="PravnaFormaSkratena" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="IcDph" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="IdentifikatoryOsobyRequest">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="Uri" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="UpvsId" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="OsobaId" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="ObecnyUradId" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="TenantId" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="IdentifikatoryOsobyResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="Uri" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="UpvsId" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="OsobaId" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="ObecnyUradId" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="TenantId" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="FormatovaneMeno" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="OsobaRequest">
+        <xs:sequence>
+          <xs:element form="qualified" name="OsobaId" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="VrataneHistorie" type="xs:boolean" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="OsobaDetail">
+        <xs:sequence>
+          <xs:element form="qualified" name="Id" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="UpvsIdentifikaciaOsoby" type="tns:UpvsIdentifikaciaOsoby" />
+          <xs:element minOccurs="0" form="qualified" name="FyzickaOsobaDetail" type="tns:FyzickaOsobaDetail" />
+          <xs:element minOccurs="0" form="qualified" name="AdresyOsoby" type="tns:AdresyOsoby" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" form="qualified" name="BankoveSpojenia" type="tns:BankoveSpojenie" />
+          <xs:element minOccurs="0" form="qualified" name="PravnickaOsobaDetail" type="tns:PravnickaOsobaDetail" />
+          <xs:element form="qualified" name="CentralnaEvidencia" type="xs:boolean" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="FyzickaOsobaDetail">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="FormatovaneMeno" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="IdentifikatorCudzinca" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="IFO" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="Meno" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="Narodnost" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="NarodnostId" type="xs:long" />
+          <xs:element minOccurs="0" form="qualified" name="Pohlavie" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="PohlavieId" type="xs:long" />
+          <xs:element minOccurs="0" form="qualified" name="Priezvisko" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="RodinnyStav" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="RodinnyStavId" type="xs:long" />
+          <xs:element minOccurs="0" form="qualified" name="RodneCislo" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="RodnePriezvisko" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="TitulPred" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="TitulPredId" type="xs:long" />
+          <xs:element minOccurs="0" form="qualified" name="TitulZa" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="TitulZaId" type="xs:long" />
+          <xs:element minOccurs="0" form="qualified" name="TypFyzickejOsoby" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="TypFyzickejOsobyId" type="xs:long" />
+          <xs:element minOccurs="0" form="qualified" name="Narodenie" type="tns:MatricnyUdaj" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" form="qualified" name="StatnaPrislusnost" type="tns:StatnaPrislusnost" />
+          <xs:element minOccurs="0" form="qualified" name="Umrtie" type="tns:MatricnyUdaj" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" form="qualified" name="Doklady" type="tns:Doklad" />
+          <xs:element minOccurs="0" form="qualified" name="ChranenaOsoba" type="xs:boolean" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" form="qualified" name="ObmedzeniaPravnejSposobilosti" type="tns:ObmedzeniePravnejSposobilosti" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="MatricnyUdaj">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="Datum" type="xs:date" />
+          <xs:element form="qualified" name="Rok" type="xs:int" />
+          <xs:element minOccurs="0" form="qualified" name="Miesto" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="Stat" type="tns:UzemnyCelok" />
+          <xs:element minOccurs="0" form="qualified" name="Obec" type="tns:UzemnyCelok" />
+          <xs:element minOccurs="0" form="qualified" name="Okres" type="tns:UzemnyCelok" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="UzemnyCelok">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="Id" type="xs:long" />
+          <xs:element minOccurs="0" form="qualified" name="Nazov" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="KodSU" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="StatnaPrislusnost">
+        <xs:sequence>
+          <xs:element form="qualified" name="Stat" type="tns:UzemnyCelok" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Doklad">
+        <xs:sequence>
+          <xs:element form="qualified" name="Id" type="xs:long" />
+          <xs:element form="qualified" name="IdentifikatorDokladu" type="xs:string" />
+          <xs:element form="qualified" name="OdovzdanyDrzitelovi" type="xs:boolean" />
+          <xs:element form="qualified" name="TypDokladuId" type="xs:long" />
+          <xs:element form="qualified" name="TypDokladuNazov" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ObmedzeniePravnejSposobilosti">
+        <xs:sequence>
+          <xs:element form="qualified" name="Id" type="xs:long" />
+          <xs:element form="qualified" name="Typ" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="AdresyOsoby">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" form="qualified" name="FyzickaAdresa" type="tns:FyzickaAdresa" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" form="qualified" name="InternetovaAdresa" type="tns:InternetovaAdresa" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" form="qualified" name="TelefonnaAdresa" type="tns:TelefonnaAdresa" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="FyzickaAdresa">
+        <xs:sequence>
+          <xs:element form="qualified" name="Id" type="xs:long" />
+          <xs:element minOccurs="0" form="qualified" name="VchodId" type="xs:long" />
+          <xs:element minOccurs="0" form="qualified" name="Obec" type="tns:UzemnyCelok" />
+          <xs:element minOccurs="0" form="qualified" name="CastObceId" type="xs:long" />
+          <xs:element minOccurs="0" form="qualified" name="CastObce" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="Okres" type="tns:UzemnyCelok" />
+          <xs:element minOccurs="0" form="qualified" name="PSC" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="DorucovaciaPosta" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="SupisneCislo" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="UlicaId" type="xs:long" />
+          <xs:element minOccurs="0" form="qualified" name="Ulica" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="OrientacneCislo" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="OrientacneCisloZnak" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="CastBudovy" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="Kraj" type="tns:UzemnyCelok" />
+          <xs:element minOccurs="0" form="qualified" name="Region" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="POBox" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="NestrukturovaneUdaje" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="PCD" type="xs:string" />
+          <xs:element form="qualified" name="TypAdresyOsoby" type="tns:TypFyzickejAdresy" />
+          <xs:element form="qualified" name="Stat" type="tns:UzemnyCelok" />
+          <xs:element minOccurs="0" form="qualified" name="DatumOd" type="xs:date" />
+          <xs:element minOccurs="0" form="qualified" name="DatumDo" type="xs:date" />
+          <xs:element minOccurs="0" form="qualified" name="KontaktZRegistra" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="BytId" type="xs:long" />
+          <xs:element minOccurs="0" form="qualified" name="BytRaId" type="xs:long" />
+          <xs:element minOccurs="0" form="qualified" name="CisloBytu" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="PoschodieBytu" type="xs:int" />
+          <xs:element minOccurs="0" name="pobytNaObci" type="xs:boolean" />
+          <xs:element form="qualified" name="FormatovanaAdresa" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" form="qualified" name="PostovaAdresa" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" form="qualified" name="FormatProblem" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="InternetovaAdresa">
+        <xs:sequence>
+          <xs:element form="qualified" name="Id" type="xs:long" />
+          <xs:element form="qualified" name="Adresa" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="TypInternetoveAdresy" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="TypInternetoveAdresyId" type="xs:long" />
+          <xs:element minOccurs="0" form="qualified" name="KontaktZRegistra" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="TelefonnaAdresa">
+        <xs:sequence>
+          <xs:element form="qualified" name="Id" type="xs:long" />
+          <xs:element form="qualified" name="FormatovaneCislo" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="MedzinarodneSmeroveCislo" type="xs:string" />
+          <xs:element form="qualified" name="Cislo" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="Linka" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="TypTelefonu" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="TypTelefonuId" type="xs:long" />
+          <xs:element minOccurs="0" form="qualified" name="KontaktZRegistra" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="BankoveSpojenie">
+        <xs:sequence>
+          <xs:element form="qualified" name="Id" type="xs:long" />
+          <xs:element minOccurs="0" form="qualified" name="TypBankovehoSpojeniaId" type="xs:long" />
+          <xs:element minOccurs="0" form="qualified" name="Predcislie" type="xs:int" />
+          <xs:element minOccurs="0" form="qualified" name="CisloUctu" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="KodBanky" type="xs:int" />
+          <xs:element minOccurs="0" form="qualified" name="NazovBanky" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="Iban" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="Bic" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="PlatnostOd" type="xs:date" />
+          <xs:element minOccurs="0" form="qualified" name="PlatnostDo" type="xs:date" />
+          <xs:element minOccurs="0" form="qualified" name="KontaktZRegistra" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PravnickaOsobaDetail">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="Ico" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="DatumVzniku" type="xs:date" />
+          <xs:element minOccurs="0" form="qualified" name="DatumZaniku" type="xs:date" />
+          <xs:element minOccurs="0" form="qualified" name="ObchodneMeno" type="xs:string" />
+          <xs:element form="qualified" name="PravnaFormaId" type="xs:long" />
+          <xs:element form="qualified" name="PravnaForma" type="xs:string" />
+          <xs:element form="qualified" name="PravnaFormaSkratena" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="Dic" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="IcDph" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="PravnyStav" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="CisloOrgJednotky" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="MaterskaOrganizacieId" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="MaterskaOrganizaciaNazov" type="xs:string" />
+          <xs:element form="qualified" name="MaOrganizacneJednotky" type="xs:boolean" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getPersonsRequest">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="ids" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getPersonsResponse">
+        <xs:sequence>
+          <xs:element form="qualified" name="celkovyPocet" type="xs:long" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" form="qualified" name="Osoba" type="tns:OsobaDetail" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="CheckElectronicDeliveryPossibleRequest">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="PersonId" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="CheckElectronicDeliveryPossibleResponse">
+        <xs:sequence>
+          <xs:element form="qualified" name="ElectronicDeliveryPossible" type="xs:boolean" />
+          <xs:element minOccurs="0" form="qualified" name="ReasonNotPossible" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="UpvsIdentifiers">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="UpvsId" type="xs:string" />
+          <xs:element form="qualified" name="UpvsUri" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="Pco" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="Meno" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="Priezvisko" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="Nazov" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="IdentityType" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PersonIdentifiers">
+        <xs:sequence>
+          <xs:element form="qualified" name="DisplayName" type="xs:string" />
+          <xs:element form="qualified" name="OsobaId" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="ObecnyUradId" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="TenantId" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="GetPersonByUpvsIdentifiersRequest">
+        <xs:sequence>
+          <xs:element form="qualified" name="Subject" type="tns:UpvsIdentifiers" />
+          <xs:element form="qualified" name="Actor" type="tns:UpvsIdentifiers" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="GetPersonByUpvsIdentifiersResponse">
+        <xs:sequence>
+          <xs:element form="qualified" name="Subject" type="tns:PersonIdentifiers" />
+          <xs:element form="qualified" name="Actor" type="tns:PersonIdentifiers" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="BankoveSpojenieNaZapis">
+        <xs:sequence>
+          <xs:element form="qualified" name="PersonId" type="xs:string" />
+          <xs:element form="qualified" name="TypBankovehoSpojeniaId" type="xs:long" />
+          <xs:element minOccurs="0" form="qualified" name="Predcislie" type="xs:int" />
+          <xs:element minOccurs="0" form="qualified" name="CisloUctu" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="KodBanky" type="xs:int" />
+          <xs:element minOccurs="0" form="qualified" name="NazovBanky" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="Iban" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="Bic" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="DuplicitnaOsobaRequest">
+        <xs:sequence>
+          <xs:element form="qualified" name="PersonId" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="DuplicitnaOsobaList">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" form="qualified" name="DuplicitnaOsoba" type="tns:DuplicitnaOsoba" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="DuplicitnaOsoba">
+        <xs:sequence>
+          <xs:element form="qualified" name="Id" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="PoslednaZmena" type="xs:date" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="adresaNaZapis">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="personId" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="id" type="xs:long" />
+          <xs:element minOccurs="0" form="qualified" name="vchodId" type="xs:long" />
+          <xs:element minOccurs="0" form="qualified" name="obec" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="castObce" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="okres" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="psc" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="ulica" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="supisneCislo" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="orientacneCislo" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="orientacneCisloZnak" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="nestrukturovanaAdresa" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="POBOX" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="indexDomu" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="pocetBytov" type="xs:int" />
+          <xs:element minOccurs="0" form="qualified" name="typAdresyOsobyId" type="xs:long" />
+          <xs:element minOccurs="0" form="qualified" name="statId" type="xs:long" />
+          <xs:element minOccurs="0" form="qualified" name="datumOd" type="xs:date" />
+          <xs:element minOccurs="0" form="qualified" name="datumDo" type="xs:date" />
+          <xs:element minOccurs="0" form="qualified" name="popis" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="poznamka" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="bytRaId" type="xs:long" />
+          <xs:element minOccurs="0" form="qualified" name="cisloBytu" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="poschodieBytu" type="xs:int" />
+          <xs:element minOccurs="0" form="qualified" name="obecRaId" type="xs:long" />
+          <xs:element minOccurs="0" form="qualified" name="pobytBezAdresy" type="xs:boolean" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PobytyNaAdreseRequest">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="pobytBezAdresy" type="xs:boolean" />
+          <xs:element minOccurs="0" name="obecId" type="xs:long" />
+          <xs:element minOccurs="0" name="obecNazov" type="xs:string" />
+          <xs:element minOccurs="0" name="castObceId" type="xs:long" />
+          <xs:element minOccurs="0" name="castObceNazov" type="xs:string" />
+          <xs:element minOccurs="0" name="ulicaId" type="xs:long" />
+          <xs:element minOccurs="0" name="ulicaNazov" type="xs:string" />
+          <xs:element minOccurs="0" name="orientacneCislo" type="xs:string" />
+          <xs:element minOccurs="0" name="supisneCislo" type="xs:string" />
+          <xs:element minOccurs="0" name="PSC" type="xs:string" />
+          <xs:element minOccurs="0" name="cisloBytu" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PobytyNaAdreseResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" form="qualified" name="residencesForAddress" type="tns:PobytNaAdrese" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PobytNaAdrese">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="idFo" type="xs:string" />
+          <xs:element minOccurs="0" name="meno" type="xs:string" />
+          <xs:element minOccurs="0" name="rodneCislo" type="xs:string" />
+          <xs:element minOccurs="0" name="datumNarodenia" type="xs:date" />
+          <xs:element minOccurs="0" name="adresa" type="tns:FyzickaAdresa" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="findPersonComboRequest">
+        <xs:sequence>
+          <xs:element form="qualified" name="HladanyRetazec" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="findPersonComboResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="PravnickeOsoby" type="tns:OsobaList" />
+          <xs:element minOccurs="0" name="FyzickeOsoby" type="tns:OsobaList" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:simpleType name="TypFyzickejAdresy">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="KontaktnaAdresa" />
+          <xs:enumeration value="PrechodnyPobyt" />
+          <xs:enumeration value="Sidlo" />
+          <xs:enumeration value="TrvalyPobyt" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:element name="VyhladavacieKriteria" nillable="true" type="tns:VyhladavacieKriteria" />
+      <xs:element name="OsobaList" nillable="true" type="tns:OsobaList" />
+      <xs:element name="IdentifikatoryOsobyRequest" nillable="true" type="tns:IdentifikatoryOsobyRequest" />
+      <xs:element name="IdentifikatoryOsobyResponse" nillable="true" type="tns:IdentifikatoryOsobyResponse" />
+      <xs:element name="OsobaPublicRequest" nillable="true" type="tns:OsobaRequest" />
+      <xs:element name="OsobaDetail" nillable="true" type="tns:OsobaDetail" />
+      <xs:element name="GetNaturalPersonRequest" nillable="true" type="xs:string" />
+      <xs:element name="GetNaturalPersonsRequest" nillable="true" type="tns:getPersonsRequest" />
+      <xs:element name="GetNaturalPersonsResponse" nillable="true" type="tns:getPersonsResponse" />
+      <xs:element name="GetLegalPersonRequest" nillable="true" type="xs:string" />
+      <xs:element name="GetLegalPersonsRequest" nillable="true" type="tns:getPersonsRequest" />
+      <xs:element name="GetLegalPersonsResponse" nillable="true" type="tns:getPersonsResponse" />
+      <xs:element name="CheckElectronicDeliveryPossibleRequest" nillable="true" type="tns:CheckElectronicDeliveryPossibleRequest" />
+      <xs:element name="GetPersonByUpvsIdentifiersRequest" nillable="true" type="tns:GetPersonByUpvsIdentifiersRequest" />
+      <xs:element name="GetPersonByUpvsIdentifiersResponse" nillable="true" type="tns:GetPersonByUpvsIdentifiersResponse" />
+      <xs:element name="DuplicitnaOsobaRequest" nillable="true" type="tns:DuplicitnaOsobaRequest" />
+      <xs:element name="DuplicitnaOsobaList" nillable="true" type="tns:DuplicitnaOsobaList" />
+      <xs:element name="GetPersonInMunicByUpvsIdRequest" nillable="true" type="ns0:getPersonInMunicByUpvsIdRequest" />
+      <xs:element name="OsobaRequest" nillable="true" type="tns:OsobaRequest" />
+      <xs:element name="PhysicalAddress" nillable="true" type="tns:adresaNaZapis" />
+      <xs:element name="PobytyNaAdreseRequest" nillable="true" type="tns:PobytyNaAdreseRequest" />
+      <xs:element name="FindPersonComboRequest" nillable="true" type="tns:findPersonComboRequest" />
+    </xs:schema>
+    <xs:schema xmlns:tns="http://schemas.dcom.sk/fault/1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://schemas.dcom.sk/fault/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:element name="dcomFault" type="tns:DcomFaultType" />
+      <xs:complexType name="DcomFaultType">
+        <xs:sequence>
+          <xs:element name="faultCode" type="xs:int" />
+          <xs:element name="faultMessage" type="xs:string" />
+          <xs:element minOccurs="0" name="faultCause" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="invalidParameter" type="tns:InvalidParameterType" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="InvalidParameterType">
+        <xs:sequence>
+          <xs:element name="parameterName" type="xs:string" />
+          <xs:element name="errorMessage" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="DcomFaultMessage" nillable="true" type="tns:DcomFaultType" />
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="GetPersonInMunicipalityByUpvsIdentifiers">
+    <wsdl:part name="getPersonInMunicByUpvsIdRequest" element="ns1:GetPersonInMunicByUpvsIdRequest" />
+  </wsdl:message>
+  <wsdl:message name="FindPerson">
+    <wsdl:part name="searchCriteria" element="ns1:VyhladavacieKriteria" />
+  </wsdl:message>
+  <wsdl:message name="getPersonCentralByUpvsIdentifiers">
+    <wsdl:part name="getPersonCentralByUpvsIdentifiers" element="tns:getPersonCentralByUpvsIdentifiers" />
+  </wsdl:message>
+  <wsdl:message name="GetPersonResponse">
+    <wsdl:part name="personDetail" element="ns1:OsobaDetail" />
+  </wsdl:message>
+  <wsdl:message name="GetPersonIdentifiersResponse">
+    <wsdl:part name="GetPersonIdentifiersResponse" element="ns1:IdentifikatoryOsobyResponse" />
+  </wsdl:message>
+  <wsdl:message name="FindPersonResponse">
+    <wsdl:part name="personList" element="ns1:OsobaList" />
+  </wsdl:message>
+  <wsdl:message name="CheckElectronicDeliveryPossible">
+    <wsdl:part name="checkElectronicDeliveryPossibleRequest" element="ns1:CheckElectronicDeliveryPossibleRequest" />
+  </wsdl:message>
+  <wsdl:message name="FindPersonComboResponse">
+    <wsdl:part name="FindPersonComboResponse" element="tns:FindPersonComboResponse" />
+  </wsdl:message>
+  <wsdl:message name="getLegalPerson">
+    <wsdl:part name="personId" element="ns1:GetLegalPersonRequest" />
+  </wsdl:message>
+  <wsdl:message name="AddPersonBankAccount">
+    <wsdl:part name="bankAccount" element="tns:bankAccount" />
+  </wsdl:message>
+  <wsdl:message name="getLegalPersons">
+    <wsdl:part name="GetPersonsRequest" element="ns1:GetLegalPersonsRequest" />
+  </wsdl:message>
+  <wsdl:message name="GetPersonInMunicipalityByUpvsIdentifiersResponse">
+    <wsdl:part name="GetPersonInMunicipalityByUpvsIdentifiersResponse" element="tns:GetPersonInMunicipalityByUpvsIdentifiersResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetPersonDuplicates">
+    <wsdl:part name="personId" element="ns1:DuplicitnaOsobaRequest" />
+  </wsdl:message>
+  <wsdl:message name="ValidateAddress">
+    <wsdl:part name="physicalAddress" element="ns1:PhysicalAddress" />
+  </wsdl:message>
+  <wsdl:message name="FindPersonCombo">
+    <wsdl:part name="findPersonComboRequest" element="ns1:FindPersonComboRequest" />
+  </wsdl:message>
+  <wsdl:message name="ValidateAddressResponse">
+    <wsdl:part name="ValidateAddressResponse" element="tns:ValidateAddressResponse" />
+  </wsdl:message>
+  <wsdl:message name="getPersonCentralByUpvsIdentifiersResponse">
+    <wsdl:part name="getPersonCentralByUpvsIdentifiersResponse" element="tns:getPersonCentralByUpvsIdentifiersResponse" />
+  </wsdl:message>
+  <wsdl:message name="getLegalPersonResponse">
+    <wsdl:part name="personDetail" element="ns1:OsobaDetail" />
+  </wsdl:message>
+  <wsdl:message name="ListNaturalPersonsForAddressResponse">
+    <wsdl:part name="ListNaturalPersonsForAddressResponse" element="tns:ListNaturalPersonsForAddressResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetPerson">
+    <wsdl:part name="personId" element="ns1:OsobaRequest" />
+  </wsdl:message>
+  <wsdl:message name="getLegalPersonsResponse">
+    <wsdl:part name="GetPersonsResponse" element="ns1:GetLegalPersonsResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetPersonForPublic">
+    <wsdl:part name="personId" element="ns1:OsobaPublicRequest" />
+  </wsdl:message>
+  <wsdl:message name="AddPersonBankAccountResponse">
+    <wsdl:part name="AddPersonBankAccountResponse" element="tns:AddPersonBankAccountResponse" />
+  </wsdl:message>
+  <wsdl:message name="getNaturalPersonResponse">
+    <wsdl:part name="personDetail" element="ns1:OsobaDetail" />
+  </wsdl:message>
+  <wsdl:message name="GetPersonByUpvsIdentifiersResponse">
+    <wsdl:part name="personIdentifiers" element="ns1:GetPersonByUpvsIdentifiersResponse" />
+  </wsdl:message>
+  <wsdl:message name="getNaturalPersonsResponse">
+    <wsdl:part name="GetPersonsResponse" element="ns1:GetNaturalPersonsResponse" />
+  </wsdl:message>
+  <wsdl:message name="CheckElectronicDeliveryPossibleResponse">
+    <wsdl:part name="CheckElectronicDeliveryPossibleResponse" element="tns:CheckElectronicDeliveryPossibleResponse" />
+  </wsdl:message>
+  <wsdl:message name="ListNaturalPersonsForAddress">
+    <wsdl:part name="residenceForAddressRequest" element="ns1:PobytyNaAdreseRequest" />
+  </wsdl:message>
+  <wsdl:message name="getNaturalPersons">
+    <wsdl:part name="GetPersonsRequest" element="ns1:GetNaturalPersonsRequest" />
+  </wsdl:message>
+  <wsdl:message name="getNaturalPerson">
+    <wsdl:part name="personId" element="ns1:GetNaturalPersonRequest" />
+  </wsdl:message>
+  <wsdl:message name="GetPersonDuplicatesResponse">
+    <wsdl:part name="personDuplicates" element="ns1:DuplicitnaOsobaList" />
+  </wsdl:message>
+  <wsdl:message name="GetPersonByUpvsIdentifiers">
+    <wsdl:part name="upvsIdentifiers" element="ns1:GetPersonByUpvsIdentifiersRequest" />
+  </wsdl:message>
+  <wsdl:message name="DcomFaultMessage">
+    <wsdl:part name="DcomFaultMessage" element="ns2:DcomFaultMessage" />
+  </wsdl:message>
+  <wsdl:message name="GetPersonForPublicResponse">
+    <wsdl:part name="personDetail" element="ns1:OsobaDetail" />
+  </wsdl:message>
+  <wsdl:message name="GetPersonIdentifiers">
+    <wsdl:part name="getPersonIdentifiersRequest" element="ns1:IdentifikatoryOsobyRequest" />
+  </wsdl:message>
+  <wsdl:portType name="PersonServices">
+    <wsdl:operation name="getNaturalPerson">
+      <wsdl:documentation>
+				Služba vracia detailné údaje fyzickej osoby, bez zohľadnenia kontextu tenanta. Služba teda vracia len tú časť detailu osoby, ktorá nie je viazaná na evidenciu konkrétnej obce. Nevracia teda kontaktné adresy, telefóny, internetové kontakty, bankové účty ani poznámku.<p />Predpokladané využitie: volanie z verejného portálu DCOM pre potreby predpĺňania údajov osoby do podania.
+			</wsdl:documentation>
+      <wsdl:input name="getNaturalPerson" message="tns:getNaturalPerson" />
+      <wsdl:output name="getNaturalPersonResponse" message="tns:getNaturalPersonResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getNaturalPersons">
+      <wsdl:documentation>
+				Služba vracia detailné údaje fyzických osôb, bez zohľadnenia kontextu tenanta. Služba teda vracia len tú časť detailu osoby, ktorá nie je viazaná na evidenciu konkrétnej obce. Nevracia teda kontaktné adresy, telefóny, internetové kontakty, bankové účty ani poznámku.<p />Predpokladané využitie: volanie z verejného portálu DCOM pre potreby predpĺňania údajov osoby do podania.
+			</wsdl:documentation>
+      <wsdl:input name="getNaturalPersons" message="tns:getNaturalPersons" />
+      <wsdl:output name="getNaturalPersonsResponse" message="tns:getNaturalPersonsResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getLegalPerson">
+      <wsdl:documentation>
+				Služba vracia detailné údaje právnickej osoby, bez zohľadnenia kontextu tenanta. Služba teda vracia len tú časť detailu osoby, ktorá nie je viazaná na evidenciu konkrétnej obce. Nevracia teda kontaktné adresy, telefóny, internetové kontakty, bankové účty ani poznámku.<p />Predpokladané využitie: volanie z verejného portálu DCOM pre potreby predpĺňania údajov osoby do podania.
+			</wsdl:documentation>
+      <wsdl:input name="getLegalPerson" message="tns:getLegalPerson" />
+      <wsdl:output name="getLegalPersonResponse" message="tns:getLegalPersonResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getLegalPersons">
+      <wsdl:documentation>
+				Služba vracia detailné údaje právnických osôb, bez zohľadnenia kontextu tenanta. Služba teda vracia len tú časť detailu osoby, ktorá nie je viazaná na evidenciu konkrétnej obce. Nevracia teda kontaktné adresy, telefóny, internetové kontakty, bankové účty ani poznámku.<p />Predpokladané využitie: volanie z verejného portálu DCOM pre potreby predpĺňania údajov osoby do podania.
+			</wsdl:documentation>
+      <wsdl:input name="getLegalPersons" message="tns:getLegalPersons" />
+      <wsdl:output name="getLegalPersonsResponse" message="tns:getLegalPersonsResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="FindPerson">
+      <wsdl:documentation>Služba hľadá osoby v evidencii tenanta, v kontexte ktorého je volanie robené. Hľadá iba v osobách, ktoré nie sú skonsolidované, teda nemajú odkaz na pravú osobu. V rámci vyhľadávania je možné použiť aj stránkovanie a v rámci neho definovať aj v akom poradí majú byť záznamy zoradené.</wsdl:documentation>
+      <wsdl:input name="FindPerson" message="tns:FindPerson" />
+      <wsdl:output name="FindPersonResponse" message="tns:FindPersonResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPersonIdentifiers">
+      <wsdl:documentation>Metóda na základe známeho identifikátora vráti množinu všetkých dostupných identifikátorov. Hľadá len v údajoch osôb, ktoré nie sú skonsolidované (nemajú odkaz na pravú osobu). Ak sa hľadá podľa tenantId alebo obecnyUradId, vracajú sa údaje o osobe len v prípade, že tenant je typu obecný úrad a že príslušný záznam obecného úradu má väzbu na osobu.</wsdl:documentation>
+      <wsdl:input name="GetPersonIdentifiers" message="tns:GetPersonIdentifiers" />
+      <wsdl:output name="GetPersonIdentifiersResponse" message="tns:GetPersonIdentifiersResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPersonForPublic">
+      <wsdl:documentation>Služba vracia detailné údaje osoby, bez zohľadnenia kontextu tenanta. Služba teda vracia len tú časť detailu osoby, ktorá nie je viazaná na evidenciu konkrétnej obce. Nevracia teda kontaktné adresy, telefóny, internetové kontakty, bankové účty ani poznámku.&lt;p/&gt;Predpokladané využitie: volanie z verejného portálu DCOM pre potreby predpĺňania údajov osoby do podania.</wsdl:documentation>
+      <wsdl:input name="GetPersonForPublic" message="tns:GetPersonForPublic" />
+      <wsdl:output name="GetPersonForPublicResponse" message="tns:GetPersonForPublicResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="CheckElectronicDeliveryPossible">
+      <wsdl:documentation>Metóda zistí, či je možné danej osobe doručovať elektronicky do schránky na UPVS. Osoba musí byť v centrálnej evidencii. Ak daná osoba nemá v DCOM ešte uložené UPVS Id/URI, služba sa pokúsi túto osoby vyhľadať v UPVS a dotiahnuť jej UPVS identifikároty.</wsdl:documentation>
+      <wsdl:input name="CheckElectronicDeliveryPossible" message="tns:CheckElectronicDeliveryPossible" />
+      <wsdl:output name="CheckElectronicDeliveryPossibleResponse" message="tns:CheckElectronicDeliveryPossibleResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getPersonCentralByUpvsIdentifiers">
+      <wsdl:input name="getPersonCentralByUpvsIdentifiers" message="tns:getPersonCentralByUpvsIdentifiers" />
+      <wsdl:output name="getPersonCentralByUpvsIdentifiersResponse" message="tns:getPersonCentralByUpvsIdentifiersResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPersonByUpvsIdentifiers">
+      <wsdl:documentation>Metóda hľadá pomocou zaslaných identifikátorov jednotlivé osoby (actor, subject), pokiaľ su zhodné tak vyhľadá jednu ale naplní rovnakými údajmi oba výstupné objekty. Ak sa osoba nenachádza v evidencii DCOM, tak uloží UPVS Id, UPVS URI a základné údaje osoby (meno, priezvisko, rodné číslo vyparsované z URI, IFO;  resp. názov, právna forma, IČO) a spustí asynchrónne dotiahnutie detailov z príslušného registra. Ak ide o fyzickú osobu, v rámci asynchrónneho dotiahnutia údajov z RFO sa zároveň vykoná v RFO označenie osoby ako záujmovej pre DCOM.</wsdl:documentation>
+      <wsdl:input name="GetPersonByUpvsIdentifiers" message="tns:GetPersonByUpvsIdentifiers" />
+      <wsdl:output name="GetPersonByUpvsIdentifiersResponse" message="tns:GetPersonByUpvsIdentifiersResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddPersonBankAccount">
+      <wsdl:documentation>Metóda na pridanie bankového účtu osobe v evidencii obce resp. tenanta v ktorého kontexte sa volanie robí.</wsdl:documentation>
+      <wsdl:input name="AddPersonBankAccount" message="tns:AddPersonBankAccount" />
+      <wsdl:output name="AddPersonBankAccountResponse" message="tns:AddPersonBankAccountResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPersonDuplicates">
+      <wsdl:documentation>Vráti zoznam všetkých alternatívnych identít zadanej osoby (teda osobu ktorá je pravou osobou pre zadanú osobu, osoby ktoré sú ľavými osobami pre zadaná osobu, osoby ktoré majú rovnakú pravú osobu ako zadaná osoba). Ak je volanie robené v kontexte tenanta, berú sa do úvahy všetky osoby v centrálnej evidencii a osoby v lokálnej evidencii daného tenanta. Ak je volanie bez kontextu tenanta, berú sa do úvahy len osoby v centrálnej evidencii.</wsdl:documentation>
+      <wsdl:input name="GetPersonDuplicates" message="tns:GetPersonDuplicates" />
+      <wsdl:output name="GetPersonDuplicatesResponse" message="tns:GetPersonDuplicatesResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPersonInMunicipalityByUpvsIdentifiers">
+      <wsdl:documentation>Metóda hľadá pomocou zaslaných identifikátorov osobu v evidencii konkrétnej obce, resp. tenanta. Ak sa osoba nenachádza v evidencii, metóda sa postará o jej pridanie (do DCOM všeobecne, aj do evidencie konkrétnej obce). Ak sa v rámci metódy pridáva do DCOM nová osoba, po pridaní sa spustí asynchrónne dotiahnutie detailov z príslušného registra.Ak ide o fyzickú osobu, v rámci asynchrónneho dotiahnutia údajov z RFO sa zároveň vykoná v RFO označenie osoby ako záujmovej pre DCOM.</wsdl:documentation>
+      <wsdl:input name="GetPersonInMunicipalityByUpvsIdentifiers" message="tns:GetPersonInMunicipalityByUpvsIdentifiers" />
+      <wsdl:output name="GetPersonInMunicipalityByUpvsIdentifiersResponse" message="tns:GetPersonInMunicipalityByUpvsIdentifiersResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPerson">
+      <wsdl:documentation>Služba vracia detailné údaje osoby z evidencie obce resp. tenanta, v kontexte ktorého je volanie robené. Ak osoba s daným ID v DCOM existuje, ale nie je súčasťou evidencie danej obce, sú vrátené len základné údaje (meno resp. názov).&lt;p/&gt;Ak je na vstupe id osoby, ktorá je v evidencii osôb skonsolidovaná na inú (pravú) osobu, vrátia sa údaje pravej osoby.</wsdl:documentation>
+      <wsdl:input name="GetPerson" message="tns:GetPerson" />
+      <wsdl:output name="GetPersonResponse" message="tns:GetPersonResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ValidateAddress">
+      <wsdl:input name="ValidateAddress" message="tns:ValidateAddress" />
+      <wsdl:output name="ValidateAddressResponse" message="tns:ValidateAddressResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ListNaturalPersonsForAddress">
+      <wsdl:documentation>Vrati zoznam pobytov na adrese zadanej vo vstupnych kriteriach.&lt;p/&gt;Ak je nastaveny priznak pobytBezAdresy na true, je potrebne uviest obecId, ostatne udaje budu ignorovane. Nie je mozne pouzit obecNazov, obec musi byt dana cez ID. V pripade pobytov bez adresy obsahuje element adresa len datumy a typ pobytu spolu s ID obce - ostatne strukturovane polia nie su vyplnene.&lt;p/&gt;Ak je priznak false alebo null, je potrebne uviest obecId alebo obecNazov a nasledne dalsie volitelne kriteria.</wsdl:documentation>
+      <wsdl:input name="ListNaturalPersonsForAddress" message="tns:ListNaturalPersonsForAddress" />
+      <wsdl:output name="ListNaturalPersonsForAddressResponse" message="tns:ListNaturalPersonsForAddressResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="FindPersonCombo">
+      <wsdl:documentation>Vyhľadá kolekciu FO aj PO podľa zadanáho reťazca. Ak je zadaný číselný reťazec s menej ako 4 znakmi alebo ľubovolný reťazec s menej ako 2 znakmi, vráti validačnú chybu. Pravidlá vyhľadávania sú popísané v algoritme. Fyzické osoby radí vzostupne podľa priezviska, právnické vzostupne podľa názvu.</wsdl:documentation>
+      <wsdl:input name="FindPersonCombo" message="tns:FindPersonCombo" />
+      <wsdl:output name="FindPersonComboResponse" message="tns:FindPersonComboResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="tns:DcomFaultMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="PersonServicesSoapBinding" type="tns:PersonServices">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <PolicyReference xmlns="http://schemas.xmlsoap.org/ws/2004/09/policy" URI="#WS2007FederationHttpBinding_IService_policy" />
+    <wsdl:operation name="FindPerson">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="FindPerson">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="FindPersonResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getNaturalPerson">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="getNaturalPerson">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getNaturalPersonResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getNaturalPersons">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="getNaturalPersons">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getNaturalPersonsResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getLegalPerson">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="getLegalPerson">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getLegalPersonResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getLegalPersons">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="getLegalPersons">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getLegalPersonsResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="CheckElectronicDeliveryPossible">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="CheckElectronicDeliveryPossible">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="CheckElectronicDeliveryPossibleResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetPersonForPublic">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="GetPersonForPublic">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetPersonForPublicResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetPersonIdentifiers">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="GetPersonIdentifiers">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetPersonIdentifiersResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetPersonByUpvsIdentifiers">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="GetPersonByUpvsIdentifiers">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetPersonByUpvsIdentifiersResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getPersonCentralByUpvsIdentifiers">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="getPersonCentralByUpvsIdentifiers">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getPersonCentralByUpvsIdentifiersResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="AddPersonBankAccount">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="AddPersonBankAccount">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="AddPersonBankAccountResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetPersonDuplicates">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="GetPersonDuplicates">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetPersonDuplicatesResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetPersonInMunicipalityByUpvsIdentifiers">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="GetPersonInMunicipalityByUpvsIdentifiers">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetPersonInMunicipalityByUpvsIdentifiersResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetPerson">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="GetPerson">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetPersonResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="ValidateAddress">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="ValidateAddress">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="ValidateAddressResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="ListNaturalPersonsForAddress">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="ListNaturalPersonsForAddress">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="ListNaturalPersonsForAddressResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="FindPersonCombo">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="FindPersonCombo">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="FindPersonComboResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap12:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="PersonServices">
+    <wsdl:port name="PersonServicesPort" binding="tns:PersonServicesSoapBinding">
+      <soap12:address location="https://lbsoa.intra.dcom.sk/soa/person/2.0/personService" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

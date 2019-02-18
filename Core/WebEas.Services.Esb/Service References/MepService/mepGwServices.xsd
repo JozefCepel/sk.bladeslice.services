@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:mep="http://schemas.dcom.sk/integration/mep/1.0" elementFormDefault="qualified" targetNamespace="http://schemas.dcom.sk/integration/mep/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="SendPaymentReceivedInformationRequest">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="1" maxOccurs="1" name="Id_Podania">
+          <xs:annotation>
+            <xs:documentation>MessageId podania zaslaneho do UPVS, ku ktoremu evidujeme prijatu platbu.</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:minLength value="1" />
+              <xs:maxLength value="36" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element minOccurs="1" maxOccurs="1" name="Identity_Prijemca_Platby">
+          <xs:annotation>
+            <xs:documentation>Tenant ID prijemcu platby, standardne ID tenanta obce.</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:minLength value="1" />
+              <xs:maxLength value="255" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element minOccurs="1" maxOccurs="1" name="Suma">
+          <xs:annotation>
+            <xs:documentation>Uhradena suma.</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:decimal">
+              <xs:minInclusive value="0" />
+              <xs:totalDigits value="30" />
+              <xs:fractionDigits value="2" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element minOccurs="1" maxOccurs="1" name="Mena">
+          <xs:annotation>
+            <xs:documentation>Mena uhradenej sumy, standardne hodnota EUR.</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:minLength value="1" />
+              <xs:maxLength value="5" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element minOccurs="1" maxOccurs="1" name="Variabilny_Symbol">
+          <xs:annotation>
+            <xs:documentation>Variabilny symbol pokynu na uhradu.</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:pattern value="\d+" />
+              <xs:minLength value="0" />
+              <xs:maxLength value="10" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element minOccurs="0" name="Konstantny_Symbol" nillable="true">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:pattern value="\d+" />
+              <xs:minLength value="1" />
+              <xs:maxLength value="4" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element minOccurs="0" maxOccurs="1" name="Specificky_Symbol" nillable="true">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:pattern value="\d+" />
+              <xs:minLength value="0" />
+              <xs:maxLength value="10" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element minOccurs="1" maxOccurs="1" name="Stav_Dokladu">
+          <xs:annotation>
+            <xs:documentation>Stav pokynu na uhradu: Vyrovnany/Nevyrovnany.</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="Vyrovnany" />
+              <xs:enumeration value="Nevyrovnany" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element minOccurs="1" maxOccurs="1" name="Kod_Banky">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:pattern value="\d+" />
+              <xs:length value="4" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element minOccurs="0" maxOccurs="1" name="Predcislie_Uctu" nillable="true">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:pattern value="\d+" />
+              <xs:maxLength value="6" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element minOccurs="1" maxOccurs="1" name="Cislo_Uctu">
+          <xs:annotation>
+            <xs:documentation>Cislo uctu prijemcu platby.</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:pattern value="\d+" />
+              <xs:maxLength value="10" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element minOccurs="0" maxOccurs="1" name="Cislo_Uctu_Iban" nillable="true">
+          <xs:annotation>
+            <xs:documentation>IBAN uctu prijemcu platby.</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:minLength value="0" />
+              <xs:maxLength value="40" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element minOccurs="0" maxOccurs="1" name="Swift" nillable="true">
+          <xs:annotation>
+            <xs:documentation>SWIFT kod uctu prijemcu platby.</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:minLength value="0" />
+              <xs:maxLength value="12" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SendPaymentOrderRequest">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="1" maxOccurs="1" name="Id_Podania">
+          <xs:annotation>
+            <xs:documentation>MessageId podania zaslaneho do UPVS, ku ktoremu registrujeme prikaz na uhradu.</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:minLength value="1" />
+              <xs:maxLength value="36" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element minOccurs="1" maxOccurs="1" name="Id_Sluzby">
+          <xs:annotation>
+            <xs:documentation>ID sluzby podla ciselnika, pridelene po zaregistrovani sluzby ISVS na UPVS.</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:minLength value="1" />
+              <xs:maxLength value="16" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element minOccurs="1" maxOccurs="1" name="Identity_Ziadatel">
+          <xs:annotation>
+            <xs:documentation>Dcom ID ziadatela sluzby, standardne fyzicka/pravnicka osoba ziadajuca sluzbu.</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:minLength value="1" />
+              <xs:maxLength value="255" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element minOccurs="1" maxOccurs="1" name="Identity_Poskytovatel">
+          <xs:annotation>
+            <xs:documentation>Tenant ID poskytovatela sluzby, standardne ID tenanta obce.</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:minLength value="1" />
+              <xs:maxLength value="255" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element minOccurs="0" maxOccurs="1" name="Identity_Prijemca_Platby">
+          <xs:annotation>
+            <xs:documentation>Tenant ID prijemcu platby ak je iny ako poskytovatel sluzby.</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:minLength value="0" />
+              <xs:maxLength value="255" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element minOccurs="1" maxOccurs="1" name="Datum_Predpisu" type="xs:date">
+          <xs:annotation>
+            <xs:documentation>Datum vystavenia pokynu na uhradu.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element minOccurs="0" maxOccurs="1" name="Datum_Splatnosti" type="xs:date" />
+        <xs:element minOccurs="1" maxOccurs="1" name="Kod_Banky">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:length value="4" />
+              <xs:pattern value="\d+" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element minOccurs="0" maxOccurs="1" name="Predcislie_Uctu">
+          <xs:annotation>
+            <xs:documentation>Predcislie uctu poskytovatela sluzby.</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:maxLength value="6" />
+              <xs:pattern value="\d+" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element minOccurs="1" maxOccurs="1" name="Cislo_Uctu">
+          <xs:annotation>
+            <xs:documentation>Cislo uctu poskytovatela sluzby.</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:maxLength value="10" />
+              <xs:pattern value="\d+" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element minOccurs="0" maxOccurs="1" name="Cislo_Uctu_Iban">
+          <xs:annotation>
+            <xs:documentation>IBAN cislo uctu poskytovatela sluzby.</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:minLength value="0" />
+              <xs:maxLength value="40" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element minOccurs="0" maxOccurs="1" name="Swift">
+          <xs:annotation>
+            <xs:documentation>SWIFT cislo uctu poskytovatela sluzby.</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:minLength value="0" />
+              <xs:maxLength value="12" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element minOccurs="1" maxOccurs="1" name="Suma">
+          <xs:annotation>
+            <xs:documentation>Suma na zaplatenie.</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:decimal">
+              <xs:minInclusive value="0" />
+              <xs:totalDigits value="30" />
+              <xs:fractionDigits value="2" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element minOccurs="1" maxOccurs="1" name="Mena">
+          <xs:annotation>
+            <xs:documentation>Mena uhradenej sumy, standardne hodnota EUR.</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:minLength value="1" />
+              <xs:maxLength value="5" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element minOccurs="1" maxOccurs="1" name="Variabilny_Symbol">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:minLength value="1" />
+              <xs:maxLength value="10" />
+              <xs:pattern value="\d+" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element minOccurs="1" maxOccurs="1" name="Konstantny_Symbol">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:minLength value="1" />
+              <xs:maxLength value="4" />
+              <xs:pattern value="\d+" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element minOccurs="0" maxOccurs="1" name="Specificky_Symbol">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:minLength value="0" />
+              <xs:maxLength value="10" />
+              <xs:pattern value="\d+" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element minOccurs="0" maxOccurs="1" name="Text">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:minLength value="0" />
+              <xs:maxLength value="140" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SendProcedureTerminationRequest">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Id_Podania">
+          <xs:annotation>
+            <xs:documentation>MessageId podania zaslaneho do UPVS, ku ktoremu evidujeme ukoncenie konania.</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:maxLength value="36" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="Stav_Konania">
+          <xs:annotation>
+            <xs:documentation>KonanieUkoncene – konanie bolo uspesne ukoncene.
+KonanieUkonceneVratkou – konanie bolo ukoncené vratenim poplatku.
+KonanieZastavene – konanie bolo zastavene.
+</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="KonanieUkoncene" />
+              <xs:enumeration value="KonanieUkonceneVratkou" />
+              <xs:enumeration value="KonanieZastavene" />
+              <xs:enumeration value="KonanieUkonceneVPS" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="Datum_Zmeny" type="xs:date">
+          <xs:annotation>
+            <xs:documentation>Datum vytvorenia rozhodnutia o ukonceni konania.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element minOccurs="0" maxOccurs="1" name="Identity_Ziadatel">
+          <xs:annotation>
+            <xs:documentation>Dcom ID ziadatela o sluzbu.</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:minLength value="0" />
+              <xs:maxLength value="255" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element minOccurs="1" maxOccurs="1" name="Identity_Poskytovatel">
+          <xs:annotation>
+            <xs:documentation>Tenant ID poskytovatela sluzby.</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:minLength value="1" />
+              <xs:maxLength value="255" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element minOccurs="0" maxOccurs="1" name="Identity_Prijemca_Platby">
+          <xs:annotation>
+            <xs:documentation>Tenant ID prijemcu platby za sluzbu.</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:minLength value="0" />
+              <xs:maxLength value="255" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element minOccurs="0" maxOccurs="1" name="Identity_Spotrebitel">
+          <xs:annotation>
+            <xs:documentation>Dcom ID spotrebytela sluzby.</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:minLength value="0" />
+              <xs:maxLength value="255" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element minOccurs="1" name="Kod_Sluzby">
+          <xs:annotation>
+            <xs:documentation>Pravdepodobne ako Id_Sluzby v SendPaymentOrderRequest.</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:minLength value="1" />
+              <xs:maxLength value="16" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fault="http://schemas.dcom.sk/fault/1.0" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:t="http://docs.oasis-open.org/ws-sx/ws-trust/200512" xmlns:wsaws="http://www.w3.org/2005/08/addressing" xmlns:st="http://schemas.dcom.sk/soa/claims/public/1.0" xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:mep="http://schemas.dcom.sk/integration/mep/1.0" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" name="DCOM-Gateway-MEP_v1_0" targetNamespace="http://schemas.dcom.sk/integration/mep/1.0" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsp:Policy xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsaws="http://www.w3.org/2005/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:t="http://docs.oasis-open.org/ws-sx/ws-trust/200512" xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702" wsu:Id="WS2007FederationHttpBinding_IService_policy">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <sp:TransportBinding>
+          <wsp:Policy>
+            <sp:TransportToken>
+              <wsp:Policy>
+                <sp:HttpsToken />
+              </wsp:Policy>
+            </sp:TransportToken>
+            <sp:AlgorithmSuite>
+              <wsp:Policy>
+                <sp:Basic256 />
+              </wsp:Policy>
+            </sp:AlgorithmSuite>
+            <sp:Layout>
+              <wsp:Policy>
+                <sp:Lax />
+              </wsp:Policy>
+            </sp:Layout>
+            <sp:IncludeTimestamp />
+          </wsp:Policy>
+        </sp:TransportBinding>
+        <sp:EndorsingSupportingTokens>
+          <wsp:Policy>
+            <sp:IssuedToken sp:IncludeToken="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702/IncludeToken/AlwaysToRecipient">
+              <sp:RequestSecurityTokenTemplate>
+                <t:TokenType>http://docs.oasis-open.org/wss/oasis-wss-saml-token-profile-1.1#SAMLV1.1
+                            </t:TokenType>
+                <t:KeyType>http://docs.oasis-open.org/ws-sx/ws-trust/200512/SymmetricKey</t:KeyType>
+                <t:KeySize>256</t:KeySize>
+              </sp:RequestSecurityTokenTemplate>
+              <wsp:Policy>
+                <sp:RequireInternalReference />
+              </wsp:Policy>
+              <sp:Issuer>
+                <wsaws:Address>
+                                https://lbsts.intra.dcom.sk:49443/adfs/services/trust/13/certificatetransport
+                            </wsaws:Address>
+                <wsaws:Metadata xmlns:wsdli="http://www.w3.org/2006/01/wsdl-instance" wsdli:wsdlLocation="http://lbsts.intra.dcom.sk/adfs/services/trust/mex">
+                  <wsaw:ServiceName xmlns:stsns="http://docs.oasis-open.org/ws-sx/ws-trust/200512/" EndpointName="CertificateWSTrustBinding_IWSTrust13Async2">
+                                    stsns:SecurityTokenService
+                                </wsaw:ServiceName>
+                </wsaws:Metadata>
+              </sp:Issuer>
+            </sp:IssuedToken>
+          </wsp:Policy>
+        </sp:EndorsingSupportingTokens>
+        <sp:Wss11>
+          <wsp:Policy />
+        </sp:Wss11>
+        <sp:Trust13>
+          <wsp:Policy>
+            <sp:MustSupportIssuedTokens />
+            <sp:RequireClientEntropy />
+            <sp:RequireServerEntropy />
+          </wsp:Policy>
+        </sp:Trust13>
+        <wsaw:UsingAddressing />
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsdl:types>
+    <xs:schema>
+      <xs:import schemaLocation="https://lbsoa.intra.dcom.sk/soa/mep/1.0/mepGwServices?xsd=DCOM-Gateway-MEP_v1_0.xsd" namespace="http://schemas.dcom.sk/integration/mep/1.0" />
+      <xs:import schemaLocation="https://lbsoa.intra.dcom.sk/soa/mep/1.0/mepGwServices?xsd=DCOM-Fault_v1_0.xsd" namespace="http://schemas.dcom.sk/fault/1.0" />
+      <xs:import schemaLocation="https://lbsoa.intra.dcom.sk/soa/mep/1.0/mepGwServices?xsd=DCOM-SOA-Claims-Public_v1_0.xsd" namespace="http://schemas.dcom.sk/soa/claims/public/1.0" />
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="DcomFaultMessage">
+    <wsdl:part name="DcomFaultMessage" element="fault:DcomFaultMessage" />
+  </wsdl:message>
+  <wsdl:message name="SendProcedureTerminationResponse" />
+  <wsdl:message name="SendPaymentReceivedInformation">
+    <wsdl:part name="sendPaymentReceivedInformation" element="mep:SendPaymentReceivedInformationRequest" />
+  </wsdl:message>
+  <wsdl:message name="SendProcedureTermination">
+    <wsdl:part name="sendProcedureTermination" element="mep:SendProcedureTerminationRequest" />
+  </wsdl:message>
+  <wsdl:message name="SendPaymentReceivedInformationResponse" />
+  <wsdl:message name="SendPaymentOrderResponse" />
+  <wsdl:message name="SendPaymentOrder">
+    <wsdl:part name="sendPaymentOrder" element="mep:SendPaymentOrderRequest" />
+  </wsdl:message>
+  <wsdl:portType name="MEPGateway">
+    <wsdl:operation name="SendPaymentReceivedInformation">
+      <wsdl:documentation>Ak obec vedie platobny prikaz ako zaplateny, odosiela pomocou operacie SendPaymentReceivedInformation spravu do modulu MEP na UPVS. Po uspesnom prijati spravy na UPVS sa zasiela do edesku platcovi, poskytovatelovi sluzby a prijimatelovi uhrady sprava triedy MEP_PAYMENT_CONFIRM_1_0 s vnutornym elementom PAYMENT_CONFIRM.</wsdl:documentation>
+      <wsdl:input name="SendPaymentReceivedInformation" message="mep:SendPaymentReceivedInformation" />
+      <wsdl:output name="SendPaymentReceivedInformationResponse" message="mep:SendPaymentReceivedInformationResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="mep:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SendPaymentOrder">
+      <wsdl:documentation>Operacia zabezpeci registraciu platobneho prikazu na UPVS. Interne sa vramci operacie vola podpisanie formulara pomocou modulu CEP a nasledne odoslanie pomocou G2G. Po uspesnom zavolani pride do edesku poplatnikovi, poskytovatelovi a prijimatelovi uhrady sprava triedy MEP_PAYMENT_ORDER_1_0 resp.  MEP_PAYMENT_ORDER_COPY_1_0 s vnutornym elementom PAYMENT_CONFIRM.</wsdl:documentation>
+      <wsdl:input name="SendPaymentOrder" message="mep:SendPaymentOrder" />
+      <wsdl:output name="SendPaymentOrderResponse" message="mep:SendPaymentOrderResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="mep:DcomFaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SendProcedureTermination">
+      <wsdl:documentation>Po ukonceni konania posiela poskytovatel sluzby informaciu o ukonceni konania. Po uspesnom prijati na UPVS pride do edesk prijimatela uhrady a platitela uhrady sprava triedy MEP_PROCEDURE_TERMINATION_1_0 s vnutornym elementom PROCEDURE_TERMINATION.</wsdl:documentation>
+      <wsdl:input name="SendProcedureTermination" message="mep:SendProcedureTermination" />
+      <wsdl:output name="SendProcedureTerminationResponse" message="mep:SendProcedureTerminationResponse" />
+      <wsdl:fault name="DcomFaultMessage" message="mep:DcomFaultMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="MEPGatewayBinding" type="mep:MEPGateway">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <PolicyReference xmlns="http://schemas.xmlsoap.org/ws/2004/09/policy" URI="#WS2007FederationHttpBinding_IService_policy" />
+    <wsdl:operation name="SendPaymentReceivedInformation">
+      <soap:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="SendPaymentReceivedInformation">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SendPaymentReceivedInformationResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="SendPaymentOrder">
+      <soap:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="SendPaymentOrder">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SendPaymentOrderResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="SendProcedureTermination">
+      <soap:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input name="SendProcedureTermination">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SendProcedureTerminationResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultMessage">
+        <soap:fault use="literal" name="DcomFaultMessage" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="MEPGatewayService">
+    <wsdl:port name="MEPGateway" binding="mep:MEPGatewayBinding">
+      <soap:address location="https://lbsoa.intra.dcom.sk/soa/mep/1.0/mepGwServices" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

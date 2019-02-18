@@ -1,0 +1,770 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://schemas.dcom.sk/public/egov/wcf/1.0" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:t="http://docs.oasis-open.org/ws-sx/ws-trust/200512" xmlns:q1="http://schemas.dcom.sk/fault/1.0" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="EgovGatewayService" targetNamespace="http://schemas.dcom.sk/public/egov/wcf/1.0" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsp:Policy xmlns:wsaws="http://www.w3.org/2005/08/addressing" xmlns:t="http://docs.oasis-open.org/ws-sx/ws-trust/200512" xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702" wsu:Id="WS2007FederationHttpBinding_IService_policy">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <sp:TransportBinding>
+          <wsp:Policy>
+            <sp:TransportToken>
+              <wsp:Policy>
+                <sp:HttpsToken />
+              </wsp:Policy>
+            </sp:TransportToken>
+            <sp:AlgorithmSuite>
+              <wsp:Policy>
+                <sp:Basic256 />
+              </wsp:Policy>
+            </sp:AlgorithmSuite>
+            <sp:Layout>
+              <wsp:Policy>
+                <sp:Lax />
+              </wsp:Policy>
+            </sp:Layout>
+            <sp:IncludeTimestamp />
+          </wsp:Policy>
+        </sp:TransportBinding>
+        <sp:EndorsingSupportingTokens>
+          <wsp:Policy>
+            <sp:IssuedToken sp:IncludeToken="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702/IncludeToken/AlwaysToRecipient">
+              <sp:RequestSecurityTokenTemplate>
+                <t:TokenType>http://docs.oasis-open.org/wss/oasis-wss-saml-token-profile-1.1#SAMLV1.1
+                            </t:TokenType>
+                <t:KeyType>http://docs.oasis-open.org/ws-sx/ws-trust/200512/SymmetricKey</t:KeyType>
+                <t:KeySize>256</t:KeySize>
+              </sp:RequestSecurityTokenTemplate>
+              <wsp:Policy>
+                <sp:RequireInternalReference />
+              </wsp:Policy>
+              <sp:Issuer>
+                <wsaws:Address>
+                                https://lbsts.intra.dcom.sk:49443/adfs/services/trust/13/certificatetransport
+                            </wsaws:Address>
+                <wsaws:Metadata xmlns:wsdli="http://www.w3.org/2006/01/wsdl-instance" wsdli:wsdlLocation="http://lbsts.intra.dcom.sk/adfs/services/trust/mex">
+                  <wsaw:ServiceName xmlns:stsns="http://docs.oasis-open.org/ws-sx/ws-trust/200512/" EndpointName="CertificateWSTrustBinding_IWSTrust13Async2">
+                                    stsns:SecurityTokenService
+                                </wsaw:ServiceName>
+                </wsaws:Metadata>
+              </sp:Issuer>
+            </sp:IssuedToken>
+          </wsp:Policy>
+        </sp:EndorsingSupportingTokens>
+        <sp:Wss11>
+          <wsp:Policy />
+        </sp:Wss11>
+        <sp:Trust13>
+          <wsp:Policy>
+            <sp:MustSupportIssuedTokens />
+            <sp:RequireClientEntropy />
+            <sp:RequireServerEntropy />
+          </wsp:Policy>
+        </sp:Trust13>
+        <wsaw:UsingAddressing />
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsdl:types>
+    <xs:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://schemas.dcom.sk/public/egov/wcf/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:import namespace="http://schemas.datacontract.org/2004/07/WebEas.ServiceModel.Office.Egov.Dto" />
+      <xs:import namespace="http://schemas.datacontract.org/2004/07/WebEas.ServiceModel.Office.Egov.Reg.Dto" />
+      <xs:import namespace="http://schemas.datacontract.org/2004/07/WebEas.ServiceModel.Office.Egov.Reg.Types" />
+      <xs:element name="ProcessSubmission">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="1" name="recordId" type="xs:long" />
+            <xs:element minOccurs="1" name="identifier" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="ProcessSubmissionResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/WebEas.ServiceModel.Office.Egov.Dto" minOccurs="1" name="ProcessSubmissionResult" nillable="true" type="q1:SubmissionResultDto" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetApplicableSolvers">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="1" name="eServiceId" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetApplicableSolversResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/WebEas.ServiceModel.Office.Egov.Dto" minOccurs="1" name="GetApplicableSolversResult" nillable="true" type="q2:ArrayOfApplicableSolver" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="RequestBulkManualDispatch">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/WebEas.ServiceModel.Office.Egov.Reg.Dto" minOccurs="1" name="requestBulkManualDispatch" nillable="true" type="q3:ArrayOfRequestManualDispatch" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="RequestBulkManualDispatchResponse">
+        <xs:complexType>
+          <xs:sequence />
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="NotifyRecordRelatedEvent">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/WebEas.ServiceModel.Office.Egov.Dto" minOccurs="1" name="notifyRecordRelatedEvent" nillable="true" type="q4:NotifyRecordRelatedEvent" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="NotifyRecordRelatedEventResponse">
+        <xs:complexType>
+          <xs:sequence />
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="RecieveDutyAreasInfo">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="1" name="requestId" type="xs:long" />
+            <xs:element minOccurs="1" name="recordId" type="xs:long" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="RecieveDutyAreasInfoResponse">
+        <xs:complexType>
+          <xs:sequence />
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="ProcessSubmissionOnEgov">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="1" name="eServiceId" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="ProcessSubmissionOnEgovResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="1" name="ProcessSubmissionOnEgovResult" type="xs:boolean" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetFormTextations">
+        <xs:complexType>
+          <xs:sequence />
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetFormTextationsResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element xmlns:q5="http://schemas.datacontract.org/2004/07/WebEas.ServiceModel.Office.Egov.Reg.Types" minOccurs="1" name="GetFormTextationsResult" nillable="true" type="q5:ArrayOfEpodFormTextationView" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="CreateXmlDecision">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element xmlns:q6="http://schemas.datacontract.org/2004/07/WebEas.ServiceModel.Office.Egov.Dto" minOccurs="1" name="createXmlDecisionDto" nillable="true" type="q6:CreateXmlDecisionDto" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="CreateXmlDecisionResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="1" name="CreateXmlDecisionResult" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetAuthenticationClauseXml">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element xmlns:q7="http://schemas.datacontract.org/2004/07/WebEas.ServiceModel.Office.Egov.Dto" minOccurs="1" name="request" nillable="true" type="q7:AuthenticationClauseRequest" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetAuthenticationClauseXmlResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element xmlns:q8="http://schemas.datacontract.org/2004/07/WebEas.ServiceModel.Office.Egov.Dto" minOccurs="1" name="GetAuthenticationClauseXmlResult" nillable="true" type="q8:AuthenticationClauseResponse" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:schema>
+    <xs:schema xmlns:tns="http://schemas.microsoft.com/2003/10/Serialization/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://schemas.microsoft.com/2003/10/Serialization/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:element name="anyType" nillable="true" type="xs:anyType" />
+      <xs:element name="anyURI" nillable="true" type="xs:anyURI" />
+      <xs:element name="base64Binary" nillable="true" type="xs:base64Binary" />
+      <xs:element name="boolean" nillable="true" type="xs:boolean" />
+      <xs:element name="byte" nillable="true" type="xs:byte" />
+      <xs:element name="dateTime" nillable="true" type="xs:dateTime" />
+      <xs:element name="decimal" nillable="true" type="xs:decimal" />
+      <xs:element name="double" nillable="true" type="xs:double" />
+      <xs:element name="float" nillable="true" type="xs:float" />
+      <xs:element name="int" nillable="true" type="xs:int" />
+      <xs:element name="long" nillable="true" type="xs:long" />
+      <xs:element name="QName" nillable="true" type="xs:QName" />
+      <xs:element name="short" nillable="true" type="xs:short" />
+      <xs:element name="string" nillable="true" type="xs:string" />
+      <xs:element name="unsignedByte" nillable="true" type="xs:unsignedByte" />
+      <xs:element name="unsignedInt" nillable="true" type="xs:unsignedInt" />
+      <xs:element name="unsignedLong" nillable="true" type="xs:unsignedLong" />
+      <xs:element name="unsignedShort" nillable="true" type="xs:unsignedShort" />
+      <xs:element name="char" nillable="true" type="tns:char" />
+      <xs:simpleType name="char">
+        <xs:restriction base="xs:int" />
+      </xs:simpleType>
+      <xs:element name="duration" nillable="true" type="tns:duration" />
+      <xs:simpleType name="duration">
+        <xs:restriction base="xs:duration">
+          <xs:pattern value="\-?P(\d*D)?(T(\d*H)?(\d*M)?(\d*(\.\d*)?S)?)?" />
+          <xs:minInclusive value="-P10675199DT2H48M5.4775808S" />
+          <xs:maxInclusive value="P10675199DT2H48M5.4775807S" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:element name="guid" nillable="true" type="tns:guid" />
+      <xs:simpleType name="guid">
+        <xs:restriction base="xs:string">
+          <xs:pattern value="[\da-fA-F]{8}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{12}" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:attribute name="FactoryType" type="xs:QName" />
+      <xs:attribute name="Id" type="xs:ID" />
+      <xs:attribute name="Ref" type="xs:IDREF" />
+    </xs:schema>
+    <xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/WebEas.ServiceModel.Office.Egov.Dto" xmlns:ser="http://schemas.microsoft.com/2003/10/Serialization/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/WebEas.ServiceModel.Office.Egov.Dto" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:import namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xs:complexType name="SubmissionResultDto">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="podanieId" type="xs:long" />
+          <xs:element minOccurs="0" name="success" type="xs:boolean" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="SubmissionResultDto" nillable="true" type="tns:SubmissionResultDto" />
+      <xs:complexType name="ArrayOfApplicableSolver">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="ApplicableSolver" nillable="true" type="tns:ApplicableSolver" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ArrayOfApplicableSolver" nillable="true" type="tns:ArrayOfApplicableSolver" />
+      <xs:complexType name="ApplicableSolver">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Email" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="FirstName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="LastName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="UserId" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ApplicableSolver" nillable="true" type="tns:ApplicableSolver" />
+      <xs:complexType name="NotifyRecordRelatedEvent">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="RecordRelatedEvents" nillable="true" type="tns:ArrayOfRecordRelatedEvent" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="NotifyRecordRelatedEvent" nillable="true" type="tns:NotifyRecordRelatedEvent" />
+      <xs:complexType name="ArrayOfRecordRelatedEvent">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="RecordRelatedEvent" nillable="true" type="tns:RecordRelatedEvent" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ArrayOfRecordRelatedEvent" nillable="true" type="tns:ArrayOfRecordRelatedEvent" />
+      <xs:complexType name="RecordRelatedEvent">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="DecisionsAttributes" nillable="true" type="tns:DecisionsAttributes" />
+          <xs:element minOccurs="0" name="DispatchData" nillable="true" type="tns:DispatchData" />
+          <xs:element minOccurs="0" name="RecordApproved" nillable="true" type="tns:RecordApproved" />
+          <xs:element minOccurs="0" name="RecordDisapprove" nillable="true" type="tns:RecordDisapprove" />
+          <xs:element minOccurs="0" name="RecordId" type="xs:long" />
+          <xs:element minOccurs="0" name="RecordRelatedEventType" type="tns:RecordRelatedEventType" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="RecordRelatedEvent" nillable="true" type="tns:RecordRelatedEvent" />
+      <xs:complexType name="DecisionsAttributes">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="DateCancelled" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="DateEffective" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="DateExecutable" nillable="true" type="xs:dateTime" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="DecisionsAttributes" nillable="true" type="tns:DecisionsAttributes" />
+      <xs:complexType name="DispatchData">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="DateDelivered" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="DateDispatched" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="MessageId" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="SentElectronic" nillable="true" type="xs:boolean" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="DispatchData" nillable="true" type="tns:DispatchData" />
+      <xs:complexType name="RecordApproved">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="DateApproved" type="xs:dateTime" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="RecordApproved" nillable="true" type="tns:RecordApproved" />
+      <xs:complexType name="RecordDisapprove">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Argument" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DateDisapproved" type="xs:dateTime" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="RecordDisapprove" nillable="true" type="tns:RecordDisapprove" />
+      <xs:simpleType name="RecordRelatedEventType">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="DecisionAttributesChange" />
+          <xs:enumeration value="DispatchDataChange" />
+          <xs:enumeration value="RecordApproved" />
+          <xs:enumeration value="RecordDisapproved" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:element name="RecordRelatedEventType" nillable="true" type="tns:RecordRelatedEventType" />
+      <xs:complexType name="CreateXmlDecisionDto">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ActorID" type="ser:guid" />
+          <xs:element minOccurs="0" name="NasaZnacka" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="SubjectId" type="ser:guid" />
+          <xs:element minOccurs="0" name="TechId" type="tns:TechnickyIdentifikator" />
+          <xs:element minOccurs="0" name="Text1" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Text2" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Text3" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="CreateXmlDecisionDto" nillable="true" type="tns:CreateXmlDecisionDto" />
+      <xs:simpleType name="TechnickyIdentifikator">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="RozhodnutieVseobecne" />
+          <xs:enumeration value="ListBezPodpisu" />
+          <xs:enumeration value="ListSPodpisom" />
+          <xs:enumeration value="RozhodnutieSpravneKonanie" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:element name="TechnickyIdentifikator" nillable="true" type="tns:TechnickyIdentifikator" />
+      <xs:complexType name="AuthenticationClauseRequest">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ContainsAuth" type="xs:boolean" />
+          <xs:element minOccurs="0" name="ConversionDate" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="ConversionPerson" nillable="true" type="tns:ConversionPerson" />
+          <xs:element minOccurs="0" name="ConversionRecordID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="FingerprintMethod" type="tns:FingerprintMethod" />
+          <xs:element minOccurs="0" name="FingerprintMethodOther" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="FingerprintValue" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="NonEmptyPagesCount" type="xs:int" />
+          <xs:element minOccurs="0" name="OrigAuthorization" nillable="true" type="tns:ArrayOfAuthorization" />
+          <xs:element minOccurs="0" name="OrigTimeStamp" nillable="true" type="tns:ArrayOfTimeStamp" />
+          <xs:element minOccurs="0" name="PaperSize" type="tns:PaperSize" />
+          <xs:element minOccurs="0" name="PaperSizeOther" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="SheetsCount" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="AuthenticationClauseRequest" nillable="true" type="tns:AuthenticationClauseRequest" />
+      <xs:complexType name="ConversionPerson">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="CorporateBody" nillable="true" type="tns:CorporateBody" />
+          <xs:element minOccurs="0" name="PersonID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="PersonIDType" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="PhysicalPerson" nillable="true" type="tns:PhysicalPerson" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ConversionPerson" nillable="true" type="tns:ConversionPerson" />
+      <xs:complexType name="CorporateBody">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="FullName" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="CorporateBody" nillable="true" type="tns:CorporateBody" />
+      <xs:complexType name="PhysicalPerson">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="FamilyName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="GivenName" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="PhysicalPerson" nillable="true" type="tns:PhysicalPerson" />
+      <xs:simpleType name="FingerprintMethod">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="other" />
+          <xs:enumeration value="SHA224" />
+          <xs:enumeration value="SHA256" />
+          <xs:enumeration value="SHA3" />
+          <xs:enumeration value="SHA386" />
+          <xs:enumeration value="SHA512" />
+          <xs:enumeration value="Whirlpool" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:element name="FingerprintMethod" nillable="true" type="tns:FingerprintMethod" />
+      <xs:complexType name="ArrayOfAuthorization">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="Authorization" nillable="true" type="tns:Authorization" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ArrayOfAuthorization" nillable="true" type="tns:ArrayOfAuthorization" />
+      <xs:complexType name="Authorization">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="AuthLocation" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="AuthPerson" nillable="true" type="tns:AuthorizationPerson" />
+          <xs:element minOccurs="0" name="AuthState" type="tns:Validity" />
+          <xs:element minOccurs="0" name="AuthTime" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="AuthTimeStamp" nillable="true" type="tns:ArrayOfTimeStamp" />
+          <xs:element minOccurs="0" name="AuthValidationTime" type="xs:dateTime" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="Authorization" nillable="true" type="tns:Authorization" />
+      <xs:complexType name="AuthorizationPerson">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Mandate" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="PersonID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Representative" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="AuthorizationPerson" nillable="true" type="tns:AuthorizationPerson" />
+      <xs:simpleType name="Validity">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="invalid" />
+          <xs:enumeration value="unavailable" />
+          <xs:enumeration value="valid" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:element name="Validity" nillable="true" type="tns:Validity" />
+      <xs:complexType name="ArrayOfTimeStamp">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="TimeStamp" nillable="true" type="tns:TimeStamp" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ArrayOfTimeStamp" nillable="true" type="tns:ArrayOfTimeStamp" />
+      <xs:complexType name="TimeStamp">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Created" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="Publisher" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="State" type="tns:Validity" />
+          <xs:element minOccurs="0" name="ValidationTime" type="xs:dateTime" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="TimeStamp" nillable="true" type="tns:TimeStamp" />
+      <xs:simpleType name="PaperSize">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="A1" />
+          <xs:enumeration value="A2" />
+          <xs:enumeration value="A3" />
+          <xs:enumeration value="A4" />
+          <xs:enumeration value="A5" />
+          <xs:enumeration value="A6" />
+          <xs:enumeration value="A7" />
+          <xs:enumeration value="B3" />
+          <xs:enumeration value="B4" />
+          <xs:enumeration value="B5" />
+          <xs:enumeration value="B6" />
+          <xs:enumeration value="B7" />
+          <xs:enumeration value="C3" />
+          <xs:enumeration value="C4" />
+          <xs:enumeration value="C5" />
+          <xs:enumeration value="C6" />
+          <xs:enumeration value="C7" />
+          <xs:enumeration value="other" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:element name="PaperSize" nillable="true" type="tns:PaperSize" />
+      <xs:complexType name="AuthenticationClauseResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="response" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="AuthenticationClauseResponse" nillable="true" type="tns:AuthenticationClauseResponse" />
+    </xs:schema>
+    <xs:schema xmlns:tns="http://schemas.dcom.sk/fault/1.0" xmlns:q1="http://schemas.dcom.sk/fault/1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://schemas.dcom.sk/fault/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:complexType name="dcomFault">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="faultCause" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="faultCode" type="xs:int" />
+          <xs:element minOccurs="0" name="faultMessage" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="invalidParameter" nillable="true" type="tns:ArrayOfInvalidParameterType" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="dcomFault" nillable="true" type="tns:dcomFault" />
+      <xs:complexType name="ArrayOfInvalidParameterType">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="InvalidParameterType" nillable="true" type="tns:InvalidParameterType" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ArrayOfInvalidParameterType" nillable="true" type="tns:ArrayOfInvalidParameterType" />
+      <xs:complexType name="InvalidParameterType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="errorMessage" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="parameterName" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="InvalidParameterType" nillable="true" type="tns:InvalidParameterType" />
+    </xs:schema>
+    <xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/WebEas.ServiceModel.Office.Egov.Reg.Dto" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/WebEas.ServiceModel.Office.Egov.Reg.Dto" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:complexType name="ArrayOfRequestManualDispatch">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="RequestManualDispatch" nillable="true" type="tns:RequestManualDispatch" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ArrayOfRequestManualDispatch" nillable="true" type="tns:ArrayOfRequestManualDispatch" />
+      <xs:complexType name="RequestManualDispatch">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="RecordId" type="xs:long" />
+          <xs:element minOccurs="0" name="RegistryNumber" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="RequestManualDispatch" nillable="true" type="tns:RequestManualDispatch" />
+    </xs:schema>
+    <xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/WebEas.ServiceModel.Office.Egov.Reg.Types" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/WebEas.ServiceModel.Office.Egov.Reg.Types" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:complexType name="ArrayOfEpodFormTextationView">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="EpodFormTextationView" nillable="true" type="tns:EpodFormTextationView" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ArrayOfEpodFormTextationView" nillable="true" type="tns:ArrayOfEpodFormTextationView" />
+      <xs:complexType name="EpodFormTextationView">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="nazov" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="textationId" type="xs:long" />
+          <xs:element minOccurs="0" name="url" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="EpodFormTextationView" nillable="true" type="tns:EpodFormTextationView" />
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="IEgovGatewayService_GetApplicableSolvers_DcomFaultTypeFault_FaultMessage">
+    <wsdl:part name="detail" element="q1:dcomFault" />
+  </wsdl:message>
+  <wsdl:message name="IEgovGatewayService_NotifyRecordRelatedEvent_DcomFaultTypeFault_FaultMessage">
+    <wsdl:part name="detail" element="q1:dcomFault" />
+  </wsdl:message>
+  <wsdl:message name="IEgovGatewayService_RequestBulkManualDispatch_DcomFaultTypeFault_FaultMessage">
+    <wsdl:part name="detail" element="q1:dcomFault" />
+  </wsdl:message>
+  <wsdl:message name="IEgovGatewayService_GetFormTextations_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetFormTextations" />
+  </wsdl:message>
+  <wsdl:message name="IEgovGatewayService_ProcessSubmission_InputMessage">
+    <wsdl:part name="parameters" element="tns:ProcessSubmission" />
+  </wsdl:message>
+  <wsdl:message name="IEgovGatewayService_RecieveDutyAreasInfo_InputMessage">
+    <wsdl:part name="parameters" element="tns:RecieveDutyAreasInfo" />
+  </wsdl:message>
+  <wsdl:message name="IEgovGatewayService_RecieveDutyAreasInfo_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RecieveDutyAreasInfoResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEgovGatewayService_CreateXmlDecision_DcomFaultTypeFault_FaultMessage">
+    <wsdl:part name="detail" element="q1:dcomFault" />
+  </wsdl:message>
+  <wsdl:message name="IEgovGatewayService_ProcessSubmissionOnEgov_DcomFaultTypeFault_FaultMessage">
+    <wsdl:part name="detail" element="q1:dcomFault" />
+  </wsdl:message>
+  <wsdl:message name="IEgovGatewayService_GetAuthenticationClauseXml_DcomFaultTypeFault_FaultMessage">
+    <wsdl:part name="detail" element="q1:dcomFault" />
+  </wsdl:message>
+  <wsdl:message name="IEgovGatewayService_RequestBulkManualDispatch_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RequestBulkManualDispatchResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEgovGatewayService_GetApplicableSolvers_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetApplicableSolversResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEgovGatewayService_ProcessSubmission_DcomFaultTypeFault_FaultMessage">
+    <wsdl:part name="detail" element="q1:dcomFault" />
+  </wsdl:message>
+  <wsdl:message name="IEgovGatewayService_GetAuthenticationClauseXml_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAuthenticationClauseXmlResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEgovGatewayService_GetFormTextations_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetFormTextationsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEgovGatewayService_CreateXmlDecision_InputMessage">
+    <wsdl:part name="parameters" element="tns:CreateXmlDecision" />
+  </wsdl:message>
+  <wsdl:message name="IEgovGatewayService_GetFormTextations_DcomFaultTypeFault_FaultMessage">
+    <wsdl:part name="detail" element="q1:dcomFault" />
+  </wsdl:message>
+  <wsdl:message name="IEgovGatewayService_CreateXmlDecision_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CreateXmlDecisionResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEgovGatewayService_GetApplicableSolvers_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetApplicableSolvers" />
+  </wsdl:message>
+  <wsdl:message name="IEgovGatewayService_ProcessSubmissionOnEgov_InputMessage">
+    <wsdl:part name="parameters" element="tns:ProcessSubmissionOnEgov" />
+  </wsdl:message>
+  <wsdl:message name="IEgovGatewayService_NotifyRecordRelatedEvent_OutputMessage">
+    <wsdl:part name="parameters" element="tns:NotifyRecordRelatedEventResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEgovGatewayService_ProcessSubmission_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ProcessSubmissionResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEgovGatewayService_NotifyRecordRelatedEvent_InputMessage">
+    <wsdl:part name="parameters" element="tns:NotifyRecordRelatedEvent" />
+  </wsdl:message>
+  <wsdl:message name="IEgovGatewayService_RequestBulkManualDispatch_InputMessage">
+    <wsdl:part name="parameters" element="tns:RequestBulkManualDispatch" />
+  </wsdl:message>
+  <wsdl:message name="IEgovGatewayService_GetAuthenticationClauseXml_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAuthenticationClauseXml" />
+  </wsdl:message>
+  <wsdl:message name="IEgovGatewayService_ProcessSubmissionOnEgov_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ProcessSubmissionOnEgovResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEgovGatewayService_RecieveDutyAreasInfo_DcomFaultTypeFault_FaultMessage">
+    <wsdl:part name="detail" element="q1:dcomFault" />
+  </wsdl:message>
+  <wsdl:portType name="IEgovGatewayService">
+    <wsdl:operation name="ProcessSubmission">
+      <wsdl:input wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/ProcessSubmission" message="tns:IEgovGatewayService_ProcessSubmission_InputMessage" />
+      <wsdl:output wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/ProcessSubmissionResponse" message="tns:IEgovGatewayService_ProcessSubmission_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/ProcessSubmission/Fault/SoapFault" name="DcomFaultTypeFault" message="tns:IEgovGatewayService_ProcessSubmission_DcomFaultTypeFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetApplicableSolvers">
+      <wsdl:input wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/GetApplicableSolvers" message="tns:IEgovGatewayService_GetApplicableSolvers_InputMessage" />
+      <wsdl:output wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/GetApplicableSolversResponse" message="tns:IEgovGatewayService_GetApplicableSolvers_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/GetApplicableSolvers/Fault/SoapFault" name="DcomFaultTypeFault" message="tns:IEgovGatewayService_GetApplicableSolvers_DcomFaultTypeFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RequestBulkManualDispatch">
+      <wsdl:input wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/RequestBulkManualDispatch" message="tns:IEgovGatewayService_RequestBulkManualDispatch_InputMessage" />
+      <wsdl:output wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/RequestBulkManualDispatchResponse" message="tns:IEgovGatewayService_RequestBulkManualDispatch_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/RequestBulkManualDispatch/Fault/SoapFault" name="DcomFaultTypeFault" message="tns:IEgovGatewayService_RequestBulkManualDispatch_DcomFaultTypeFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="NotifyRecordRelatedEvent">
+      <wsdl:input wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/NotifyRecordRelatedEvent" message="tns:IEgovGatewayService_NotifyRecordRelatedEvent_InputMessage" />
+      <wsdl:output wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/NotifyRecordRelatedEventResponse" message="tns:IEgovGatewayService_NotifyRecordRelatedEvent_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/NotifyRecordRelatedEvent/Fault/SoapFault" name="DcomFaultTypeFault" message="tns:IEgovGatewayService_NotifyRecordRelatedEvent_DcomFaultTypeFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RecieveDutyAreasInfo">
+      <wsdl:input wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/RecieveDutyAreasInfo" message="tns:IEgovGatewayService_RecieveDutyAreasInfo_InputMessage" />
+      <wsdl:output wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/RecieveDutyAreasInfoResponse" message="tns:IEgovGatewayService_RecieveDutyAreasInfo_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/RecieveDutyAreasInfo/Fault/SoapFault" name="DcomFaultTypeFault" message="tns:IEgovGatewayService_RecieveDutyAreasInfo_DcomFaultTypeFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ProcessSubmissionOnEgov">
+      <wsdl:input wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/ProcessSubmissionOnEgov" message="tns:IEgovGatewayService_ProcessSubmissionOnEgov_InputMessage" />
+      <wsdl:output wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/ProcessSubmissionOnEgovResponse" message="tns:IEgovGatewayService_ProcessSubmissionOnEgov_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/ProcessSubmissionOnEgov/Fault/SoapFault" name="DcomFaultTypeFault" message="tns:IEgovGatewayService_ProcessSubmissionOnEgov_DcomFaultTypeFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetFormTextations">
+      <wsdl:input wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/GetFormTextations" message="tns:IEgovGatewayService_GetFormTextations_InputMessage" />
+      <wsdl:output wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/GetFormTextationsResponse" message="tns:IEgovGatewayService_GetFormTextations_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/GetFormItems/Fault/SoapFault" name="DcomFaultTypeFault" message="tns:IEgovGatewayService_GetFormTextations_DcomFaultTypeFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateXmlDecision">
+      <wsdl:input wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/CreateXmlDecision" message="tns:IEgovGatewayService_CreateXmlDecision_InputMessage" />
+      <wsdl:output wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/CreateXmlDecisionResponse" message="tns:IEgovGatewayService_CreateXmlDecision_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/CreateXmlDecision/Fault/SoapFault" name="DcomFaultTypeFault" message="tns:IEgovGatewayService_CreateXmlDecision_DcomFaultTypeFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAuthenticationClauseXml">
+      <wsdl:input wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/GetAuthenticationClauseXml" message="tns:IEgovGatewayService_GetAuthenticationClauseXml_InputMessage" />
+      <wsdl:output wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/GetAuthenticationClauseXmlResponse" message="tns:IEgovGatewayService_GetAuthenticationClauseXml_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/getAuthenticationClauseXml/Fault/SoapFault" name="DcomFaultTypeFault" message="tns:IEgovGatewayService_GetAuthenticationClauseXml_DcomFaultTypeFault_FaultMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="Soap12_IEgovGatewayService" type="tns:IEgovGatewayService">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <PolicyReference xmlns="http://schemas.xmlsoap.org/ws/2004/09/policy" URI="#WS2007FederationHttpBinding_IService_policy" />
+    <wsdl:operation name="ProcessSubmission">
+      <soap12:operation soapAction="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/ProcessSubmission" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultTypeFault">
+        <soap12:fault use="literal" name="DcomFaultTypeFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetApplicableSolvers">
+      <soap12:operation soapAction="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/GetApplicableSolvers" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultTypeFault">
+        <soap12:fault use="literal" name="DcomFaultTypeFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="RequestBulkManualDispatch">
+      <soap12:operation soapAction="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/RequestBulkManualDispatch" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultTypeFault">
+        <soap12:fault use="literal" name="DcomFaultTypeFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="NotifyRecordRelatedEvent">
+      <soap12:operation soapAction="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/NotifyRecordRelatedEvent" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultTypeFault">
+        <soap12:fault use="literal" name="DcomFaultTypeFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="RecieveDutyAreasInfo">
+      <soap12:operation soapAction="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/RecieveDutyAreasInfo" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultTypeFault">
+        <soap12:fault use="literal" name="DcomFaultTypeFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="ProcessSubmissionOnEgov">
+      <soap12:operation soapAction="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/ProcessSubmissionOnEgov" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultTypeFault">
+        <soap12:fault use="literal" name="DcomFaultTypeFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetFormTextations">
+      <soap12:operation soapAction="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/GetFormTextations" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultTypeFault">
+        <soap12:fault use="literal" name="DcomFaultTypeFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="CreateXmlDecision">
+      <soap12:operation soapAction="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/CreateXmlDecision" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultTypeFault">
+        <soap12:fault use="literal" name="DcomFaultTypeFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetAuthenticationClauseXml">
+      <soap12:operation soapAction="http://schemas.dcom.sk/public/egov/wcf/1.0/IEgovGatewayService/GetAuthenticationClauseXml" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultTypeFault">
+        <soap12:fault use="literal" name="DcomFaultTypeFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="EgovGatewayService">
+    <wsdl:port name="Soap12_IEgovGatewayService" binding="tns:Soap12_IEgovGatewayService">
+      <soap12:address location="https://st1soa01.test.dcom.sk:8443/soa/egovgateway/1.0/egovgateway" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

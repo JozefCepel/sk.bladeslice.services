@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://schemas.dcom.sk/public/egov/wcf/1.0" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:t="http://docs.oasis-open.org/ws-sx/ws-trust/200512" xmlns:q1="http://schemas.dcom.sk/fault/1.0" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="MapService" targetNamespace="http://schemas.dcom.sk/public/egov/wcf/1.0" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsp:Policy xmlns:wsaws="http://www.w3.org/2005/08/addressing" xmlns:t="http://docs.oasis-open.org/ws-sx/ws-trust/200512" xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702" wsu:Id="WS2007FederationHttpBinding_IService_policy">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <sp:TransportBinding>
+          <wsp:Policy>
+            <sp:TransportToken>
+              <wsp:Policy>
+                <sp:HttpsToken />
+              </wsp:Policy>
+            </sp:TransportToken>
+            <sp:AlgorithmSuite>
+              <wsp:Policy>
+                <sp:Basic256 />
+              </wsp:Policy>
+            </sp:AlgorithmSuite>
+            <sp:Layout>
+              <wsp:Policy>
+                <sp:Lax />
+              </wsp:Policy>
+            </sp:Layout>
+            <sp:IncludeTimestamp />
+          </wsp:Policy>
+        </sp:TransportBinding>
+        <sp:EndorsingSupportingTokens>
+          <wsp:Policy>
+            <sp:IssuedToken sp:IncludeToken="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702/IncludeToken/AlwaysToRecipient">
+              <sp:RequestSecurityTokenTemplate>
+                <t:TokenType>http://docs.oasis-open.org/wss/oasis-wss-saml-token-profile-1.1#SAMLV1.1
+                            </t:TokenType>
+                <t:KeyType>http://docs.oasis-open.org/ws-sx/ws-trust/200512/SymmetricKey</t:KeyType>
+                <t:KeySize>256</t:KeySize>
+              </sp:RequestSecurityTokenTemplate>
+              <wsp:Policy>
+                <sp:RequireInternalReference />
+              </wsp:Policy>
+              <sp:Issuer>
+                <wsaws:Address>
+                                https://lbsts.intra.dcom.sk:49443/adfs/services/trust/13/certificatetransport
+                            </wsaws:Address>
+                <wsaws:Metadata xmlns:wsdli="http://www.w3.org/2006/01/wsdl-instance" wsdli:wsdlLocation="http://lbsts.intra.dcom.sk/adfs/services/trust/mex">
+                  <wsaw:ServiceName xmlns:stsns="http://docs.oasis-open.org/ws-sx/ws-trust/200512/" EndpointName="CertificateWSTrustBinding_IWSTrust13Async2">
+                                    stsns:SecurityTokenService
+                                </wsaw:ServiceName>
+                </wsaws:Metadata>
+              </sp:Issuer>
+            </sp:IssuedToken>
+          </wsp:Policy>
+        </sp:EndorsingSupportingTokens>
+        <sp:Wss11>
+          <wsp:Policy />
+        </sp:Wss11>
+        <sp:Trust13>
+          <wsp:Policy>
+            <sp:MustSupportIssuedTokens />
+            <sp:RequireClientEntropy />
+            <sp:RequireServerEntropy />
+          </wsp:Policy>
+        </sp:Trust13>
+        <wsaw:UsingAddressing />
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsdl:types>
+    <xs:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://schemas.dcom.sk/public/egov/wcf/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:element name="SaveToEvidence">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="dPodanieId" type="xs:long" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="SaveToEvidenceResponse">
+        <xs:complexType>
+          <xs:sequence />
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="SaveToEvidenceXml">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="dPodanieId" type="xs:long" />
+            <xs:element minOccurs="0" name="xml" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="SaveToEvidenceXmlResponse">
+        <xs:complexType>
+          <xs:sequence />
+        </xs:complexType>
+      </xs:element>
+    </xs:schema>
+    <xs:schema xmlns:tns="http://schemas.microsoft.com/2003/10/Serialization/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://schemas.microsoft.com/2003/10/Serialization/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:element name="anyType" nillable="true" type="xs:anyType" />
+      <xs:element name="anyURI" nillable="true" type="xs:anyURI" />
+      <xs:element name="base64Binary" nillable="true" type="xs:base64Binary" />
+      <xs:element name="boolean" nillable="true" type="xs:boolean" />
+      <xs:element name="byte" nillable="true" type="xs:byte" />
+      <xs:element name="dateTime" nillable="true" type="xs:dateTime" />
+      <xs:element name="decimal" nillable="true" type="xs:decimal" />
+      <xs:element name="double" nillable="true" type="xs:double" />
+      <xs:element name="float" nillable="true" type="xs:float" />
+      <xs:element name="int" nillable="true" type="xs:int" />
+      <xs:element name="long" nillable="true" type="xs:long" />
+      <xs:element name="QName" nillable="true" type="xs:QName" />
+      <xs:element name="short" nillable="true" type="xs:short" />
+      <xs:element name="string" nillable="true" type="xs:string" />
+      <xs:element name="unsignedByte" nillable="true" type="xs:unsignedByte" />
+      <xs:element name="unsignedInt" nillable="true" type="xs:unsignedInt" />
+      <xs:element name="unsignedLong" nillable="true" type="xs:unsignedLong" />
+      <xs:element name="unsignedShort" nillable="true" type="xs:unsignedShort" />
+      <xs:element name="char" nillable="true" type="tns:char" />
+      <xs:simpleType name="char">
+        <xs:restriction base="xs:int" />
+      </xs:simpleType>
+      <xs:element name="duration" nillable="true" type="tns:duration" />
+      <xs:simpleType name="duration">
+        <xs:restriction base="xs:duration">
+          <xs:pattern value="\-?P(\d*D)?(T(\d*H)?(\d*M)?(\d*(\.\d*)?S)?)?" />
+          <xs:minInclusive value="-P10675199DT2H48M5.4775808S" />
+          <xs:maxInclusive value="P10675199DT2H48M5.4775807S" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:element name="guid" nillable="true" type="tns:guid" />
+      <xs:simpleType name="guid">
+        <xs:restriction base="xs:string">
+          <xs:pattern value="[\da-fA-F]{8}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{12}" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:attribute name="FactoryType" type="xs:QName" />
+      <xs:attribute name="Id" type="xs:ID" />
+      <xs:attribute name="Ref" type="xs:IDREF" />
+    </xs:schema>
+    <xs:schema xmlns:tns="http://schemas.dcom.sk/fault/1.0" xmlns:q1="http://schemas.dcom.sk/fault/1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://schemas.dcom.sk/fault/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:complexType name="dcomFault">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="faultCause" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="faultCode" type="xs:int" />
+          <xs:element minOccurs="0" name="faultMessage" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="invalidParameter" nillable="true" type="tns:ArrayOfInvalidParameterType" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="dcomFault" nillable="true" type="tns:dcomFault" />
+      <xs:complexType name="ArrayOfInvalidParameterType">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="InvalidParameterType" nillable="true" type="tns:InvalidParameterType" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ArrayOfInvalidParameterType" nillable="true" type="tns:ArrayOfInvalidParameterType" />
+      <xs:complexType name="InvalidParameterType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="errorMessage" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="parameterName" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="InvalidParameterType" nillable="true" type="tns:InvalidParameterType" />
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="IMapService_SaveToEvidenceXml_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SaveToEvidenceXmlResponse" />
+  </wsdl:message>
+  <wsdl:message name="IMapService_SaveToEvidenceXml_DcomFaultTypeFault_FaultMessage">
+    <wsdl:part name="detail" element="q1:dcomFault" />
+  </wsdl:message>
+  <wsdl:message name="IMapService_SaveToEvidenceXml_InputMessage">
+    <wsdl:part name="parameters" element="tns:SaveToEvidenceXml" />
+  </wsdl:message>
+  <wsdl:message name="IMapService_SaveToEvidence_InputMessage">
+    <wsdl:part name="parameters" element="tns:SaveToEvidence" />
+  </wsdl:message>
+  <wsdl:message name="IMapService_SaveToEvidence_DcomFaultTypeFault_FaultMessage">
+    <wsdl:part name="detail" element="q1:dcomFault" />
+  </wsdl:message>
+  <wsdl:message name="IMapService_SaveToEvidence_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SaveToEvidenceResponse" />
+  </wsdl:message>
+  <wsdl:portType name="IMapService">
+    <wsdl:operation name="SaveToEvidence">
+      <wsdl:input wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IMapService/SaveToEvidence" message="tns:IMapService_SaveToEvidence_InputMessage" />
+      <wsdl:output wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IMapService/SaveToEvidenceResponse" message="tns:IMapService_SaveToEvidence_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IMapService/SaveToEvidence/Fault/SoapFault" name="DcomFaultTypeFault" message="tns:IMapService_SaveToEvidence_DcomFaultTypeFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SaveToEvidenceXml">
+      <wsdl:input wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IMapService/SaveToEvidenceXml" message="tns:IMapService_SaveToEvidenceXml_InputMessage" />
+      <wsdl:output wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IMapService/SaveToEvidenceXmlResponse" message="tns:IMapService_SaveToEvidenceXml_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://schemas.dcom.sk/public/egov/wcf/1.0/IMapService/SaveToEvidenceXml/Fault/SoapFault" name="DcomFaultTypeFault" message="tns:IMapService_SaveToEvidenceXml_DcomFaultTypeFault_FaultMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="Soap12_IMapService" type="tns:IMapService">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <PolicyReference xmlns="http://schemas.xmlsoap.org/ws/2004/09/policy" URI="#WS2007FederationHttpBinding_IService_policy" />
+    <wsdl:operation name="SaveToEvidence">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultTypeFault">
+        <soap12:fault use="literal" name="DcomFaultTypeFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="SaveToEvidenceXml">
+      <soap12:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="DcomFaultTypeFault">
+        <soap12:fault use="literal" name="DcomFaultTypeFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="MapService">
+    <wsdl:port name="Soap12_IMapService" binding="tns:Soap12_IMapService">
+      <soap12:address location="https://st1soa01.test.dcom.sk:8443/soa/egov/map/1.0/map" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

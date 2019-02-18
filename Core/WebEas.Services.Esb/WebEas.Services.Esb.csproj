@@ -1,0 +1,875 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{870F7F06-7FDA-4A8B-8830-2B320DE9C45E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WebEas.Services.Esb</RootNamespace>
+    <AssemblyName>WebEas.Services.Esb</AssemblyName>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Libraries\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Libraries\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'BA_Debug|AnyCPU'">
+    <OutputPath>bin\BA_Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Develop|AnyCPU'">
+    <OutputPath>bin\Develop\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Int|AnyCPU'">
+    <OutputPath>bin\Int\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>none</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Test|AnyCPU'">
+    <OutputPath>bin\Test\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AddressProxy.cs" />
+    <Compile Include="Bpm2Proxy.cs" />
+    <Compile Include="BpmProxy.cs" />
+    <Compile Include="Config\ProxyElement.cs" />
+    <Compile Include="Config\ProxyElementCollection.cs" />
+    <Compile Include="Config\ProxySection.cs" />
+    <Compile Include="DmsDocumentProxy.cs" />
+    <Compile Include="Egov\DapProxy.cs" />
+    <Compile Include="Egov\EdmProxy.cs" />
+    <Compile Include="Egov\EgovGatewayProxy.cs" />
+    <Compile Include="Egov\EviProxy.cs" />
+    <Compile Include="Egov\IapProxy.cs" />
+    <Compile Include="Egov\LapProxy.cs" />
+    <Compile Include="Egov\MapProxy.cs" />
+    <Compile Include="Egov\NasProxy.cs" />
+    <Compile Include="Egov\ObsProxy.cs" />
+    <Compile Include="Egov\PlaProxy.cs" />
+    <Compile Include="Egov\SocProxy.cs" />
+    <Compile Include="EpodCaseFileProxy.cs" />
+    <Compile Include="EpodSubmissionProxy.cs" />
+    <Compile Include="FormsProxy.cs" />
+    <Compile Include="IamRoleProxy.cs" />
+    <Compile Include="IamUserProxy.cs" />
+    <Compile Include="IsoGwProxy.cs" />
+    <Compile Include="KnProxy.cs" />
+    <Compile Include="MdfxProxy.cs" />
+    <Compile Include="MepProxy.cs" />
+    <Compile Include="NevProxy.cs" />
+    <Compile Include="UpvsProxy.cs" />
+    <Compile Include="PersonProxy.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProxyBase.cs" />
+    <Compile Include="RsdProxy.cs" />
+    <Compile Include="Service References\Address\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\Bpm2\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\Bpm\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\Dms.Document\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\Egov.DapService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\Egov.EdmService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\Egov.EgovGateway\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\Egov.EviService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\Egov.IapService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\Egov.LapService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\Egov.MapService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\Egov.NasService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\Egov.ObsService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\Egov.PlaService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\Egov.SocService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\Epod.CaseFile\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\Epod.Submission\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\Fs\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\Iam.Role\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\Iam.User\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\IsoGw\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\Kn\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\Mdfx\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\MepService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\Nev\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\Person\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\Rsd\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\Sp\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="FsProxy.cs" />
+    <Compile Include="Service References\Upvs\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="SpProxy.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Cert\eGovTestVsetkyCertifikaty.pfx" />
+    <None Include="Cert\key_pair_svc_egov_esb_ca_dcom_dev_.p12" />
+    <None Include="Service References\Address\addressServices_v1_0.wsdl" />
+    <None Include="Service References\Address\WebEas.Services.Esb.Address.AddAddressResult.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Address\WebEas.Services.Esb.Address.Adresa.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Address\WebEas.Services.Esb.Address.Byt.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Address\WebEas.Services.Esb.Address.DorucovaciaPostaResult.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Address\WebEas.Services.Esb.Address.ObjektAdresy.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Address\WebEas.Services.Esb.Address.SlovenskaAdresa.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Bpm2\bpmService.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Bpm2\bpmService_v2_0.wsdl" />
+    <None Include="Service References\Bpm2\WebEas.Services.Esb.Bpm2.GetProcessVariablesResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Bpm2\WebEas.Services.Esb.Bpm2.GetSingleTaskResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Bpm2\WebEas.Services.Esb.Bpm2.ProcessInstanceDto.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Bpm2\WebEas.Services.Esb.Bpm2.StartProcessInstanceResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Bpm2\WebEas.Services.Esb.Bpm2.UserAgendaCountResponseDto.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Bpm2\WebEas.Services.Esb.Bpm2.UserAgendaItemDto.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Bpm\bpmService.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Bpm\bpmService_v1_0.wsdl" />
+    <None Include="Service References\Bpm\WebEas.Services.Esb.Bpm.GetProcessVariablesResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Bpm\WebEas.Services.Esb.Bpm.GetSingleTaskResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Bpm\WebEas.Services.Esb.Bpm.ProcessInstanceDto.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Bpm\WebEas.Services.Esb.Bpm.StartProcessInstanceResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Bpm\WebEas.Services.Esb.Bpm.UserAgendaCountResponseDto.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Bpm\WebEas.Services.Esb.Bpm.UserAgendaItemDto.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Dms.Document\DocumentService.wsdl" />
+    <None Include="Service References\Dms.Document\WebEas.Services.Esb.Dms.Document.document.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Dms.Document\WebEas.Services.Esb.Dms.Document.folder.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Dms.Document\WebEas.Services.Esb.Dms.Document.searchResult.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Egov.DapService\DapService1.wsdl" />
+    <None Include="Service References\Egov.DapService\WebEas.Services.Esb.Egov.DapService.CheckRecordRelatedPaymentResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Egov.DapService\WebEas.Services.Esb.Egov.DapService.RaiseInternalPaymentResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Egov.EdmService\EdmService1.wsdl" />
+    <None Include="Service References\Egov.EgovGateway\EgovGatewayService1.wsdl" />
+    <None Include="Service References\Egov.EgovGateway\WebEas.Services.Esb.Egov.EgovGateway.ApplicableSolver.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Egov.EgovGateway\WebEas.Services.Esb.Egov.EgovGateway.AuthenticationClauseResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Egov.EgovGateway\WebEas.Services.Esb.Egov.EgovGateway.EpodFormTextationView.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Egov.EgovGateway\WebEas.Services.Esb.Egov.EgovGateway.SubmissionResultDto.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Egov.EviService\EviService1.wsdl" />
+    <None Include="Service References\Egov.EviService\WebEas.Services.Esb.Egov.EviService.PesView.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Egov.IapService\IapService1.wsdl" />
+    <None Include="Service References\Egov.LapService\LapService1.wsdl" />
+    <None Include="Service References\Egov.MapService\MapService1.wsdl" />
+    <None Include="Service References\Egov.NasService\NasService1.wsdl" />
+    <None Include="Service References\Egov.ObsService\ObsService1.wsdl" />
+    <None Include="Service References\Egov.PlaService\PlaService1.wsdl" />
+    <None Include="Service References\Egov.SocService\SocService1.wsdl" />
+    <None Include="Service References\Epod.CaseFile\CaseFileServices.wsdl" />
+    <None Include="Service References\Epod.CaseFile\WebEas.Services.Esb.Epod.CaseFile.CaseFile.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Epod.CaseFile\WebEas.Services.Esb.Epod.CaseFile.EventProcessingResultDto.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Epod.CaseFile\WebEas.Services.Esb.Epod.CaseFile.FileRenumberingResponseDto.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Epod.CaseFile\WebEas.Services.Esb.Epod.CaseFile.InsertBulkRecordResponseDto.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Epod.CaseFile\WebEas.Services.Esb.Epod.CaseFile.Record.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Epod.CaseFile\WebEas.Services.Esb.Epod.CaseFile.RecordDto.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Epod.CaseFile\WebEas.Services.Esb.Epod.CaseFile.RecordShortDto.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Epod.CaseFile\WebEas.Services.Esb.Epod.CaseFile.UserAgendaItemDto.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Epod.Submission\SubmissionServices.wsdl" />
+    <None Include="Service References\Epod.Submission\WebEas.Services.Esb.Epod.Submission.GetSubmissionsResponseDto.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Fs\DCOM-Gateway-FS_v1_0.wsdl" />
+    <None Include="Service References\Fs\fs.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Fs\fs1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Fs\fs2.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Fs\WebEas.Services.Esb.Fs.GetDutyArrearsInfoResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Fs\WebEas.Services.Esb.Fs.SendGetDutyArrearsInfoRequestResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Iam.Role\WebEas.Services.Esb.Iam.Role.AgendaType.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Iam.Role\WebEas.Services.Esb.Iam.Role.UnionRoleType.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Iam.Role\WebEas.Services.Esb.Iam.Role.UserType.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Iam.Role\WebServiceConnector.wsdl" />
+    <None Include="Service References\Iam.User\user.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Iam.User\user1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Iam.User\UserService_v1_0.wsdl" />
+    <None Include="Service References\Iam.User\WebEas.Services.Esb.Iam.User.ActivationStatusType.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Iam.User\WebEas.Services.Esb.Iam.User.LockoutStatusType.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Iam.User\WebEas.Services.Esb.Iam.User.TimeIntervalStatusType.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\IsoGw\RegisterISO.wsdl" />
+    <None Include="Service References\IsoGw\riso.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\IsoGw\WebEas.Services.Esb.IsoGw.ResGetConfig.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\IsoGw\WebEas.Services.Esb.IsoGw.ResGetOperationType.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\IsoGw\WebEas.Services.Esb.IsoGw.ResHasService.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\IsoGw\WebEas.Services.Esb.IsoGw.ServiceDetail.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Kn\knservice.wsdl">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Kn\WebEas.Services.Esb.Kn.LVRespType.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Kn\WebEas.Services.Esb.Kn.ResponseType.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Kn\WebEas.Services.Esb.Kn.SparovaneOsobyRespType.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Kn\WebEas.Services.Esb.Kn.StiahniLVRespType.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Mdfx\mdfx.wsdl" />
+    <None Include="Service References\Mdfx\WebEas.Services.Esb.Mdfx.formDto_type.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Mdfx\WebEas.Services.Esb.Mdfx.getFormDetailRes_type.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Mdfx\WebEas.Services.Esb.Mdfx.getFormTransformationRes_type.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Mdfx\WebEas.Services.Esb.Mdfx.prefetchRequiredFormsRes_type.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Mdfx\WebEas.Services.Esb.Mdfx.validateFormDataRes_type.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\MepService\DCOM-Gateway-MEP_v1_0.wsdl" />
+    <None Include="Service References\MepService\mepGwServices.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\MepService\mepGwServices1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\MepService\mepGwServices2.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Nev\DCOM-Fault_v1_0.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Nev\DCOM-Gateway-NEV_v1_0.wsdl" />
+    <None Include="Service References\Nev\DCOM-Gateway-NEV_v1_0.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Nev\DCOM-SOA-Claims-Public_v1_0.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Nev\WebEas.Services.Esb.Nev.getVehicleInfoRes.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Nev\WebEas.Services.Esb.Nev.VehicleInfo.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Person\PersonServices.wsdl">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Person\WebEas.Services.Esb.Person.CheckElectronicDeliveryPossibleResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Person\WebEas.Services.Esb.Person.DuplicitnaOsoba.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Person\WebEas.Services.Esb.Person.findPersonComboResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Person\WebEas.Services.Esb.Person.GetPersonByUpvsIdentifiersResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Person\WebEas.Services.Esb.Person.getPersonsResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Person\WebEas.Services.Esb.Person.IdentifikatoryOsobyResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Person\WebEas.Services.Esb.Person.OsobaDetail.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Person\WebEas.Services.Esb.Person.OsobaList.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Person\WebEas.Services.Esb.Person.PersonIdentifiers.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Person\WebEas.Services.Esb.Person.PersonValidationError.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Person\WebEas.Services.Esb.Person.PobytNaAdrese.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Rsd\DCOM-Gateway-RSD_v1_0.wsdl" />
+    <None Include="Service References\Rsd\rsdService.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Rsd\rsdService1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Rsd\rsdService2.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Rsd\WebEas.Services.Esb.Rsd.ApplicantResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Rsd\WebEas.Services.Esb.Rsd.GetPersonDisabilityStatusResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Sp\DCOM-Gateway-SP_v1_0.wsdl" />
+    <None Include="Service References\Sp\spService.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Sp\spService1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Sp\spService2.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Sp\WebEas.Services.Esb.Sp.CheckEmploymentStatusResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Sp\WebEas.Services.Esb.Sp.GetBenefitInfoResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Upvs\UpvsGwServices.wsdl" />
+    <None Include="Service References\Upvs\WebEas.Services.Esb.Upvs.ConvertPDFResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Upvs\WebEas.Services.Esb.Upvs.Delegation.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Upvs\WebEas.Services.Esb.Upvs.GetSignCertificateMetadataResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Upvs\WebEas.Services.Esb.Upvs.IdentityData.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Upvs\WebEas.Services.Esb.Upvs.IdentityHistory.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Upvs\WebEas.Services.Esb.Upvs.MdurzSearchResultType.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Upvs\WebEas.Services.Esb.Upvs.ObjectFromSignedContainer.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Upvs\WebEas.Services.Esb.Upvs.SearchIdentitiesResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Upvs\WebEas.Services.Esb.Upvs.SignedObject.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Upvs\WebEas.Services.Esb.Upvs.ValidatePDFResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\Address\" />
+    <WCFMetadataStorage Include="Service References\Bpm2\" />
+    <WCFMetadataStorage Include="Service References\Bpm\" />
+    <WCFMetadataStorage Include="Service References\Dms.Document\" />
+    <WCFMetadataStorage Include="Service References\Egov.DapService\" />
+    <WCFMetadataStorage Include="Service References\Egov.EdmService\" />
+    <WCFMetadataStorage Include="Service References\Egov.EgovGateway\" />
+    <WCFMetadataStorage Include="Service References\Egov.EviService\" />
+    <WCFMetadataStorage Include="Service References\Egov.IapService\" />
+    <WCFMetadataStorage Include="Service References\Egov.LapService\" />
+    <WCFMetadataStorage Include="Service References\Egov.MapService\" />
+    <WCFMetadataStorage Include="Service References\Egov.NasService\" />
+    <WCFMetadataStorage Include="Service References\Egov.ObsService\" />
+    <WCFMetadataStorage Include="Service References\Egov.PlaService\" />
+    <WCFMetadataStorage Include="Service References\Egov.SocService\" />
+    <WCFMetadataStorage Include="Service References\Epod.CaseFile\" />
+    <WCFMetadataStorage Include="Service References\Epod.Submission\" />
+    <WCFMetadataStorage Include="Service References\Fs\" />
+    <WCFMetadataStorage Include="Service References\Iam.Role\" />
+    <WCFMetadataStorage Include="Service References\Iam.User\" />
+    <WCFMetadataStorage Include="Service References\IsoGw\" />
+    <WCFMetadataStorage Include="Service References\Kn\" />
+    <WCFMetadataStorage Include="Service References\Mdfx\" />
+    <WCFMetadataStorage Include="Service References\MepService\" />
+    <WCFMetadataStorage Include="Service References\Nev\" />
+    <WCFMetadataStorage Include="Service References\Person\" />
+    <WCFMetadataStorage Include="Service References\Rsd\" />
+    <WCFMetadataStorage Include="Service References\Sp\" />
+    <WCFMetadataStorage Include="Service References\Upvs\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\Iam.Role\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\Iam.Role\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\Iam.Role\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\Address\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\Address\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\Address\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\Person\configuration91.svcinfo">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\Person\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\Person\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\Epod.CaseFile\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\Epod.CaseFile\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\Epod.CaseFile\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\Epod.Submission\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\Epod.Submission\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\Epod.Submission\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\Dms.Document\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\Dms.Document\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\Dms.Document\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Cert\Readme.txt" />
+    <None Include="Service References\Upvs\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\Upvs\configuration.svcinfo" />
+    <None Include="Service References\Upvs\configuration91.svcinfo" />
+    <None Include="Service References\Bpm2\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\Bpm2\configuration.svcinfo" />
+    <None Include="Service References\Bpm2\configuration91.svcinfo" />
+    <None Include="Service References\Fs\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\Fs\configuration.svcinfo" />
+    <None Include="Service References\Fs\configuration91.svcinfo" />
+    <None Include="Service References\IsoGw\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\IsoGw\configuration.svcinfo" />
+    <None Include="Service References\IsoGw\configuration91.svcinfo" />
+    <None Include="Service References\MepService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\MepService\configuration.svcinfo" />
+    <None Include="Service References\MepService\configuration91.svcinfo" />
+    <None Include="Service References\Rsd\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\Rsd\configuration.svcinfo" />
+    <None Include="Service References\Rsd\configuration91.svcinfo" />
+    <None Include="Service References\Kn\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\Kn\configuration.svcinfo" />
+    <None Include="Service References\Kn\configuration91.svcinfo" />
+    <None Include="Service References\Sp\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\Sp\configuration.svcinfo" />
+    <None Include="Service References\Sp\configuration91.svcinfo" />
+    <None Include="Service References\Nev\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\Nev\configuration.svcinfo" />
+    <None Include="Service References\Nev\configuration91.svcinfo" />
+    <None Include="Service References\Iam.User\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\Iam.User\configuration.svcinfo" />
+    <None Include="Service References\Iam.User\configuration91.svcinfo" />
+    <None Include="Service References\Mdfx\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\Mdfx\configuration.svcinfo" />
+    <None Include="Service References\Mdfx\configuration91.svcinfo" />
+    <None Include="Service References\Egov.EdmService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\Egov.EdmService\configuration.svcinfo" />
+    <None Include="Service References\Egov.EdmService\configuration91.svcinfo" />
+    <None Include="Service References\Egov.NasService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\Egov.NasService\configuration.svcinfo" />
+    <None Include="Service References\Egov.NasService\configuration91.svcinfo" />
+    <None Include="Service References\Egov.LapService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\Egov.LapService\configuration.svcinfo" />
+    <None Include="Service References\Egov.LapService\configuration91.svcinfo" />
+    <None Include="Service References\Egov.DapService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\Egov.DapService\configuration.svcinfo" />
+    <None Include="Service References\Egov.DapService\configuration91.svcinfo" />
+    <None Include="Service References\Egov.EviService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\Egov.EviService\configuration.svcinfo" />
+    <None Include="Service References\Egov.EviService\configuration91.svcinfo" />
+    <None Include="Service References\Egov.MapService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\Egov.MapService\configuration.svcinfo" />
+    <None Include="Service References\Egov.MapService\configuration91.svcinfo" />
+    <None Include="Service References\Egov.PlaService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\Egov.PlaService\configuration.svcinfo" />
+    <None Include="Service References\Egov.PlaService\configuration91.svcinfo" />
+    <None Include="Service References\Egov.SocService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\Egov.SocService\configuration.svcinfo" />
+    <None Include="Service References\Egov.SocService\configuration91.svcinfo" />
+    <None Include="Service References\Egov.ObsService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\Egov.ObsService\configuration.svcinfo" />
+    <None Include="Service References\Egov.ObsService\configuration91.svcinfo" />
+    <None Include="Service References\Egov.IapService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\Egov.IapService\configuration.svcinfo" />
+    <None Include="Service References\Egov.IapService\configuration91.svcinfo" />
+    <None Include="Service References\Bpm\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\Bpm\configuration.svcinfo" />
+    <None Include="Service References\Bpm\configuration91.svcinfo" />
+    <None Include="Service References\Egov.EgovGateway\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\Egov.EgovGateway\configuration.svcinfo" />
+    <None Include="Service References\Egov.EgovGateway\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WebEas.Core.Common\WebEas.Core.Common.csproj">
+      <Project>{362e3c3f-9257-4ce5-8522-2c50a1b1d044}</Project>
+      <Name>WebEas.Core.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="NLog">
+      <Version>4.4.12</Version>
+    </PackageReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
