@@ -5,27 +5,25 @@ using WebEas.ServiceModel;
 namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
 {
     [Schema("cfe")]
-    [Alias("C_Role")]
+    [Alias("V_Role")]
     [DataContract]
-    public class RoleView : BaseEntity
+    public class RoleView : Role 
     {
-        [PrimaryKey]
-        [AutoIncrement]
-        [DataMember]        
-        public int C_Role_Id { get; set; }                     
-
-        [DataMember]
-        [PfeColumn(Text = "Názov")]        
-        public string Nazov { get; set; }
-
-        [DataMember]
-        [PfeColumn(Text = "_Nadradená rola")]
-        public string C_Roles_Id_Parent { get; set; }
-
         [DataMember]
         [PfeColumn(Text = "Nadradená rola")]
-        [PfeCombo(typeof(RoleView), NameColumn = "C_Roles_Id_Parent")]
-        public string RoleParent { get; set; }
+        [PfeCombo(typeof(RoleView), NameColumn = "C_Roles_Id_Parent", DisplayColumn = "Nazov")]
+        [IgnoreInsertOrUpdate]
+        public string ParentNazov { get; set; }
 
+        //audit stlpce
+        [DataMember]
+        [PfeColumn(Text = "Vytvoril", Hidden = true, Editable = false, ReadOnly = true)]
+        [IgnoreInsertOrUpdate]
+        public string VytvorilMeno { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Zmenil", Hidden = true, Editable = false, ReadOnly = true)]
+        [IgnoreInsertOrUpdate]
+        public string ZmenilMeno { get; set; }
     }
 }

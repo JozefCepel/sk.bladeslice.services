@@ -2,11 +2,8 @@
 using System.Linq;
 using WebEas.Esam.ServiceModel.Office.Reg.Dto;
 using WebEas.Esam.ServiceModel.Office.Reg.Types;
-using WebEas.ServiceInterface;
 using WebEas.ServiceModel;
-using WebEas.ServiceModel.Office.Egov.Dto;
 using WebEas.ServiceModel.Office.Egov.Reg.Types;
-using WebEas.ServiceModel.Office.Egov.Types;
 using WebEas.ServiceModel.Reg.Types;
 
 namespace WebEas.Esam.ServiceInterface.Office

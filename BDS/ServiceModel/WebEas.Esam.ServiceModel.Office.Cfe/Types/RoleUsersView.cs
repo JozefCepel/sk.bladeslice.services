@@ -1,33 +1,36 @@
-﻿using System;
+﻿using ServiceStack.DataAnnotations;
 using System.Runtime.Serialization;
-using ServiceStack.DataAnnotations;
 using WebEas.ServiceModel;
+using WebEas.ServiceModel.Types;
 
 namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
 {
     [Schema("cfe")]
-    [Alias("D_RoleUsers")]
+    [Alias("V_RoleUsers")]
     [DataContract]
-    public class RoleUsersView : BaseTenantEntity
+    public class RoleUsersView : RoleUsers
     {
-        [PrimaryKey]
-        [AutoIncrement]
-        [DataMember]        
-        public int D_RoleUsers_Id { get; set; }
+        [DataMember]
+        [PfeColumn(Text = "Užívateľ")]
+        [PfeCombo(typeof(UserView), NameColumn = "D_User_Id", DisplayColumn = "FullName")]
+        [IgnoreInsertOrUpdate]
+        public string UserName { get; set; }
 
         [DataMember]
-        public Guid D_User_Id { get; set; }
+        [PfeColumn(Text = "Rola")]
+        [PfeCombo(typeof(RoleView), NameColumn = "C_Role_Id", DisplayColumn = "Nazov")]
+        [IgnoreInsertOrUpdate]
+        public string RoleName { get; set; }
+
+        //audit stlpce
+        [DataMember]
+        [PfeColumn(Text = "Vytvoril", Hidden = true, Editable = false, ReadOnly = true)]
+        [IgnoreInsertOrUpdate]
+        public string VytvorilMeno { get; set; }
 
         [DataMember]
-        public int C_Role_Id { get; set; }
-
-        [DataMember]
-        [PfeColumn(Text = "Dátum pridelenia", Hidden = true, Type = PfeDataType.DateTime, Editable = false, Rank = 103, ReadOnly = true)]
-        public DateTime PlatnostOd { get; set; }
-
-        [DataMember]
-        [PfeColumn(Text = "Dátum odobratia", Hidden = true, Type = PfeDataType.DateTime, Editable = false, Rank = 103, ReadOnly = true)]
-        public DateTime? PlatnostDo { get; set; }
-
+        [PfeColumn(Text = "Zmenil", Hidden = true, Editable = false, ReadOnly = true)]
+        [IgnoreInsertOrUpdate]
+        public string ZmenilMeno { get; set; }
     }
 }

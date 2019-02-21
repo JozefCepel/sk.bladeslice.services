@@ -6,6 +6,7 @@ using ServiceStack.OrmLite;
 using WebEas.Auth;
 using WebEas.Esam.ServiceInterface.Office;
 using WebEas.Esam.ServiceInterface.Office.Cfe;
+using WebEas.Esam.ServiceInterface.Office.Dms;
 using WebEas.Esam.ServiceInterface.Office.Rzp;
 using WebEas.Esam.ServiceInterface.Pfe;
 using WebEas.ServiceInterface;
@@ -64,16 +65,19 @@ namespace WebEas.Esam.Pfe
             LogManager.GetLogger("Kernel").Info("Loading kernel");
             kernel.Bind<IRoleList>().To<ServiceModel.Office.Reg.ServiceModel>();
             kernel.Bind<IRoleList>().To<ServiceModel.Office.Rzp.ServiceModel>();
+            kernel.Bind<IRoleList>().To<ServiceModel.Office.Dms.ServiceModel>();
             kernel.Bind<IRoleList>().To<ServiceModel.Office.Cfe.ServiceModel>();
 
             kernel.Bind<IRoleList>().To<ServiceModel.Office.RolesDefinition.OfficeRoleList>();
 
             kernel.Bind<IWebEasServiceInterface>().To<WebEas.Esam.ServiceInterface.Office.Rzp.ServiceInterface>();
+            kernel.Bind<IWebEasServiceInterface>().To<WebEas.Esam.ServiceInterface.Office.Dms.ServiceInterface>();
             kernel.Bind<IWebEasServiceInterface>().To<WebEas.Esam.ServiceInterface.Office.Cfe.ServiceInterface>();
             kernel.Bind<IWebEasServiceInterface>().To<ServiceInterface.Office.Reg.ServiceInterface>();
 
             kernel.Bind<IPfeRepository>().To<PfeRepository>().InRequestScope().WithPropertyValue("StsThumbPrint", this.GetThumbprint("StsThumbprint"));
             kernel.Bind<IRzpRepository>().To<RzpRepository>().InRequestScope().WithPropertyValue("StsThumbPrint", this.GetThumbprint("StsThumbprint"));
+            kernel.Bind<IDmsRepository>().To<DmsRepository>().InRequestScope().WithPropertyValue("StsThumbPrint", this.GetThumbprint("StsThumbprint"));
             kernel.Bind<ICfeRepository>().To<CfeRepository>().InRequestScope().WithPropertyValue("StsThumbPrint", this.GetThumbprint("StsThumbprint"));
             base.AddNinjectBinding(kernel);
             LogManager.GetLogger("Kernel").Info("Loading kernel done");

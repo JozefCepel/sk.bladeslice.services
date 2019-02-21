@@ -23,14 +23,14 @@ namespace WebEas.Esam.ServiceInterface.Office.Rzp
 
         #region Návrhy rozpočtu
 
-        void ChangeStateNavrh(IChangeState state);
+        void ChangeStateNavrh(ChangeStateDto state);
         void PrevziatNavrhRozpoctu(PrevziatNavrhRozpoctuDto request);
 
         #endregion
 
         #region Zmeny rozpočtu
 
-        void ChangeStateZmena(IChangeState state);
+        void ChangeStateZmena(ChangeStateDto state);
         long PocetOdoslanychZaznamovKDatumu(PocetOdoslanychZaznamovKDatumu request);
 
         #endregion

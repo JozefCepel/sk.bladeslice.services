@@ -596,7 +596,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Rzp
             return GetById<NavrhyRzpValView>(Update(data.ConvertToEntity()));
         }
 
-        public void ChangeStateNavrh(IChangeState state)
+        public void ChangeStateNavrh(ChangeStateDto state)
         {
             var rec = GetList<NavrhRzpView>(x => x.D_NavrhZmenyRzp_Id == state.Id).SingleOrDefault();
             if (rec != null)
@@ -619,7 +619,8 @@ namespace WebEas.Esam.ServiceInterface.Office.Rzp
                             C_StavEntity_Id_New = state.IdNewState,
                             C_StavEntity_Id_Old = rec.C_StavEntity_Id,
                             C_StavovyPriestor_Id = (int)StavovyPriestorEnum.RZP_NavrhUprava,
-                            D_NavrhZmenyRzp_Id = rec.D_NavrhZmenyRzp_Id
+                            D_NavrhZmenyRzp_Id = rec.D_NavrhZmenyRzp_Id,
+                            VyjadrenieSpracovatela = state.VyjadrenieSpracovatela
                         };
 
                         InsertData(historia);
@@ -797,7 +798,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Rzp
             return GetById<ZmenyRzpValView>(Update(data.ConvertToEntity()));
         }
 
-        public void ChangeStateZmena(IChangeState state)
+        public void ChangeStateZmena(ChangeStateDto state)
         {
             using (var transaction = BeginTransaction())
             {
@@ -812,7 +813,8 @@ namespace WebEas.Esam.ServiceInterface.Office.Rzp
                         C_StavEntity_Id_New = state.IdNewState,
                         C_StavEntity_Id_Old = rec.C_StavEntity_Id,
                         C_StavovyPriestor_Id = (int)StavovyPriestorEnum.RZP_NavrhUprava,
-                        D_NavrhZmenyRzp_Id = rec.D_NavrhZmenyRzp_Id
+                        D_NavrhZmenyRzp_Id = rec.D_NavrhZmenyRzp_Id,
+                        VyjadrenieSpracovatela = state.VyjadrenieSpracovatela
                     };
 
                     InsertData(historia);

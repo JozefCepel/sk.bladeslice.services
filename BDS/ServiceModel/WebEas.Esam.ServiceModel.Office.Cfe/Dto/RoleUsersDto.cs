@@ -23,7 +23,7 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
     {
         [PrimaryKey]
         [DataMember(IsRequired = true)]
-        public long D_RoleUsers_Id { get; set; }
+        public int D_RoleUsers_Id { get; set; }
     }
 
     // Delete
@@ -34,12 +34,12 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
     public class DeleteRoleUsers
     {
         [DataMember(IsRequired = true)]
-        public long D_RoleUsers_Id { get; set; }
+        public int D_RoleUsers_Id { get; set; }
     }
 
     #region DTO
     [DataContract]
-    public class RoleUsersDto : BaseDto<RoleUsersView>
+    public class RoleUsersDto : BaseDto<RoleUsers>
     {
 
         [DataMember]
@@ -61,7 +61,7 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
         /// Binds to entity.
         /// </summary>
         /// <param name="data"></param>
-        protected override void BindToEntity(RoleUsersView data)
+        protected override void BindToEntity(RoleUsers data)
         {
             data.D_User_Id = D_User_Id;
             data.C_Role_Id = C_Role_Id;

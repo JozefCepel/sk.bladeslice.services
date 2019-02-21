@@ -46,21 +46,5 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
         [DataMember]
         public Guid D_User_Id { get; set; }
 
-        [DataMember]
-        [PfeColumn(Text = "Typ")]
-        [PfeCombo(typeof(TenantTypeView), IdColumnCombo = "C_TenantType_Id")]
-        public int C_TenantType_Id { get; set; }
-
-        [DataMember]
-        [PfeColumn(Text = "Názov")]        
-        public string Nazov { get; set; }
-
-        [DataMember]
-        [PfeColumn(Text = "Server")]
-        public string Server { get; set; }
-
-        [DataMember]
-        [PfeColumn(Text = "Databáza")]
-        public string Databaza { get; set; }
     }
 }

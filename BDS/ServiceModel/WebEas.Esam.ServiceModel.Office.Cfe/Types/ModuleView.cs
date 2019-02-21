@@ -5,9 +5,9 @@ using WebEas.ServiceModel;
 namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
 {
     [Schema("cfe")]
-    [Alias("V_TenantType")]
+    [Alias("V_Module")]
     [DataContract]
-    public class TenantTypeView : TenantType
+    public class ModuleView : Module
     {
         //audit stlpce
         [DataMember]

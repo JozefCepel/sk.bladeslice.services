@@ -67,6 +67,7 @@ namespace WebEas.Esam.Office.Reg
 
             kernel.Bind<IRoleList>().To<ServiceModel.Office.Reg.ServiceModel>();
             kernel.Bind<IRoleList>().To<ServiceModel.Office.Rzp.ServiceModel>();
+            kernel.Bind<IRoleList>().To<ServiceModel.Office.Dms.ServiceModel>();
             kernel.Bind<IRoleList>().To<ServiceModel.Office.Cfe.ServiceModel>();
 
             kernel.Bind<IRoleList>().To<ServiceModel.Office.RolesDefinition.OfficeRoleList>();
