@@ -23,7 +23,7 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
     {
         [PrimaryKey]
         [DataMember(IsRequired = true)]
-        public long D_Department_Id { get; set; }
+        public int D_Department_Id { get; set; }
     }
 
     // Delete
@@ -34,17 +34,16 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
     public class DeleteDepartment
     {
         [DataMember(IsRequired = true)]
-        public long D_Department_Id { get; set; }
+        public int D_Department_Id { get; set; }
     }
 
     #region DTO
     [DataContract]
-    public class DepartmentDto : BaseDto<DepartmentView>
+    public class DepartmentDto : BaseDto<Department>
     {
-
         [DataMember]
         [Required]
-        public int Typ { get; set; }
+        public short Typ { get; set; }
 
         [DataMember]
         [NotEmptyOrDefault]
@@ -58,7 +57,7 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
         public int? C_Department_Id_Parent { get; set; }
 
         [DataMember]
-        public int? Zodpovedny_id { get; set; }
+        public Guid? Zodpovedny_Id { get; set; }
 
         [DataMember]
         [NotEmptyOrDefault]
@@ -71,13 +70,13 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
         /// Binds to entity.
         /// </summary>
         /// <param name="data"></param>
-        protected override void BindToEntity(DepartmentView data)
+        protected override void BindToEntity(Department data)
         {
             data.Typ = Typ;
             data.Kod = Kod;
             data.Nazov = Nazov;
             data.C_Department_Id_Parent = C_Department_Id_Parent;
-            data.Zodpovedny_id = Zodpovedny_id;
+            data.Zodpovedny_Id = Zodpovedny_Id;
             data.PlatnostOd = PlatnostOd;
             data.PlatnostDo = PlatnostDo;
         }

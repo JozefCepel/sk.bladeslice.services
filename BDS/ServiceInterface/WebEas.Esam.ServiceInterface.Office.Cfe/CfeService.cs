@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WebEas.Esam.ServiceModel.Office.Cfe.Dto;
+﻿using WebEas.Esam.ServiceModel.Office.Cfe.Dto;
+using WebEas.Esam.ServiceModel.Office.Cfe.Types;
+using WebEas.ServiceModel.Types;
 
 namespace WebEas.Esam.ServiceInterface.Office.Cfe
 {
@@ -104,6 +101,112 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
         public object Any(RowDefaultValues request)
         {
             return Repository.GetRowDefaultValues(request.code, request.masterCode, request.masterRowId);
+        }
+
+        #endregion
+
+        // ----------------------------------------------------------
+
+        #region Tenant
+
+        public object Any(UpdateTenant request)
+        {
+            return Repository.Update<TenantView>(request);
+        }
+
+        #endregion
+
+        #region User
+
+        public void Any(CreateUser request)
+        {
+            Repository.CreateUser(request);  // specialita:  GUID ako primary key
+        }
+
+        public object Any(UpdateUser request)
+        {
+            return Repository.Update<UserView>(request);
+        }
+
+        public void Any(DeleteUser request)
+        {
+            Repository.Delete<User>(request.D_User_Id);
+        }
+
+        #endregion
+
+        #region Role
+
+        public object Any(CreateRole request)
+        {
+            return Repository.Create<RoleView>(request);
+        }
+
+        public object Any(UpdateRole request)
+        {
+            return Repository.Update<RoleView>(request);
+        }
+
+        public void Any(DeleteRole request)
+        {
+            Repository.Delete<Role>(request.C_Role_Id);
+        }
+
+        #endregion
+
+        #region RoleUsers
+
+        public object Any(CreateRoleUsers request)
+        {
+            return Repository.Create<RoleUsersView>(request);
+        }
+
+        public object Any(UpdateRoleUsers request)
+        {
+            return Repository.Update<RoleUsersView>(request);
+        }
+
+        public void Any(DeleteRoleUsers request)
+        {
+            Repository.Delete<RoleUsers>(request.D_RoleUsers_Id);
+        }
+
+        #endregion
+
+        #region TenantUsers
+
+        public object Any(CreateTenantUsers request)
+        {
+            return Repository.Create<TenantUsersView>(request);
+        }
+
+        public object Any(UpdateTenantUsers request)
+        {
+            return Repository.UpdateTenantUsers(request);  // specialita: UPDATE D_Tenant_Id
+        }
+
+        public void Any(DeleteTenantUsers request)
+        {
+            Repository.Delete<TenantUsers>(request.D_TenantUsers_Id);
+        }
+
+        #endregion
+
+        #region Department
+
+        public object Any(CreateDepartment request)
+        {
+            return Repository.Create<DepartmentView>(request);
+        }
+
+        public object Any(UpdateDepartment request)
+        {
+            return Repository.Update<DepartmentView>(request);
+        }
+
+        public void Any(DeleteDepartment request)
+        {
+            Repository.Delete<Department>(request.D_Department_Id);
         }
 
         #endregion

@@ -213,16 +213,11 @@
     <Compile Include="TenantUpdatableAttribute.cs" />
     <Compile Include="SyncHelper.cs" />
     <Compile Include="Types\ComboResult.cs" />
-    <Compile Include="Types\CisKataster.cs" />
-    <Compile Include="Types\ComboSablony.cs" />
-    <Compile Include="Types\CreateDecission.cs" />
     <Compile Include="Types\DbEnvironment.cs" />
     <Compile Include="Types\User.cs" />
-    <Compile Include="Types\InternalPayment.cs" />
-    <Compile Include="Types\KodRokOstatneDane.cs" />
     <Compile Include="Types\LoggingView.cs" />
-    <Compile Include="Types\CisSadzba.cs" />
     <Compile Include="Types\LogView.cs" />
+    <Compile Include="Types\UserView.cs" />
     <Compile Include="UseThisTypeAttribute.cs" />
     <Compile Include="Validator.cs" />
     <Compile Include="Wcf\CodeType.cs" />

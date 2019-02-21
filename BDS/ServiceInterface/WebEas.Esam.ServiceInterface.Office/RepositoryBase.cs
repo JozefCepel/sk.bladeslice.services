@@ -1,6 +1,5 @@
 ﻿using NLog;
 using ServiceStack;
-using ServiceStack.DataAnnotations;
 using ServiceStack.OrmLite;
 using ServiceStack.OrmLite.Dapper;
 using System;
@@ -8,8 +7,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -20,9 +17,7 @@ using WebEas.Esam.ServiceModel.Office.Types;
 using WebEas.ServiceInterface;
 using WebEas.ServiceModel;
 using WebEas.ServiceModel.Dto;
-using WebEas.ServiceModel.Office.Egov;
 using WebEas.ServiceModel.Office.Egov.Reg.Types;
-using WebEas.ServiceModel.Office.Egov.Types;
 using WebEas.ServiceModel.Types;
 
 namespace WebEas.Esam.ServiceInterface.Office

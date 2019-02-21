@@ -90,6 +90,7 @@
     <Compile Include="Reg\Types\ProjektView.cs" />
     <Compile Include="Reg\Types\StrediskoView.cs" />
     <Compile Include="RolesDefinition\Cfe\Roles.cs" />
+    <Compile Include="RolesDefinition\Dms\Roles.cs" />
     <Compile Include="RolesDefinition\OfficeRoleList.cs" />
     <Compile Include="RolesDefinition\Bds\Roles.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

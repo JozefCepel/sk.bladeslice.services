@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using WebEas.Esam.ServiceModel.Office.Cfe.Dto;
 using WebEas.Esam.ServiceModel.Office.Cfe.Types;
-using WebEas.ServiceInterface;
 using WebEas.ServiceModel;
+using WebEas.ServiceModel.Types;
 using RolesDefinition = WebEas.Esam.ServiceModel.Office.RolesDefinition;
 
 namespace WebEas.Esam.ServiceInterface.Office.Cfe
@@ -32,8 +31,15 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
                     Children = new List<HierarchyNode>
                     {
 
-                        new HierarchyNode<UserView>("users", "Používatelia", null, HierarchyNodeType.Ciselnik)
+                        new HierarchyNode<UserView>("users", "Používatelia", null, HierarchyNodeType.DatovaPolozka)
                         {
+                            Actions = new List<NodeAction>
+                            {
+                                new NodeAction(NodeActionType.Change, roles_member),
+                                new NodeAction(NodeActionType.Delete, typeof(DeleteUser)) {SelectionMode = PfeSelection.Multi },
+                                new NodeAction(NodeActionType.Update, typeof(UpdateUser))
+                            }.AddMenuButtonsAll(NodeActionType.Create, typeof(CreateUser), roles_member),
+
                             Children = new List<HierarchyNode>
                             {
                                 new HierarchyNode<RoleUsersView>("roleusers", "Priradenie do rolí", null, HierarchyNodeType.Ciselnik)
@@ -70,6 +76,13 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
                         },
                         new HierarchyNode<RoleView>("role", "Role", null, HierarchyNodeType.DatovaPolozka)
                         {
+                            Actions = new List<NodeAction>
+                            {
+                                new NodeAction(NodeActionType.Change, roles_member),
+                                new NodeAction(NodeActionType.Delete, typeof(DeleteRole)) {SelectionMode = PfeSelection.Multi },
+                                new NodeAction(NodeActionType.Update, typeof(UpdateRole))
+                            }.AddMenuButtonsAll(NodeActionType.Create, typeof(CreateRole), roles_member),
+
                             // Rola [1,2,3] (folder)
 
                         }
@@ -80,13 +93,25 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
                     Children = new List<HierarchyNode>
                     {
                         // D_Tenant/ (SysAdmin všetko, ostatní uvidia iba svojho tenanta)
-                        new HierarchyNode<TenantView>("ten", "Zoznam tenantov", null, HierarchyNodeType.Ciselnik)
+                        new HierarchyNode<TenantView>("ten", "Zoznam tenantov", null, HierarchyNodeType.DatovaPolozka)
                         {
+                            Actions = new List<NodeAction>
+                            {
+                                new NodeAction(NodeActionType.Change, roles_member),
+                                new NodeAction(NodeActionType.Update, typeof(UpdateTenant)) // len Update! create/delete cez script
+                            },
                             Children = new List<HierarchyNode>
                             {
                                 // read ikonka
-                                new HierarchyNode<TenantUsersView>("tenantusers", "Priradenie používateľov", null, HierarchyNodeType.StatickyCiselnik)
+                                new HierarchyNode<TenantUsersView>("tenusers", "Priradenie používateľov", null, HierarchyNodeType.Ciselnik)
                                 {
+                                    SelectionMode = PfeSelection.Multi,
+                                    Actions = new List<NodeAction>
+                                    {
+                                        new NodeAction(NodeActionType.Change, roles_member),
+                                        new NodeAction(NodeActionType.Delete, typeof(DeleteTenantUsers)) {SelectionMode = PfeSelection.Multi },
+                                        new NodeAction(NodeActionType.Update, typeof(UpdateTenantUsers))
+                                    }.AddMenuButtonsAll(NodeActionType.Create, typeof(CreateTenantUsers), roles_member),
                                 },
                                 // Používateľ [1,2,3] folder
                             },
@@ -115,7 +140,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
                             }.AddMenuButtonsAll(NodeActionType.Create, typeof(CreateDepartment), roles_member)
                         },
                         // (Read ikonka - importované skriptom) /C_Module
-                        new HierarchyNode<RoleView>("role", "Moduly", null, HierarchyNodeType.StatickyCiselnik)
+                        new HierarchyNode<ModuleView>("role", "Moduly", null, HierarchyNodeType.DatovaPolozka)
                         {
                             Children = new List<HierarchyNode>
                             {

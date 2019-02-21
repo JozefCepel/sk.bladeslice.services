@@ -1,47 +1,48 @@
-﻿using System;
+﻿using ServiceStack.DataAnnotations;
 using System.Runtime.Serialization;
-using ServiceStack.DataAnnotations;
 using WebEas.ServiceModel;
-using WebEas.ServiceModel.Office.Egov.Types;
+using WebEas.ServiceModel.Types;
 
 namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
 {
     [Schema("cfe")]
-    [Alias("D_Department")]
+    [Alias("V_Department")]
     [DataContract]
-    public class DepartmentView : BaseTenantEntity
+    public class DepartmentView : Department
     {
-        [PrimaryKey]
-        [AutoIncrement]
         [DataMember]
-        public int D_Department_Id { get; set; }
-
-        [DataMember]
+        [PfeCombo(typeof(DepartmentCombo), NameColumn = "Typ")]
         [PfeColumn(Text = "Typ")]
-        public int Typ { get; set; }
-
-        [DataMember]
-        [PfeColumn(Text = "Kód")]
-        public string Kod { get; set; }
-
-        [DataMember]
-        [PfeColumn(Text = "Názov")]
-        public string Nazov { get; set; }
-
-        [DataMember]
-        [PfeColumn(Text = "Nadradenné oddelenie")]
-        public int? C_Department_Id_Parent { get; set; }
+        [Ignore]
+        public string TypText
+        {
+            get
+            {
+                return DepartmentCombo.GetText(Typ);
+            }
+        }
 
         [DataMember]
         [PfeColumn(Text = "Zodpovedný")]
-        public int? Zodpovedny_id { get; set; }
+        [PfeCombo(typeof(UserView), NameColumn = "Zodpovedny_Id", DisplayColumn = "FullName")]
+        [IgnoreInsertOrUpdate]
+        public string Zodpovedny { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Platné od", Hidden = true, Type = PfeDataType.DateTime, Editable = false, Rank = 103, ReadOnly = true)]
-        public DateTime PlatnostOd { get; set; }
+        [PfeColumn(Text = "Nadradenné oddelenie")]
+        [PfeCombo(typeof(DepartmentView), NameColumn = "C_Department_Id_Parent", DisplayColumn = "Nazov")]
+        [IgnoreInsertOrUpdate]
+        public string ParentName { get; set; }
+
+        //audit stlpce
+        [DataMember]
+        [PfeColumn(Text = "Vytvoril", Hidden = true, Editable = false, ReadOnly = true)]
+        [IgnoreInsertOrUpdate]
+        public string VytvorilMeno { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Platné do", Hidden = true, Type = PfeDataType.DateTime, Editable = false, Rank = 103, ReadOnly = true)]
-        public DateTime? PlatnostDo { get; set; }
+        [PfeColumn(Text = "Zmenil", Hidden = true, Editable = false, ReadOnly = true)]
+        [IgnoreInsertOrUpdate]
+        public string ZmenilMeno { get; set; }
     }
 }

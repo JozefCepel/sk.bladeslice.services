@@ -578,14 +578,17 @@ namespace WebEas.ServiceInterface
                     excludeFields.Add("D_Tenant_Id");
                 }
 
-                PrepareParameterizedUpdateStatement<T>(dialectProvider, obj, dbCmd, excludeFields);
+                //Fix: DatumZmeny a Zmenil musi byt nastaveny pred generrovanim statementu.
+                obj.PrepareUpdateParameters(repository);
+
+                PrepareParameterizedUpdateStatement(dialectProvider, obj, dbCmd, excludeFields);
 
                 if (string.IsNullOrEmpty(dbCmd.CommandText))
                 {
                     return 0;
                 }
 
-                obj.PrepareUpdateParameters(repository);
+                
                 SetParameterValues<T>(dbCmd, obj);
 
                 if (log.IsDebugEnabled)

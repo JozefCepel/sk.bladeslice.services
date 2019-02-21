@@ -1,27 +1,42 @@
-﻿using System;
+﻿using ServiceStack.DataAnnotations;
 using System.Runtime.Serialization;
-using ServiceStack.DataAnnotations;
 using WebEas.ServiceModel;
+using WebEas.ServiceModel.Types;
 
 namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
 {
     [Schema("cfe")]
-    [Alias("D_TenantUsers")]
+    [Alias("V_TenantUsers")]
     [DataContract]
-    public class TenantUsersView : BaseEntity
+    public class TenantUsersView : TenantUsers
     {
-        [PrimaryKey]
-        [AutoIncrement]
-        [DataMember]        
-        public int D_TenantUsers_Id { get; set; }
+        [DataMember]
+        [PfeColumn(Text = "Užívateľ")]
+        [PfeCombo(typeof(UserView), NameColumn = "D_User_Id", DisplayColumn = "FullName")]
+        [IgnoreInsertOrUpdate]
+        public string UserName { get; set; }
 
         [DataMember]
-        public Guid D_User_Id { get; set; }
+        [PfeColumn(Text = "Tenant")]
+        [PfeCombo(typeof(TenantView), NameColumn = "D_Tenant_Id", DisplayColumn = "Nazov")]
+        [IgnoreInsertOrUpdate]
+        public string TenantName { get; set; }
 
         [DataMember]
-        public Guid D_Tenant_Id { get; set; }
+        [PfeColumn(Text = "Oddelenie")]
+        [PfeCombo(typeof(DepartmentView), NameColumn = "D_Department_Id", DisplayColumn = "Nazov")]
+        [IgnoreInsertOrUpdate]
+        public string DepartmentName { get; set; }
+
+        //audit stlpce
+        [DataMember]
+        [PfeColumn(Text = "Vytvoril", Hidden = true, Editable = false, ReadOnly = true)]
+        [IgnoreInsertOrUpdate]
+        public string VytvorilMeno { get; set; }
 
         [DataMember]
-        public int D_Department_Id { get; set; }
+        [PfeColumn(Text = "Zmenil", Hidden = true, Editable = false, ReadOnly = true)]
+        [IgnoreInsertOrUpdate]
+        public string ZmenilMeno { get; set; }
     }
 }

@@ -1,20 +1,22 @@
-﻿using System;
+﻿using ServiceStack.DataAnnotations;
 using System.Runtime.Serialization;
-using ServiceStack.DataAnnotations;
-using WebEas.ServiceModel;
 
-namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
+namespace WebEas.ServiceModel.Types
 {
     [Schema("cfe")]
-    [Alias("V_Tenant")]
+    [Alias("V_Users")]
     [DataContract]
-    public class TenantView : Tenant
+    public class UserView : User
     {
         [DataMember]
-        [PfeColumn(Text = "Typ")]
-        [PfeCombo(typeof(TenantType), NameColumn = "C_TenantType_Id", DisplayColumn = "Typ")]
+        [PfeColumn(Text = "Nadradený")]
+        [PfeCombo(typeof(UserView), NameColumn = "D_User_Id_Parent", DisplayColumn = "FullName")]
         [IgnoreInsertOrUpdate]
-        public string TenantTypeName { get; set; }
+        public string ParentFullName { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Celé meno", ReadOnly = true)]
+        public string FullName { get; set; }
 
         //audit stlpce
         [DataMember]

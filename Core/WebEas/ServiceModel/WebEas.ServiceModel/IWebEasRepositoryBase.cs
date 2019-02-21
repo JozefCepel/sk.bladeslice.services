@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using WebEas.Core;
-using WebEas.ServiceModel.Dto;
-using WebEas.ServiceModel.Office.Egov.Types;
 using WebEas.ServiceModel.Types;
 
 namespace WebEas.ServiceModel

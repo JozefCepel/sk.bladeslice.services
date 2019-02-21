@@ -5,10 +5,6 @@ using WebEas.Esam.ServiceModel.Office;
 using WebEas.Esam.ServiceModel.Office.Dto;
 using WebEas.Esam.ServiceModel.Pfe.Dto;
 using WebEas.ServiceModel;
-using WebEas.ServiceModel.Office.Egov;
-using WebEas.ServiceModel.Office.Egov.Reg.Types;
-using WebEas.ServiceModel.Office.Egov.Types;
-using WebEas.ServiceModel.Pfe.Dto;
 using WebEas.ServiceModel.Pfe.Types;
 using WebEas.ServiceModel.Types;
 

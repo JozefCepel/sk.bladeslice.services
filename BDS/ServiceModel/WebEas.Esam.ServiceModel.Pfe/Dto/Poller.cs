@@ -1,8 +1,5 @@
-﻿using System.Runtime.Serialization;
-using ServiceStack;
-using WebEas.ServiceModel.Pfe.Types;
-using WebEas.ServiceModel.Office.Egov.Types;
-using ServiceStack.DataAnnotations;
+﻿using ServiceStack;
+using System.Runtime.Serialization;
 
 namespace WebEas.Esam.ServiceModel.Pfe.Dto
 {

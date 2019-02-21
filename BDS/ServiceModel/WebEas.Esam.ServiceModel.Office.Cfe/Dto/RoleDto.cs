@@ -9,58 +9,53 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
 {
     // Create
     [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeMember)]
-    [Route("/CreateTenantUsers", "POST")]
-    [Api("TenantUsers")]
+    [Route("/CreateRole", "POST")]
+    [Api("Role")]
     [DataContract]
-    public class CreateTenantUsers : TenantUsersDto { }
+    public class CreateRole : RoleDto { }
 
     // Update
     [WebEasRequiredRole(Roles.Admin)]
-    [Route("/UpdateTenantUsers", "PUT")]
-    [Api("TenantUsers")]
+    [Route("/UpdateRole", "PUT")]
+    [Api("Role")]
     [DataContract]
-    public class UpdateTenantUsers : TenantUsersDto
+    public class UpdateRole : RoleDto
     {
         [PrimaryKey]
         [DataMember(IsRequired = true)]
-        public int D_TenantUsers_Id { get; set; }
+        public int C_Role_Id { get; set; }
     }
 
     // Delete
     [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeMember)]
-    [Route("/DeleteTenantUsers", "DELETE")]
-    [Api("TenantUsers")]
+    [Route("/DeleteRole", "DELETE")]
+    [Api("Role")]
     [DataContract]
-    public class DeleteTenantUsers
+    public class DeleteRole
     {
         [DataMember(IsRequired = true)]
-        public int D_TenantUsers_Id { get; set; }
+        public int C_Role_Id { get; set; }
     }
 
     #region DTO
     [DataContract]
-    public class TenantUsersDto : BaseDto<TenantUsers>
+    public class RoleDto : BaseDto<Role>
     {
         [DataMember]
         [NotEmptyOrDefault]
-        public Guid D_User_Id { get; set; }
+        public string Nazov { get; set; }
 
         [DataMember]
-        [NotEmptyOrDefault]
-        public Guid D_Tenant_Id { get; set; }
-
-        [DataMember]
-        public int? D_Department_Id { get; set; }
+        public int? C_Roles_Id_Parent { get; set; }
 
         /// <summary>
         /// Binds to entity.
         /// </summary>
         /// <param name="data"></param>
-        protected override void BindToEntity(TenantUsers data)
+        protected override void BindToEntity(Role data)
         {
-            data.D_User_Id = D_User_Id;
-            data.D_Tenant_Id = D_Tenant_Id;
-            data.D_Department_Id = D_Department_Id;
+            data.Nazov = Nazov;
+            data.C_Roles_Id_Parent = C_Roles_Id_Parent;
         }
     }
     #endregion

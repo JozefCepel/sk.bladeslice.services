@@ -5,16 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Reflection;
 using System.Text;
 using WebEas.Egov.Reports;
 using WebEas.Esam.ServiceInterface.Office;
 using WebEas.Esam.ServiceModel.Pfe.Dto;
 using WebEas.ServiceInterface;
 using WebEas.ServiceModel;
-using WebEas.ServiceModel.Office.Egov.Dto;
-using WebEas.ServiceModel.Office.Egov.Reg.Types;
 using WebEas.ServiceModel.Pfe.Dto;
 using WebEas.ServiceModel.Pfe.Types;
 using WebEas.ServiceModel.Types;
@@ -117,6 +113,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
             */
 
             //Pre DMS musime vycistit adresarovy strom
+            Modules.Load<Office.Dms.IDmsRepository>().ClearDirCache();
             Modules.HierarchyNodeList = null;
 
             // staticky strom pre celu app - definicia

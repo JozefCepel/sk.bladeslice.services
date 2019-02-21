@@ -2,18 +2,20 @@
 using System.Runtime.Serialization;
 using ServiceStack.DataAnnotations;
 
-namespace WebEas.ServiceModel.Office.Egov.Types
+namespace WebEas.ServiceModel.Types
 {
 	[Schema("cfe")]
-	[Alias("V_Users")]
+	[Alias("D_Users")]
     [DataContract]
     public class User : BaseEntity
     {
+        [PrimaryKey]
         [DataMember]
+        [AutoIncrement]
         public Guid D_User_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Login meno")]
+        [PfeColumn(Text = "Login meno", Mandatory = true)]
         public string LoginName { get; set; }
 
         [DataMember]
@@ -21,16 +23,12 @@ namespace WebEas.ServiceModel.Office.Egov.Types
         public string LoginPswd { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Meno")]
+        [PfeColumn(Text = "Meno", Mandatory = true)]
         public string FirstName { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Priezvisko")]
+        [PfeColumn(Text = "Priezvisko", Mandatory = true)]
         public string LastName { get; set; }
-
-        [DataMember]
-        [PfeColumn(Text = "Celé meno")]
-        public string FullName { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Titul pred")]
@@ -41,7 +39,7 @@ namespace WebEas.ServiceModel.Office.Egov.Types
         public string TitulZa { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "E-mailová adresa")]
+        [PfeColumn(Text = "E-mailová adresa", Mandatory = true)]
         public string Email { get; set; }
 
         [DataMember]
@@ -54,23 +52,18 @@ namespace WebEas.ServiceModel.Office.Egov.Types
 
         [DataMember]
         [PfeColumn(Text = "_Nadradený")]
-        public Guid D_User_Id_Parent { get; set; }
+        public Guid? D_User_Id_Parent { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Nadradený")]
-        [PfeCombo(typeof(User), NameColumn = "D_User_Id_Parent")]
-        public string UserParent { get; set; }
-
-        [DataMember]
-        [PfeColumn(Text = "Dátum začiatku")]
+        [PfeColumn(Text = "Dátum začiatku", Mandatory = true)]
         public DateTime DateStart { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Dátum ukončenia")]
-        public DateTime DateEnd { get; set; }
+        public DateTime? DateEnd { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Krajina")]
-        public short Country { get; set; }
+        [PfeColumn(Text = "_Krajina")]  // bude sa riesit neskor, nie ja na to cas, defualtne 1 = SVK
+        public short? Country { get; set; }
     }
 }
