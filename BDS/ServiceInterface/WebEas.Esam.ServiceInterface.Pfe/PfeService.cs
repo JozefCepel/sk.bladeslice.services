@@ -104,20 +104,17 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         {
             var disabledNodes = new List<string>();
 
-            if (!((Office.RepositoryBase)repository).GetNastavenieB("rzp", "VydProgrRzp"))
+            /*
+            if (!((Office.RepositoryBase)repository).GetNastavenieB("bds", "VydProgrBds"))
             {
                 disabledNodes.AddRange(
                     new string[]
                     {
-                        "rzp-evi-ciel",
-                        "rzp-evi-ciel-ukazov",
-                        "rzp-prh-prgrzp",
-                        "rzp-def-prr",
-                        "rzp-def-prs",
-                        "rzp-def-ciel",
-                        "rzp-def-ciel-ukazovatel"
+                        "bds-xxx-bbb",
+                        "bds-yyy-aaa"
                 });
             }
+            */
 
             //Pre DMS musime vycistit adresarovy strom
             Modules.HierarchyNodeList = null;

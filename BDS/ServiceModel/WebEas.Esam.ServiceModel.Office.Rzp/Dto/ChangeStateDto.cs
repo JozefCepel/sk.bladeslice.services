@@ -7,12 +7,12 @@ using System.Text;
 using System.Threading.Tasks;
 using WebEas.ServiceModel.Dto;
 
-namespace WebEas.Esam.ServiceModel.Office.Rzp.Dto
+namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
 {
     [DataContract]
     [Route("/changestate", "POST")]
     [Api("Zmena stavu")]
-    [WebEasRequiresAnyRole(RolesDefinition.Rzp.Roles.RzpWriter)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsWriter)]
     public class ChangeStateDto : BaseChangeStateDto
     {
     }

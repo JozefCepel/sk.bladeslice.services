@@ -197,7 +197,7 @@ namespace WebEas.Esam.ServiceModel.Office
                             {
                                 throw new WebEasException("Error in getting role list", ex);
                             }
-                            var admin = new Role("RZP_ADMIN", "Admin modulu rozpočet");
+                            var admin = new Role("BDS_ADMIN", "Admin modulu rozpočet");
                             admin.SubRoles = new List<Role>();
                             admin.SubRoles.AddRange(listRoles);
                             listRoles.Add(admin);
@@ -391,7 +391,7 @@ namespace WebEas.Esam.ServiceModel.Office
                 if (debug)
                 {
                     log.Debug("Asign debug roles");
-                    AddRole(session, "RZP_ADMIN");
+                    AddRole(session, "BDS_ADMIN");
                     AddRole(session, "DMS_ADMIN");
                     AddRole(session, "CFE_ADMIN");
                     return;

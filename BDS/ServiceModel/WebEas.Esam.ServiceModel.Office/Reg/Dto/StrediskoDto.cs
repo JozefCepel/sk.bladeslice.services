@@ -8,7 +8,7 @@ using WebEas.ServiceModel;
 namespace WebEas.Esam.ServiceModel.Office.Reg.Dto
 {
     // Create
-    [WebEasRequiresAnyRole(RolesDefinition.Rzp.Roles.RzpMember)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
     [Route("/CreateStredisko", "POST")]
     [Api("Stredisko")]
     [DataContract]
@@ -27,7 +27,7 @@ namespace WebEas.Esam.ServiceModel.Office.Reg.Dto
     }
 
     // Delete
-    [WebEasRequiresAnyRole(RolesDefinition.Rzp.Roles.RzpMember)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
     [Route("/DeleteStredisko", "DELETE")]
     [Api("Stredisko")]
     [DataContract]

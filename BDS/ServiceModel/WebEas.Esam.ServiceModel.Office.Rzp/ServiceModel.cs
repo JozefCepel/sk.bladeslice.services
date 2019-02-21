@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using WebEas.Auth;
 
-namespace WebEas.Esam.ServiceModel.Office.Rzp
+namespace WebEas.Esam.ServiceModel.Office.Bds
 {
     public class ServiceModel :  IRoleList
     {
@@ -13,7 +13,7 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp
         {
             get
             {
-                return RolesDefinition.Rzp.Roles.List;
+                return RolesDefinition.Bds.Roles.List;
             }
         }
     }

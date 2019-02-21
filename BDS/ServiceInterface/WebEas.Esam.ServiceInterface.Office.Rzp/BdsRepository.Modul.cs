@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using WebEas.Esam.ServiceModel.Office.Rzp.Types;
+using WebEas.Esam.ServiceModel.Office.Bds.Types;
 using WebEas.ServiceModel;
 
-namespace WebEas.Esam.ServiceInterface.Office.Rzp
+namespace WebEas.Esam.ServiceInterface.Office.Bds
 {
-    public partial class RzpRepository
+    public partial class BdsRepository
     {
         public List<DatabaseHierarchyNode> RenderProgramovyRozpocet(DatabaseHierarchyNode staticData)
         {

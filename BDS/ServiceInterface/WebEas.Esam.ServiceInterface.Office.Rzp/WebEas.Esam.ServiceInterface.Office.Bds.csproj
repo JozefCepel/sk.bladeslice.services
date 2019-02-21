@@ -66,11 +66,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IRzpRepository.cs" />
+    <Compile Include="IBdsRepository.cs" />
     <Compile Include="Modul.cs" />
-    <Compile Include="RzpRepository.cs" />
-    <Compile Include="RzpRepository.Modul.cs" />
-    <Compile Include="RzpService.cs" />
+    <Compile Include="BdsRepository.cs" />
+    <Compile Include="BdsRepository.Modul.cs" />
+    <Compile Include="BdsService.cs" />
     <Compile Include="ServiceInterface.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -83,9 +83,9 @@
       <Project>{1b40e5ee-7311-46e7-8241-d9f0c443905d}</Project>
       <Name>WebEas.ServiceModel</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\ServiceModel\WebEas.Esam.ServiceModel.Office.Rzp\WebEas.Esam.ServiceModel.Office.Rzp.csproj">
+    <ProjectReference Include="..\..\ServiceModel\WebEas.Esam.ServiceModel.Office.Rzp\WebEas.Esam.ServiceModel.Office.Bds.csproj">
       <Project>{630888ec-7671-47df-aecd-18bad4ec52ac}</Project>
-      <Name>WebEas.Esam.ServiceModel.Office.Rzp</Name>
+      <Name>WebEas.Esam.ServiceModel.Office.Bds</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\ServiceModel\WebEas.Esam.ServiceModel.Office\WebEas.Esam.ServiceModel.Office.csproj">
       <Project>{b368a929-aa16-4823-87ec-69e90901d0ed}</Project>
@@ -97,7 +97,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IRzpRepository.Modul.cs" />
+    <Compile Include="IBdsRepository.Modul.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

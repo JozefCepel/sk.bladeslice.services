@@ -1,12 +1,12 @@
 ﻿using ServiceStack;
 using System;
 using System.Runtime.Serialization;
-using WebEas.Esam.ServiceModel.Office.RolesDefinition.Rzp;
+using WebEas.Esam.ServiceModel.Office.RolesDefinition.Bds;
 
-namespace WebEas.Esam.ServiceModel.Office.Rzp.Dto
+namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
 {
     // Get type of parameter
-    [WebEasRequiredRole(Roles.RzpAdmin)]
+    [WebEasRequiredRole(Roles.BdsAdmin)]
     [Route("/GetParameterType", "GET")]
     [Api("DapIne")]
     [DataContract]
@@ -17,7 +17,7 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Dto
     }
 
     // Update
-    [WebEasRequiredRole(Roles.RzpAdmin)]
+    [WebEasRequiredRole(Roles.BdsAdmin)]
     [Route("/UpdateNastavenie", "PUT")]
     [DataContract]
     public class UpdateNastavenie

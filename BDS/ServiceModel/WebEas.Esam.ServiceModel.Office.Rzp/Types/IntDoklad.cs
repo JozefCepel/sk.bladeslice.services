@@ -3,7 +3,7 @@ using System;
 using System.Runtime.Serialization;
 using WebEas.ServiceModel;
 
-namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
+namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 {
     [Schema("rzp")]
     [Alias("D_IntDoklad")]
@@ -36,8 +36,8 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
         public int Rok { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_C_RzpPredkontacia_Id")]
-        public int? C_RzpPredkontacia_Id { get; set; }
+        [PfeColumn(Text = "_C_BdsPredkontacia_Id")]
+        public int? C_BdsPredkontacia_Id { get; set; }
 
     }
 }

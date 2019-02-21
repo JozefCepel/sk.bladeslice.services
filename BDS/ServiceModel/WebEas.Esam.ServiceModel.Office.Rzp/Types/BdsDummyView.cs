@@ -3,10 +3,10 @@ using System;
 using System.Runtime.Serialization;
 using WebEas.ServiceModel;
 
-namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
+namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 {
     [DataContract]
-    public class RzpDummyData : BaseTenantEntity
+    public class BdsDummyData : BaseTenantEntity
     {
         [DataMember]
         [PrimaryKey]

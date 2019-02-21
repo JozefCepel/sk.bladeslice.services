@@ -5,17 +5,17 @@ using System.Runtime.Serialization;
 using WebEas.Esam.ServiceInterface.Office.Reg;
 using WebEas.ServiceModel;
 
-namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
+namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 {
     [Schema("rzp")]
-    [Alias("C_RzpPolozky")]
+    [Alias("C_BdsPolozky")]
     [DataContract]
-    public class RzpPolozky : BaseTenantEntity, IPfeCustomize
+    public class BdsPolozky : BaseTenantEntity, IPfeCustomize
     {
         [PrimaryKey]
         [AutoIncrement]
         [DataMember]
-        public long C_RzpPolozky_Id { get; set; }
+        public long C_BdsPolozky_Id { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "_C_FRZdroj_Id")]
@@ -43,7 +43,7 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
 
         [DataMember]
         [PfeColumn(Text = "Názov", Mandatory = true)]
-        public string RzpNazov { get; set; }
+        public string BdsNazov { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Platnosť od", Type = PfeDataType.Date, Mandatory = true)]

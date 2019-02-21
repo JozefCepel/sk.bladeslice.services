@@ -2,13 +2,13 @@
 using ServiceStack.DataAnnotations;
 using System;
 using System.Runtime.Serialization;
-using WebEas.Esam.ServiceModel.Office.Rzp.Types;
+using WebEas.Esam.ServiceModel.Office.Bds.Types;
 using WebEas.ServiceModel;
 
-namespace WebEas.Esam.ServiceModel.Office.Rzp.Dto
+namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
 {
     // Create
-    [WebEasRequiresAnyRole(RolesDefinition.Rzp.Roles.RzpMember)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
     [Route("/CreateCiele", "POST")]
     [Api("Ciele")]
     [DataContract]
@@ -27,7 +27,7 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Dto
     }
 
     // Delete
-    [WebEasRequiresAnyRole(RolesDefinition.Rzp.Roles.RzpMember)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
     [Route("/DeleteCiele", "DELETE")]
     [Api("Ciele")]
     [DataContract]

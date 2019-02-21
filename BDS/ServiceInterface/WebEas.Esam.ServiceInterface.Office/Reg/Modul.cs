@@ -18,11 +18,11 @@ namespace WebEas.Esam.ServiceInterface.Office.Reg
         static readonly string[] roles_writer = new string[] { WebEas.ServiceModel.Office.Egov.Reg.Roles.RegWriter };
         static readonly string[] modules_roles_member = new string[]
         {
-            ServiceModel.Office.RolesDefinition.Rzp.Roles.RzpMember,
+            ServiceModel.Office.RolesDefinition.Bds.Roles.BdsMember,
         };
         static readonly string[] modules_roles_writer = new string[]
         {
-            ServiceModel.Office.RolesDefinition.Rzp.Roles.RzpWriter,
+            ServiceModel.Office.RolesDefinition.Bds.Roles.BdsWriter,
         };
 
         #endregion

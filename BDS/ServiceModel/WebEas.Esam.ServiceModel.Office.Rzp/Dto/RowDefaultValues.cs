@@ -1,13 +1,13 @@
 ﻿using ServiceStack;
 
-namespace WebEas.Esam.ServiceModel.Office.Rzp.Dto
+namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
 {
     /// <summary>
     /// Gets Row Default Values
     /// </summary>
     [Route("/GetRowDefaultValues", "GET")]
     [Api("GetRowDefaultValues")]
-    [WebEasRequiredRole(RolesDefinition.Rzp.Roles.RzpMember)]
+    [WebEasRequiredRole(RolesDefinition.Bds.Roles.BdsMember)]
     public class RowDefaultValues
     {
         [ApiMember(Name = "Code", Description = "kod aktualnej polozky v strome", DataType = "string", IsRequired = true)]

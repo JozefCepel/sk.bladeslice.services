@@ -91,7 +91,7 @@
     <Compile Include="Reg\Types\StrediskoView.cs" />
     <Compile Include="RolesDefinition\Cfe\Roles.cs" />
     <Compile Include="RolesDefinition\OfficeRoleList.cs" />
-    <Compile Include="RolesDefinition\Rzp\Roles.cs" />
+    <Compile Include="RolesDefinition\Bds\Roles.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Types\PossibleStatesResult.cs" />
   </ItemGroup>

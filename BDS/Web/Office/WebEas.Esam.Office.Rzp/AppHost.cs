@@ -3,17 +3,17 @@ using Ninject.Web.Common;
 using ServiceStack;
 using WebEas.Auth;
 using WebEas.Esam.ServiceInterface.Office;
-using WebEas.Esam.ServiceInterface.Office.Rzp;
+using WebEas.Esam.ServiceInterface.Office.Bds;
 using WebEas.ServiceInterface;
 
-namespace WebEas.Esam.Office.Rzp
+namespace WebEas.Esam.Office.Bds
 {
     public class AppHost : EsamAppHostBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AppHost" /> class.
         /// </summary>
-        public AppHost() : base("Egovernment", typeof(RzpService).Assembly)
+        public AppHost() : base("Egovernment", typeof(BdsService).Assembly)
         {
         }
 
@@ -26,7 +26,7 @@ namespace WebEas.Esam.Office.Rzp
         {
             ServiceStack.OrmLite.OrmLiteConfig.CommandTimeout = 60;
             WebEas.Context.Current.CurrentEndpoint = Context.EndpointType.Office;
-            WebEas.Log.WebEasNLogLogger.Application = "RZP";
+            WebEas.Log.WebEasNLogLogger.Application = "BDS";
 
             base.Configure(container);
 
@@ -55,11 +55,11 @@ namespace WebEas.Esam.Office.Rzp
         {
             base.AddNinjectBinding(kernel);
 
-            kernel.Bind<IRoleList>().To<ServiceModel.Office.Rzp.ServiceModel>();
+            kernel.Bind<IRoleList>().To<ServiceModel.Office.Bds.ServiceModel>();
             kernel.Bind<IRoleList>().To<ServiceModel.Office.RolesDefinition.OfficeRoleList>();
 
-            kernel.Bind<IWebEasServiceInterface>().To<ServiceInterface.Office.Rzp.ServiceInterface>();
-            kernel.Bind<IRzpRepository>().To<RzpRepository>().InRequestScope().WithPropertyValue("StsThumbPrint", this.GetThumbprint("StsThumbprint"));
+            kernel.Bind<IWebEasServiceInterface>().To<ServiceInterface.Office.Bds.ServiceInterface>();
+            kernel.Bind<IBdsRepository>().To<BdsRepository>().InRequestScope().WithPropertyValue("StsThumbPrint", this.GetThumbprint("StsThumbprint"));
 
             return kernel;
         }

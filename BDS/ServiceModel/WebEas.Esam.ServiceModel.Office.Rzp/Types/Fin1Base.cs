@@ -3,7 +3,7 @@ using System;
 using System.Runtime.Serialization;
 using WebEas.ServiceModel;
 
-namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
+namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 {
     [DataContract]
     public class Fin1Base : BaseEntity
@@ -34,11 +34,11 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
 
         [DataMember]
         [PfeColumn(Text = "Typ rozpočtu", ReadOnly = true)]
-        public string TypRzp { get; set; }
+        public string TypBds { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Druh rozpočtu", ReadOnly = true)]
-        public string DruhRzp { get; set; }
+        public string DruhBds { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Zdroj", ReadOnly = true)]
@@ -86,23 +86,23 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
 
         [DataMember]
         [PfeColumn(Text = "Schválený rozpočet", ReadOnly = true)]
-        public decimal SchvalenyRzp { get; set; }
+        public decimal SchvalenyBds { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Zmeny rozpočtu", ReadOnly = true)]
-        public decimal ZmenaRzp { get; set; }
+        public decimal ZmenaBds { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Rozpočet po zmenách", ReadOnly = true)]
-        public decimal UpravenyRzp { get; set; }
+        public decimal UpravenyBds { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Očakávaná skutočnosť", ReadOnly = true)]
-        public decimal OcakavanyRzp { get; set; }
+        public decimal OcakavanyBds { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Skutočnosť", ReadOnly = true)]
-        public decimal SkutocnostRzp { get; set; }
+        public decimal SkutocnostBds { get; set; }
 
     }
 }

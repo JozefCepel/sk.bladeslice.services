@@ -28,7 +28,7 @@ namespace WebEas.Esam.ServiceModel.Office.Reg.Types
         public string Popis { get; set; }
 
         [DataMember]
-        public int? C_TypRzp_Id { get; set; }
+        public int? C_TypBds_Id { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Platnosť od", Type = PfeDataType.Date, Mandatory = true)]

@@ -2,10 +2,10 @@
 using System.Runtime.Serialization;
 using WebEas.ServiceModel;
 
-namespace WebEas.Esam.ServiceModel.Office.Rzp.Dto
+namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
 {
     [DataContract]
-    [WebEasRequiredRole(RolesDefinition.Rzp.Roles.RzpMember)]
+    [WebEasRequiredRole(RolesDefinition.Bds.Roles.BdsMember)]
     [Api("Hodnoty číselnika")]
     [Route("/combo/{KodPolozky}/{Column}", "GET")]
     [Route("/combo/{KodPolozky}/{Column}/{RequiredField*}", "GET")]

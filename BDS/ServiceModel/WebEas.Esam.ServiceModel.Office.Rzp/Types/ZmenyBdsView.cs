@@ -1,17 +1,19 @@
 ﻿using ServiceStack.DataAnnotations;
-using System;
-using System.Linq;
 using System.Runtime.Serialization;
 using WebEas.ServiceModel;
 using WebEas.ServiceModel.Reg.Types;
 
-namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
+namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 {
     [Schema("rzp")]
-    [Alias("V_NavrhZmenyRzp")]
+    [Alias("V_NavrhZmenyBds")]
     [DataContract]
-    public class NavrhRzpView : NavrhZmenyRzp
+    public class ZmenyBdsView : NavrhZmenyBds
     {
+        [DataMember]
+        [PfeColumn(Text = "Rok", Editable = false)]
+        public new int Rok { get; set; }
+
         [DataMember]
         [PfeColumn(Text = "Zodpovedný")]
         [PfeCombo(typeof(CmbOsobaView), NameColumn = "D_User_Id_Zodp", DisplayColumn = "FullName")]

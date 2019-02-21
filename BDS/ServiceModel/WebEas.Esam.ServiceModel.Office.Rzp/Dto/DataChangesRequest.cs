@@ -2,11 +2,11 @@
 using System.Runtime.Serialization;
 using WebEas.ServiceModel.Dto;
 
-namespace WebEas.Esam.ServiceModel.Office.Rzp.Dto
+namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
 {
     [DataContract]
     [Route("/datachanges/{Code}/{RowId}", "GET")]
-    [WebEasRequiresAnyRole(RolesDefinition.Rzp.Roles.RzpMember)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
     public class DataChangesRequest : DataChangesRequestBase
     {
     }

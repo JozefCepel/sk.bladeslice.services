@@ -66,7 +66,7 @@ namespace WebEas.Esam.Office.Reg
             base.AddNinjectBinding(kernel);
 
             kernel.Bind<IRoleList>().To<ServiceModel.Office.Reg.ServiceModel>();
-            kernel.Bind<IRoleList>().To<ServiceModel.Office.Rzp.ServiceModel>();
+            kernel.Bind<IRoleList>().To<ServiceModel.Office.Bds.ServiceModel>();
             kernel.Bind<IRoleList>().To<ServiceModel.Office.Cfe.ServiceModel>();
 
             kernel.Bind<IRoleList>().To<ServiceModel.Office.RolesDefinition.OfficeRoleList>();

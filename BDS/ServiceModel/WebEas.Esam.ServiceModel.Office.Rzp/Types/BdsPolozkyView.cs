@@ -2,12 +2,12 @@
 using System.Runtime.Serialization;
 using WebEas.ServiceModel;
 
-namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
+namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 {
     [Schema("rzp")]
-    [Alias("V_RzpPolozky")]
+    [Alias("V_BdsPolozky")]
     [DataContract]
-    public class RzpPolozkyView : RzpPolozky
+    public class BdsPolozkyView : BdsPolozky
     {
         [DataMember]
         [PfeColumn(Text = "_Kód")]
@@ -20,11 +20,11 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
         [DataMember]
         [PfeColumn(Text = "Rozpočtová položka", ReadOnly = true)]
         [PfeValueColumn]
-        public string RzpUcet { get; set; }
+        public string BdsUcet { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Rozpočtová položka - názov", Hidden = true, Hideable = false)]
-        public string RzpUcetNazov { get; set; }
+        public string BdsUcetNazov { get; set; }
 
         //audit stlpce
         [DataMember]

@@ -6,12 +6,12 @@ using WebEas.Esam.ServiceInterface.Office;
 using WebEas.Esam.ServiceModel.Office.Reg.Types;
 using WebEas.ServiceModel;
 
-namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
+namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 {
     [Schema("rzp")]
-    [Alias("V_NavrhyRzpVal")]
+    [Alias("V_NavrhyBdsVal")]
     [DataContract]
-    public class NavrhyRzpValView : NavrhyRzpVal, IPfeCustomize
+    public class NavrhyBdsValView : NavrhyBdsVal, IPfeCustomize
     {
         [DataMember]
         [PfeColumn(Text = "_Typ", Description = "Návrh/Zmena(y)")]
@@ -19,16 +19,16 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
 
         [DataMember]
         [PfeColumn(Text = "Názov návrhu", ReadOnly = true)]
-        public string NavrhZmenyRzpNazov { get; set; }
+        public string NavrhZmenyBdsNazov { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Názov rozpočtovej položky", ReadOnly = true)]
-        public string RzpPolozkyNazov { get; set; }
+        public string BdsPolozkyNazov { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Rozpočtová položka", RequiredFields = new[] { "Rok" })]
-        [PfeCombo(typeof(RzpPolozkyView), NameColumn = "C_RzpPolozky_Id", AdditionalWhereSql = "(@Rok BETWEEN year(PlatnostOd) AND ISNULL(year(PlatnostDo), year(getDate())))")]
-        public string RzpUcet { get; set; }
+        [PfeCombo(typeof(BdsPolozkyView), NameColumn = "C_BdsPolozky_Id", AdditionalWhereSql = "(@Rok BETWEEN year(PlatnostOd) AND ISNULL(year(PlatnostDo), year(getDate())))")]
+        public string BdsUcet { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Rok", ReadOnly = true)]
@@ -72,9 +72,9 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
             {
                 // JP: Nevieme menit za jazdy nazvy stlpcov, ked stojis na zaznamoch s roznym rokom tak to neukazovalo spravne, ukazovalo vzdy YEAR(NOW) + 1
                 // budeme teda zobrazovt Rok+1 a Rok+2
-                //model.Fields.FirstOrDefault(p => p.Name == "NavrhRzp1").Text = string.Concat("Návrh rozpočtu ", DateTime.Now.Year + 1);
-                //model.Fields.FirstOrDefault(p => p.Name == "NavrhRzp2").Text = string.Concat("Návrh rozpočtu ", DateTime.Now.Year + 2);
-                if (!((RepositoryBase)repository).GetNastavenieB("rzp", "VydProgrRzp"))
+                //model.Fields.FirstOrDefault(p => p.Name == "NavrhBds1").Text = string.Concat("Návrh rozpočtu ", DateTime.Now.Year + 1);
+                //model.Fields.FirstOrDefault(p => p.Name == "NavrhBds2").Text = string.Concat("Návrh rozpočtu ", DateTime.Now.Year + 2);
+                if (!((RepositoryBase)repository).GetNastavenieB("rzp", "VydProgrBds"))
                 {
                     model.Fields.First(p => p.Name == "PRFull").Name = "_PRFull";
                 }

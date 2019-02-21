@@ -2,7 +2,7 @@
 using System.Runtime.Serialization;
 using WebEas.ServiceModel;
 
-namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
+namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 {
     [Schema("rzp")]
     [Alias("V_FREK")]
@@ -23,8 +23,8 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
         }
 
         [DataMember]
-        [PfeCombo(typeof(TypRzpCis), NameColumn = "C_TypRzp_Id")]
+        [PfeCombo(typeof(TypBdsCis), NameColumn = "C_TypBds_Id")]
         [PfeColumn(Text = "Typ rozpočtu")]
-        public string TypRzpName { get; set; }
+        public string TypBdsName { get; set; }
     }
 }

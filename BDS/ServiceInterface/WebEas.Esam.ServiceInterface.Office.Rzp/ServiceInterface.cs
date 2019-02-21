@@ -1,7 +1,7 @@
 ﻿using WebEas.ServiceInterface;
 using WebEas.ServiceModel;
 
-namespace WebEas.Esam.ServiceInterface.Office.Rzp
+namespace WebEas.Esam.ServiceInterface.Office.Bds
 {
     public class ServiceInterface : IWebEasServiceInterface
     {

@@ -7,12 +7,12 @@ using WebEas.Esam.ServiceModel.Office.Reg.Types;
 using WebEas.ServiceModel;
 using WebEas.ServiceModel.Reg.Types;
 
-namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
+namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 {
     [Schema("rzp")]
-    [Alias("V_ZmenyRzpVal")]
+    [Alias("V_ZmenyBdsVal")]
     [DataContract]
-    public class ZmenyRzpValView : ZmenyRzpVal, IPfeCustomize
+    public class ZmenyBdsValView : ZmenyBdsVal, IPfeCustomize
     {
         [DataMember]
         [PfeColumn(Text = "_Typ", Description = "Návrh/Zmena(y)")]
@@ -20,16 +20,16 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
 
         [DataMember]
         [PfeColumn(Text = "Názov návrhu", ReadOnly = true)]
-        public string NavrhZmenyRzpNazov { get; set; }
+        public string NavrhZmenyBdsNazov { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Názov rozpočtovej položky", ReadOnly = true)]
-        public string RzpPolozkyNazov { get; set; }
+        public string BdsPolozkyNazov { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Rozpočtová položka", RequiredFields = new[] { "Datum" })]
-        [PfeCombo(typeof(RzpPolozkyView), NameColumn = "C_RzpPolozky_Id", AdditionalWhereSql = "((CASE WHEN ISDATE (@Datum) = 1 THEN @Datum END) BETWEEN PlatnostOd AND ISNULL(PlatnostDo, CASE WHEN ISDATE (@Datum) = 1 THEN @Datum END))")]
-        public string RzpUcet { get; set; }
+        [PfeCombo(typeof(BdsPolozkyView), NameColumn = "C_BdsPolozky_Id", AdditionalWhereSql = "((CASE WHEN ISDATE (@Datum) = 1 THEN @Datum END) BETWEEN PlatnostOd AND ISNULL(PlatnostDo, CASE WHEN ISDATE (@Datum) = 1 THEN @Datum END))")]
+        public string BdsUcet { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Dátum", Type = PfeDataType.Date, ReadOnly = true)]
@@ -72,7 +72,7 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
         {
             if (model.Fields != null)
             {
-                if (!((RepositoryBase)repository).GetNastavenieB("rzp", "VydProgrRzp"))
+                if (!((RepositoryBase)repository).GetNastavenieB("rzp", "VydProgrBds"))
                 {
                     model.Fields.First(p => p.Name == "PRFull").Name = "_PRFull";
                 }

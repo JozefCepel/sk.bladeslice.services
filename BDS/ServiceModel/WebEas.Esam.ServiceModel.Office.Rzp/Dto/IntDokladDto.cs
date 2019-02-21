@@ -2,13 +2,13 @@
 using ServiceStack.DataAnnotations;
 using System;
 using System.Runtime.Serialization;
-using WebEas.Esam.ServiceModel.Office.Rzp.Types;
+using WebEas.Esam.ServiceModel.Office.Bds.Types;
 using WebEas.ServiceModel;
 
-namespace WebEas.Esam.ServiceModel.Office.Rzp.Dto
+namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
 {
     // Create
-    [WebEasRequiresAnyRole(RolesDefinition.Rzp.Roles.RzpMember)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
     [Route("/CreateIntDoklad", "POST")]
     [Api("IntDoklad")]
     [DataContract]
@@ -27,7 +27,7 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Dto
     }
 
     // Delete
-    [WebEasRequiresAnyRole(RolesDefinition.Rzp.Roles.RzpMember)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
     [Route("/DeleteIntDoklad", "DELETE")]
     [Api("IntDoklad")]
     [DataContract]
@@ -52,7 +52,7 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Dto
         public decimal? Suma { get; set; }
 
         [DataMember]
-        public int? C_RzpPredkontacia_Id { get; set; }
+        public int? C_BdsPredkontacia_Id { get; set; }
 
         [DataMember]
         public long? C_Stredisko_Id { get; set; }
@@ -78,7 +78,7 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Dto
             data.D_BiznisEntita_Id = D_BiznisEntita_Id;
             data.Popis = Popis;
             data.Suma = Suma;
-            data.C_RzpPredkontacia_Id = C_RzpPredkontacia_Id;
+            data.C_BdsPredkontacia_Id = C_BdsPredkontacia_Id;
         }
     }
     #endregion

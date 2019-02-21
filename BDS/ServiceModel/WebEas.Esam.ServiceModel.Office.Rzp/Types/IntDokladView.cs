@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 using WebEas.Esam.ServiceModel.Office.Reg.Types;
 using WebEas.ServiceModel;
 
-namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
+namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 {
     [Schema("rzp")]
     [Alias("V_IntDoklad")]

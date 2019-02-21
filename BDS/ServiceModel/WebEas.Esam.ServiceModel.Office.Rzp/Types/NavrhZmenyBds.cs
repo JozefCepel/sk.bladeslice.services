@@ -3,17 +3,17 @@ using System;
 using System.Runtime.Serialization;
 using WebEas.ServiceModel;
 
-namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
+namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 {
     [Schema("rzp")]
-    [Alias("D_NavrhZmenyRzp")]
+    [Alias("D_NavrhZmenyBds")]
     [DataContract]
-    public class NavrhZmenyRzp : BaseTenantEntity, IHasStateId
+    public class NavrhZmenyBds : BaseTenantEntity, IHasStateId
     {
         [PrimaryKey]
         [AutoIncrement]
         [DataMember]
-        public long D_NavrhZmenyRzp_Id { get; set; }
+        public long D_NavrhZmenyBds_Id { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "_Typ", Description = "Návrh/Zmena(y)")]

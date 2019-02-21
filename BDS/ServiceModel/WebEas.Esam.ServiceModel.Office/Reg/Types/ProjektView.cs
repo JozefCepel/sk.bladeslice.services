@@ -11,7 +11,7 @@ namespace WebEas.Esam.ServiceModel.Office.Reg.Types
     {
         [DataMember]
         [PfeColumn(Text = "Druh", ReadOnly = true)]
-        public string TypRzpName { get; set; }
+        public string TypBdsName { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Kód zdroja", ReadOnly = true)]

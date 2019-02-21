@@ -4,25 +4,25 @@ using System.Linq;
 using System.Runtime.Serialization;
 using WebEas.ServiceModel;
 
-namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
+namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 {
     [Schema("rzp")]
-    [Alias("D_ZmenyRzpVal")]
+    [Alias("D_ZmenyBdsVal")]
     [DataContract]
-    public class ZmenyRzpVal : BaseTenantEntity
+    public class ZmenyBdsVal : BaseTenantEntity
     {
         [PrimaryKey]
         [AutoIncrement]
         [DataMember]
-        public long D_ZmenyRzpVal_Id { get; set; }
+        public long D_ZmenyBdsVal_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_D_NavrhZmenyRzp_Id", Mandatory = true)]
-        public long D_NavrhZmenyRzp_Id { get; set; }
+        [PfeColumn(Text = "_D_NavrhZmenyBds_Id", Mandatory = true)]
+        public long D_NavrhZmenyBds_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_C_RzpPolozky_Id")]
-        public long? C_RzpPolozky_Id { get; set; }
+        [PfeColumn(Text = "_C_BdsPolozky_Id")]
+        public long? C_BdsPolozky_Id { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "_D_Program_Id")]

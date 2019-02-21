@@ -101,17 +101,17 @@
       <Project>{1b40e5ee-7311-46e7-8241-d9f0c443905d}</Project>
       <Name>WebEas.ServiceModel</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\ServiceInterface\WebEas.Esam.ServiceInterface.Office.Rzp\WebEas.Esam.ServiceInterface.Office.Rzp.csproj">
+    <ProjectReference Include="..\..\..\ServiceInterface\WebEas.Esam.ServiceInterface.Office.Rzp\WebEas.Esam.ServiceInterface.Office.Bds.csproj">
       <Project>{e85ea2d5-bb2b-425e-be89-d2bc75df04f9}</Project>
-      <Name>WebEas.Esam.ServiceInterface.Office.Rzp</Name>
+      <Name>WebEas.Esam.ServiceInterface.Office.Bds</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\ServiceInterface\WebEas.Esam.ServiceInterface.Office\WebEas.Esam.ServiceInterface.Office.csproj">
       <Project>{a0b8a0db-8ac5-47e8-925a-862529231d16}</Project>
       <Name>WebEas.Esam.ServiceInterface.Office</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\ServiceModel\WebEas.Esam.ServiceModel.Office.Rzp\WebEas.Esam.ServiceModel.Office.Rzp.csproj">
+    <ProjectReference Include="..\..\..\ServiceModel\WebEas.Esam.ServiceModel.Office.Rzp\WebEas.Esam.ServiceModel.Office.Bds.csproj">
       <Project>{630888ec-7671-47df-aecd-18bad4ec52ac}</Project>
-      <Name>WebEas.Esam.ServiceModel.Office.Rzp</Name>
+      <Name>WebEas.Esam.ServiceModel.Office.Bds</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\ServiceModel\WebEas.Esam.ServiceModel.Office\WebEas.Esam.ServiceModel.Office.csproj">
       <Project>{b368a929-aa16-4823-87ec-69e90901d0ed}</Project>

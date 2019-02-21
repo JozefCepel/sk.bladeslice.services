@@ -2,25 +2,25 @@
 using System.Runtime.Serialization;
 using WebEas.ServiceModel;
 
-namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
+namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 {
     [Schema("rzp")]
-    [Alias("D_NavrhyRzpVal")]
+    [Alias("D_NavrhyBdsVal")]
     [DataContract]
-    public class NavrhyRzpVal : BaseTenantEntity
+    public class NavrhyBdsVal : BaseTenantEntity
     {
         [PrimaryKey]
         [AutoIncrement]
         [DataMember]
-        public long D_NavrhyRzpVal_Id { get; set; }
+        public long D_NavrhyBdsVal_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_D_NavrhZmenyRzp_Id", Mandatory = true)]
-        public long D_NavrhZmenyRzp_Id { get; set; }
+        [PfeColumn(Text = "_D_NavrhZmenyBds_Id", Mandatory = true)]
+        public long D_NavrhZmenyBds_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_C_RzpPolozky_Id")]
-        public long? C_RzpPolozky_Id { get; set; }
+        [PfeColumn(Text = "_C_BdsPolozky_Id")]
+        public long? C_BdsPolozky_Id { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "_D_Program_Id")]
@@ -36,14 +36,14 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
 
         [DataMember]
         [PfeColumn(Text = "Schválený rozpočet", Mandatory = true)]
-        public decimal SchvalenyRzp { get; set; }
+        public decimal SchvalenyBds { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Návrh rozpočtu Rok+1", Mandatory = true)]
-        public decimal NavrhRzp1 { get; set; }
+        public decimal NavrhBds1 { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Návrh rozpočtu Rok+2", Mandatory = true)]
-        public decimal NavrhRzp2 { get; set; }
+        public decimal NavrhBds2 { get; set; }
     }
 }

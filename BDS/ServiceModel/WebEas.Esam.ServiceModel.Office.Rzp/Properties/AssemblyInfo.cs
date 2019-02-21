@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("WebEas.Esam.ServiceModel.Office.Rzp")]
+[assembly: AssemblyTitle("WebEas.Esam.ServiceModel.Office.Bds")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("WebEas.Esam.ServiceModel.Office.Rzp")]
+[assembly: AssemblyProduct("WebEas.Esam.ServiceModel.Office.Bds")]
 [assembly: AssemblyCopyright("Copyright ©  2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

@@ -8,7 +8,7 @@ using WebEas.ServiceModel;
 namespace WebEas.Esam.ServiceModel.Office.Reg.Dto
 {
     // Create
-    [WebEasRequiresAnyRole(RolesDefinition.Rzp.Roles.RzpMember)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
     [Route("/CreateProjekt", "POST")]
     [Api("Projekt")]
     [DataContract]
@@ -27,7 +27,7 @@ namespace WebEas.Esam.ServiceModel.Office.Reg.Dto
     }
 
     // Delete
-    [WebEasRequiresAnyRole(RolesDefinition.Rzp.Roles.RzpMember)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
     [Route("/DeleteProjekt", "DELETE")]
     [Api("Projekt")]
     [DataContract]
@@ -58,7 +58,7 @@ namespace WebEas.Esam.ServiceModel.Office.Reg.Dto
         public DateTime? PlatnostDo { get; set; }
 
         [DataMember]
-        public int? C_TypRzp_Id { get; set; }
+        public int? C_TypBds_Id { get; set; }
 
         [DataMember]
         public DateTime? Datum { get; set; }
@@ -80,7 +80,7 @@ namespace WebEas.Esam.ServiceModel.Office.Reg.Dto
             data.Popis = Popis;
             data.PlatnostOd = PlatnostOd;
             data.PlatnostDo = PlatnostDo;
-            data.C_TypRzp_Id = C_TypRzp_Id;
+            data.C_TypBds_Id = C_TypBds_Id;
             data.Datum = Datum;
             data.Poskytovatel = Poskytovatel;
             data.Suma = Suma;

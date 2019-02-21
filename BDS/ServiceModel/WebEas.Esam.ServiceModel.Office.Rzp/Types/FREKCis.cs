@@ -3,7 +3,7 @@ using System;
 using System.Runtime.Serialization;
 using WebEas.ServiceModel;
 
-namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
+namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 {
     [Schema("rzp")]
     [Alias("C_FREK")]
@@ -52,7 +52,7 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
         public byte PrijemVydaj { get; set; }
 
         [DataMember]
-        public int C_TypRzp_Id { get; set; }
+        public int C_TypBds_Id { get; set; }
     }
 
 }

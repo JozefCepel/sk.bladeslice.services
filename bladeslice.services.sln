@@ -29,11 +29,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebEas.Esam.ServiceInterfac
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebEas.Esam.ServiceModel.Office", "BDS\ServiceModel\WebEas.Esam.ServiceModel.Office\WebEas.Esam.ServiceModel.Office.csproj", "{B368A929-AA16-4823-87EC-69E90901D0ED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebEas.Esam.ServiceInterface.Office.Rzp", "BDS\ServiceInterface\WebEas.Esam.ServiceInterface.Office.Rzp\WebEas.Esam.ServiceInterface.Office.Rzp.csproj", "{E85EA2D5-BB2B-425E-BE89-D2BC75DF04F9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebEas.Esam.ServiceInterface.Office.Bds", "BDS\ServiceInterface\WebEas.Esam.ServiceInterface.Office.Rzp\WebEas.Esam.ServiceInterface.Office.Bds.csproj", "{E85EA2D5-BB2B-425E-BE89-D2BC75DF04F9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebEas.Esam.ServiceModel.Office.Rzp", "BDS\ServiceModel\WebEas.Esam.ServiceModel.Office.Rzp\WebEas.Esam.ServiceModel.Office.Rzp.csproj", "{630888EC-7671-47DF-AECD-18BAD4EC52AC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebEas.Esam.ServiceModel.Office.Bds", "BDS\ServiceModel\WebEas.Esam.ServiceModel.Office.Rzp\WebEas.Esam.ServiceModel.Office.Bds.csproj", "{630888EC-7671-47DF-AECD-18BAD4EC52AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebEas.Esam.Office.Rzp", "BDS\Web\Office\WebEas.Esam.Office.Rzp\WebEas.Esam.Office.Rzp.csproj", "{5A8C2BBA-7B38-4CD4-8341-D0A747CBF8CC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebEas.Esam.Office.Bds", "BDS\Web\Office\WebEas.Esam.Office.Rzp\WebEas.Esam.Office.Bds.csproj", "{5A8C2BBA-7B38-4CD4-8341-D0A747CBF8CC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Webeas", "Webeas", "{7F7141DA-6ACA-4811-8B9C-3FA4B428D8AF}"
 EndProject

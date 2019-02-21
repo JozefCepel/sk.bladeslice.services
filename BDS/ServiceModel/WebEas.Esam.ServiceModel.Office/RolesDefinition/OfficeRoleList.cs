@@ -14,8 +14,7 @@ namespace WebEas.Esam.ServiceModel.Office.RolesDefinition
                 if (roleList == null)
                 {
                     var list = new List<Role>();
-                    list.AddRange(Rzp.Roles.List);
-                    list.AddRange(Dms.Roles.List);
+                    list.AddRange(Bds.Roles.List);
                     list.AddRange(Cfe.Roles.List);
                     list.AddRange(WebEas.ServiceModel.Office.Egov.Reg.Roles.List);
 

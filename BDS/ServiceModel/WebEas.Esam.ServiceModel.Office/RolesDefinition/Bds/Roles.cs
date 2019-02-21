@@ -1,23 +1,23 @@
 ﻿using System.Collections.Generic;
 using WebEas.Auth;
 
-namespace WebEas.Esam.ServiceModel.Office.RolesDefinition.Rzp
+namespace WebEas.Esam.ServiceModel.Office.RolesDefinition.Bds
 {
     public static class Roles
     {
         public readonly static List<Role> List;
 
-        public const string RzpMember = "RZP_MEMBER";
-        public const string RzpWriter = "RZP_WRITER";
-        public const string RzpCisWriter = "RZP_CIS_WRITER";
-        public const string RzpAdmin = "RZP_ADMIN";
+        public const string BdsMember = "BDS_MEMBER";
+        public const string BdsWriter = "BDS_WRITER";
+        public const string BdsCisWriter = "BDS_CIS_WRITER";
+        public const string BdsAdmin = "BDS_ADMIN";
 
         static Roles()
         {
-            var member = new Role(RzpMember, "ReadOnly");
-            var writer = new Role(RzpWriter, "Write");
-            var cisWriter = new Role(RzpCisWriter, "Cis Write");
-            var admin = new Role(RzpAdmin, "Admin");
+            var member = new Role(BdsMember, "ReadOnly");
+            var writer = new Role(BdsWriter, "Write");
+            var cisWriter = new Role(BdsCisWriter, "Cis Write");
+            var admin = new Role(BdsAdmin, "Admin");
 
             // definovanie vazieb
             admin.SubRoles = new List<Role> { member, writer, cisWriter };

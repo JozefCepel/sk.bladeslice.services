@@ -1,7 +1,7 @@
 ﻿using ServiceStack.MiniProfiler;
 using System;
 
-namespace WebEas.Esam.Office.Rzp
+namespace WebEas.Esam.Office.Bds
 {
     /// <summary>
     /// 

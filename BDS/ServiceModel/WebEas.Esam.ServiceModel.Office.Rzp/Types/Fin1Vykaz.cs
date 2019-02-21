@@ -3,7 +3,7 @@ using System;
 using System.Runtime.Serialization;
 using WebEas.ServiceModel;
 
-namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
+namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 {
     [Schema("rzp")]
     [Alias("V_Fin112")]
@@ -37,12 +37,12 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
         }
 
         [DataMember]
-        [PfeColumn(Text = "_EKTypRzp", ReadOnly = true)]
-        public string EKTypRzp { get; set; }
+        [PfeColumn(Text = "_EKTypBds", ReadOnly = true)]
+        public string EKTypBds { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Typ rozpočtu", ReadOnly = true)]
-        public string EKTypRzpText { get; set; }
+        public string EKTypBdsText { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "EK", ReadOnly = true)]
@@ -58,27 +58,27 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
 
         [DataMember]
         [PfeColumn(Text = "Schválený rozpočet", ReadOnly = true)]
-        public decimal SchvalenyRzp { get; set; }
+        public decimal SchvalenyBds { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Rozpočet po zmenách", ReadOnly = true)]
-        public decimal UpravenyRzp { get; set; }
+        public decimal UpravenyBds { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Očakávaná skutočnosť", ReadOnly = true)]
-        public decimal OcakavanyRzp { get; set; }
+        public decimal OcakavanyBds { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Skutočnosť", ReadOnly = true)]
-        public decimal SkutocnostRzp { get; set; }
+        public decimal SkutocnostBds { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Popis 1", ReadOnly = true)]
-        public string EKTypRzpDesc1 { get; set; }
+        public string EKTypBdsDesc1 { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Popis 2", ReadOnly = true)]
-        public string EKTypRzpDesc2 { get; set; }
+        public string EKTypBdsDesc2 { get; set; }
 
         //[DataMember]
         //[PfeColumn(Hidden = true, Hideable = false)]

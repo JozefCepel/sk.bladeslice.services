@@ -2,20 +2,16 @@
 using System.Runtime.Serialization;
 using WebEas.ServiceModel;
 
-namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
+namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 {
     [Schema("rzp")]
-    [Alias("V_RzpPolozky")]
+    [Alias("V_BdsPolozky")]
     [DataContract]
-    public class RzpPolozkyVydView : RzpPolozkyView
+    public class BdsPolozkyPrijView : BdsPolozkyView
     {
         [DataMember]
         [PfeColumn(Text = "_C_FRZdroj_Id", Mandatory = true)]
         public new long? C_FRZdroj_Id { get; set; }
-
-        [DataMember]
-        [PfeColumn(Text = "_C_FRFK_Id", Mandatory = true)]
-        public new int? C_FRFK_Id { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "_C_FREK_Id", Mandatory = true)]
@@ -28,12 +24,7 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
 
         [DataMember]
         [PfeColumn(Text = "Ekonomická klasifikácia")]
-        [PfeCombo(typeof(FREKView), NameColumn = "C_FREK_Id", DisplayColumn = "EKFull", AdditionalWhereSql = "(PrijemVydaj = 2 AND Platny = 1 AND (getDate() BETWEEN PlatnostOd AND ISNULL(PlatnostDo,getDate()+1)))")]
+        [PfeCombo(typeof(FREKView), NameColumn = "C_FREK_Id", DisplayColumn = "EKFull", AdditionalWhereSql = "(PrijemVydaj = 1 AND Platny = 1 AND (getDate() BETWEEN PlatnostOd AND ISNULL(PlatnostDo,getDate()+1)))")]
         public string EKFull { get; set; }
-
-        [DataMember]
-        [PfeColumn(Text = "Funkčná klasifikácia")]
-        [PfeCombo(typeof(FRFKView), NameColumn = "C_FRFK_Id", DisplayColumn = "FKFull", AdditionalWhereSql = "(Platny = 1 AND getDate() BETWEEN PlatnostOd AND ISNULL(PlatnostDo,getDate()+1))")]
-        public string FKFull { get; set; }
     }
 }
