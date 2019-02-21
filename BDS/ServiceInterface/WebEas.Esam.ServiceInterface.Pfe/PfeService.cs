@@ -113,7 +113,6 @@ namespace WebEas.Esam.ServiceInterface.Pfe
             */
 
             //Pre DMS musime vycistit adresarovy strom
-            Modules.Load<Office.Dms.IDmsRepository>().ClearDirCache();
             Modules.HierarchyNodeList = null;
 
             // staticky strom pre celu app - definicia

@@ -109,10 +109,6 @@
       <Project>{196fac5c-025d-4dde-802c-b763decb2402}</Project>
       <Name>WebEas.Esam.ServiceModel.Pfe</Name>
     </ProjectReference>
-    <ProjectReference Include="..\WebEas.Esam.ServiceInterface.Office.Dms\WebEas.Esam.ServiceInterface.Office.Dms.csproj">
-      <Project>{79ecce54-31be-411a-afbc-ff944ceafc62}</Project>
-      <Name>WebEas.Esam.ServiceInterface.Office.Dms</Name>
-    </ProjectReference>
     <ProjectReference Include="..\WebEas.Esam.ServiceInterface.Office\WebEas.Esam.ServiceInterface.Office.csproj">
       <Project>{a0b8a0db-8ac5-47e8-925a-862529231d16}</Project>
       <Name>WebEas.Esam.ServiceInterface.Office</Name>
