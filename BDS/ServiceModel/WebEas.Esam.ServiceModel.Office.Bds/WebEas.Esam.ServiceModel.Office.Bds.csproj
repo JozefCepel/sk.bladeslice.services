@@ -65,12 +65,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dto\ChangeStateDto.cs" />
-    <Compile Include="Dto\CieleUkazDto.cs" />
     <Compile Include="Dto\DataChangesRequest.cs" />
-    <Compile Include="Dto\DefPrrProgramovyRozpocetDto.cs" />
-    <Compile Include="Dto\CieleDto.cs" />
+    <Compile Include="Dto\D_VYD_0Dto.cs" />
+    <Compile Include="Dto\D_PRI_0Dto.cs" />
     <Compile Include="Dto\GetTreeCountsDto.cs" />
-    <Compile Include="Dto\IntDokladDto.cs" />
     <Compile Include="Dto\ListComboDto.cs" />
     <Compile Include="Dto\ListDto.cs" />
     <Compile Include="Dto\LongOperations.cs" />
@@ -78,44 +76,13 @@
     <Compile Include="Dto\RowDefaultValues.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceModel.cs" />
-    <Compile Include="Types\DennikBds.cs" />
-    <Compile Include="Types\DennikBdsView.cs" />
-    <Compile Include="Types\Fin1.cs" />
-    <Compile Include="Types\Fin1Base.cs" />
-    <Compile Include="Types\Fin1Pol.cs" />
-    <Compile Include="Types\Fin1Vykaz.cs" />
-    <Compile Include="Types\IntDokladView.cs" />
-    <Compile Include="Types\IntDoklad.cs" />
-    <Compile Include="Types\Nastavenie.cs" />
-    <Compile Include="Types\TypBdsCis.cs" />
-    <Compile Include="Types\ZmenyBdsVal.cs" />
-    <Compile Include="Types\ZmenyBdsValView.cs" />
-    <Compile Include="Types\NavrhyBdsValView.cs" />
-    <Compile Include="Types\NavrhyBdsVal.cs" />
-    <Compile Include="Types\NavrhBdsView.cs" />
-    <Compile Include="Types\ZmenyBdsView.cs" />
-    <Compile Include="Types\NavrhZmenyBds.cs" />
-    <Compile Include="Types\BdsPolozkyVydView.cs" />
-    <Compile Include="Types\BdsPolozkyPrijView.cs" />
-    <Compile Include="Types\BdsPolozky.cs" />
-    <Compile Include="Types\Ciele.cs" />
-    <Compile Include="Types\CieleUkaz.cs" />
-    <Compile Include="Types\CieleUkazView.cs" />
-    <Compile Include="Types\BdsPolozkyView.cs" />
-    <Compile Include="Types\CieleView.cs" />
-    <Compile Include="Types\FREKView.cs" />
-    <Compile Include="Types\FRFKView.cs" />
-    <Compile Include="Types\FRZdrojView.cs" />
+    <Compile Include="Types\D_VYD_0.cs" />
+    <Compile Include="Types\V_VYD_0View.cs" />
+    <Compile Include="Types\V_PRI_0View.cs" />
+    <Compile Include="Types\D_PRI_0.cs" />
     <Compile Include="Types\Combos\CmbOsobaView.cs" />
-    <Compile Include="Types\ProgramovyRozpocetProgramView.cs" />
-    <Compile Include="Types\ProgramovyRozpocetPrvokView.cs" />
-    <Compile Include="Types\ProgramovyRozpocetPodprogramView.cs" />
-    <Compile Include="Types\ProgramView.cs" />
-    <Compile Include="Types\FREKCis.cs" />
-    <Compile Include="Types\FRFKCis.cs" />
-    <Compile Include="Types\FRZdrojCis.cs" />
-    <Compile Include="Types\Program.cs" />
     <Compile Include="Types\BdsDummyView.cs" />
+    <Compile Include="Types\Nastavenie.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

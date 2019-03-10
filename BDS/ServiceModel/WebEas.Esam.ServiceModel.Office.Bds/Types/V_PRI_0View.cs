@@ -1,30 +1,39 @@
 ﻿using ServiceStack.DataAnnotations;
+using System;
 using System.Runtime.Serialization;
 using WebEas.ServiceModel;
 
 namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 {
-    [Schema("rzp")]
-    [Alias("V_BdsPolozky")]
+    [Schema("dbo")]
+    [Alias("V_PRI_0")]
     [DataContract]
-    public class BdsPolozkyView : BdsPolozky
+    public class tblV_PRI_0View : tblD_PRI_0
     {
         [DataMember]
-        [PfeColumn(Text = "_Kód")]
-        public string FKDot { get; set; }
+        public string ICO { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_Názov")]
-        public string FKNazov { get; set; }
+        public string NAZOV1 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Rozpočtová položka", ReadOnly = true)]
-        [PfeValueColumn]
-        public string BdsUcet { get; set; }
+        public string NAZOV2 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Rozpočtová položka - názov", Hidden = true, Hideable = false)]
-        public string BdsUcetNazov { get; set; }
+        public string ULICA_S { get; set; }
+
+        [DataMember]
+        public string PSC_S { get; set; }
+
+        [DataMember]
+        public string OBEC_S { get; set; }
+
+        [DataMember]
+        public string ORJ { get; set; }
+
+        [DataMember]
+        public string SKL { get; set; }
+
 
         //audit stlpce
         [DataMember]
@@ -34,5 +43,6 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         [DataMember]
         [PfeColumn(Text = "Zmenil", Hidden = true, Editable = false, ReadOnly = true)]
         public string ZmenilMeno { get; set; }
+
     }
 }

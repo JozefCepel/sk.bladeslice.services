@@ -4,7 +4,7 @@ using WebEas.ServiceModel;
 
 namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 {
-    [Schema("rzp")]
+    [Schema("bds")]
     [Alias("V_Nastavenie")]
     [DataContract]
     public class Nastavenie

@@ -50,17 +50,8 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
         }
 
         public void Post(ChangeStateDto request)
-        {
-            if (Modules.FindNode(request.ItemCode).ModelType == typeof(NavrhBdsView))
-            {
-                //Repository.ChangeStateNavrh(request);
-            }
-            else if (Modules.FindNode(request.ItemCode).ModelType == typeof(ZmenyBdsView))
-            {
-                //Repository.ChangeStateZmena(request);
-            }
-            else
-                Repository.ChangeState(request);
+        {            
+            Repository.ChangeState(request);
         }
 
 
@@ -119,40 +110,21 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
 
         #endregion
 
-        #region Ciele
+        #region D_PRI_0
 
-        public object Any(CreateCiele request)
+        public object Any(CreateD_PRI_0 request)
         {
-            return Repository.Create<CieleView>(request);
+            return Repository.Create<D_PRI_0View>(request);
         }
 
-        public object Any(UpdateCiele request)
+        public object Any(UpdateD_PRI_0 request)
         {
-            return Repository.Update<CieleView>(request);
+            return Repository.Update<D_PRI_0View>(request);
         }
 
-        public void Any(DeleteCiele request)
+        public void Any(DeleteD_PRI_0 request)
         {
-            Repository.Delete<Ciele>(request.D_PRCiele_Id);
-        }
-
-        #endregion
-
-        #region CieleUkaz
-
-        public object Any(CreateCieleUkaz request)
-        {
-            return Repository.Create<CieleUkazView>(request);
-        }
-
-        public object Any(UpdateCieleUkaz request)
-        {
-            return Repository.Update<CieleUkazView>(request);
-        }
-
-        public void Any(DeleteCieleUkaz request)
-        {
-            Repository.Delete<CieleUkaz>(request.D_PRCieleUkaz_Id);
+            Repository.Delete<D_PRI_0>(request.D_PRD_PRI_0_Id);
         }
 
         #endregion

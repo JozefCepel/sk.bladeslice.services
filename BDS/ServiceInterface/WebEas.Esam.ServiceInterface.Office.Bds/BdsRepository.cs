@@ -55,6 +55,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
             var node = Modules.TryFindNode(code);
             var masternode = Modules.TryFindNode(masterCode);
 
+            /*
             #region Programový rozpočet
 
             var aktDatum = DateTime.Now;
@@ -248,32 +249,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
             }
 
             #endregion
-
-            #region Dennik Bds.
-
-            if (node != null && node.ModelType == typeof(DennikBdsView))
-            {
-                if (masternode != null && masternode.ModelType == typeof(IntDokladView) && !string.IsNullOrEmpty(masterRowId))
-                {
-                    var intDoklad = GetById<IntDokladView>(masterRowId);
-
-                    if (intDoklad != null)
-                    {
-                        return new DennikBdsView()
-                        {
-                            DatumDokladu = intDoklad.DatumDokladu,
-                            CisloDokladu = intDoklad.CisloDokladu,
-                            D_IntDoklad_Id = intDoklad.D_IntDoklad_Id,
-                            UO = intDoklad.UO,
-                            Rok = intDoklad.Rok,
-                            PrijemVydaj = 1,
-                            Suma = 0
-                        };
-                    }
-                }
-            }
-
-            #endregion
+           */
 
             return new object();
         }
@@ -288,7 +264,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
 
             var filter = new Filter();
             filter.AndEq("Nazov", data.Nazov);
-            filter.AndEq("Modul", "rzp");
+            filter.AndEq("Modul", "bds");
 
             typ = GetList<Nastavenie>(filter).FirstOrDefault();
             if (typ == null)
@@ -325,7 +301,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                 string typ = Db.Scalar<string>("Select Typ from [rzp].[V_Nastavenie] where Nazov = @nazov and Modul = 'rzp'", new { nazov = data.Nazov });
                 var p = new DynamicParameters();
                 p.Add("@tenant", Session.TenantIdGuid, dbType: System.Data.DbType.Guid);
-                p.Add("@modul", "rzp", dbType: System.Data.DbType.String);
+                p.Add("@modul", "bds", dbType: System.Data.DbType.String);
                 p.Add("@nazov", data.Nazov, dbType: System.Data.DbType.String);
                 p.Add("@pouzivatel", null, dbType: System.Data.DbType.String);
                 switch (typ)

@@ -29,11 +29,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebEas.Esam.ServiceInterfac
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebEas.Esam.ServiceModel.Office", "BDS\ServiceModel\WebEas.Esam.ServiceModel.Office\WebEas.Esam.ServiceModel.Office.csproj", "{B368A929-AA16-4823-87EC-69E90901D0ED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebEas.Esam.ServiceInterface.Office.Bds", "BDS\ServiceInterface\WebEas.Esam.ServiceInterface.Office.Rzp\WebEas.Esam.ServiceInterface.Office.Bds.csproj", "{E85EA2D5-BB2B-425E-BE89-D2BC75DF04F9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebEas.Esam.ServiceInterface.Office.Bds", "BDS\ServiceInterface\WebEas.Esam.ServiceInterface.Office.Bds\WebEas.Esam.ServiceInterface.Office.Bds.csproj", "{E85EA2D5-BB2B-425E-BE89-D2BC75DF04F9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebEas.Esam.ServiceModel.Office.Bds", "BDS\ServiceModel\WebEas.Esam.ServiceModel.Office.Rzp\WebEas.Esam.ServiceModel.Office.Bds.csproj", "{630888EC-7671-47DF-AECD-18BAD4EC52AC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebEas.Esam.ServiceModel.Office.Bds", "BDS\ServiceModel\WebEas.Esam.ServiceModel.Office.Bds\WebEas.Esam.ServiceModel.Office.Bds.csproj", "{630888EC-7671-47DF-AECD-18BAD4EC52AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebEas.Esam.Office.Bds", "BDS\Web\Office\WebEas.Esam.Office.Rzp\WebEas.Esam.Office.Bds.csproj", "{5A8C2BBA-7B38-4CD4-8341-D0A747CBF8CC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebEas.Esam.Office.Bds", "BDS\Web\Office\WebEas.Esam.Office.Bds\WebEas.Esam.Office.Bds.csproj", "{5A8C2BBA-7B38-4CD4-8341-D0A747CBF8CC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Webeas", "Webeas", "{7F7141DA-6ACA-4811-8B9C-3FA4B428D8AF}"
 EndProject
@@ -44,8 +44,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebEas.ServiceModel", "Core\WebEas\ServiceModel\WebEas.ServiceModel\WebEas.ServiceModel.csproj", "{1B40E5EE-7311-46E7-8241-D9F0C443905D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebEas.ServiceInterface", "Core\WebEas\ServiceInterface\WebEas.ServiceInterface\WebEas.ServiceInterface.csproj", "{E2A6581B-C2D4-42E4-A5D6-14EA0753EE7D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebEas.Esam.Office.Reg", "BDS\Web\Office\WebEas.Esam.Office.Reg\WebEas.Esam.Office.Reg.csproj", "{1A87EEA1-7703-4089-9C74-2E9CF9F4FB78}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebEas.Esam.ServiceInterface.Office.Cfe", "BDS\ServiceInterface\WebEas.Esam.ServiceInterface.Office.Cfe\WebEas.Esam.ServiceInterface.Office.Cfe.csproj", "{B85EA2D5-AB2B-425E-BE89-42BC75DF01F6}"
 EndProject
@@ -183,18 +181,6 @@ Global
 		{E2A6581B-C2D4-42E4-A5D6-14EA0753EE7D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E2A6581B-C2D4-42E4-A5D6-14EA0753EE7D}.Test|Any CPU.ActiveCfg = Test|Any CPU
 		{E2A6581B-C2D4-42E4-A5D6-14EA0753EE7D}.Test|Any CPU.Build.0 = Test|Any CPU
-		{1A87EEA1-7703-4089-9C74-2E9CF9F4FB78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1A87EEA1-7703-4089-9C74-2E9CF9F4FB78}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1A87EEA1-7703-4089-9C74-2E9CF9F4FB78}.Develop|Any CPU.ActiveCfg = Develop|Any CPU
-		{1A87EEA1-7703-4089-9C74-2E9CF9F4FB78}.Develop|Any CPU.Build.0 = Develop|Any CPU
-		{1A87EEA1-7703-4089-9C74-2E9CF9F4FB78}.Int|Any CPU.ActiveCfg = Release|Any CPU
-		{1A87EEA1-7703-4089-9C74-2E9CF9F4FB78}.Int|Any CPU.Build.0 = Release|Any CPU
-		{1A87EEA1-7703-4089-9C74-2E9CF9F4FB78}.Prod|Any CPU.ActiveCfg = Release|Any CPU
-		{1A87EEA1-7703-4089-9C74-2E9CF9F4FB78}.Prod|Any CPU.Build.0 = Release|Any CPU
-		{1A87EEA1-7703-4089-9C74-2E9CF9F4FB78}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1A87EEA1-7703-4089-9C74-2E9CF9F4FB78}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1A87EEA1-7703-4089-9C74-2E9CF9F4FB78}.Test|Any CPU.ActiveCfg = Release|Any CPU
-		{1A87EEA1-7703-4089-9C74-2E9CF9F4FB78}.Test|Any CPU.Build.0 = Release|Any CPU
 		{B85EA2D5-AB2B-425E-BE89-42BC75DF01F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B85EA2D5-AB2B-425E-BE89-42BC75DF01F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B85EA2D5-AB2B-425E-BE89-42BC75DF01F6}.Develop|Any CPU.ActiveCfg = Debug|Any CPU
@@ -254,7 +240,6 @@ Global
 		{23E62674-2932-4B9B-9490-5D18EE55D1F6} = {7F7141DA-6ACA-4811-8B9C-3FA4B428D8AF}
 		{1B40E5EE-7311-46E7-8241-D9F0C443905D} = {23E62674-2932-4B9B-9490-5D18EE55D1F6}
 		{E2A6581B-C2D4-42E4-A5D6-14EA0753EE7D} = {55D60A33-AD35-4843-846E-0BC69366A224}
-		{1A87EEA1-7703-4089-9C74-2E9CF9F4FB78} = {20E64CBC-1925-4D31-982F-633430A8F82D}
 		{B85EA2D5-AB2B-425E-BE89-42BC75DF01F6} = {E50296CD-78D3-4FC8-A116-A25B625AC7B2}
 		{034E196C-9754-4AE6-86F7-C05DE96B6913} = {5A33FDC4-1618-4592-9569-EA964F4C5F5F}
 		{E2F1B3B9-DE75-47FB-8CB5-CACDEB04CC1C} = {20E64CBC-1925-4D31-982F-633430A8F82D}
