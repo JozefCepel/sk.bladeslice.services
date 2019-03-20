@@ -1,0 +1,65 @@
+﻿using ServiceStack;
+using ServiceStack.DataAnnotations;
+using System;
+using System.Runtime.Serialization;
+using WebEas.Esam.ServiceModel.Office.Bds.Types;
+using WebEas.ServiceModel;
+
+namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
+{
+    // Create
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
+    [Route("/CreateK_ORJ_0", "POST")]
+    [Api("K_ORJ_0")]
+    [DataContract]
+    public class CreateK_ORJ_0 : K_ORJ_0Dto { }
+
+    // Update
+    [WebEasRequiredRole(Roles.Admin)]
+    [Route("/UpdateK_ORJ_0", "PUT")]
+    [Api("K_ORJ_0")]
+    [DataContract]
+    public class UpdateK_ORJ_0 : K_ORJ_0Dto
+    {
+        [PrimaryKey]
+        [DataMember(IsRequired = true)]
+        public long K_ORJ_0 { get; set; }
+    }
+
+    // Delete
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
+    [Route("/DeleteK_ORJ_0", "DELETE")]
+    [Api("K_ORJ_0")]
+    [DataContract]
+    public class DeleteK_ORJ_0
+    {
+        [DataMember(IsRequired = true)]
+        public long K_ORJ_0 { get; set; }
+    }
+
+    #region DTO
+    [DataContract]
+    public class K_ORJ_0Dto : BaseDto<tblK_ORJ_0>
+    {
+        [DataMember]
+        public string ORJ { get; set; }
+
+        [DataMember]
+        public string POZN { get; set; }
+
+        [DataMember]
+        public string KOD { get; set; }
+
+        /// <summary>
+        /// Binds to entity.
+        /// </summary>
+        /// <param name="data"></param>
+        protected override void BindToEntity(tblK_ORJ_0 data)
+        {
+            data.ORJ = ORJ;
+            data.POZN = POZN;
+            data.KOD = KOD;
+        }
+    }
+    #endregion
+}

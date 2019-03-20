@@ -27,7 +27,7 @@ namespace WebEas.Esam.ServiceInterface.Office
             if (response.Response is WebEasResponseStatus)
             {
 #if DEBUG || DEVELOP
-                ((WebEasResponseStatus)response.Response).DetailMessage += $"{Environment.NewLine}http://esam-dev.datalan.sk/esam/api/pfe/lll/{ex.GetIdentifier()}";
+                ((WebEasResponseStatus)response.Response).DetailMessage += $"{Environment.NewLine}http://localhost:85/esam/api/pfe/lll/{ex.GetIdentifier()}";
 #endif
 
             }

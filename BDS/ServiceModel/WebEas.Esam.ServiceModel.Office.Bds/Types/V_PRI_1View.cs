@@ -3,23 +3,28 @@ using System;
 using System.Runtime.Serialization;
 using WebEas.ServiceModel;
 
-namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
+namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 {
-    [Schema("rzp")]
-    [Alias("V_Fin1Pol")]
+    [Schema("dbo")]
+    [Alias("V_PRI_1")]
     [DataContract]
-    public class Fin1PolView : Fin1Pol
+    public class V_PRI_1View : tblD_PRI_1
     {
+        [DataMember]
+        [PfeColumn(Text = "_DKL_C")]
+        public string DKL_C { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "_TSK")]
+        public string TSK { get; set; }
 
         //audit stlpce
         [DataMember]
         [PfeColumn(Text = "Vytvoril", Hidden = true, Editable = false, ReadOnly = true)]
-        [IgnoreInsertOrUpdate]
         public string VytvorilMeno { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Zmenil", Hidden = true, Editable = false, ReadOnly = true)]
-        [IgnoreInsertOrUpdate]
         public string ZmenilMeno { get; set; }
     }
 }

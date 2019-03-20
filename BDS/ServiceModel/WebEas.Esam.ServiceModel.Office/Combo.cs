@@ -33,4 +33,35 @@ namespace WebEas.Esam.ServiceModel.Office
             }
         }
     }
+
+    [DataContract]
+    public class PravoCombo : IStaticCombo
+    {
+        [DataMember]
+        public short Kod { get; set; }
+
+        [DataMember]
+        public string Nazov { get; set; }
+
+        public IWebEasRepositoryBase Repository { get; set; }
+
+        public List<ComboResult> GetComboList(string[] requestFields)
+        {
+            byte[] list = new byte[] { 0, 1, 2, 3 };
+            return list.Select(a => new ComboResult() { Id = a.ToString(), Value = GetText(a) }).ToList();
+        }
+
+        public static string GetText(short kod)
+        {
+            switch (kod)
+            {
+                case 0: return "<žiadny>";  // none
+                case 1: return "Čítať";     // read
+                case 2: return "Upravovať"; // read, insert, update
+                case 3: return "Plný";      // read, insert, update, delete
+                default: return kod + " (?)";
+            }
+        }
+    }
+
 }

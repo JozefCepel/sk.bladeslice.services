@@ -42,9 +42,22 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     public class D_PRI_0Dto : BaseDto<tblD_PRI_0>
     {
         [DataMember]
-        [Required]
-        [NotEmptyOrDefault]
         public int? K_OBP_0 { get; set; }
+
+        [DataMember]
+        public int K_SKL_0 { get; set; }
+
+        [DataMember]
+        public int K_MEN_0 { get; set; }
+
+        [DataMember]
+        public int K_POH_0 { get; set; }
+
+        [DataMember]
+        public int K_ORJ_0 { get; set; }
+
+        [DataMember]
+        public decimal? KURZ { get; set; }
 
         [DataMember]
         public string ICO { get; set; }
@@ -63,27 +76,6 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
 
         [DataMember]
         public string OBEC_S { get; set; }
-
-        [DataMember]
-        public int K_ORJ_0 { get; set; }
-
-        [DataMember]
-        public string ORJ { get; set; }
-
-        [DataMember]
-        public int K_SKL_0 { get; set; }
-
-        [DataMember]
-        public string SKL { get; set; }
-
-        [DataMember]
-        public int K_MEN_0 { get; set; }
-
-        [DataMember]
-        public decimal? KURZ { get; set; }
-
-        [DataMember]
-        public int K_POH_0 { get; set; }
 
         [DataMember]
         public bool? PS { get; set; }
@@ -107,10 +99,10 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
         public string POZN { get; set; }
 
         [DataMember]
-        public decimal? D_SUMA { get; set; }
+        public decimal? Z_SUMA { get; set; }
 
         [DataMember]
-        public decimal? Z_SUMA { get; set; }
+        public decimal? D_SUMA { get; set; }
 
         [DataMember]
         public decimal? D_DPH1 { get; set; }
@@ -128,11 +120,17 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
         protected override void BindToEntity(tblD_PRI_0 data)
         {
             data.K_OBP_0 = K_OBP_0;
-            data.K_ORJ_0 = K_ORJ_0;
             data.K_SKL_0 = K_SKL_0;
             data.K_MEN_0 = K_MEN_0;
-            data.KURZ = KURZ;
             data.K_POH_0 = K_POH_0;
+            data.K_ORJ_0 = K_ORJ_0;
+            data.KURZ = KURZ;
+            data.ICO = ICO;
+            data.NAZOV1 = NAZOV1;
+            data.NAZOV2 = NAZOV2;
+            data.ULICA_S = ULICA_S;
+            data.PSC_S = PSC_S;
+            data.OBEC_S = OBEC_S;
             data.PS = PS;
             data.DKL_C = DKL_C;
             data.DL_C = DL_C;
@@ -140,8 +138,8 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
             data.Z = Z;
             data.DAT_DKL = DAT_DKL;
             data.POZN = POZN;
-            data.D_SUMA = D_SUMA;
             data.Z_SUMA = Z_SUMA;
+            data.D_SUMA = D_SUMA;
             data.D_DPH1 = D_DPH1;
             data.D_DPH2 = D_DPH2;
             data.SO = SO;

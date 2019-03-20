@@ -24,7 +24,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
 
         #endregion
 
-        public readonly static HierarchyNode HierarchyTree = new HierarchyNode(Code, "Rozpočet")
+        public readonly static HierarchyNode HierarchyTree = new HierarchyNode(Code, "Blade Slice")
         {
             Children = new List<HierarchyNode>
             {
@@ -34,7 +34,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                     
                     Children = new List<HierarchyNode>
                     {
-                        new HierarchyNode<tblV_PRI_0View>("pri", "Príjemky", null, HierarchyNodeType.Ciselnik)
+                        new HierarchyNode<V_PRI_0View>("pri", "Príjemky", null, HierarchyNodeType.Ciselnik)
                         {
                             Actions = new List<NodeAction>
                             {
@@ -44,7 +44,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                             }.AddMenuButtonsAll(NodeActionType.Create, typeof(CreateD_PRI_0), roles_member),
                             Children = new List<HierarchyNode>
                             {
-                                new HierarchyNode<tblV_PRI_1View>("pol", "Položky", null, HierarchyNodeType.Ciselnik)
+                                new HierarchyNode<V_PRI_1View>("pol", "Položky", null, HierarchyNodeType.Ciselnik)
                                 {
                                     Actions = new List<NodeAction>
                                     {
@@ -65,7 +65,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                     
                     Children = new List<HierarchyNode>
                     {
-                        new HierarchyNode<tblV_MAT_0View>("mat", "Katalóg materiálov", null, HierarchyNodeType.Ciselnik)
+                        new HierarchyNode<V_MAT_0View>("mat", "Katalóg materiálov", null, HierarchyNodeType.Ciselnik)
                         {
                             Actions = new List<NodeAction>
                             {
@@ -74,7 +74,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                                 new NodeAction(NodeActionType.Update, typeof(UpdateK_MAT_0))
                             }.AddMenuButtonsAll(NodeActionType.Create, typeof(CreateK_MAT_0), roles_member)
                         },
-                        new HierarchyNode<tblV_OBP_0View>("obp", "Katalóg obchodných partnerov", null, HierarchyNodeType.Ciselnik)
+                        new HierarchyNode<V_OBP_0View>("obp", "Katalóg obchodných partnerov", null, HierarchyNodeType.Ciselnik)
                         {
                             Actions = new List<NodeAction>
                             {
@@ -97,7 +97,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                         {
                             Children = new List<HierarchyNode>
                             {
-                                new HierarchyNode<tblV_ORJ_0View>("orj", "Organizačné jednotky", null, HierarchyNodeType.Ciselnik)
+                                new HierarchyNode<V_ORJ_0View>("orj", "Organizačné jednotky", null, HierarchyNodeType.Ciselnik)
                                 {
                                     Actions = new List<NodeAction>
                                     {
@@ -106,7 +106,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                                         new NodeAction(NodeActionType.Update, typeof(UpdateK_ORJ_0))
                                     }.AddMenuButtonsAll(NodeActionType.Create, typeof(CreateK_ORJ_0), roles_member)
                                 },
-                                new HierarchyNode<tblV_SKL_0View>("skl", "Sklady", null, HierarchyNodeType.Ciselnik)
+                                new HierarchyNode<V_SKL_0View>("skl", "Sklady", null, HierarchyNodeType.Ciselnik)
                                 {
                                     Actions = new List<NodeAction>
                                     {
@@ -116,7 +116,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                                     }.AddMenuButtonsAll(NodeActionType.Create, typeof(CreateK_SKL_0), roles_member),
                                     Children = new List<HierarchyNode>
                                     {
-                                        new HierarchyNode<tblV_SKL_1View>("tsk", "Priradenie materiálových skupín", null, HierarchyNodeType.Ciselnik)
+                                        new HierarchyNode<V_SKL_1View>("tsk", "Priradenie materiálových skupín", null, HierarchyNodeType.Ciselnik)
                                         {
                                             Actions = new List<NodeAction>
                                             {
@@ -125,7 +125,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                                                 new NodeAction(NodeActionType.Update, typeof(UpdateK_SKL_1))
                                             }.AddMenuButtonsAll(NodeActionType.Create, typeof(CreateK_SKL_1), roles_member)
                                         },
-                                        new HierarchyNode<tblV_SKL_2View>("loc", "Pozície na sklade", null, HierarchyNodeType.Ciselnik)
+                                        new HierarchyNode<V_SKL_2View>("loc", "Pozície na sklade", null, HierarchyNodeType.Ciselnik)
                                         {
                                             Actions = new List<NodeAction>
                                             {
@@ -136,7 +136,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                                         }
                                     }
                                 },
-                                new HierarchyNode<tblV_ORJ_1View>("orjskl", "Priradenie skladov ORJ", null, HierarchyNodeType.Ciselnik)
+                                new HierarchyNode<V_ORJ_1View>("orjskl", "Priradenie skladov ORJ", null, HierarchyNodeType.Ciselnik)
                                 {
                                     Actions = new List<NodeAction>
                                     {
@@ -148,7 +148,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                             }
 
                         },
-                        new HierarchyNode<tblV_TSK_0View>("tsk", "Materiálové skupiny", null, HierarchyNodeType.Ciselnik)
+                        new HierarchyNode<V_TSK_0View>("tsk", "Materiálové skupiny", null, HierarchyNodeType.Ciselnik)
                         {
                             Actions = new List<NodeAction>
                             {

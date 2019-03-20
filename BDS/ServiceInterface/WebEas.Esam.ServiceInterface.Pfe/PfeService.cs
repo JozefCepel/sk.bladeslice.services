@@ -81,7 +81,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                     Kod = module.Kod,
                     Nazov = module.Nazov,
 #if DEBUG || DEVELOP
-                    Url = $"http://esam-dev.datalan.sk/{module.Kod.ToUpper()}/",
+                    Url = $"http://localhost:85/{module.Kod.ToUpper()}/",
 #endif
                     Separator = false
                 };

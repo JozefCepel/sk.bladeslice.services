@@ -114,17 +114,17 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
 
         public object Any(CreateD_PRI_0 request)
         {
-            return Repository.Create<D_PRI_0View>(request);
+            return Repository.Create<V_PRI_0View>(request);
         }
 
         public object Any(UpdateD_PRI_0 request)
         {
-            return Repository.Update<D_PRI_0View>(request);
+            return Repository.Update<V_PRI_0View>(request);
         }
 
         public void Any(DeleteD_PRI_0 request)
         {
-            Repository.Delete<D_PRI_0>(request.D_PRD_PRI_0_Id);
+            Repository.Delete<tblD_PRI_0>(request.D_PRI_0);
         }
 
         #endregion

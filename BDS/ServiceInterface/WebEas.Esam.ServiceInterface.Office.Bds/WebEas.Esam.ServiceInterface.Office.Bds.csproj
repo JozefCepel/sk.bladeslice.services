@@ -7,8 +7,8 @@
     <ProjectGuid>{E85EA2D5-BB2B-425E-BE89-D2BC75DF04F9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WebEas.Esam.ServiceInterface.Office.Rzp</RootNamespace>
-    <AssemblyName>WebEas.Esam.ServiceInterface.Office.Rzp</AssemblyName>
+    <RootNamespace>WebEas.Esam.ServiceInterface.Office.Bds</RootNamespace>
+    <AssemblyName>WebEas.Esam.ServiceInterface.Office.Bds</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -83,7 +83,7 @@
       <Project>{1b40e5ee-7311-46e7-8241-d9f0c443905d}</Project>
       <Name>WebEas.ServiceModel</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\ServiceModel\WebEas.Esam.ServiceModel.Office.Rzp\WebEas.Esam.ServiceModel.Office.Bds.csproj">
+    <ProjectReference Include="..\..\ServiceModel\WebEas.Esam.ServiceModel.Office.Bds\WebEas.Esam.ServiceModel.Office.Bds.csproj">
       <Project>{630888ec-7671-47df-aecd-18bad4ec52ac}</Project>
       <Name>WebEas.Esam.ServiceModel.Office.Bds</Name>
     </ProjectReference>

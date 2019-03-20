@@ -22,7 +22,7 @@ namespace WebEas.Esam.ServiceModel.Office.RolesDefinition.Bds
             // definovanie vazieb
             admin.SubRoles = new List<Role> { member, writer, cisWriter };
             cisWriter.SubRoles = new List<Role> { member };
-            writer.SubRoles = new List<Role> { member, Reg.Roles.RoleRegWriter};
+            //writer.SubRoles = new List<Role> { member, Reg.Roles.RoleRegWriter};
 
             // vytvorenie zoznamu
             List = new List<Role> { member, writer, cisWriter, admin };
