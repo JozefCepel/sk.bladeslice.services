@@ -23,12 +23,12 @@ namespace WebEas.Esam.ServiceModel.Office
             return list.Select(a => new ComboResult() { Id = a.ToString(), Value = GetText(a) }).ToList();
         }
 
-        public static string GetText(byte kod)
+        public static string GetText(short kod)
         {
             switch (kod)
             {
-                case 1: return "Príjem";
-                case 2: return "Výdaj";
+                case 1: return "P";
+                case 2: return "V";
                 default: return kod + " (?)";
             }
         }

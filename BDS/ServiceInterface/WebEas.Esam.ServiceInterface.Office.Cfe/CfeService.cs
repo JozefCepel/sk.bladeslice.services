@@ -191,24 +191,6 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
         }
 
         #endregion
-
-        #region Department
-
-        public object Any(CreateDepartment request)
-        {
-            return Repository.Create<DepartmentView>(request);
-        }
-
-        public object Any(UpdateDepartment request)
-        {
-            return Repository.Update<DepartmentView>(request);
-        }
-
-        public void Any(DeleteDepartment request)
-        {
-            Repository.Delete<Department>(request.D_Department_Id);
-        }
-
-        #endregion
+       
     }
 }

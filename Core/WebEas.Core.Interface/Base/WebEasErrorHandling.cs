@@ -70,7 +70,7 @@ namespace WebEas.Core.Base
                 Caption = GetCaption(exception)
             };
 
-            errorResponse.Message = GetMessage(exception) ?? string.Format("Nastala interná chyba pri volaní {0}. Chyba bola zaznamenaná k riešeniu.", dto == null ? "unknown" : dto.GetType().Name);
+            errorResponse.Message = GetMessage(exception) ?? string.Format("Nastala interná chyba pri volaní {0}. Chyba bola zaevidovaná a zaslaná na spracovanie.", dto == null ? "unknown" : dto.GetType().Name);
 
             #if DEBUG
 

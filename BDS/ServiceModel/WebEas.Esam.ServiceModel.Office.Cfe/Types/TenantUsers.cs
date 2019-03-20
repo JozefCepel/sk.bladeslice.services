@@ -22,9 +22,5 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
         [DataMember]
         [PfeColumn(Text = "_Tenant")]
         public Guid D_Tenant_Id { get; set; }
-
-        [DataMember]
-        [PfeColumn(Text = "_Oddelenie")]
-        public int? D_Department_Id { get; set; }
     }
 }

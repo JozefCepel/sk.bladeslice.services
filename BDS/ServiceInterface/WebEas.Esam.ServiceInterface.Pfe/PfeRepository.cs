@@ -8,7 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using WebEas.Egov.Reports;
-using WebEas.Esam.ServiceModel.Office.Dto;
 using WebEas.Esam.ServiceModel.Pfe.Dto;
 using WebEas.ServiceInterface;
 using WebEas.ServiceModel;
@@ -1154,6 +1153,8 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                         newLayout.Layout = new PfeLayout[] { changedLayout };
                         newLayout.DoubleClickAction = currentLayout.DoubleClickAction;
                         newLayout.WaitForInputData = currentLayout.WaitForInputData;
+                        newLayout.UseAsBrowser = currentLayout.UseAsBrowser;
+                        newLayout.UseAsBrowserRank = currentLayout.UseAsBrowserRank;
 
                         if (newLayout.DoubleClickAction != null)
                         {

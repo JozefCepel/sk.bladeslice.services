@@ -54,7 +54,7 @@ namespace WebEas.ServiceModel.Office.Egov.Reg.Types
         /// </summary>
         /// <value>The nazov.</value>
         [DataMember]
-        [PfeColumn(Text = "Názov biznis entity", Width = 200)]
+        [PfeColumn(Text = "Typ dokladu", Width = 200)]
         [PfeSort(Rank = 2)]
         public string Nazov { get; set; }
     }

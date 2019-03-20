@@ -70,30 +70,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Combo.cs" />
-    <Compile Include="Dto\ContextUser.cs" />
     <Compile Include="EsamSession.cs" />
     <Compile Include="EsamSessionProvider.cs" />
     <Compile Include="IEsamService.cs" />
     <Compile Include="IRepositoryBase.cs" />
-    <Compile Include="Reg\Dto\ChangeState.cs" />
-    <Compile Include="Reg\Dto\ColumnTranslationDto.cs" />
-    <Compile Include="Reg\Dto\ListComboDto.cs" />
-    <Compile Include="Reg\Dto\ListDto.cs" />
-    <Compile Include="Reg\Dto\Logging.cs" />
-    <Compile Include="Reg\Dto\ProjektDto.cs" />
-    <Compile Include="Reg\Dto\RowDefaultValues.cs" />
-    <Compile Include="Reg\Dto\StavEntity.cs" />
-    <Compile Include="Reg\Dto\StrediskoDto.cs" />
-    <Compile Include="Reg\ServiceModel.cs" />
-    <Compile Include="Reg\Types\Projekt.cs" />
-    <Compile Include="Reg\Types\Stredisko.cs" />
-    <Compile Include="Reg\Types\ProjektView.cs" />
-    <Compile Include="Reg\Types\StrediskoView.cs" />
     <Compile Include="RolesDefinition\Cfe\Roles.cs" />
+    <Compile Include="RolesDefinition\Crm\Roles.cs" />
+    <Compile Include="RolesDefinition\Dap\Roles.cs" />
     <Compile Include="RolesDefinition\Dms\Roles.cs" />
+    <Compile Include="RolesDefinition\Fin\Roles.cs" />
     <Compile Include="RolesDefinition\OfficeRoleList.cs" />
     <Compile Include="RolesDefinition\Bds\Roles.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RolesDefinition\Uct\Roles.cs" />
     <Compile Include="Types\PossibleStatesResult.cs" />
   </ItemGroup>
   <ItemGroup>

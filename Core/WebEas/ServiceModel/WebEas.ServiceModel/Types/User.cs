@@ -55,12 +55,12 @@ namespace WebEas.ServiceModel.Types
         public Guid? D_User_Id_Parent { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Dátum začiatku", Mandatory = true)]
-        public DateTime DateStart { get; set; }
+        [PfeColumn(Text = "Dátum začiatku", Type = PfeDataType.Date, Mandatory = true)]
+        public DateTime PlatnostOd { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Dátum ukončenia")]
-        public DateTime? DateEnd { get; set; }
+        [PfeColumn(Text = "Dátum ukončenia", Type = PfeDataType.Date)]
+        public DateTime? PlatnostDo { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "_Krajina")]  // bude sa riesit neskor, nie ja na to cas, defualtne 1 = SVK

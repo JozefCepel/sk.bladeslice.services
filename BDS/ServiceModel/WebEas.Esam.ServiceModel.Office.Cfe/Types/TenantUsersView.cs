@@ -22,12 +22,6 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
         [IgnoreInsertOrUpdate]
         public string TenantName { get; set; }
 
-        [DataMember]
-        [PfeColumn(Text = "Oddelenie")]
-        [PfeCombo(typeof(DepartmentView), NameColumn = "D_Department_Id", DisplayColumn = "Nazov")]
-        [IgnoreInsertOrUpdate]
-        public string DepartmentName { get; set; }
-
         //audit stlpce
         [DataMember]
         [PfeColumn(Text = "Vytvoril", Hidden = true, Editable = false, ReadOnly = true)]

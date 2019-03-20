@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dto\ClearCache.cs" />
+    <Compile Include="Dto\ContextUser.cs" />
     <Compile Include="Dto\ExportDto.cs" />
     <Compile Include="Dto\FileDownloadUpload.cs" />
     <Compile Include="Dto\GetContextUser.cs" />

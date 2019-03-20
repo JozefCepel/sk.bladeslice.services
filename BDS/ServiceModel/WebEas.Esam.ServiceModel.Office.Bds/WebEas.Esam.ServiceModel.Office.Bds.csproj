@@ -98,6 +98,10 @@
       <Project>{a0b8a0db-8ac5-47e8-925a-862529231d16}</Project>
       <Name>WebEas.Esam.ServiceInterface.Office</Name>
     </ProjectReference>
+    <ProjectReference Include="..\WebEas.Esam.ServiceModel.Office.Reg\WebEas.Esam.ServiceModel.Office.Reg.csproj">
+      <Project>{befa8b1f-6412-4138-bf6b-8e1de0210933}</Project>
+      <Name>WebEas.Esam.ServiceModel.Office.Reg</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WebEas.Esam.ServiceModel.Office\WebEas.Esam.ServiceModel.Office.csproj">
       <Project>{b368a929-aa16-4823-87ec-69e90901d0ed}</Project>
       <Name>WebEas.Esam.ServiceModel.Office</Name>

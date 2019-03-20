@@ -220,6 +220,33 @@ namespace WebEas.ServiceInterface
                 }
             }
 
+            // specialita, velmi specificke prepojenie gridov
+            if(node.KodPolozky.Equals("rzp-evi-intd-pol") || node.KodPolozky.Equals("rzp-evi-zmena-pol"))
+            {
+                int mes = 0;
+                string stmp;
+                foreach (FilterElement el in filter.FilterElements)
+                {
+                    if (Convert.ToString(el.Value).EndsWith("M@")) {
+                        stmp = el.Value.ToString().Split('|')[1];
+                        mes = stmp.Substring(0, stmp.Length - 2).ToInt(); 
+                        el.Value = el.Value.ToString().Split('|')[0];
+                    }
+                }
+                if (mes > 0)
+                {
+                    if (node.KodPolozky.Equals("rzp-evi-zmena-pol"))
+                    {
+                        filter.And(FilterElement.LessThanOrEq("Mesiac", mes));
+                        filter.And(FilterElement.In("C_StavEntity_Id", new[] { (int)StavEntityEnumRzp.SCHVALENY, (int)StavEntityEnumRzp.ODOSLANY }));  // ZMENY
+                    }
+                    else { 
+                        filter.And(FilterElement.LessThanOrEq("UOMesiac", mes));
+                        filter.And(FilterElement.Eq("C_StavEntity_Id", (int)StavEntityEnumInd.ZAUCTOVANY));  // IND
+                    }
+                }
+            }
+
             // ------ HirarchyNode.AdditionalFilter
             if (node.AdditionalFilter != null)
             {

@@ -65,12 +65,7 @@
   <ItemGroup>
     <Compile Include="EsamAppHostBase.cs" />
     <Compile Include="EsamServiceRunner.cs" />
-    <Compile Include="IOfficeRepository.cs" />
-    <Compile Include="OfficeRepository.cs" />
-    <Compile Include="OfficeService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Reg\Modul.cs" />
-    <Compile Include="Reg\ServiceInterface.cs" />
     <Compile Include="RepositoryBase.cs" />
     <Compile Include="ServiceBase.cs" />
   </ItemGroup>

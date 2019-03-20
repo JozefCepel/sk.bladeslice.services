@@ -49,9 +49,6 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
         [NotEmptyOrDefault]
         public Guid D_Tenant_Id { get; set; }
 
-        [DataMember]
-        public int? D_Department_Id { get; set; }
-
         /// <summary>
         /// Binds to entity.
         /// </summary>
@@ -60,7 +57,6 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
         {
             data.D_User_Id = D_User_Id;
             data.D_Tenant_Id = D_Tenant_Id;
-            data.D_Department_Id = D_Department_Id;
         }
     }
     #endregion
