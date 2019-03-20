@@ -8,7 +8,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     // Get type of parameter
     [WebEasRequiredRole(Roles.BdsAdmin)]
     [Route("/GetParameterType", "GET")]
-    [Api("DapIne")]
+    [Api("BdsIne")]
     [DataContract]
     public class GetParameterType
     {
