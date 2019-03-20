@@ -3,6 +3,7 @@ using Ninject.Web.Common;
 using ServiceStack;
 using WebEas.Auth;
 using WebEas.Esam.ServiceInterface.Office;
+using WebEas.Esam.ServiceInterface.Office.Reg;
 using WebEas.ServiceInterface;
 
 namespace WebEas.Esam.Office.Reg
@@ -15,7 +16,7 @@ namespace WebEas.Esam.Office.Reg
         /// <summary>
         /// Initializes a new instance of the <see cref="AppHost" /> class.
         /// </summary>
-        public AppHost() : base("Egovernment", typeof(OfficeService).Assembly)
+        public AppHost() : base("Egovernment", typeof(RegService).Assembly)
         {
         }
 
@@ -65,14 +66,19 @@ namespace WebEas.Esam.Office.Reg
         {
             base.AddNinjectBinding(kernel);
 
+            kernel.Bind<IRoleList>().To<ServiceModel.Office.Cfe.ServiceModel>();
+            kernel.Bind<IRoleList>().To<ServiceModel.Office.Crm.ServiceModel>();
+            kernel.Bind<IRoleList>().To<ServiceModel.Office.Dap.ServiceModel>();
+            kernel.Bind<IRoleList>().To<ServiceModel.Office.Dms.ServiceModel>();
+            kernel.Bind<IRoleList>().To<ServiceModel.Office.Fin.ServiceModel>();
+            kernel.Bind<IRoleList>().To<ServiceModel.Office.Osa.ServiceModel>();
             kernel.Bind<IRoleList>().To<ServiceModel.Office.Reg.ServiceModel>();
             kernel.Bind<IRoleList>().To<ServiceModel.Office.Rzp.ServiceModel>();
-            kernel.Bind<IRoleList>().To<ServiceModel.Office.Dms.ServiceModel>();
-            kernel.Bind<IRoleList>().To<ServiceModel.Office.Cfe.ServiceModel>();
+            kernel.Bind<IRoleList>().To<ServiceModel.Office.Uct.ServiceModel>();
 
             kernel.Bind<IRoleList>().To<ServiceModel.Office.RolesDefinition.OfficeRoleList>();
             kernel.Bind<IWebEasServiceInterface>().To<ServiceInterface.Office.Reg.ServiceInterface>();
-            kernel.Bind<IOfficeRepository>().To<OfficeRepository>().InRequestScope().WithPropertyValue("StsThumbPrint", GetThumbprint("StsThumbprint"));            
+            kernel.Bind<IRegRepository>().To<RegRepository>().InRequestScope().WithPropertyValue("StsThumbPrint", GetThumbprint("StsThumbprint"));            
 
             return kernel;
         }

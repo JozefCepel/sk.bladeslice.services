@@ -71,6 +71,8 @@ namespace WebEas.ServiceModel
             dataModel.Layout = currentViewConfig.Layout;
             dataModel.DoubleClickAction = currentViewConfig.DoubleClickAction;
             dataModel.WaitForInputData = currentViewConfig.WaitForInputData;
+            dataModel.UseAsBrowser = currentViewConfig.UseAsBrowser;
+            dataModel.UseAsBrowserRank = currentViewConfig.UseAsBrowserRank;
 
             return dataModel;
         }

@@ -42,8 +42,7 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Dto
     public class IntDokladDto : BaseDto<IntDoklad>
     {
         [DataMember]
-        [NotEmptyOrDefault]
-        public long D_BiznisEntita_Id { get; set; }
+        public bool PS { get; set; }
 
         [DataMember]
         public string Popis { get; set; }
@@ -55,10 +54,10 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Dto
         public int? C_RzpPredkontacia_Id { get; set; }
 
         [DataMember]
-        public long? C_Stredisko_Id { get; set; }
+        public int? C_Stredisko_Id { get; set; }
 
         [DataMember]
-        public string CisloDokladu { get; set; }
+        public string CisloInterne { get; set; }
 
         [DataMember]
         public DateTime DatumDokladu { get; set; }
@@ -67,7 +66,7 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Dto
         public string VS { get; set; }
 
         [DataMember]
-        public byte? UO { get; set; }
+        public byte UO { get; set; }
 
         /// <summary>
         /// Binds to entity.
@@ -75,7 +74,7 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Dto
         /// <param name="data"></param>
         protected override void BindToEntity(IntDoklad data)
         {
-            data.D_BiznisEntita_Id = D_BiznisEntita_Id;
+            data.PS = PS;
             data.Popis = Popis;
             data.Suma = Suma;
             data.C_RzpPredkontacia_Id = C_RzpPredkontacia_Id;

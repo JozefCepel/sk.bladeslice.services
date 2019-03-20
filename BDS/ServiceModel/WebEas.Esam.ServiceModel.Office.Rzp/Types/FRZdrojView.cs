@@ -12,6 +12,6 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
     {
         [DataMember]
         [PfeColumn(Text = "Typ organizácie")]
-        public string TypOrganizacie { get; set; }
+        public string OrganizaciaTyp { get; set; }
     }
 }

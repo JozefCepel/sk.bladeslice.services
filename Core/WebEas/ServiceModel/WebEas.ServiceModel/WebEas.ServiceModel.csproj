@@ -123,7 +123,6 @@
     <Compile Include="Pfe\PfeSummaryRow.cs" />
     <Compile Include="Pfe\PfeMessageType.cs" />
     <Compile Include="Pfe\PfeValidatorType.cs" />
-    <Compile Include="Reg\Roles.cs" />
     <Compile Include="Reg\Types\AdresnyStitokVymerVyzvaView.cs" />
     <Compile Include="Reg\Types\BiznisEntita.cs" />
     <Compile Include="Reg\Types\EntitaHistoriaStavov.cs" />
@@ -214,6 +213,7 @@
     <Compile Include="SyncHelper.cs" />
     <Compile Include="Types\ComboResult.cs" />
     <Compile Include="Types\DbEnvironment.cs" />
+    <Compile Include="Types\Nastavenie.cs" />
     <Compile Include="Types\User.cs" />
     <Compile Include="Types\LoggingView.cs" />
     <Compile Include="Types\LogView.cs" />

@@ -15,7 +15,7 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
     {
         [DataMember]
         [PfeColumn(Text = "Číslo dokladu", Mandatory = true)]
-        public string CisloDokladu { get; set; }
+        public string CisloInterne { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Variabilný symbol")]
@@ -23,11 +23,11 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
 
         [DataMember]
         [PfeColumn(Text = "Účtovné obdobie", Mandatory = true)]
-        public byte? UO { get; set; }
+        public byte? UOMesiac { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "StrediskoId", Editable = true, Mandatory = false, Hidden = true, Hideable = false)]
-        public long C_Stredisko_Id { get; set; }
+        public int? C_Stredisko_Id { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Kód strediska", ReadOnly = true)]
@@ -52,7 +52,7 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
 
         [DataMember]
         [PfeColumn(Text = "Dátum", Type = PfeDataType.Date, Mandatory = true)]
-        public DateTime DatumDokladu { get; set; }
+        public DateTime? DatumPrijatia { get; set; }
 
         //audit stlpce
         [DataMember]

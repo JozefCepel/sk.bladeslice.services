@@ -81,7 +81,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                     Kod = module.Kod,
                     Nazov = module.Nazov,
 #if DEBUG || DEVELOP
-                    Url = $"http://sd1esambe01.datalan.sk/{module.Kod.ToUpper()}/",
+                    Url = $"http://esam-dev.datalan.sk/{module.Kod.ToUpper()}/",
 #endif
                     Separator = false
                 };
@@ -909,7 +909,8 @@ namespace WebEas.Esam.ServiceInterface.Pfe
 
                 bool isMenu = action.MenuButtons != null || action.ActionType == NodeActionType.MenuButtons;
                 sb.AppendFormat("<td>{0}{1}{2}{7}</td><td>{3}</td><td>{4}</td><td>{5}</td><td>{6}</td></tr>",
-                    parent, action.Caption, isMenu ? " (MENU)" : "", action.ActionIcon, actroles, action.ActionType, action.IdField, action.SelectionMode == PfeSelection.Multi ? " (MS)" : ""); //, action.mu);
+                    parent, action.Caption, isMenu ? " (MENU)" : "", action.ActionIcon, actroles, 
+                    action.ActionType, action.IdField, action.SelectionMode == PfeSelection.Multi ? " (MS)" : ""); //, action.mu);
 
                 if (isMenu)
                 {

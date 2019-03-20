@@ -11,13 +11,13 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
     public class IntDoklad : BaseTenantEntity
     {
         [PrimaryKey]
-        [AutoIncrement]
         [DataMember]
         public long D_IntDoklad_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_D_BiznisEntita_Id", Mandatory = true)]
-        public long D_BiznisEntita_Id { get; set; }
+        [PfeColumn(Text = "_D_BiznisEntita_Id", ReadOnly = true)]   // pouzite len na vazbu medzi gridmi, musia mat rovnake ID, to iste co D_IntDoklad_Id
+        [Ignore]
+        public long D_BiznisEntita_Id { get { return D_IntDoklad_Id; } }
 
         [DataMember]
         [PfeColumn(Text = "Počiatočný stav", ReadOnly = true)]
@@ -33,7 +33,7 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
 
         [DataMember]
         [PfeColumn(Text = "Rok", Mandatory = true)]
-        public int Rok { get; set; }
+        public short Rok { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "_C_RzpPredkontacia_Id")]

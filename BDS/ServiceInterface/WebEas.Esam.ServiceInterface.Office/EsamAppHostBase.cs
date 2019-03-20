@@ -72,7 +72,7 @@ namespace WebEas.Esam.ServiceInterface.Office
             if (response.Response is WebEas.Exceptions.WebEasResponseStatus)
             {
 #if DEBUG || DEVELOP
-                ((WebEas.Exceptions.WebEasResponseStatus)response.Response).DetailMessage += $"{Environment.NewLine}http://sd1esambe01.datalan.sk/esam/api/pfe/lll/{ex.GetIdentifier()}";
+                ((WebEas.Exceptions.WebEasResponseStatus)response.Response).DetailMessage += $"{Environment.NewLine}http://esam-dev.datalan.sk/esam/api/pfe/lll/{ex.GetIdentifier()}";
 #endif
 
             }

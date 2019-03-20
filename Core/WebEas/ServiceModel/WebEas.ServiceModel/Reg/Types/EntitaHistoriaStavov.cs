@@ -37,7 +37,7 @@ namespace WebEas.ServiceModel.Office.Egov.Reg.Types
         public int? C_TypBiznisEntity_Id { get; set; }
 
         [DataMember]
-        public long? D_NavrhZmenyRzp_Id { get; set; }
+        public long? D_Rzp_Id { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Vyjadrenie spracovateľa", Xtype = PfeXType.TextareaWW, Editable = false)]

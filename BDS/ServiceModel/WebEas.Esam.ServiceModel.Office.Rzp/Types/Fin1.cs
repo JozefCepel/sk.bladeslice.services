@@ -6,9 +6,9 @@ using WebEas.ServiceModel;
 namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
 {
     [Schema("rzp")]
-    [Alias("V_Fin1")]
+    [Alias("D_Fin1")]
     [DataContract]
-    public class Fin1 : BaseEntity
+    public class Fin1 : BaseTenantEntity 
     {
         [PrimaryKey]
         [AutoIncrement]
@@ -33,7 +33,7 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
 
         [DataMember]
         [PfeColumn(Text = "Dátum exportu", ReadOnly = true)]
-        public DateTime ExportDatum { get; set; }
+        public DateTime? ExportDatum { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Export", ReadOnly = true)]

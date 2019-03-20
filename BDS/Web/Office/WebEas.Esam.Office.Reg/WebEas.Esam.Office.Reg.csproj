@@ -121,13 +121,37 @@
       <Project>{b85ea2d5-ab2b-425e-be89-42bc75df01f6}</Project>
       <Name>WebEas.Esam.ServiceInterface.Office.Cfe</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\ServiceInterface\WebEas.Esam.ServiceInterface.Office.Crm\WebEas.Esam.ServiceInterface.Office.Crm.csproj">
+      <Project>{34d24431-9d8a-4cf6-8119-75a1fd6ac96e}</Project>
+      <Name>WebEas.Esam.ServiceInterface.Office.Crm</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\ServiceInterface\WebEas.Esam.ServiceInterface.Office.Dap\WebEas.Esam.ServiceInterface.Office.Dap.csproj">
+      <Project>{598d9052-f7a8-4119-9272-68c697b892fb}</Project>
+      <Name>WebEas.Esam.ServiceInterface.Office.Dap</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\ServiceInterface\WebEas.Esam.ServiceInterface.Office.Dms\WebEas.Esam.ServiceInterface.Office.Dms.csproj">
       <Project>{79ecce54-31be-411a-afbc-ff944ceafc62}</Project>
       <Name>WebEas.Esam.ServiceInterface.Office.Dms</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\ServiceInterface\WebEas.Esam.ServiceInterface.Office.Fin\WebEas.Esam.ServiceInterface.Office.Fin.csproj">
+      <Project>{af9c3b09-f0f1-4977-a98a-e50108a3225c}</Project>
+      <Name>WebEas.Esam.ServiceInterface.Office.Fin</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\ServiceInterface\WebEas.Esam.ServiceInterface.Office.Osa\WebEas.Esam.ServiceInterface.Office.Osa.csproj">
+      <Project>{c4527dff-1472-4d00-ae2f-d218a69e5313}</Project>
+      <Name>WebEas.Esam.ServiceInterface.Office.Osa</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\ServiceInterface\WebEas.Esam.ServiceInterface.Office.Reg\WebEas.Esam.ServiceInterface.Office.Reg.csproj">
+      <Project>{0c445a3d-404c-469e-83e0-fa5d795eab80}</Project>
+      <Name>WebEas.Esam.ServiceInterface.Office.Reg</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\ServiceInterface\WebEas.Esam.ServiceInterface.Office.Rzp\WebEas.Esam.ServiceInterface.Office.Rzp.csproj">
       <Project>{e85ea2d5-bb2b-425e-be89-d2bc75df04f9}</Project>
       <Name>WebEas.Esam.ServiceInterface.Office.Rzp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\ServiceInterface\WebEas.Esam.ServiceInterface.Office.Uct\WebEas.Esam.ServiceInterface.Office.Uct.csproj">
+      <Project>{8192e041-11d5-4ba5-a6f6-1bbbbdf21986}</Project>
+      <Name>WebEas.Esam.ServiceInterface.Office.Uct</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\ServiceInterface\WebEas.Esam.ServiceInterface.Office\WebEas.Esam.ServiceInterface.Office.csproj">
       <Project>{a0b8a0db-8ac5-47e8-925a-862529231d16}</Project>
@@ -137,13 +161,37 @@
       <Project>{034e196c-9754-4ae6-86f7-c05de96b6913}</Project>
       <Name>WebEas.Esam.ServiceModel.Office.Cfe</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\ServiceModel\WebEas.Esam.ServiceModel.Office.Crm\WebEas.Esam.ServiceModel.Office.Crm.csproj">
+      <Project>{7566c528-3dcf-4be7-8728-3e624a01952c}</Project>
+      <Name>WebEas.Esam.ServiceModel.Office.Crm</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\ServiceModel\WebEas.Esam.ServiceModel.Office.Dap\WebEas.Esam.ServiceModel.Office.Dap.csproj">
+      <Project>{b71b41ae-a610-42bb-900c-66463bf4de15}</Project>
+      <Name>WebEas.Esam.ServiceModel.Office.Dap</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\ServiceModel\WebEas.Esam.ServiceModel.Office.Dms\WebEas.Esam.ServiceModel.Office.Dms.csproj">
       <Project>{54f9ccde-7c72-4bb2-87ee-981c15c4f1b4}</Project>
       <Name>WebEas.Esam.ServiceModel.Office.Dms</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\ServiceModel\WebEas.Esam.ServiceModel.Office.Fin\WebEas.Esam.ServiceModel.Office.Fin.csproj">
+      <Project>{9b6b51f5-8150-44c1-b930-b242af58fe39}</Project>
+      <Name>WebEas.Esam.ServiceModel.Office.Fin</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\ServiceModel\WebEas.Esam.ServiceModel.Office.Osa\WebEas.Esam.ServiceModel.Office.Osa.csproj">
+      <Project>{a904e184-e082-4f85-b402-721a956b2990}</Project>
+      <Name>WebEas.Esam.ServiceModel.Office.Osa</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\ServiceModel\WebEas.Esam.ServiceModel.Office.Reg\WebEas.Esam.ServiceModel.Office.Reg.csproj">
+      <Project>{befa8b1f-6412-4138-bf6b-8e1de0210933}</Project>
+      <Name>WebEas.Esam.ServiceModel.Office.Reg</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\ServiceModel\WebEas.Esam.ServiceModel.Office.Rzp\WebEas.Esam.ServiceModel.Office.Rzp.csproj">
       <Project>{630888ec-7671-47df-aecd-18bad4ec52ac}</Project>
       <Name>WebEas.Esam.ServiceModel.Office.Rzp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\ServiceModel\WebEas.Esam.ServiceModel.Office.Uct\WebEas.Esam.ServiceModel.Office.Uct.csproj">
+      <Project>{149d8e1b-1232-4dd0-b100-0897bb31ddef}</Project>
+      <Name>WebEas.Esam.ServiceModel.Office.Uct</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\ServiceModel\WebEas.Esam.ServiceModel.Office\WebEas.Esam.ServiceModel.Office.csproj">
       <Project>{b368a929-aa16-4823-87ec-69e90901d0ed}</Project>

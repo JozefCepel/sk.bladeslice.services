@@ -29,7 +29,7 @@ namespace WebEas.ServiceModel.Reg.Types
 
         [DataMember]
         [PfeColumn(Text = "Východiskový stav", Width = 270, RequiredFields = new string[] { "C_StavovyPriestor_Id" }, ReadOnly = true)]
-        [PfeCombo(typeof(StavEntityView), IdColumnCombo = "C_StavEntity_Id")]
+        [PfeCombo(typeof(StavEntityView), NameColumn = "C_StavEntity_Id_Parent", IdColumnCombo = "C_StavEntity_Id")]
         public string C_StavEntity_Id_Parent_Nazov { get; set; }
 
         [DataMember]
@@ -39,7 +39,7 @@ namespace WebEas.ServiceModel.Reg.Types
 
         [DataMember]
         [PfeColumn(Text = "Cieľový stav", Width = 270, RequiredFields = new string[] { "C_StavovyPriestor_Id" }, ReadOnly = true)]
-        [PfeCombo(typeof(StavEntityView), IdColumnCombo = "C_StavEntity_Id")]
+        [PfeCombo(typeof(StavEntityView), NameColumn = "C_StavEntity_Id_Child", IdColumnCombo = "C_StavEntity_Id")]
         public string C_StavEntity_Id_Child_Nazov { get; set; }
 
         [DataMember]
@@ -48,11 +48,15 @@ namespace WebEas.ServiceModel.Reg.Types
         public string NazovUkonu { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Formulár", ReadOnly = true)]
+        [PfeColumn(Text = "_Formulár", ReadOnly = true)]
         public string C_Formular_Id_Nazov { get; set; }
 
         [DataMember]
         [PfeColumn(Hidden = true, Hideable = false)]
         public byte? ePodatelnaEvent { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Manuálny prechod", ReadOnly = true)]
+        public bool ManualnyPrechodPovoleny { get; set; }
     }
 }

@@ -65,49 +65,51 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dto\ChangeStateDto.cs" />
-    <Compile Include="Dto\CieleUkazDto.cs" />
+    <Compile Include="Dto\CielUkazDto.cs" />
     <Compile Include="Dto\DataChangesRequest.cs" />
     <Compile Include="Dto\DefPrrProgramovyRozpocetDto.cs" />
-    <Compile Include="Dto\CieleDto.cs" />
-    <Compile Include="Dto\DennikRzpDto.cs" />
+    <Compile Include="Dto\CielDto.cs" />
+    <Compile Include="Dto\RzpDennikDto.cs" />
     <Compile Include="Dto\GetTreeCountsDto.cs" />
     <Compile Include="Dto\IntDokladDto.cs" />
     <Compile Include="Dto\ListComboDto.cs" />
     <Compile Include="Dto\ListDto.cs" />
     <Compile Include="Dto\LongOperations.cs" />
     <Compile Include="Dto\NastavenieDto.cs" />
-    <Compile Include="Dto\ZmenyRzpValDto.cs" />
-    <Compile Include="Dto\NavrhyRzpValDto.cs" />
-    <Compile Include="Dto\NavrhZmenyRzpDto.cs" />
+    <Compile Include="Dto\RzpPolZmenaDto.cs" />
+    <Compile Include="Dto\RzpPolNavrhDto.cs" />
+    <Compile Include="Dto\RzpDto.cs" />
     <Compile Include="Dto\RowDefaultValues.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Dto\RzpPolozkyDto.cs" />
+    <Compile Include="Dto\RzpPolDto.cs" />
     <Compile Include="ServiceModel.cs" />
-    <Compile Include="Types\DennikRzp.cs" />
-    <Compile Include="Types\DennikRzpView.cs" />
+    <Compile Include="Types\RzpPrevziatNavrh.cs" />
+    <Compile Include="Types\RzpDennik.cs" />
+    <Compile Include="Types\RzpDennikView.cs" />
+    <Compile Include="Types\Fin1PolBase.cs" />
+    <Compile Include="Types\Fin1View.cs" />
     <Compile Include="Types\Fin1.cs" />
-    <Compile Include="Types\Fin1Base.cs" />
+    <Compile Include="Types\Fin1PolView.cs" />
     <Compile Include="Types\Fin1Pol.cs" />
     <Compile Include="Types\Fin1Vykaz.cs" />
     <Compile Include="Types\IntDokladView.cs" />
     <Compile Include="Types\IntDoklad.cs" />
-    <Compile Include="Types\Nastavenie.cs" />
+    <Compile Include="Types\NastavenieView.cs" />
     <Compile Include="Types\TypRzpCis.cs" />
-    <Compile Include="Types\ZmenyRzpVal.cs" />
-    <Compile Include="Types\ZmenyRzpValView.cs" />
-    <Compile Include="Types\NavrhyRzpValView.cs" />
-    <Compile Include="Types\NavrhyRzpVal.cs" />
-    <Compile Include="Types\NavrhRzpView.cs" />
-    <Compile Include="Types\ZmenyRzpView.cs" />
-    <Compile Include="Types\NavrhZmenyRzp.cs" />
-    <Compile Include="Types\RzpPolozkyVydView.cs" />
-    <Compile Include="Types\RzpPolozkyPrijView.cs" />
-    <Compile Include="Types\RzpPolozky.cs" />
-    <Compile Include="Types\Ciele.cs" />
-    <Compile Include="Types\CieleUkaz.cs" />
-    <Compile Include="Types\CieleUkazView.cs" />
-    <Compile Include="Types\RzpPolozkyView.cs" />
-    <Compile Include="Types\CieleView.cs" />
+    <Compile Include="Types\RzpPolZmena.cs" />
+    <Compile Include="Types\RzpPolZmenaView.cs" />
+    <Compile Include="Types\RzpPolNavrhView.cs" />
+    <Compile Include="Types\RzpPolNavrh.cs" />
+    <Compile Include="Types\RzpView.cs" />
+    <Compile Include="Types\Rzp.cs" />
+    <Compile Include="Types\RzpPolVydView.cs" />
+    <Compile Include="Types\RzpPolPrijView.cs" />
+    <Compile Include="Types\RzpPol.cs" />
+    <Compile Include="Types\Ciel.cs" />
+    <Compile Include="Types\CielUkaz.cs" />
+    <Compile Include="Types\CielUkazView.cs" />
+    <Compile Include="Types\RzpPolView.cs" />
+    <Compile Include="Types\CielView.cs" />
     <Compile Include="Types\FREKView.cs" />
     <Compile Include="Types\FRFKView.cs" />
     <Compile Include="Types\FRZdrojView.cs" />
@@ -135,6 +137,10 @@
     <ProjectReference Include="..\..\ServiceInterface\WebEas.Esam.ServiceInterface.Office\WebEas.Esam.ServiceInterface.Office.csproj">
       <Project>{a0b8a0db-8ac5-47e8-925a-862529231d16}</Project>
       <Name>WebEas.Esam.ServiceInterface.Office</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WebEas.Esam.ServiceModel.Office.Reg\WebEas.Esam.ServiceModel.Office.Reg.csproj">
+      <Project>{befa8b1f-6412-4138-bf6b-8e1de0210933}</Project>
+      <Name>WebEas.Esam.ServiceModel.Office.Reg</Name>
     </ProjectReference>
     <ProjectReference Include="..\WebEas.Esam.ServiceModel.Office\WebEas.Esam.ServiceModel.Office.csproj">
       <Project>{b368a929-aa16-4823-87ec-69e90901d0ed}</Project>

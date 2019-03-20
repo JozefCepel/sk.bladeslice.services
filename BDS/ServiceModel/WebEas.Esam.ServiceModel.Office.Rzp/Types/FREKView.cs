@@ -23,8 +23,8 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
         }
 
         [DataMember]
-        [PfeCombo(typeof(TypRzpCis), NameColumn = "C_TypRzp_Id")]
+        [PfeCombo(typeof(RzpTypCis), NameColumn = "C_RzpTyp_Id")]
         [PfeColumn(Text = "Typ rozpočtu")]
-        public string TypRzpName { get; set; }
+        public string RzpTypName { get; set; }
     }
 }

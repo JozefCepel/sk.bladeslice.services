@@ -161,6 +161,12 @@ namespace WebEas.ServiceModel
         [DataMember(Name = "srow")]
         public List<PfeSummaryRow> SummaryRow { get; set; }
 
+        [DataMember(Name = "uab")]
+        public bool? UseAsBrowser { get; set; }
+
+        [DataMember(Name = "uabr")]
+        public int? UseAsBrowserRank { get; set; }
+
         /// <summary>
         /// Shoulds the serialize actions.
         /// </summary>
@@ -239,7 +245,8 @@ namespace WebEas.ServiceModel
         /// <returns>A string that represents the current object.</returns>
         public override string ToString()
         {
-            return string.Format("Id: {0}, Name: {1}, Type: {2}, ShowInActions: {3}, MasterView: {4}, RowFilterEnabled: {5}, MultiSortEnabled: {6}, Fields: {7}, FieldGroups: {8}, MultiSort: {9}, Filters: {10}, Pages: {11}, Layout: {12}, SelectionMode: {13}, RequiresFilter: {14}, DoubleClickAction: {15}, WaitForInputData: {16}, SummaryRowEnabled: {17}, SummaryRow: {18}", this.Id, this.Name, this.Type, this.ShowInActions, this.MasterView, this.RowFilterEnabled, this.MultiSortEnabled, this.Fields, this.FieldGroups, this.MultiSort, this.Filters, this.Pages, this.Layout, this.SelectionMode, this.RequiresFilter, this.DoubleClickAction, this.WaitForInputData, SummaryRowEnabled, SummaryRow);
+            return string.Format("Id: {0}, Name: {1}, Type: {2}, ShowInActions: {3}, MasterView: {4}, RowFilterEnabled: {5}, MultiSortEnabled: {6}, Fields: {7}, FieldGroups: {8}, MultiSort: {9}, Filters: {10}, Pages: {11}, Layout: {12}, SelectionMode: {13}, RequiresFilter: {14}, DoubleClickAction: {15}, WaitForInputData: {16}, SummaryRowEnabled: {17}, SummaryRow: {18}, UseAsBrowser: {19}, UseAsBrowserRank: {20}", 
+                                 this.Id, this.Name, this.Type, this.ShowInActions, this.MasterView, this.RowFilterEnabled, this.MultiSortEnabled, this.Fields, this.FieldGroups, this.MultiSort, this.Filters, this.Pages, this.Layout, this.SelectionMode, this.RequiresFilter, this.DoubleClickAction, this.WaitForInputData, SummaryRowEnabled, SummaryRow, this.UseAsBrowser, this.UseAsBrowserRank);
         }
 
         /// <summary>
@@ -270,6 +277,8 @@ namespace WebEas.ServiceModel
                 result = result * 23 + ((this.Layout != null) ? this.Layout.GetHashCode() : 0);
                 result = result * 23 + this.SelectionMode.GetHashCode();
                 result = result * 23 + ((this.DoubleClickAction != null) ? this.DoubleClickAction.GetHashCode() : 0);
+                result = result * 23 + ((this.UseAsBrowser != null) ? this.UseAsBrowser.GetHashCode() : 0);
+                result = result * 23 + ((this.UseAsBrowserRank != null) ? this.UseAsBrowserRank.GetHashCode() : 0);
                 return result;
             }
         }
@@ -306,8 +315,10 @@ namespace WebEas.ServiceModel
                    Equals(this.Filters, other.Filters) &&
                    Equals(this.Pages, other.Pages) &&
                    Equals(this.Layout, other.Layout) &&
-                   Equals(this.SelectionMode, other.Layout) &&
-                   Equals(this.DoubleClickAction, other.DoubleClickAction);
+                   Equals(this.SelectionMode, other.SelectionMode) &&
+                   Equals(this.DoubleClickAction, other.DoubleClickAction) &&
+                   Equals(this.UseAsBrowser, other.UseAsBrowser) &&
+                   Equals(this.UseAsBrowserRank, other.UseAsBrowserRank);
         }
 
         /// <summary>

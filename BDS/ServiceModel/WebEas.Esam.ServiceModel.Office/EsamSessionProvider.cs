@@ -391,9 +391,15 @@ namespace WebEas.Esam.ServiceModel.Office
                 if (debug)
                 {
                     log.Debug("Asign debug roles");
-                    AddRole(session, "RZP_ADMIN");
-                    AddRole(session, "DMS_ADMIN");
                     AddRole(session, "CFE_ADMIN");
+                    AddRole(session, "CRM_ADMIN");
+                    AddRole(session, "DAP_ADMIN");
+                    AddRole(session, "DMS_ADMIN");
+                    AddRole(session, "FIN_ADMIN");
+                    AddRole(session, "OSA_ADMIN");
+                    AddRole(session, "REG_ADMIN");
+                    AddRole(session, "RZP_ADMIN");
+                    AddRole(session, "UCT_ADMIN");
                     return;
                 }
 

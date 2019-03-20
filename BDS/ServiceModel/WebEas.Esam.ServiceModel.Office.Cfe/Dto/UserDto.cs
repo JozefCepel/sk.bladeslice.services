@@ -76,10 +76,10 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
 
         [DataMember]
         [NotEmptyOrDefault]
-        public DateTime DateStart { get; set; }
+        public DateTime PlatnostOd { get; set; }
 
         [DataMember]
-        public DateTime? DateEnd { get; set; }
+        public DateTime? PlatnostDo { get; set; }
 
         [DataMember]
         public short? Country { get; set; }
@@ -101,8 +101,8 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
             data.DomainName = DomainName;
             data.EC = EC;
             data.D_User_Id_Parent = D_User_Id_Parent;
-            data.DateStart = DateStart;
-            data.DateEnd = DateEnd;
+            data.PlatnostOd = PlatnostOd;
+            data.PlatnostDo = PlatnostDo;
             data.Country = Country;
         }
     }

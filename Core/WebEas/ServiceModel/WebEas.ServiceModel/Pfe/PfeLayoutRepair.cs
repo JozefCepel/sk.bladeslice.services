@@ -31,6 +31,12 @@ namespace WebEas.ServiceModel
         [DataMember(Name = "wfid")]
         public bool? WaitForInputData { get; set; }
 
+        [DataMember(Name = "uab")]
+        public bool? UseAsBrowser { get; set; }
+
+        [DataMember(Name = "uabr")]
+        public int? UseAsBrowserRank { get; set; }
+
         /// <summary>
         /// Returns a string that represents the current object.
         /// </summary>

@@ -16,7 +16,7 @@ namespace WebEas.ServiceModel.Office.Egov.Reg.Types
 
         [PfeColumn(Text = "Číslo dokladu", Editable = false)]
         [DataMember]
-        public string CisloDokladu { get; set; }
+        public string CisloInterne { get; set; }
 
         [DataMember]
         public string C_StavovyPriestor_Name { get; set; }

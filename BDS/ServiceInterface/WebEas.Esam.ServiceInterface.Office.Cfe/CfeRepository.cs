@@ -52,7 +52,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
             {
                 return new UserView()
                 {
-                    DateStart = DateTime.Now
+                    PlatnostOd = DateTime.Now
                 };
             }
 
@@ -63,18 +63,6 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
             if (node != null && node.ModelType == typeof(RoleUsersView))
             {
                 return new RoleUsersView()
-                {
-                    PlatnostOd = DateTime.Now
-                };
-            }
-
-            #endregion
-
-            #region Department
-
-            if (node != null && node.ModelType == typeof(DepartmentView))
-            {
-                return new DepartmentView()
                 {
                     PlatnostOd = DateTime.Now
                 };

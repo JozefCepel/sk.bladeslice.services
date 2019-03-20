@@ -1016,11 +1016,47 @@ namespace WebEas.ServiceInterface
 
                 #region FROM part
 
-                sqlFromPart.AppendFormat("{0}.{1}", modelDefinition.Schema, modelDefinition.Alias);
+                string sqlFromAlias = modelDefinition.Alias;
+
+                if (sqlFromAlias.StartsWith("F_"))
+                {
+                    // F_Fin112 (@Rok, @Mes)
+                    if (sqlFromAlias.StartsWith("F_Fin112"))
+                    {
+                        Dictionary<string, string> values = new Dictionary<string, string>();
+                        Dictionary<string, string> operators = new Dictionary<string, string>();
+
+                        if (sqlFromAlias.Contains("@Rok"))
+                        {
+                            string sRok = DateTime.Now.Year.ToString();
+                            values = new Dictionary<string, string>();
+                            operators = new Dictionary<string, string>();
+                            GetFieldValueAndRemove(filter, values, operators, "Rok");
+                            if (values.Count > 0)
+                                sRok = values.FirstOrDefault().Value;
+                            sqlFromAlias = sqlFromAlias.Replace("@Rok", sRok);
+                        }
+
+                        if (sqlFromAlias.Contains("@Mes"))
+                        {
+                            string sMes = DateTime.Now.Month.ToString();
+                            values = new Dictionary<string, string>();
+                            operators = new Dictionary<string, string>();
+                            GetFieldValueAndRemove(filter, values, operators, "Obdobie");
+                            if (values.Count > 0)
+                                sMes = values.FirstOrDefault().Value;
+                            sqlFromAlias = sqlFromAlias.Replace("@Mes", sMes);
+                        }
+
+                    }
+                }
+
+                //sqlFromPart.AppendFormat("{0}.{1}", modelDefinition.Schema, modelDefinition.Alias);
+                sqlFromPart.AppendFormat("{0}.{1}", modelDefinition.Schema, sqlFromAlias);
 
                 if (preferTenant != null)
                 {
-                    preferTenant.WriteCommand(dialectProvider, sqlFromPart, modelDefinition.Schema, modelDefinition.Alias, repository.Session.TenantId);
+                    preferTenant.WriteCommand(dialectProvider, sqlFromPart, modelDefinition.Schema, sqlFromAlias, repository.Session.TenantId);
                 }
 
                 #endregion
@@ -1201,6 +1237,36 @@ namespace WebEas.ServiceInterface
             catch (Exception ex)
             {
                 throw new Exception(string.Format("Cannot get data from {0} - {1}", typeof(T), sql), ex);
+            }
+        }
+
+        internal static void GetFieldValueAndRemove(Filter filter, Dictionary<string, string> values, Dictionary<string, string> operators, string sFieldName)
+        {
+            Dictionary<string, IFilterElement> forRemove = new Dictionary<string, IFilterElement>();
+            for (int i = 0; i < filter.FilterElements.Count; i++)
+            {
+                if (filter.FilterElements[i] is FilterElement)
+                {
+                    FilterElement el = (FilterElement)filter.FilterElements[i];
+                    if (el.Key.ToString().Equals(sFieldName))
+                    {
+                        values[el.Value.ToString()] = el.Value.ToString();
+                        operators[el.Value.ToString()] = el.Operator;
+                        forRemove[i.ToString()] = filter.FilterElements[i];
+                    }
+                }
+                else
+                {
+                    Filter f = (Filter)filter.FilterElements[i];
+                    GetFieldValueAndRemove(f, values, operators, sFieldName);
+                    if (f.FilterElements.Count == 0)
+                        forRemove[i.ToString()] = filter.FilterElements[i];
+                }
+            }
+
+            foreach (KeyValuePair<string, IFilterElement> d in forRemove)
+            {
+                filter.FilterElements.Remove(d.Value);
             }
         }
 

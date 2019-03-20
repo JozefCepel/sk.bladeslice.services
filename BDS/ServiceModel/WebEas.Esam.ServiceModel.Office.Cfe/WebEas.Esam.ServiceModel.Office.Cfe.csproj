@@ -52,12 +52,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dto\OrsElementPermissionDto.cs" />
+    <Compile Include="Dto\OrsElementTypeDto.cs" />
+    <Compile Include="Dto\RightPermissionDto.cs" />
+    <Compile Include="Dto\RightDto.cs" />
     <Compile Include="Dto\RoleDto.cs" />
     <Compile Include="Dto\TenantDto.cs" />
+    <Compile Include="Dto\TreePermissionDto.cs" />
     <Compile Include="Dto\UserDto.cs" />
     <Compile Include="Dto\TenantUsersDto.cs" />
     <Compile Include="Dto\RoleUsersDto.cs" />
-    <Compile Include="Dto\DepartmentDto.cs" />
     <Compile Include="Dto\ChangeStateDto.cs" />
     <Compile Include="Dto\DataChangesRequest.cs" />
     <Compile Include="Dto\GetTreeCountsDto.cs" />
@@ -68,17 +72,27 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceModel.cs" />
     <Compile Include="Types\CfeDummyView.cs" />
-    <Compile Include="Types\Department.cs" />
-    <Compile Include="Types\DepartmentView.cs" />
-    <Compile Include="Types\Module.cs" />
+    <Compile Include="Types\Modul.cs" />
+    <Compile Include="Types\OrsElementPermission.cs" />
+    <Compile Include="Types\OrsElementType.cs" />
+    <Compile Include="Dto\TreeDto.cs" />
+    <Compile Include="Types\OrsElementPermissionView.cs" />
+    <Compile Include="Types\TreePermission.cs" />
+    <Compile Include="Types\TreeView.cs" />
+    <Compile Include="Types\RightPermission.cs" />
+    <Compile Include="Types\OrsElementTypeView.cs" />
+    <Compile Include="Types\RightPermissionView.cs" />
+    <Compile Include="Types\RightView.cs" />
+    <Compile Include="Types\Right.cs" />
+    <Compile Include="Types\Tree.cs" />
     <Compile Include="Types\Role.cs" />
-    <Compile Include="Types\ModuleView.cs" />
+    <Compile Include="Types\ModulView.cs" />
     <Compile Include="Types\RoleUsers.cs" />
     <Compile Include="Types\Tenant.cs" />
     <Compile Include="Types\TenantType.cs" />
     <Compile Include="Types\TenantTypeView.cs" />
     <Compile Include="Types\TenantUsers.cs" />
-    <Compile Include="Types\TreePermissionsView.cs" />
+    <Compile Include="Types\TreePermissionView.cs" />
     <Compile Include="Types\TenantView.cs" />
     <Compile Include="Types\TenantUsersView.cs" />
     <Compile Include="Types\RoleUsersView.cs" />

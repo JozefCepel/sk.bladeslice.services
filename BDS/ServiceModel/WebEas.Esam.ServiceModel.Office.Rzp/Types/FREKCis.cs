@@ -52,7 +52,7 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
         public byte PrijemVydaj { get; set; }
 
         [DataMember]
-        public int C_TypRzp_Id { get; set; }
+        public int C_RzpTyp_Id { get; set; }
     }
 
 }

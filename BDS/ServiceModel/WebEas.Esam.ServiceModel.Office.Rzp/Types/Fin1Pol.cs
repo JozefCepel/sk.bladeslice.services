@@ -6,11 +6,10 @@ using WebEas.ServiceModel;
 namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
 {
     [Schema("rzp")]
-    [Alias("V_Fin1Pol")]
+    [Alias("D_Fin1Pol")]
     [DataContract]
-    public class Fin1Pol : Fin1Base
+    public class Fin1Pol : Fin1PolBase
     {
-        // pouzite pre historiu
         [PrimaryKey]
         [AutoIncrement]
         [DataMember]
@@ -19,5 +18,6 @@ namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
         [DataMember]
         [PfeColumn(Text = "_D_Fin1_Id", ReadOnly = true)]
         public long D_Fin1_Id { get; set; }
+
     }
 }

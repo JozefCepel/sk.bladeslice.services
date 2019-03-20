@@ -6,19 +6,19 @@ using WebEas.ServiceModel;
 namespace WebEas.Esam.ServiceModel.Office.Rzp.Types
 {
     [Schema("rzp")]
-    [Alias("C_TypRzp")]
+    [Alias("C_RzpTyp")]
     [DataContract]
-    public class TypRzpCis : BaseEntity
+    public class RzpTypCis : BaseEntity
     {
         [PrimaryKey]
         [AutoIncrement]
         [DataMember]
-        public int C_TypRzp_Id { get; set; }
+        public int C_RzpTyp_Id { get; set; }
 
         [PfeColumn(Text = "Typ rozpočtu")]
         [PfeValueColumn]
         [DataMember]
-        public string TypRzp { get; set; }
+        public string Nazov { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Platnosť od", Type = PfeDataType.Date, Mandatory = true)]
