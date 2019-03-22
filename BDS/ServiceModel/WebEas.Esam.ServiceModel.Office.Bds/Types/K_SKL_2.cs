@@ -19,10 +19,10 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         [PfeColumn(Text = "_K_SKL_0")]
         public int K_SKL_0 { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_LOCATION")]
+        [PfeColumn(Text = "Umiestnenie")]
         public string LOCATION { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_POPIS")]
+        [PfeColumn(Text = "Popis")]
         public string POPIS { get; set; }
     }
 }

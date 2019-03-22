@@ -25,40 +25,40 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         [PfeColumn(Text = "_K_TYP_0")]
         public int K_TYP_0 { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_KOD")]
+        [PfeColumn(Text = "Kód")]
         public string KOD { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_NAZOV")]
+        [PfeColumn(Text = "Názov")]
         public string NAZOV { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_POC_KS")]
+        [PfeColumn(Text = "Počet MJ")]
         public decimal? POC_KS { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_MJ")]
+        [PfeColumn(Text = "MJ")]
         public string MJ { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_D_CENA")]
+        [PfeColumn(Text = "Cena")]
         public decimal? D_CENA { get; set; }
         [DataMember]
         [PfeColumn(Text = "_Z_CENA")]
         public decimal? Z_CENA { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_RANK")]
+        [PfeColumn(Text = "R")]
         public int? RANK { get; set; }
         [DataMember]
         [PfeColumn(Text = "_BAL_KS")]
         public decimal? BAL_KS { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_EAN")]
+        [PfeColumn(Text = "EAN kód")]
         public string EAN { get; set; }
         [DataMember]
         [PfeColumn(Text = "_WARRANTY")]
         public int? WARRANTY { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_SN")]
+        [PfeColumn(Text = "SN")]
         public string SN { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_LOCATION")]
+        [PfeColumn(Text = "Umiestnenie")]
         public string LOCATION { get; set; }
         [DataMember]
         [PfeColumn(Text = "_KOD_EXT")]
@@ -67,7 +67,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         [PfeColumn(Text = "_NAZOV_EXT")]
         public string NAZOV_EXT { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_SARZA")]
+        [PfeColumn(Text = "Šarža")]
         public string SARZA { get; set; }
     }
 }

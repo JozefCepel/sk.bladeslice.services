@@ -34,43 +34,43 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         [PfeColumn(Text = "_KURZ")]
         public decimal? KURZ { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_ICO")]
+        [PfeColumn(Text = "IČO")]
         public string ICO { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_NAZOV1")]
+        [PfeColumn(Text = "Názov 1")]
         public string NAZOV1 { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_NAZOV2")]
+        [PfeColumn(Text = "Názov 2")]
         public string NAZOV2 { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_ULICA_S")]
+        [PfeColumn(Text = "Ulica")]
         public string ULICA_S { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_PSC_S")]
+        [PfeColumn(Text = "PSČ")]
         public string PSC_S { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_OBEC_S")]
+        [PfeColumn(Text = "Obec")]
         public string OBEC_S { get; set; }
         [DataMember]
         [PfeColumn(Text = "_PS")]
         public bool? PS { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_DKL_C")]
+        [PfeColumn(Text = "Číslo dokladu")]
         public string DKL_C { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_DL_C")]
+        [PfeColumn(Text = "Dodací list")]
         public string DL_C { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_V")]
+        [PfeColumn(Text = "V")]
         public bool? V { get; set; }
         [DataMember]
         [PfeColumn(Text = "_Z")]
         public bool? Z { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_DAT_DKL")]
+        [PfeColumn(Text = "Dátum výdaja")]
         public DateTime DAT_DKL { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_POZN")]
+        [PfeColumn(Text = "_Poznámka")]
         public string POZN { get; set; }
         [DataMember]
         [PfeColumn(Text = "_D_SUMA")]

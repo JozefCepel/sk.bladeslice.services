@@ -19,61 +19,73 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         [PfeColumn(Text = "_K_TSK_0")]
         public int K_TSK_0 { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_KOD")]
+        [PfeColumn(Text = "Kód")]
         public string KOD { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_NAZOV")]
+        [PfeColumn(Text = "Názov")]
         public string NAZOV { get; set; }
         [DataMember]
         [PfeColumn(Text = "_DPH")]
         public decimal? DPH { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_MJ")]
+        [PfeColumn(Text = "MJ")]
         public string MJ { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_POZN")]
+        [PfeColumn(Text = "_Poznámka")]
         public string POZN { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_N_CENA")]
+        [PfeColumn(Text = "Nákupná cena")]
         public decimal? N_CENA { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_PC1")]
+        [PfeColumn(Text = "Cena 1")]
         public decimal? PC1 { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_PC2")]
+        [PfeColumn(Text = "Cena 2")]
         public decimal? PC2 { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_PC3")]
+        [PfeColumn(Text = "Cena 3")]
         public decimal? PC3 { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_PC4")]
+        [PfeColumn(Text = "Cena 4")]
         public decimal? PC4 { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_PC5")]
+        [PfeColumn(Text = "Cena 5")]
         public decimal? PC5 { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_MIN_MN")]
+        [PfeColumn(Text = "Cena 6")]
+        public decimal PC6 { get; set; }
+        [DataMember]
+        [PfeColumn(Text = "Cena 7")]
+        public decimal PC7 { get; set; }
+        [DataMember]
+        [PfeColumn(Text = "Cena 8")]
+        public decimal PC8 { get; set; }
+        [DataMember]
+        [PfeColumn(Text = "Cena 9")]
+        public decimal PC9 { get; set; }
+        [DataMember]
+        [PfeColumn(Text = "Min. množstvo")]
         public decimal? MIN_MN { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_MAX_MN")]
+        [PfeColumn(Text = "Max. množstvo")]
         public decimal? MAX_MN { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_EAN")]
+        [PfeColumn(Text = "EAN kód")]
         public string EAN { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_WARRANTY")]
+        [PfeColumn(Text = "Záruka")]
         public int? WARRANTY { get; set; }
         [DataMember]
         [PfeColumn(Text = "_VRB_INE")]
         public decimal? VRB_INE { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_WT")]
+        [PfeColumn(Text = "Hmotnosť / MJ")]
         public decimal WT { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_WT_MJ")]
+        [PfeColumn(Text = "MJ hmotnosti")]
         public string WT_MJ { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_IST")]
+        [PfeColumn(Text = "IST kód")]
         public string IST { get; set; }
         [DataMember]
         [PfeColumn(Text = "_KOD_EXT")]
@@ -85,19 +97,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         [PfeColumn(Text = "_VALID_TO")]
         public DateTime? VALID_TO { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_HUST")]
+        [PfeColumn(Text = "Hustota")]
         public decimal HUST { get; set; }
-        [DataMember]
-        [PfeColumn(Text = "_PC6")]
-        public decimal PC6 { get; set; }
-        [DataMember]
-        [PfeColumn(Text = "_PC7")]
-        public decimal PC7 { get; set; }
-        [DataMember]
-        [PfeColumn(Text = "_PC8")]
-        public decimal PC8 { get; set; }
-        [DataMember]
-        [PfeColumn(Text = "_PC9")]
-        public decimal PC9 { get; set; }
     }
 }

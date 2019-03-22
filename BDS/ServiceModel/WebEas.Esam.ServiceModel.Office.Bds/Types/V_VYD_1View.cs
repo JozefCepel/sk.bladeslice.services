@@ -15,7 +15,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string DKL_C { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_TSK")]
+        [PfeColumn(Text = "Skupina")]
         public string TSK { get; set; }
 
         //audit stlpce

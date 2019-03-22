@@ -11,7 +11,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
     public class V_MAT_0View : tblK_MAT_0
     {
         [DataMember]
-        [PfeColumn(Text = "_TSK")]
+        [PfeColumn(Text = "Skupina")]
         public string TSK { get; set; }
 
         //audit stlpce

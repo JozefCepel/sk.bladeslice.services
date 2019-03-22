@@ -11,11 +11,11 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
     public class V_PRI_1View : tblD_PRI_1
     {
         [DataMember]
-        [PfeColumn(Text = "_DKL_C")]
+        [PfeColumn(Text = "Číslo príjemky")]
         public string DKL_C { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_TSK")]
+        [PfeColumn(Text = "Skupina")]
         public string TSK { get; set; }
 
         //audit stlpce

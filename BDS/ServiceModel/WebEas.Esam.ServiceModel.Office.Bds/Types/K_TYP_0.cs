@@ -16,7 +16,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         [PfeColumn(Text = "_K_TYP_0")]
         public int K_TYP_0 { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_NAZOV")]
+        [PfeColumn(Text = "Názov")]
         public string NAZOV { get; set; }
         [DataMember]
         [PfeColumn(Text = "_DPH_0")]

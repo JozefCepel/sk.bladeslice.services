@@ -16,34 +16,34 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         [PfeColumn(Text = "_K_SKL_0")]
         public int K_SKL_0 { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_SKL")]
+        [PfeColumn(Text = "Sklad")]
         public string SKL { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_POZN")]
-        public string POZN { get; set; }
-        [DataMember]
-        [PfeColumn(Text = "_ROZSAH")]
+        [PfeColumn(Text = "Rozsah")]
         public short? ROZSAH { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_SO")]
+        [PfeColumn(Text = "Skladové obdobie")]
         public byte? SO { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_KOD")]
+        [PfeColumn(Text = "Kód")]
         public string KOD { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_SKL_GRP")]
+        [PfeColumn(Text = "Skupina skladov")]
         public string SKL_GRP { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_SKL_MINUS")]
+        [PfeColumn(Text = "Povoliť stav do mínusu")]
         public bool SKL_MINUS { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_SHOW_VYD_ZERO_SKL")]
+        [PfeColumn(Text = "Zobraz pri výdaji aj nulové položky")]
         public bool? SHOW_VYD_ZERO_SKL { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_CHECK_IN_SKL_MIN_MAX")]
+        [PfeColumn(Text = "Zahrnúť do min/max")]
         public bool CHECK_IN_SKL_MIN_MAX { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_CHECK_IN_REZ")]
+        [PfeColumn(Text = "Zahrnúť do rezervácií")]
         public bool CHECK_IN_REZ { get; set; }
+        [DataMember]
+        [PfeColumn(Text = "_Poznámka")]
+        public string POZN { get; set; }
     }
 }

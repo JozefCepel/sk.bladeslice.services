@@ -25,25 +25,25 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         [PfeColumn(Text = "_K_TYP_0")]
         public int K_TYP_0 { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_KOD")]
+        [PfeColumn(Text = "Kód")]
         public string KOD { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_NAZOV")]
+        [PfeColumn(Text = "Názov")]
         public string NAZOV { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_POC_KS")]
+        [PfeColumn(Text = "Počet MJ")]
         public decimal? POC_KS { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_MJ")]
+        [PfeColumn(Text = "MJ")]
         public string MJ { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_D_CENA")]
+        [PfeColumn(Text = "Cena")]
         public decimal? D_CENA { get; set; }
         [DataMember]
         [PfeColumn(Text = "_Z_CENA")]
         public decimal? Z_CENA { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_RANK")]
+        [PfeColumn(Text = "R")]
         public int? RANK { get; set; }
         [DataMember]
         [PfeColumn(Text = "_BAL_KS")]
@@ -52,19 +52,19 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         [PfeColumn(Text = "_BAL_KS1")]
         public decimal? BAL_KS1 { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_EAN")]
+        [PfeColumn(Text = "EAN kód")]
         public string EAN { get; set; }
         [DataMember]
         [PfeColumn(Text = "_WARRANTY")]
         public int? WARRANTY { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_SN")]
+        [PfeColumn(Text = "SN")]
         public string SN { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_LOCATION")]
+        [PfeColumn(Text = "Umiestnenie")]
         public string LOCATION { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_LOCATION_DEST")]
+        [PfeColumn(Text = "Umiestnenie cieľ")]
         public string LOCATION_DEST { get; set; }
         [DataMember]
         [PfeColumn(Text = "_KOD_EXT")]
@@ -73,25 +73,25 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         [PfeColumn(Text = "_NAZOV_EXT")]
         public string NAZOV_EXT { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_SARZA")]
+        [PfeColumn(Text = "Šarža")]
         public string SARZA { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_D3D_A")]
+        [PfeColumn(Text = "a")]
         public int D3D_A { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_D3D_B")]
+        [PfeColumn(Text = "b")]
         public int D3D_B { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_D3D_L")]
+        [PfeColumn(Text = "L")]
         public int D3D_L { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_D3D_D1")]
+        [PfeColumn(Text = "_D")]
         public int D3D_D1 { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_D3D_D2")]
+        [PfeColumn(Text = "d")]
         public int D3D_D2 { get; set; }
         [DataMember]
-        [PfeColumn(Text = "_D3D_POC_KS")]
+        [PfeColumn(Text = "Počet kusov 3D")]
         public int D3D_POC_KS { get; set; }
     }
 }

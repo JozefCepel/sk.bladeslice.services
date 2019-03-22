@@ -34,7 +34,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                     
                     Children = new List<HierarchyNode>
                     {
-                        new HierarchyNode<V_PRI_0View>("pri", "Príjemky", null, HierarchyNodeType.Ciselnik)
+                        new HierarchyNode<V_PRI_0View>("pri", "Príjemky", null, HierarchyNodeType.DatovaPolozka)
                         {
                             Actions = new List<NodeAction>
                             {
@@ -44,7 +44,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                             }.AddMenuButtonsAll(NodeActionType.Create, typeof(CreateD_PRI_0), roles_member),
                             Children = new List<HierarchyNode>
                             {
-                                new HierarchyNode<V_PRI_1View>("pol", "Položky", null, HierarchyNodeType.Ciselnik)
+                                new HierarchyNode<V_PRI_1View>("pol", "Položky", null, HierarchyNodeType.DatovaPolozka)
                                 {
                                     Actions = new List<NodeAction>
                                     {
@@ -54,6 +54,39 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                                     }.AddMenuButtonsAll(NodeActionType.Create, typeof(CreateD_PRI_1), roles_member),
                                 }
                             }
+                        },
+                        new HierarchyNode<V_VYD_0View>("vyd", "Výdajky", null, HierarchyNodeType.DatovaPolozka)
+                        {
+                            Actions = new List<NodeAction>
+                            {
+                                new NodeAction(NodeActionType.Change, roles_member),
+                                new NodeAction(NodeActionType.Delete, typeof(DeleteD_VYD_0)) {SelectionMode = PfeSelection.Multi },
+                                new NodeAction(NodeActionType.Update, typeof(UpdateD_VYD_0))
+                            }.AddMenuButtonsAll(NodeActionType.Create, typeof(CreateD_VYD_0), roles_member),
+                            Children = new List<HierarchyNode>
+                            {
+                                new HierarchyNode<V_VYD_1View>("pol", "Položky", null, HierarchyNodeType.DatovaPolozka)
+                                {
+                                    Actions = new List<NodeAction>
+                                    {
+                                        new NodeAction(NodeActionType.Change, roles_member),
+                                        new NodeAction(NodeActionType.Delete, typeof(DeleteD_VYD_1)) {SelectionMode = PfeSelection.Multi },
+                                        new NodeAction(NodeActionType.Update, typeof(UpdateD_VYD_1))
+                                    }.AddMenuButtonsAll(NodeActionType.Create, typeof(CreateD_VYD_1), roles_member),
+                                }
+                            }
+                        },
+                        new HierarchyNode<V_SIM_0View>("sim", "3D simulačné dáta", null, HierarchyNodeType.DatovaPolozka)
+                        {
+                            Actions = new List<NodeAction>
+                            {
+                                new NodeAction(NodeActionType.Change, roles_member),
+                                new NodeAction(NodeActionType.Delete, typeof(DeleteD_SIM_0)) {SelectionMode = PfeSelection.Multi },
+                                new NodeAction(NodeActionType.Update, typeof(UpdateD_SIM_0))
+                            }.AddMenuButtonsAll(NodeActionType.Create, typeof(CreateD_SIM_0), roles_member)
+                        },
+                        new HierarchyNode<BdsDummyData>("sts", "Stav skladu", null, HierarchyNodeType.Program)
+                        {
                         }
                     }
                     

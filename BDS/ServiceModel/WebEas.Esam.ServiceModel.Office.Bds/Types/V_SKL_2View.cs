@@ -11,7 +11,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
     public class V_SKL_2View : tblK_SKL_2
     {
         [DataMember]
-        [PfeColumn(Text = "_SKL")]
+        [PfeColumn(Text = "Sklad")]
         public string SKL { get; set; }
 
         //audit stlpce

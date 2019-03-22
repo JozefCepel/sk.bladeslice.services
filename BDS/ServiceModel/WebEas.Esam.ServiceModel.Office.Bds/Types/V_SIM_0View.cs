@@ -11,11 +11,11 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
     public class V_SIM_0View : tblD_SIM_0
     {
         [DataMember]
-        [PfeColumn(Text = "_PriPol")]
+        [PfeColumn(Text = "Položka príjemky")]
         public string PriPol { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_VydPol")]
+        [PfeColumn(Text = "Položka výdajky")]
         public string VydPol { get; set; }
 
         //audit stlpce
