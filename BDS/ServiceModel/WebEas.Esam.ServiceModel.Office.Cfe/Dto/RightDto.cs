@@ -15,7 +15,7 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
     public class CreateRight : RightDto { }
 
     // Update
-    [WebEasRequiredRole(Roles.Admin)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
     [Route("/UpdateRight", "PUT")]
     [Api("Right")]
     [DataContract]

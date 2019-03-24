@@ -15,7 +15,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     public class CreateK_ORJ_1 : K_ORJ_1Dto { }
 
     // Update
-    [WebEasRequiredRole(Roles.Admin)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
     [Route("/UpdateK_ORJ_1", "PUT")]
     [Api("K_ORJ_1")]
     [DataContract]
@@ -23,7 +23,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     {
         [PrimaryKey]
         [DataMember(IsRequired = true)]
-        public long K_ORJ_1 { get; set; }
+        public int K_ORJ_1 { get; set; }
     }
 
     // Delete
@@ -34,7 +34,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     public class DeleteK_ORJ_1
     {
         [DataMember(IsRequired = true)]
-        public long K_ORJ_1 { get; set; }
+        public int K_ORJ_1 { get; set; }
     }
 
     #region DTO

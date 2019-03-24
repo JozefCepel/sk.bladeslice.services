@@ -13,16 +13,18 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         [PrimaryKey]
         [AutoIncrement]
         [DataMember]
-        [PfeColumn(Text = "_K_SKL_2")]
         public int K_SKL_2 { get; set; }
+
         [DataMember]
         [PfeColumn(Text = "_K_SKL_0")]
         public int K_SKL_0 { get; set; }
+
         [DataMember]
-        [PfeColumn(Text = "Umiestnenie")]
+        [PfeColumn(Text = "Position")]
         public string LOCATION { get; set; }
+
         [DataMember]
-        [PfeColumn(Text = "Popis")]
+        [PfeColumn(Text = "Description")]
         public string POPIS { get; set; }
     }
 }

@@ -15,7 +15,7 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
     public class CreateDepartment : DepartmentDto { }
 
     // Update
-    [WebEasRequiredRole(Roles.Admin)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
     [Route("/UpdateDepartment", "PUT")]
     [Api("Department")]
     [DataContract]

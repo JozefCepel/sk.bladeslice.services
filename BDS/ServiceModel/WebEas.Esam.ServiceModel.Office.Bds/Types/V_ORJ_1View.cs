@@ -11,12 +11,14 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
     public class V_ORJ_1View : tblK_ORJ_1
     {
         [DataMember]
-        [PfeColumn(Text = "Organizačná jednotka")]
-        public string ORJ { get; set; }
+        [PfeColumn(Text = "Warehouse")]
+        [PfeCombo(typeof(tblK_SKL_0), IdColumnCombo = "K_SKL_0", DisplayColumn = "SKL")]
+        public string SKL { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Sklad")]
-        public string SKL { get; set; }
+        [PfeColumn(Text = "Organisation unit")]
+        [PfeCombo(typeof(tblK_ORJ_0), IdColumnCombo = "K_ORJ_0", DisplayColumn = "ORJ")]
+        public string ORJ { get; set; }
 
         //audit stlpce
         [DataMember]

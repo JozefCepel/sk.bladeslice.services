@@ -15,7 +15,7 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
     public class CreateTreePermission : TreePermissionDto { }
 
     // Update
-    [WebEasRequiredRole(Roles.Admin)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
     [Route("/UpdateTreePermission", "PUT")]
     [Api("TreePermission")]
     [DataContract]

@@ -15,7 +15,7 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
     public class CreateRole : RoleDto { }
 
     // Update
-    [WebEasRequiredRole(Roles.Admin)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
     [Route("/UpdateRole", "PUT")]
     [Api("Role")]
     [DataContract]

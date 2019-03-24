@@ -11,7 +11,8 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
     public class V_VYD_1View : tblD_VYD_1
     {
         [DataMember]
-        [PfeColumn(Text = "_DKL_C")]
+        [PfeColumn(Text = "Číslo výdajky")]
+        [PfeCombo(typeof(tblD_VYD_0), IdColumnCombo = "D_VYD_0", DisplayColumn = "DKL_C")]
         public string DKL_C { get; set; }
 
         [DataMember]

@@ -5,7 +5,7 @@ namespace WebEas.ServiceModel
 {
     public static class Roles
     {
-        public const string Admin = "RZP_ADMIN";
+        public const string SysAdmin = "SYS_ADMIN";
         public const string RegWriter = "REG_WRITER";
         //public const string Uradnik = "Uradnik";
         //public const string Obcan = "Obcan";

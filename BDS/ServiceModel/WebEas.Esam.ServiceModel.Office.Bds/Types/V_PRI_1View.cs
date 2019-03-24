@@ -12,6 +12,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
     {
         [DataMember]
         [PfeColumn(Text = "Číslo príjemky")]
+        [PfeCombo(typeof(tblD_PRI_0), IdColumnCombo = "D_PRI_0", DisplayColumn = "DKL_C")]
         public string DKL_C { get; set; }
 
         [DataMember]

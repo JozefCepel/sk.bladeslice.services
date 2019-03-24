@@ -164,7 +164,7 @@ namespace WebEas.Esam.ServiceInterface.Office
 
                     // AcccessFlag urcuje prava usera na dane akcie pre dany riadok
 
-                    if ((zbernySpis || jeRiesitel) && (piTenantId == null || tenantId.HasValue || this.Session.HasRole(Roles.Admin)))
+                    if ((zbernySpis || jeRiesitel) && (piTenantId == null || tenantId.HasValue || this.Session.HasRole(Roles.SysAdmin)))
                     {
                         baseEntity.AccessFlag |= (long)(NodeActionFlag.Create | NodeActionFlag.Update | NodeActionFlag.ZmenaStavuPodania | NodeActionFlag.Delete);
                     }

@@ -15,7 +15,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     public class CreateD_VYD_1 : D_VYD_1Dto { }
 
     // Update
-    [WebEasRequiredRole(Roles.Admin)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
     [Route("/UpdateD_VYD_1", "PUT")]
     [Api("D_VYD_1")]
     [DataContract]
@@ -23,7 +23,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     {
         [PrimaryKey]
         [DataMember(IsRequired = true)]
-        public long D_VYD_1 { get; set; }
+        public int D_VYD_1 { get; set; }
     }
 
     // Delete
@@ -34,7 +34,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     public class DeleteD_VYD_1
     {
         [DataMember(IsRequired = true)]
-        public long D_VYD_1 { get; set; }
+        public int D_VYD_1 { get; set; }
     }
 
     #region DTO
@@ -48,8 +48,8 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
         [DataMember]
         public int? K_TSK_0 { get; set; }
 
-        [DataMember]
-        public int K_TYP_0 { get; set; }
+        //[DataMember]
+        //public int K_TYP_0 { get; set; }
 
         [DataMember]
         public string KOD { get; set; }
@@ -72,11 +72,11 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
         [DataMember]
         public int? RANK { get; set; }
 
-        [DataMember]
-        public decimal? BAL_KS { get; set; }
+        //[DataMember]
+        //public decimal? BAL_KS { get; set; }
 
-        [DataMember]
-        public decimal? BAL_KS1 { get; set; }
+        //[DataMember]
+        //public decimal? BAL_KS1 { get; set; }
 
         [DataMember]
         public string EAN { get; set; }
@@ -128,7 +128,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
         {
             data.D_VYD_0 = D_VYD_0;
             data.K_TSK_0 = K_TSK_0;
-            data.K_TYP_0 = K_TYP_0;
+            data.K_TYP_0 = 2; //K_TYP_0;
             data.KOD = KOD;
             data.NAZOV = NAZOV;
             data.POC_KS = POC_KS;
@@ -136,8 +136,8 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
             data.D_CENA = D_CENA;
             data.Z_CENA = Z_CENA;
             data.RANK = RANK;
-            data.BAL_KS = BAL_KS;
-            data.BAL_KS1 = BAL_KS1;
+            data.BAL_KS = POC_KS; //BAL_KS;
+            data.BAL_KS1 = 1; // BAL_KS1;
             data.EAN = EAN;
             data.WARRANTY = WARRANTY;
             data.SN = SN;

@@ -15,7 +15,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     public class CreateK_MAT_0 : K_MAT_0Dto { }
 
     // Update
-    [WebEasRequiredRole(Roles.Admin)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
     [Route("/UpdateK_MAT_0", "PUT")]
     [Api("K_MAT_0")]
     [DataContract]
@@ -23,7 +23,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     {
         [PrimaryKey]
         [DataMember(IsRequired = true)]
-        public long K_MAT_0 { get; set; }
+        public int K_MAT_0 { get; set; }
     }
 
     // Delete
@@ -34,7 +34,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     public class DeleteK_MAT_0
     {
         [DataMember(IsRequired = true)]
-        public long K_MAT_0 { get; set; }
+        public int K_MAT_0 { get; set; }
     }
 
     #region DTO
@@ -50,8 +50,8 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
         [DataMember]
         public string NAZOV { get; set; }
 
-        [DataMember]
-        public decimal? DPH { get; set; }
+        //[DataMember]
+        //public decimal DPH { get; set; }
 
         [DataMember]
         public string MJ { get; set; }
@@ -60,28 +60,28 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
         public string POZN { get; set; }
 
         [DataMember]
-        public decimal? N_CENA { get; set; }
+        public decimal N_CENA { get; set; }
 
         [DataMember]
-        public decimal? PC1 { get; set; }
+        public decimal PC1 { get; set; }
 
         [DataMember]
-        public decimal? PC2 { get; set; }
+        public decimal PC2 { get; set; }
 
         [DataMember]
-        public decimal? PC3 { get; set; }
+        public decimal PC3 { get; set; }
 
         [DataMember]
-        public decimal? PC4 { get; set; }
+        public decimal PC4 { get; set; }
 
         [DataMember]
-        public decimal? PC5 { get; set; }
+        public decimal PC5 { get; set; }
 
         [DataMember]
-        public decimal? MIN_MN { get; set; }
+        public decimal MIN_MN { get; set; }
 
         [DataMember]
-        public decimal? MAX_MN { get; set; }
+        public decimal MAX_MN { get; set; }
 
         [DataMember]
         public string EAN { get; set; }
@@ -89,8 +89,8 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
         [DataMember]
         public int? WARRANTY { get; set; }
 
-        [DataMember]
-        public decimal? VRB_INE { get; set; }
+        //[DataMember]
+        //public decimal VRB_INE { get; set; }
 
         [DataMember]
         public decimal WT { get; set; }
@@ -134,20 +134,24 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
             data.K_TSK_0 = K_TSK_0;
             data.KOD = KOD;
             data.NAZOV = NAZOV;
-            data.DPH = DPH;
-            data.MJ = MJ;
-            data.POZN = POZN;
+            data.DPH = 0; //DPH;
+            data.MJ = string.IsNullOrEmpty(MJ) ? "" : MJ;
+            data.POZN = string.IsNullOrEmpty(POZN) ? "" : POZN;
             data.N_CENA = N_CENA;
             data.PC1 = PC1;
             data.PC2 = PC2;
             data.PC3 = PC3;
             data.PC4 = PC4;
             data.PC5 = PC5;
+            data.PC6 = PC6;
+            data.PC7 = PC7;
+            data.PC8 = PC8;
+            data.PC9 = PC9;
             data.MIN_MN = MIN_MN;
             data.MAX_MN = MAX_MN;
             data.EAN = EAN;
             data.WARRANTY = WARRANTY;
-            data.VRB_INE = VRB_INE;
+            data.VRB_INE = 0; // VRB_INE;
             data.WT = WT;
             data.WT_MJ = WT_MJ;
             data.IST = IST;
@@ -155,10 +159,6 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
             data.NAZOV_EXT = NAZOV_EXT;
             data.VALID_TO = VALID_TO;
             data.HUST = HUST;
-            data.PC6 = PC6;
-            data.PC7 = PC7;
-            data.PC8 = PC8;
-            data.PC9 = PC9;
         }
     }
     #endregion

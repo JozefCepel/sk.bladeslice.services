@@ -10,7 +10,7 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
     // Create - nie je
 
     // Update
-    [WebEasRequiredRole(Roles.Admin)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
     [Route("/UpdateTenant", "PUT")]
     [Api("Tenant")]
     [DataContract]

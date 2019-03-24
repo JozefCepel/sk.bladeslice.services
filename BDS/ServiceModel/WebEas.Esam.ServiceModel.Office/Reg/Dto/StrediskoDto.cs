@@ -15,7 +15,7 @@ namespace WebEas.Esam.ServiceModel.Office.Reg.Dto
     public class CreateStredisko : StrediskoDto { }
 
     // Update
-    [WebEasRequiredRole(Roles.Admin)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
     [Route("/UpdateStredisko", "PUT")]
     [Api("Stredisko")]
     [DataContract]

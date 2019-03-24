@@ -12,6 +12,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
     {
         [DataMember]
         [PfeColumn(Text = "Skupina")]
+        [PfeCombo(typeof(tblK_TSK_0), IdColumnCombo = "K_TSK_0", DisplayColumn = "TSK")]
         public string TSK { get; set; }
 
         //audit stlpce

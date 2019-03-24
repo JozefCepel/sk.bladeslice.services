@@ -15,7 +15,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     public class CreateK_SKL_1 : K_SKL_1Dto { }
 
     // Update
-    [WebEasRequiredRole(Roles.Admin)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
     [Route("/UpdateK_SKL_1", "PUT")]
     [Api("K_SKL_1")]
     [DataContract]
@@ -23,7 +23,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     {
         [PrimaryKey]
         [DataMember(IsRequired = true)]
-        public long K_SKL_1 { get; set; }
+        public int K_SKL_1 { get; set; }
     }
 
     // Delete
@@ -34,7 +34,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     public class DeleteK_SKL_1
     {
         [DataMember(IsRequired = true)]
-        public long K_SKL_1 { get; set; }
+        public int K_SKL_1 { get; set; }
     }
 
     #region DTO

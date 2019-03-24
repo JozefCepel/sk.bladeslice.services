@@ -197,7 +197,11 @@ namespace WebEas.Esam.ServiceModel.Office
                             {
                                 throw new WebEasException("Error in getting role list", ex);
                             }
-                            var admin = new Role("BDS_ADMIN", "Admin modulu rozpočet");
+                            var sysadmin = new Role("SYS_ADMIN", "Admin systému");
+                            sysadmin.SubRoles = new List<Role>();
+                            listRoles.Add(sysadmin);
+
+                            var admin = new Role("BDS_ADMIN", "Admin modulu Blade Slice");
                             admin.SubRoles = new List<Role>();
                             admin.SubRoles.AddRange(listRoles);
                             listRoles.Add(admin);
@@ -391,6 +395,7 @@ namespace WebEas.Esam.ServiceModel.Office
                 if (debug)
                 {
                     log.Debug("Asign debug roles");
+                    AddRole(session, "SYS_ADMIN");
                     AddRole(session, "BDS_ADMIN");
                     AddRole(session, "DMS_ADMIN");
                     AddRole(session, "CFE_ADMIN");
@@ -704,8 +709,11 @@ namespace WebEas.Esam.ServiceModel.Office
         /// <param name="session">The session.</param>
         private static EsamSession LoadDebugData(EsamSession session)
         {
-            var debugSessionFilePath = WebConfigurationManager.AppSettings["DebugSessionFilePath"];
-            if (!session.IsAuthorized && (DebugTokenId != null || debugSessionFilePath != null))
+            //BLADE: Zakomentované načítanie SESSION
+            //var debugSessionFilePath = WebConfigurationManager.AppSettings["DebugSessionFilePath"];
+            //if (!session.IsAuthorized && (DebugTokenId != null || debugSessionFilePath != null))
+
+            if (!session.IsAuthorized)
             {
                 //  log.Debug("Loading debug data..");
                 session.AccessType = WebEasAccessType.Debug;
@@ -713,15 +721,17 @@ namespace WebEas.Esam.ServiceModel.Office
                 session.SubjectDcomId = DebugSubjectDcomId ?? "D68D8CB1-2945-46D0-A7B7-DF36DFADF433";
                 session.IamDcomToken = DebugTokenId;
                 session.DcomId = DebugDcomId ?? "00000000-0000-0000-0000-000000000000".ToUpper();
-                session.Email = "Local test@datalan.sk";
-                session.FirstName = "Local test";
-                //session.FormattedName = "Test starosta Litava";
+                session.Email = "jozef.cepeltest@gmail.com";
+                session.FirstName = "Local DEV";
+                //session.FormattedName = "Jozef Čepel";
                 session.Language = "sk";
-                session.LastName = "Local test";             
+                session.LastName = "Local DEV";
                 //session.TenantId = "B0F6447C-BDDB-4942-8498-881DAE108803".ToUpper();
-                //session.TenantId = "9FF9C399-6FF3-4EFD-891A-7FFAFC5C02B4".ToUpper();
+                session.TenantId = "00000000-0000-0000-0000-000000000000".ToUpper();
                 session.TenantId = DebugTenantId ?? "00000000-0000-0000-0000-000000000000".ToUpper();
+                //session.Roles.Add
 
+                /* BLADE 
                 if (!string.IsNullOrEmpty(debugSessionFilePath) && false)
                 {
                     if (System.IO.File.Exists(debugSessionFilePath))
@@ -737,6 +747,7 @@ namespace WebEas.Esam.ServiceModel.Office
                         }
                     }
                 }
+                */
 
             }
             else

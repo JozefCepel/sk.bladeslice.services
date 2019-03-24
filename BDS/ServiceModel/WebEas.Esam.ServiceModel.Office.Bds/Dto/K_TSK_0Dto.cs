@@ -15,7 +15,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     public class CreateK_TSK_0 : K_TSK_0Dto { }
 
     // Update
-    [WebEasRequiredRole(Roles.Admin)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
     [Route("/UpdateK_TSK_0", "PUT")]
     [Api("K_TSK_0")]
     [DataContract]
@@ -23,7 +23,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     {
         [PrimaryKey]
         [DataMember(IsRequired = true)]
-        public long K_TSK_0 { get; set; }
+        public int K_TSK_0 { get; set; }
     }
 
     // Delete
@@ -34,7 +34,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     public class DeleteK_TSK_0
     {
         [DataMember(IsRequired = true)]
-        public long K_TSK_0 { get; set; }
+        public int K_TSK_0 { get; set; }
     }
 
     #region DTO
@@ -48,58 +48,58 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
         public string POZN { get; set; }
 
         [DataMember]
-        public bool? TOVAR { get; set; }
-
-        [DataMember]
-        public bool? MATERIAL { get; set; }
-
-        [DataMember]
-        public bool? OSIVO { get; set; }
-
-        [DataMember]
-        public decimal? PREP_K { get; set; }
-
-        [DataMember]
-        public decimal? PREP_M { get; set; }
-
-        [DataMember]
-        public bool? BALENIE { get; set; }
-
-        [DataMember]
-        public bool? VYROBOK { get; set; }
-
-        [DataMember]
-        public decimal? OM1 { get; set; }
-
-        [DataMember]
-        public decimal? OM2 { get; set; }
-
-        [DataMember]
-        public decimal? OM3 { get; set; }
-
-        [DataMember]
-        public decimal? OM4 { get; set; }
-
-        [DataMember]
-        public decimal? OM5 { get; set; }
-
-        [DataMember]
-        public byte? PREP_M1 { get; set; }
-
-        [DataMember]
         public byte SKL_SIMULATION { get; set; }
 
-        [DataMember]
-        public decimal OM6 { get; set; }
+        //[DataMember]
+        //public bool? TOVAR { get; set; }
 
-        [DataMember]
-        public decimal OM7 { get; set; }
+        //[DataMember]
+        //public bool? MATERIAL { get; set; }
 
-        [DataMember]
-        public decimal OM8 { get; set; }
+        //[DataMember]
+        //public bool? OSIVO { get; set; }
 
-        [DataMember]
-        public decimal OM9 { get; set; }
+        //[DataMember]
+        //public bool? BALENIE { get; set; }
+
+        //[DataMember]
+        //public bool VYROBOK { get; set; }
+
+        //[DataMember]
+        //public decimal? PREP_K { get; set; }
+
+        //[DataMember]
+        //public decimal? PREP_M { get; set; }
+
+        //[DataMember]
+        //public byte? PREP_M1 { get; set; }
+
+        //[DataMember]
+        //public decimal? OM1 { get; set; }
+
+        //[DataMember]
+        //public decimal? OM2 { get; set; }
+
+        //[DataMember]
+        //public decimal? OM3 { get; set; }
+
+        //[DataMember]
+        //public decimal? OM4 { get; set; }
+
+        //[DataMember]
+        //public decimal? OM5 { get; set; }
+        
+        //[DataMember]
+        //public decimal OM6 { get; set; }
+
+        //[DataMember]
+        //public decimal OM7 { get; set; }
+
+        //[DataMember]
+        //public decimal OM8 { get; set; }
+
+        //[DataMember]
+        //public decimal OM9 { get; set; }
 
         /// <summary>
         /// Binds to entity.
@@ -108,25 +108,26 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
         protected override void BindToEntity(tblK_TSK_0 data)
         {
             data.TSK = TSK;
-            data.POZN = POZN;
-            data.TOVAR = TOVAR;
-            data.MATERIAL = MATERIAL;
-            data.OSIVO = OSIVO;
-            data.PREP_K = PREP_K;
-            data.PREP_M = PREP_M;
-            data.BALENIE = BALENIE;
-            data.VYROBOK = VYROBOK;
-            data.OM1 = OM1;
-            data.OM2 = OM2;
-            data.OM3 = OM3;
-            data.OM4 = OM4;
-            data.OM5 = OM5;
-            data.PREP_M1 = PREP_M1;
             data.SKL_SIMULATION = SKL_SIMULATION;
-            data.OM6 = OM6;
-            data.OM7 = OM7;
-            data.OM8 = OM8;
-            data.OM9 = OM9;
+            data.POZN = string.IsNullOrEmpty(POZN) ? "" : POZN;
+            data.MATERIAL = true; //MATERIAL;
+
+            data.TOVAR = false; // TOVAR;
+            data.OSIVO = false; //OSIVO;
+            data.BALENIE = false; //BALENIE;
+            data.VYROBOK = false; //VYROBOK;
+            data.PREP_K = 0; //PREP_K;
+            data.PREP_M = 0; //PREP_M;
+            data.PREP_M1 = 0; //PREP_M1;
+            data.OM1 = 0; //OM1;
+            data.OM2 = 0; //OM2;
+            data.OM3 = 0; //OM3;
+            data.OM4 = 0; //OM4;
+            data.OM5 = 0; //OM5;
+            data.OM6 = 0; //OM6;
+            data.OM7 = 0; //OM7;
+            data.OM8 = 0; //OM8;
+            data.OM9 = 0; //OM9;
         }
     }
     #endregion

@@ -15,7 +15,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     public class CreateD_VYD_0 : D_VYD_0Dto { }
 
     // Update
-    [WebEasRequiredRole(Roles.Admin)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
     [Route("/UpdateD_VYD_0", "PUT")]
     [Api("D_VYD_0")]
     [DataContract]
@@ -23,7 +23,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     {
         [PrimaryKey]
         [DataMember(IsRequired = true)]
-        public long D_VYD_0 { get; set; }
+        public int D_VYD_0 { get; set; }
     }
 
     // Delete
@@ -34,7 +34,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     public class DeleteD_VYD_0
     {
         [DataMember(IsRequired = true)]
-        public long D_VYD_0 { get; set; }
+        public int D_VYD_0 { get; set; }
     }
 
     #region DTO
@@ -50,35 +50,17 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
         [DataMember]
         public int K_POH_0 { get; set; }
 
-        [DataMember]
-        public int K_MEN_0 { get; set; }
+        //[DataMember]
+        //public int K_MEN_0 { get; set; }
 
         [DataMember]
         public int K_ORJ_0 { get; set; }
 
-        [DataMember]
-        public decimal? KURZ { get; set; }
+        //[DataMember]
+        //public decimal? KURZ { get; set; }
 
         [DataMember]
-        public string ICO { get; set; }
-
-        [DataMember]
-        public string NAZOV1 { get; set; }
-
-        [DataMember]
-        public string NAZOV2 { get; set; }
-
-        [DataMember]
-        public string ULICA_S { get; set; }
-
-        [DataMember]
-        public string PSC_S { get; set; }
-
-        [DataMember]
-        public string OBEC_S { get; set; }
-
-        [DataMember]
-        public bool? PS { get; set; }
+        public bool PS { get; set; }
 
         [DataMember]
         public string DKL_C { get; set; }
@@ -87,10 +69,13 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
         public string DL_C { get; set; }
 
         [DataMember]
-        public bool? V { get; set; }
+        public bool V { get; set; }
 
         [DataMember]
-        public bool? Z { get; set; }
+        public bool Z { get; set; }
+
+        [DataMember]
+        public bool P { get; set; }
 
         [DataMember]
         public DateTime DAT_DKL { get; set; }
@@ -99,22 +84,19 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
         public string POZN { get; set; }
 
         [DataMember]
-        public decimal? D_SUMA { get; set; }
+        public decimal D_SUMA { get; set; }
 
         [DataMember]
-        public decimal? Z_SUMA { get; set; }
+        public decimal Z_SUMA { get; set; }
 
         [DataMember]
-        public decimal? D_DPH1 { get; set; }
+        public decimal D_DPH1 { get; set; }
 
         [DataMember]
-        public decimal? D_DPH2 { get; set; }
+        public decimal D_DPH2 { get; set; }
 
         [DataMember]
-        public byte? SO { get; set; }
-
-        [DataMember]
-        public bool? P { get; set; }
+        public byte SO { get; set; }
 
         /// <summary>
         /// Binds to entity.
@@ -125,28 +107,22 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
             data.K_OBP_0 = K_OBP_0;
             data.K_SKL_0 = K_SKL_0;
             data.K_POH_0 = K_POH_0;
-            data.K_MEN_0 = K_MEN_0;
+            data.K_MEN_0 = 1; //K_MEN_0;
             data.K_ORJ_0 = K_ORJ_0;
-            data.KURZ = KURZ;
-            data.ICO = ICO;
-            data.NAZOV1 = NAZOV1;
-            data.NAZOV2 = NAZOV2;
-            data.ULICA_S = ULICA_S;
-            data.PSC_S = PSC_S;
-            data.OBEC_S = OBEC_S;
+            data.KURZ = 1;   //KURZ;
             data.PS = PS;
             data.DKL_C = DKL_C;
             data.DL_C = DL_C;
             data.V = V;
             data.Z = Z;
+            data.P = V; //P;
             data.DAT_DKL = DAT_DKL;
-            data.POZN = POZN;
+            data.POZN = string.IsNullOrEmpty(POZN) ? "" : POZN;
             data.D_SUMA = D_SUMA;
             data.Z_SUMA = Z_SUMA;
             data.D_DPH1 = D_DPH1;
             data.D_DPH2 = D_DPH2;
             data.SO = SO;
-            data.P = P;
         }
     }
     #endregion

@@ -139,9 +139,9 @@ namespace WebEas.ServiceModel
             {
                 valueCol = data.GetType().GetProperties().First(nav => nav.HasAttribute<PfeValueColumnAttribute>());
             }
-            else if (properties.Any(nav => nav.Name.ToLower().ContainsAny("nazov", "name", "popis")))
+            else if (properties.Any(nav => nav.Name.ToLower().ContainsAny("nazov", "name", "Description")))
             {
-                valueCol = properties.First(nav => nav.Name.ToLower().ContainsAny("nazov", "name", "popis"));
+                valueCol = properties.First(nav => nav.Name.ToLower().ContainsAny("nazov", "name", "Description"));
             }
             else
             {

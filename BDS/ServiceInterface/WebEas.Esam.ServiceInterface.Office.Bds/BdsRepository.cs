@@ -19,7 +19,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
     public partial class BdsRepository : RepositoryBase, IBdsRepository
     {
 
-        #region Sklad
+        #region Warehouse
 
         #endregion
 

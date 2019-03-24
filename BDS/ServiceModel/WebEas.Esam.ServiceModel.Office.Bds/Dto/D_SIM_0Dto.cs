@@ -15,7 +15,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     public class CreateD_SIM_0 : D_SIM_0Dto { }
 
     // Update
-    [WebEasRequiredRole(Roles.Admin)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
     [Route("/UpdateD_SIM_0", "PUT")]
     [Api("D_SIM_0")]
     [DataContract]
@@ -23,7 +23,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     {
         [PrimaryKey]
         [DataMember(IsRequired = true)]
-        public long D_SIM_0 { get; set; }
+        public int D_SIM_0 { get; set; }
     }
 
     // Delete
@@ -34,7 +34,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     public class DeleteD_SIM_0
     {
         [DataMember(IsRequired = true)]
-        public long D_SIM_0 { get; set; }
+        public int D_SIM_0 { get; set; }
     }
 
     #region DTO
@@ -144,7 +144,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
             data.POC_KS_VYREZ = POC_KS_VYREZ;
             data.POC_KS_ZVYSOK = POC_KS_ZVYSOK;
             data.ZVYSOK_SPOTREBA = ZVYSOK_SPOTREBA;
-            data.POZN = POZN;
+            data.POZN = string.IsNullOrEmpty(POZN) ? "" : POZN;
             data.SARZA = SARZA;
             data.LOCATION = LOCATION;
             data.SKL_CENA = SKL_CENA;

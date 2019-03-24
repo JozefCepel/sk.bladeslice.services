@@ -15,7 +15,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     public class CreateK_OBP_0 : K_OBP_0Dto { }
 
     // Update
-    [WebEasRequiredRole(Roles.Admin)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
     [Route("/UpdateK_OBP_0", "PUT")]
     [Api("K_OBP_0")]
     [DataContract]
@@ -23,7 +23,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     {
         [PrimaryKey]
         [DataMember(IsRequired = true)]
-        public long K_OBP_0 { get; set; }
+        public int K_OBP_0 { get; set; }
     }
 
     // Delete
@@ -34,22 +34,25 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     public class DeleteK_OBP_0
     {
         [DataMember(IsRequired = true)]
-        public long K_OBP_0 { get; set; }
+        public int K_OBP_0 { get; set; }
     }
 
     #region DTO
     [DataContract]
     public class K_OBP_0Dto : BaseDto<tblK_OBP_0>
     {
-        [DataMember]
-        public int K_TOB_0 { get; set; }
+        //[DataMember]
+        //public int K_TOB_0 { get; set; }
 
-        [DataMember]
-        public int K_PRF_0 { get; set; }
+        //[DataMember]
+        //public int K_PRF_0 { get; set; }
 
-        [DataMember]
-        public int K_OPC_0 { get; set; }
+        //[DataMember]
+        //public int K_OPC_0 { get; set; }
 
+        //[DataMember]
+        //public int? K_OPK_0 { get; set; }
+        
         [DataMember]
         public string ICO { get; set; }
 
@@ -135,9 +138,6 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
         public string IC_DPH { get; set; }
 
         [DataMember]
-        public int? K_OPK_0 { get; set; }
-
-        [DataMember]
         public string NICKNAME { get; set; }
 
         [DataMember]
@@ -158,9 +158,10 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
         /// <param name="data"></param>
         protected override void BindToEntity(tblK_OBP_0 data)
         {
-            data.K_TOB_0 = K_TOB_0;
-            data.K_PRF_0 = K_PRF_0;
-            data.K_OPC_0 = K_OPC_0;
+            data.K_TOB_0 = 1;  //K_TOB_0;
+            data.K_PRF_0 = 1;  //K_PRF_0;
+            data.K_OPC_0 = 1;  //K_OPC_0;
+            data.K_OPK_0 = 1;  //K_OPK_0;
             data.ICO = ICO;
             data.DRC = DRC;
             data.NAZOV1 = NAZOV1;
@@ -187,9 +188,8 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
             data.MOBIL = MOBIL;
             data.EMAIL = EMAIL;
             data.WWW = WWW;
-            data.POZN = POZN;
+            data.POZN = string.IsNullOrEmpty(POZN) ? "" : POZN;
             data.IC_DPH = IC_DPH;
-            data.K_OPK_0 = K_OPK_0;
             data.NICKNAME = NICKNAME;
             data.OBP_C = OBP_C;
             data.OBP_POTENCIAL = OBP_POTENCIAL;

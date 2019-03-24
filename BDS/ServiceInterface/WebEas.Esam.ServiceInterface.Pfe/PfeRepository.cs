@@ -28,7 +28,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// <returns>Vytvoreny pohlad</returns>
         public PohladView CreatePohlad(Pohlad pohlad)
         {
-            if (pohlad.Nazov == "Štandardný pohľad")
+            if (pohlad.Nazov == "Standard view")
             {
                 pohlad.ViewSharing = 2;
                 pohlad.D_Tenant_Id = null;
@@ -481,13 +481,13 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// <returns>Povolenie/zakaz upravit pohlad</returns>
         private bool CheckUpdatePermissionForViewSharing(Pohlad originalView, Pohlad newView, string moduleShortcut)
         {
-            bool isDcomAdmin = this.Session.HasRole(Roles.Admin);
+            bool isSysAdmin = this.Session.HasRole(Roles.SysAdmin);
             bool isModuleAdmin = this.Session.HasRole(string.Format("{0}_ADMIN", moduleShortcut.ToUpper()));
 
             switch (originalView.ViewSharing)
             {
                 case 0:
-                    if (isDcomAdmin || isModuleAdmin || (originalView.Vytvoril == this.Session.DcomId && newView.ViewSharing == 0))
+                    if (isSysAdmin || isModuleAdmin || (originalView.Vytvoril == this.Session.DcomId && newView.ViewSharing == 0))
                     {
                         return true;
                     }
@@ -496,7 +496,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                         throw new WebEasException(null, "Prihlásený používateľ nemá právo meniť aktuálny pohľad!");
                     }
                 case 1:
-                    if (isDcomAdmin || (isModuleAdmin && (newView.ViewSharing == 0 || newView.ViewSharing == 1)))
+                    if (isSysAdmin || (isModuleAdmin && (newView.ViewSharing == 0 || newView.ViewSharing == 1)))
                     {
                         return true;
                     }
@@ -505,7 +505,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                         throw new WebEasException(null, "Prihlásený používateľ nemá právo meniť aktuálny pohľad!");
                     }
                 case 2:
-                    if (isDcomAdmin)
+                    if (isSysAdmin)
                     {
                         return true;
                     }
@@ -525,17 +525,17 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// <returns>Povolenie/zakaz upravit (odomknut) pohlad</returns>
         private bool CheckUpdatePermissionForViewSharing(PohladLockModel originalView, string moduleShortcut)
         {
-            bool isDcomAdmin = this.Session.HasRole(Roles.Admin);
+            bool isSysAdmin = this.Session.HasRole(Roles.SysAdmin);
             bool isModuleAdmin = this.Session.HasRole(string.Format("{0}_ADMIN", moduleShortcut.ToUpper()));
 
             switch (originalView.ViewSharing)
             {
                 case 0:
-                    return isDcomAdmin || isModuleAdmin || originalView.Vytvoril == this.Session.DcomId;
+                    return isSysAdmin || isModuleAdmin || originalView.Vytvoril == this.Session.DcomId;
                 case 1:
-                    return isDcomAdmin || isModuleAdmin;
+                    return isSysAdmin || isModuleAdmin;
                 case 2:
-                    return isDcomAdmin;
+                    return isSysAdmin;
             }
             return false;
         }
@@ -617,7 +617,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                 {
                     string sflt = "";
                     //Admin vidi aj subpohlady. Normalny uradnici nevidia tie, ktore su pouzite na nejakych LAYOUT-och
-                    if (!this.Session.HasRole(Roles.Admin))
+                    if (!this.Session.HasRole(Roles.SysAdmin))
                     {
                         sflt = "D_Pohlad_Id NOT IN ( " + Environment.NewLine +
                                 "  SELECT DISTINCT p.D_Pohlad_Id FROM pfe.D_Pohlad p, pfe.D_Pohlad lay " + Environment.NewLine +
@@ -682,7 +682,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                         switch (pohlad.ViewSharing)
                         {
                             case 0:
-                                if (this.Session.HasRole(Roles.Admin) && staryPohlad.ViewSharing == 2)
+                                if (this.Session.HasRole(Roles.SysAdmin) && staryPohlad.ViewSharing == 2)
                                 {
                                     staryPohlad.ViewSharing = pohlad.ViewSharing;
                                     staryPohlad.D_Tenant_Id = this.Session.TenantIdGuid;
@@ -693,13 +693,13 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                                 }
                                 break;
                             case 1:
-                                if (this.Session.HasRole(Roles.Admin) || this.Session.HasRole(string.Format("{0}_ADMIN", moduleShortcut.ToUpper())))
+                                if (this.Session.HasRole(Roles.SysAdmin) || this.Session.HasRole(string.Format("{0}_ADMIN", moduleShortcut.ToUpper())))
                                 {
                                     staryPohlad.ViewSharing = pohlad.ViewSharing;
                                 }
                                 break;
                             case 2:
-                                if (this.Session.HasRole(Roles.Admin))
+                                if (this.Session.HasRole(Roles.SysAdmin))
                                 {
                                     staryPohlad.ViewSharing = pohlad.ViewSharing;
                                     staryPohlad.D_Tenant_Id = null;
@@ -904,7 +904,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                 Released = Context.Info.Updated.ToString("dd.MM.yyyy HH:mm"),
                 Environment = DbEnvironment == null ? "Test": DbEnvironment,
                 DbReleased = DbDeployTime == null ? "" : DbDeployTime.Value.ToString("dd.MM.yyyy HH:mm"),
-                DcomAdmin = Session.HasRole(Roles.Admin),
+                DcomAdmin = Session.HasRole(Roles.SysAdmin),
                 FilterRok = GetNastavenieI(moduleShortcut, "FilterRok"),
                 DomenaName = "zvolen",
                 VillageName = "Zvolen"

@@ -15,7 +15,7 @@ namespace WebEas.Esam.ServiceModel.Office.Reg.Dto
     public class CreateProjekt : ProjektDto { }
 
     // Update
-    [WebEasRequiredRole(Roles.Admin)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
     [Route("/UpdateProjekt", "PUT")]
     [Api("Projekt")]
     [DataContract]

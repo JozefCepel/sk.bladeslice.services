@@ -53,7 +53,7 @@ namespace WebEas.ServiceModel
         /// </summary>
         /// <value>The poznamka.</value>
         [DataMember]
-        [PfeColumn(Text = "Poznámka", Hidden = true, Xtype = PfeXType.Textarea, Rank = 104)]
+        [PfeColumn(Text = "Note", Hidden = true, Xtype = PfeXType.Textarea, Rank = 104)]
         [StringLength(255)]
         public string Poznamka { get; set; }
 

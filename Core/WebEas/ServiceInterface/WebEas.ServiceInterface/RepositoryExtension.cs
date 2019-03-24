@@ -552,7 +552,7 @@ namespace WebEas.ServiceInterface
                 Validator.Validate(obj);
                 if (obj is ITenantEntityNullable && ((ITenantEntityNullable)obj).D_Tenant_Id == null)
                 {
-                    if (!repository.Session.HasRole(Roles.Admin))
+                    if (!repository.Session.HasRole(Roles.SysAdmin))
                     {
                         throw new WebEasUnauthorizedAccessException();
                     }
@@ -694,7 +694,7 @@ namespace WebEas.ServiceInterface
                         Validator.Validate(obj);
                         if (obj is ITenantEntityNullable && ((ITenantEntityNullable)obj).D_Tenant_Id == null)
                         {
-                            if (!repository.Session.HasRole(Roles.Admin))
+                            if (!repository.Session.HasRole(Roles.SysAdmin))
                             {
                                 throw new WebEasUnauthorizedAccessException();
                             }

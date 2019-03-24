@@ -13,14 +13,16 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         [PrimaryKey]
         [AutoIncrement]
         [DataMember]
-        [PfeColumn(Text = "_K_ORJ_0")]
         public int K_ORJ_0 { get; set; }
+
         [DataMember]
-        [PfeColumn(Text = "Kód ORJ")]
+        [PfeColumn(Text = "Kód")]
         public string KOD { get; set; }
+
         [DataMember]
         [PfeColumn(Text = "Názov")]
         public string ORJ { get; set; }
+
         [DataMember]
         [PfeColumn(Text = "_Poznámka")]
         public string POZN { get; set; }

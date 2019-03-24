@@ -19,7 +19,7 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
         public string Typ { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Popis")]        
+        [PfeColumn(Text = "Description")]        
         public string Popis { get; set; }
 
     }

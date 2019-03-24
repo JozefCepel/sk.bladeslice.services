@@ -13,91 +13,118 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         [PrimaryKey]
         [AutoIncrement]
         [DataMember]
-        [PfeColumn(Text = "_K_MAT_0")]
         public int K_MAT_0 { get; set; }
+
         [DataMember]
         [PfeColumn(Text = "_K_TSK_0")]
         public int K_TSK_0 { get; set; }
+
         [DataMember]
         [PfeColumn(Text = "Kód")]
         public string KOD { get; set; }
+
         [DataMember]
         [PfeColumn(Text = "Názov")]
         public string NAZOV { get; set; }
+
         [DataMember]
-        [PfeColumn(Text = "_DPH")]
-        public decimal? DPH { get; set; }
+        [PfeColumn(Text = "_DPH", DefaultValue = 0)]
+        public decimal DPH { get; set; }
+
         [DataMember]
         [PfeColumn(Text = "MJ")]
         public string MJ { get; set; }
+
         [DataMember]
         [PfeColumn(Text = "_Poznámka")]
         public string POZN { get; set; }
+
         [DataMember]
-        [PfeColumn(Text = "Nákupná cena")]
-        public decimal? N_CENA { get; set; }
+        [PfeColumn(Text = "Nákupná cena", DefaultValue = 0)]
+        public decimal N_CENA { get; set; }
+
         [DataMember]
-        [PfeColumn(Text = "Cena 1")]
-        public decimal? PC1 { get; set; }
+        [PfeColumn(Text = "Cena 1", DefaultValue = 0)]
+        public decimal PC1 { get; set; }
+
         [DataMember]
-        [PfeColumn(Text = "Cena 2")]
-        public decimal? PC2 { get; set; }
+        [PfeColumn(Text = "Cena 2", DefaultValue = 0)]
+        public decimal PC2 { get; set; }
+
         [DataMember]
-        [PfeColumn(Text = "Cena 3")]
-        public decimal? PC3 { get; set; }
+        [PfeColumn(Text = "Cena 3", DefaultValue = 0)]
+        public decimal PC3 { get; set; }
+
         [DataMember]
-        [PfeColumn(Text = "Cena 4")]
-        public decimal? PC4 { get; set; }
+        [PfeColumn(Text = "Cena 4", DefaultValue = 0)]
+        public decimal PC4 { get; set; }
+
         [DataMember]
-        [PfeColumn(Text = "Cena 5")]
-        public decimal? PC5 { get; set; }
+        [PfeColumn(Text = "Cena 5", DefaultValue = 0)]
+        public decimal PC5 { get; set; }
+
         [DataMember]
-        [PfeColumn(Text = "Cena 6")]
+        [PfeColumn(Text = "Cena 6", DefaultValue = 0)]
         public decimal PC6 { get; set; }
+
         [DataMember]
-        [PfeColumn(Text = "Cena 7")]
+        [PfeColumn(Text = "Cena 7", DefaultValue = 0)]
         public decimal PC7 { get; set; }
+
         [DataMember]
-        [PfeColumn(Text = "Cena 8")]
+        [PfeColumn(Text = "Cena 8", DefaultValue = 0)]
         public decimal PC8 { get; set; }
+
         [DataMember]
-        [PfeColumn(Text = "Cena 9")]
+        [PfeColumn(Text = "Cena 9", DefaultValue = 0)]
         public decimal PC9 { get; set; }
+
         [DataMember]
-        [PfeColumn(Text = "Min. množstvo")]
-        public decimal? MIN_MN { get; set; }
+        [PfeColumn(Text = "Min stav", DefaultValue = 0)]
+        public decimal MIN_MN { get; set; }
+
         [DataMember]
-        [PfeColumn(Text = "Max. množstvo")]
-        public decimal? MAX_MN { get; set; }
+        [PfeColumn(Text = "Max stav", DefaultValue = 0)]
+        public decimal MAX_MN { get; set; }
+
         [DataMember]
         [PfeColumn(Text = "EAN kód")]
         public string EAN { get; set; }
+
         [DataMember]
-        [PfeColumn(Text = "Záruka")]
+        [PfeColumn(Text = "Záruka", DefaultValue = 0)]
         public int? WARRANTY { get; set; }
+
         [DataMember]
-        [PfeColumn(Text = "_VRB_INE")]
-        public decimal? VRB_INE { get; set; }
+        [PfeColumn(Text = "_VRB_INE", DefaultValue = 0)]
+        public decimal VRB_INE { get; set; }
+
         [DataMember]
-        [PfeColumn(Text = "Hmotnosť / MJ")]
+        [PfeColumn(Text = "Hmotnosť / MJ", DefaultValue = 0)]
         public decimal WT { get; set; }
+
         [DataMember]
         [PfeColumn(Text = "MJ hmotnosti")]
         public string WT_MJ { get; set; }
+
         [DataMember]
         [PfeColumn(Text = "IST kód")]
         public string IST { get; set; }
+
         [DataMember]
         [PfeColumn(Text = "_KOD_EXT")]
         public string KOD_EXT { get; set; }
+
         [DataMember]
         [PfeColumn(Text = "_NAZOV_EXT")]
         public string NAZOV_EXT { get; set; }
+
         [DataMember]
         [PfeColumn(Text = "_VALID_TO")]
         public DateTime? VALID_TO { get; set; }
+
         [DataMember]
-        [PfeColumn(Text = "Hustota")]
+        [PfeColumn(Text = "Hustota", DefaultValue = 0)]
         public decimal HUST { get; set; }
     }
 }

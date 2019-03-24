@@ -13,40 +13,50 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         [PrimaryKey]
         [AutoIncrement]
         [DataMember]
-        [PfeColumn(Text = "_K_TYP_0")]
         public int K_TYP_0 { get; set; }
+
         [DataMember]
         [PfeColumn(Text = "Názov")]
         public string NAZOV { get; set; }
+
         [DataMember]
-        [PfeColumn(Text = "_DPH_0")]
+        [PfeColumn(Text = "_DPH_0", DefaultValue = false)]
         public bool? DPH_0 { get; set; }
+
         [DataMember]
-        [PfeColumn(Text = "_DPH_1")]
+        [PfeColumn(Text = "_DPH_1", DefaultValue = false)]
         public bool? DPH_1 { get; set; }
+
         [DataMember]
-        [PfeColumn(Text = "_DPH_2")]
+        [PfeColumn(Text = "_DPH_2", DefaultValue = false)]
         public bool? DPH_2 { get; set; }
+
         [DataMember]
-        [PfeColumn(Text = "_UCT_DKL")]
+        [PfeColumn(Text = "_UCT_DKL", DefaultValue = false)]
         public bool? UCT_DKL { get; set; }
+
         [DataMember]
-        [PfeColumn(Text = "_HLASENIE_DPH")]
+        [PfeColumn(Text = "_HLASENIE_DPH", DefaultValue = false)]
         public bool? HLASENIE_DPH { get; set; }
+
         [DataMember]
-        [PfeColumn(Text = "_KAT_MAT")]
+        [PfeColumn(Text = "_KAT_MAT", DefaultValue = false)]
         public bool? KAT_MAT { get; set; }
+
         [DataMember]
         [PfeColumn(Text = "_CUST_NAZOV")]
         public string CUST_NAZOV { get; set; }
+
         [DataMember]
-        [PfeColumn(Text = "_IS_HIDDEN")]
+        [PfeColumn(Text = "_IS_HIDDEN", DefaultValue = false)]
         public bool IS_HIDDEN { get; set; }
+
         [DataMember]
-        [PfeColumn(Text = "_IS_CUST")]
+        [PfeColumn(Text = "_IS_CUST", DefaultValue = false)]
         public bool IS_CUST { get; set; }
+
         [DataMember]
-        [PfeColumn(Text = "_TYP_RANK")]
+        [PfeColumn(Text = "_TYP_RANK", DefaultValue = 0)]
         public int? TYP_RANK { get; set; }
     }
 }

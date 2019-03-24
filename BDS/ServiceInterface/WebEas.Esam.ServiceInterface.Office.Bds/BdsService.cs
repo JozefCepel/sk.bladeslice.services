@@ -129,6 +129,253 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
 
         #endregion
 
+        #region D_PRI_1
+
+        public object Any(CreateD_PRI_1 request)
+        {
+            return Repository.Create<V_PRI_1View>(request);
+        }
+
+        public object Any(UpdateD_PRI_1 request)
+        {
+            return Repository.Update<V_PRI_1View>(request);
+        }
+
+        public void Any(DeleteD_PRI_1 request)
+        {
+            Repository.Delete<tblD_PRI_1>(request.D_PRI_1);
+        }
+
+        #endregion
+
+        #region D_SIM_0
+
+        public object Any(CreateD_SIM_0 request)
+        {
+            return Repository.Create<V_SIM_0View>(request);
+        }
+
+        public object Any(UpdateD_SIM_0 request)
+        {
+            return Repository.Update<V_SIM_0View>(request);
+        }
+
+        public void Any(DeleteD_SIM_0 request)
+        {
+            Repository.Delete<tblD_SIM_0>(request.D_SIM_0);
+        }
+
+        #endregion
+
+        #region D_VYD_0
+
+        public object Any(CreateD_VYD_0 request)
+        {
+            return Repository.Create<V_VYD_0View>(request);
+        }
+
+        public object Any(UpdateD_VYD_0 request)
+        {
+            return Repository.Update<V_VYD_0View>(request);
+        }
+
+        public void Any(DeleteD_VYD_0 request)
+        {
+            Repository.Delete<tblD_VYD_0>(request.D_VYD_0);
+        }
+
+        #endregion
+
+        #region D_VYD_1
+
+        public object Any(CreateD_VYD_1 request)
+        {
+            return Repository.Create<V_VYD_1View>(request);
+        }
+
+        public object Any(UpdateD_VYD_1 request)
+        {
+            return Repository.Update<V_VYD_1View>(request);
+        }
+
+        public void Any(DeleteD_VYD_1 request)
+        {
+            Repository.Delete<tblD_VYD_1>(request.D_VYD_1);
+        }
+
+        #endregion
+
+        #region K_MAT_0
+
+        public object Any(CreateK_MAT_0 request)
+        {
+            return Repository.Create<V_MAT_0View>(request);
+        }
+
+        public object Any(UpdateK_MAT_0 request)
+        {
+            return Repository.Update<V_MAT_0View>(request);
+        }
+
+        public void Any(DeleteK_MAT_0 request)
+        {
+            Repository.Delete<tblK_MAT_0>(request.K_MAT_0);
+        }
+
+        #endregion
+
+        #region K_OBP_0
+
+        public object Any(CreateK_OBP_0 request)
+        {
+            return Repository.Create<V_OBP_0View>(request);
+        }
+
+        public object Any(UpdateK_OBP_0 request)
+        {
+            return Repository.Update<V_OBP_0View>(request);
+        }
+
+        public void Any(DeleteK_OBP_0 request)
+        {
+            Repository.Delete<tblK_OBP_0>(request.K_OBP_0);
+        }
+
+        #endregion
+
+        #region K_ORJ_0
+
+        public object Any(CreateK_ORJ_0 request)
+        {
+            return Repository.Create<V_ORJ_0View>(request);
+        }
+
+        public object Any(UpdateK_ORJ_0 request)
+        {
+            return Repository.Update<V_ORJ_0View>(request);
+        }
+
+        public void Any(DeleteK_ORJ_0 request)
+        {
+            Repository.Delete<tblK_ORJ_0>(request.K_ORJ_0);
+        }
+
+        #endregion
+
+        #region K_ORJ_1
+
+        public object Any(CreateK_ORJ_1 request)
+        {
+            return Repository.Create<V_ORJ_1View>(request);
+        }
+
+        public object Any(UpdateK_ORJ_1 request)
+        {
+            return Repository.Update<V_ORJ_1View>(request);
+        }
+
+        public void Any(DeleteK_ORJ_1 request)
+        {
+            Repository.Delete<tblK_ORJ_1>(request.K_ORJ_1);
+        }
+
+        #endregion
+
+        #region K_SKL_0
+
+        public object Any(CreateK_SKL_0 request)
+        {
+            return Repository.Create<V_SKL_0View>(request);
+        }
+
+        public object Any(UpdateK_SKL_0 request)
+        {
+            return Repository.Update<V_SKL_0View>(request);
+        }
+
+        public void Any(DeleteK_SKL_0 request)
+        {
+            Repository.Delete<tblK_SKL_0>(request.K_SKL_0);
+        }
+
+        #endregion
+
+        #region K_SKL_1
+
+        public object Any(CreateK_SKL_1 request)
+        {
+            return Repository.Create<V_SKL_1View>(request);
+        }
+
+        public object Any(UpdateK_SKL_1 request)
+        {
+            return Repository.Update<V_SKL_1View>(request);
+        }
+
+        public void Any(DeleteK_SKL_1 request)
+        {
+            Repository.Delete<tblK_SKL_1>(request.K_SKL_1);
+        }
+
+        #endregion
+
+        #region K_SKL_2
+
+        public object Any(CreateK_SKL_2 request)
+        {
+            return Repository.Create<V_SKL_2View>(request);
+        }
+
+        public object Any(UpdateK_SKL_2 request)
+        {
+            return Repository.Update<V_SKL_2View>(request);
+        }
+
+        public void Any(DeleteK_SKL_2 request)
+        {
+            Repository.Delete<tblK_SKL_2>(request.K_SKL_2);
+        }
+
+        #endregion
+
+        #region K_TSK_0
+
+        public object Any(CreateK_TSK_0 request)
+        {
+            return Repository.Create<V_TSK_0View>(request);
+        }
+
+        public object Any(UpdateK_TSK_0 request)
+        {
+            return Repository.Update<V_TSK_0View>(request);
+        }
+
+        public void Any(DeleteK_TSK_0 request)
+        {
+            Repository.Delete<tblK_TSK_0>(request.K_TSK_0);
+        }
+
+        #endregion
+
+        #region K_TYP_0
+
+        public object Any(CreateK_TYP_0 request)
+        {
+            return Repository.Create<V_TYP_0View>(request);
+        }
+
+        public object Any(UpdateK_TYP_0 request)
+        {
+            return Repository.Update<V_TYP_0View>(request);
+        }
+
+        public void Any(DeleteK_TYP_0 request)
+        {
+            Repository.Delete<tblK_TYP_0>(request.K_TYP_0);
+        }
+
+        #endregion
+
         #region Nastavenie
 
         public object Any(GetParameterType request)

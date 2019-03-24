@@ -15,7 +15,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     public class CreateK_SKL_0 : K_SKL_0Dto { }
 
     // Update
-    [WebEasRequiredRole(Roles.Admin)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
     [Route("/UpdateK_SKL_0", "PUT")]
     [Api("K_SKL_0")]
     [DataContract]
@@ -23,7 +23,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     {
         [PrimaryKey]
         [DataMember(IsRequired = true)]
-        public long K_SKL_0 { get; set; }
+        public int K_SKL_0 { get; set; }
     }
 
     // Delete
@@ -34,7 +34,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     public class DeleteK_SKL_0
     {
         [DataMember(IsRequired = true)]
-        public long K_SKL_0 { get; set; }
+        public int K_SKL_0 { get; set; }
     }
 
     #region DTO
@@ -47,11 +47,11 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
         [DataMember]
         public string POZN { get; set; }
 
-        [DataMember]
-        public short? ROZSAH { get; set; }
+        //[DataMember]
+        //public short? ROZSAH { get; set; }
 
         [DataMember]
-        public byte? SO { get; set; }
+        public byte SO { get; set; }
 
         [DataMember]
         public string KOD { get; set; }
@@ -78,11 +78,11 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
         protected override void BindToEntity(tblK_SKL_0 data)
         {
             data.SKL = SKL;
-            data.POZN = POZN;
-            data.ROZSAH = ROZSAH;
+            data.POZN = string.IsNullOrEmpty(POZN) ? "" : POZN;
+            data.ROZSAH = 1; //ROZSAH;
             data.SO = SO;
             data.KOD = KOD;
-            data.SKL_GRP = SKL_GRP;
+            data.SKL_GRP = string.IsNullOrEmpty(SKL_GRP) ? "" : SKL_GRP;
             data.SKL_MINUS = SKL_MINUS;
             data.SHOW_VYD_ZERO_SKL = SHOW_VYD_ZERO_SKL;
             data.CHECK_IN_SKL_MIN_MAX = CHECK_IN_SKL_MIN_MAX;

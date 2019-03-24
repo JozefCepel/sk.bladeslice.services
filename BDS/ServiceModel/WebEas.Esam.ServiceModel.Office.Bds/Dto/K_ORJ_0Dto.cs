@@ -15,7 +15,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     public class CreateK_ORJ_0 : K_ORJ_0Dto { }
 
     // Update
-    [WebEasRequiredRole(Roles.Admin)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
     [Route("/UpdateK_ORJ_0", "PUT")]
     [Api("K_ORJ_0")]
     [DataContract]
@@ -23,7 +23,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     {
         [PrimaryKey]
         [DataMember(IsRequired = true)]
-        public long K_ORJ_0 { get; set; }
+        public int K_ORJ_0 { get; set; }
     }
 
     // Delete
@@ -34,7 +34,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     public class DeleteK_ORJ_0
     {
         [DataMember(IsRequired = true)]
-        public long K_ORJ_0 { get; set; }
+        public int K_ORJ_0 { get; set; }
     }
 
     #region DTO
@@ -57,7 +57,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
         protected override void BindToEntity(tblK_ORJ_0 data)
         {
             data.ORJ = ORJ;
-            data.POZN = POZN;
+            data.POZN = string.IsNullOrEmpty(POZN) ? "" : POZN;
             data.KOD = KOD;
         }
     }
