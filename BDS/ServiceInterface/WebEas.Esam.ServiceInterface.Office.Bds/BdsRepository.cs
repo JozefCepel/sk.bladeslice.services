@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using WebEas.Esam.ServiceModel.Office.Bds.Defaults;
 using WebEas.Esam.ServiceModel.Office.Bds.Dto;
 using WebEas.Esam.ServiceModel.Office.Bds.Types;
 using WebEas.ServiceInterface;
@@ -54,6 +55,24 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
         {
             var node = Modules.TryFindNode(code);
             var masternode = Modules.TryFindNode(masterCode);
+
+            #region D_PRI_0, D_VYD_0
+
+            if (node != null && (node.ModelType == typeof(V_PRI_0View) || node.ModelType == typeof(V_VYD_0View)))
+            {
+                var FirstOrj = GetList<tblK_ORJ_0>().OrderBy(x => x.Serial_No).FirstOrDefault();
+                var FirstSkl = GetList<tblK_SKL_0>().OrderBy(x => x.Serial_No).FirstOrDefault();
+                
+                return new PriVydDefaults()
+                {
+                    DAT_DKL = DateTime.Now.Date,
+                    K_ORJ_0 = (int)(FirstOrj?.K_ORJ_0 ?? null),
+                    K_SKL_0 = (int)(FirstSkl?.K_SKL_0 ?? null)
+                };
+            }
+            
+            #endregion
+
 
             /*
             #region Programový rozpočet
@@ -168,35 +187,6 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
 
             #endregion
 
-            #region Návrhy rozpočtu
-
-            if (node != null && node.ModelType == typeof(NavrhBdsView))
-            {
-                return new NavrhBdsView()
-                {
-                    Datum = DateTime.Now.Date,
-                    Rok = DateTime.Now.Year,
-                    Nazov = string.Concat("Návrh rozpočtu na rok ", DateTime.Now.Year),
-                    D_User_Id_Zodp = Session.DcomIdGuid.Value,
-                    Typ = false,
-                    C_StavEntity_Id = 1
-                };
-            }
-
-            if (node != null && node.ModelType == typeof(ZmenyBdsView))
-            {
-                return new ZmenyBdsView()
-                {
-                    Datum = DateTime.Now.Date,
-                    Rok = DateTime.Now.Year,
-                    Nazov = string.Concat("Úprava rozpočtu k ", DateTime.Now.ToShortDateString()),
-                    D_User_Id_Zodp = Session.DcomIdGuid.Value,
-                    Typ = true,
-                    C_StavEntity_Id = 1
-                };
-            }
-
-            #endregion
 
             #region Položky návrhov
 

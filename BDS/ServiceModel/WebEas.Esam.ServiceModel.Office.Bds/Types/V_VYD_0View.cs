@@ -16,12 +16,12 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string ORJ { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Warehouse")]
-        [PfeCombo(typeof(tblK_SKL_0), IdColumnCombo = "K_SKL_0", DisplayColumn = "SKL")]
+        [PfeColumn(Text = "Warehouse", RequiredFields = new[] { "K_ORJ_0" })]
+        [PfeCombo(typeof(V_ORJ_1View), IdColumnCombo = "K_SKL_0", DisplayColumn = "SKL")]
         public string SKL { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Názov")]
+        [PfeColumn(Text = "Customer")]
         [PfeCombo(typeof(tblK_OBP_0), IdColumnCombo = "K_OBP_0", DisplayColumn = "NAZOV1")]
         public string NAZOV1 { get; set; }
 

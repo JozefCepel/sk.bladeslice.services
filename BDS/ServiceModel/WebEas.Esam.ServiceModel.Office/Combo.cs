@@ -7,7 +7,7 @@ using WebEas.ServiceModel.Types;
 namespace WebEas.Esam.ServiceModel.Office
 {
     [DataContract]
-    public class PrijemVydajCombo : IStaticCombo
+    public class PV3DCombo : IStaticCombo
     {
         [DataMember]
         public string Kod { get; set; }
@@ -27,8 +27,8 @@ namespace WebEas.Esam.ServiceModel.Office
         {
             switch (kod)
             {
-                case 1: return "P";
-                case 2: return "V";
+                case 1: return "+";
+                case 2: return "-";
                 default: return kod + " (?)";
             }
         }

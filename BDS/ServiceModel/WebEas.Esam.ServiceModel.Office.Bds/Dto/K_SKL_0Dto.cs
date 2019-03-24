@@ -71,6 +71,9 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
         [DataMember]
         public bool CHECK_IN_REZ { get; set; }
 
+        [DataMember]
+        public int Serial_No { get; set; }
+
         /// <summary>
         /// Binds to entity.
         /// </summary>
@@ -87,6 +90,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
             data.SHOW_VYD_ZERO_SKL = SHOW_VYD_ZERO_SKL;
             data.CHECK_IN_SKL_MIN_MAX = CHECK_IN_SKL_MIN_MAX;
             data.CHECK_IN_REZ = CHECK_IN_REZ;
+            data.Serial_No = Serial_No;
         }
     }
     #endregion

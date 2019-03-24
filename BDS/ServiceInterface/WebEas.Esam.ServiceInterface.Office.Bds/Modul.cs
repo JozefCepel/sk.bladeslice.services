@@ -244,7 +244,9 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
             HierarchyNodeDependency.One2ManyBack2One("bds-skl-pri", "bds-skl-pri-pol", "D_PRI_0", "Položky", "Hlavička"),
             HierarchyNodeDependency.One2ManyBack2One("bds-skl-vyd", "bds-skl-vyd-pol", "D_VYD_0", "Položky", "Hlavička"),
             HierarchyNodeDependency.One2ManyBack2One("bds-skl-pri-pol", "bds-skl-sim", "D_PRI_1", "Simulation data", "Položka príjemky"),
-            HierarchyNodeDependency.One2ManyBack2One("bds-skl-vyd-pol", "bds-skl-sim", "D_VYD_1", "Simulation data", "Položka výdajky")
+            HierarchyNodeDependency.One2ManyBack2One("bds-skl-vyd-pol", "bds-skl-sim", "D_VYD_1", "Simulation data", "Položka výdajky"),
+            HierarchyNodeDependency.One2ManyBack2One("bds-skl-pri", "bds-skl-sim", "D_PRI_0", "Simulation data", "Príjemka"),
+            HierarchyNodeDependency.One2ManyBack2One("bds-skl-vyd", "bds-skl-sim", "D_VYD_0", "Simulation data", "Výdajka")
         );
         #endregion
 

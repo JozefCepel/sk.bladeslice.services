@@ -50,6 +50,9 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
         [DataMember]
         public string KOD { get; set; }
 
+        [DataMember]
+        public int Serial_No { get; set; }
+
         /// <summary>
         /// Binds to entity.
         /// </summary>
@@ -59,6 +62,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
             data.ORJ = ORJ;
             data.POZN = string.IsNullOrEmpty(POZN) ? "" : POZN;
             data.KOD = KOD;
+            data.Serial_No = Serial_No;
         }
     }
     #endregion

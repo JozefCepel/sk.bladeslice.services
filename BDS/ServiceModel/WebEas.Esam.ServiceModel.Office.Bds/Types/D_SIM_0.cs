@@ -36,8 +36,21 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public int? RANK { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Typ")]
+        [PfeColumn(Text = "_Typ")]
         public byte PV { get; set; }
+
+
+        [DataMember]
+        [PfeCombo(typeof(PV3DCombo), NameColumn = "PV")]
+        [PfeColumn(Text = "Typ")]
+        [Ignore]
+        public string PVText
+        {
+            get
+            {
+                return PV3DCombo.GetText(PV);
+            }
+        }
 
         [DataMember]
         [PfeColumn(Text = "SN")]

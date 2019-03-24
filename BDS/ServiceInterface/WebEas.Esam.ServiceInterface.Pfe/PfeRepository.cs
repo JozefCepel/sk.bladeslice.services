@@ -92,7 +92,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                         pohladActions.Data = source.Data;
                         if (pohladActions.Data.Fields != null)
                         {
-                            pohladActions.Data.Fields.RemoveAll(x => x.Hidden);
+                            pohladActions.Data.Fields.RemoveAll(x => x.Hidden || x.Text.StartsWith("_"));
                         }
 
                         res.Data = JsonSerializer.SerializeToString(pohladActions.Data);
@@ -119,7 +119,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                             // cize zobereme vsetko okrem fieldov = Hidden, preto aj request.Data = null;
                             if (pohladActions.Data.Fields != null)
                             {
-                                pohladActions.Data.Fields.RemoveAll(x => x.Hidden);
+                                pohladActions.Data.Fields.RemoveAll(x => x.Hidden || x.Text.StartsWith("_"));
                             }
 
                             // Zatial sa vytvara iba dca a layout

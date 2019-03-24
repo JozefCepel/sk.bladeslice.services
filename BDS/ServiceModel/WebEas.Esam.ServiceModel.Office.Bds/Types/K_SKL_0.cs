@@ -24,15 +24,20 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string SKL { get; set; }
 
         [DataMember]
+        [PfeColumn(Text = "Rank")]
+        [PfeSort(Rank = 1, Sort = PfeOrder.Asc)]
+        public int Serial_No { get; set; }
+
+        [DataMember]
         [PfeColumn(Text = "_Rozsah", DefaultValue = 1)]
         public short? ROZSAH { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Warehouseové obdobie", DefaultValue = 1)]
+        [PfeColumn(Text = "Warehouse period", DefaultValue = 1)]
         public byte SO { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Skupina Warehouseov")]
+        [PfeColumn(Text = "Warehouse group")]
         public string SKL_GRP { get; set; }
 
         [DataMember]

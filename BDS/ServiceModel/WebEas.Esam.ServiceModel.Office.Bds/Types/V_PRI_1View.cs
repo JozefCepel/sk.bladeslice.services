@@ -16,6 +16,10 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string DKL_C { get; set; }
 
         [DataMember]
+        [PfeColumn(Text = "Položka príjemky", ReadOnly = true)]
+        public string PriPol { get; set; }
+
+        [DataMember]
         [PfeColumn(Text = "Skupina")]
         public string TSK { get; set; }
 

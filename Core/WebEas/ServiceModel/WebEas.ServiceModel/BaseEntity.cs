@@ -29,7 +29,7 @@ namespace WebEas.ServiceModel
         /// <value>The datum vytvorenia.</value>
         [DataMember]
         [PfeSort(Sort = PfeOrder.Desc, Rank = 99)]
-        [PfeColumn(Text = "Čas vytvorenia", Hidden = true, Type = PfeDataType.DateTime, Editable = false, Rank = 101, ReadOnly = true)]
+        [PfeColumn(Text = "Čas vytvorenia", Hidden = true, Type = PfeDataType.DateTime, Editable = false, ReadOnly = true)]
         public DateTime DatumVytvorenia { get; set; }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace WebEas.ServiceModel
         /// </summary>
         /// <value>The datum zmeny.</value>
         [DataMember]
-        [PfeColumn(Text = "Čas zmeny", Hidden = true, Type = PfeDataType.DateTime, Editable = false, Rank = 103, ReadOnly = true)]
+        [PfeColumn(Text = "Čas zmeny", Hidden = true, Type = PfeDataType.DateTime, Editable = false, ReadOnly = true)]
         public DateTime DatumZmeny { get; set; }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace WebEas.ServiceModel
         /// </summary>
         /// <value>The poznamka.</value>
         [DataMember]
-        [PfeColumn(Text = "Note", Hidden = true, Xtype = PfeXType.Textarea, Rank = 104)]
+        [PfeColumn(Text = "Note", Hidden = true, Xtype = PfeXType.Textarea)]
         [StringLength(255)]
         public string Poznamka { get; set; }
 

@@ -24,6 +24,11 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string ORJ { get; set; }
 
         [DataMember]
+        [PfeColumn(Text = "Rank")]
+        [PfeSort(Rank = 1, Sort = PfeOrder.Asc)]
+        public int Serial_No { get; set; }
+
+        [DataMember]
         [PfeColumn(Text = "_Poznámka")]
         public string POZN { get; set; }
     }
