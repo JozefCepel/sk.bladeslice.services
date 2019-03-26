@@ -124,16 +124,9 @@ namespace WebEas.Esam.ServiceInterface.Office
                 IList<PropertyInfo> props = new List<PropertyInfo>(entityType.GetProperties());
 
                 PropertyInfo piRiesitel = props.FirstOrDefault(p => p.Name.ToUpper() == "RIESITEL");
-                PropertyInfo piZaznamId = props.FirstOrDefault(p => p.Name.ToUpper() == "ZAZNAM_ID");
                 PropertyInfo piPohladId = props.FirstOrDefault(p => p.Name.ToUpper() == "D_POHLAD_ID");
-                PropertyInfo piSpisId = props.FirstOrDefault(p => p.Name.ToUpper() == "SPISID");
-                PropertyInfo piIdVytvorenehoZaznamuVPodatelni = props.FirstOrDefault(p => p.Name.ToUpper() == "IDVYTVORENEHOZAZNAMUVPODATELNI");
-                PropertyInfo piEPodatelnaId = props.FirstOrDefault(p => p.Name.ToUpper() == "EPODATELNAID");
                 PropertyInfo piTenantId = props.FirstOrDefault(p => p.Name.ToUpper() == "D_TENANT_ID");
-                PropertyInfo piSluzbaId = props.FirstOrDefault(p => p.Name.ToUpper() == "C_SLUZBA_ID");
-                PropertyInfo piZbernySpis = props.FirstOrDefault(p => p.Name.ToUpper() == "ZBERNYSPIS");
-                PropertyInfo piPodanieId = props.FirstOrDefault(p => p.Name.ToUpper() == "D_PODANIE_ID");
-                PropertyInfo piFormId = props.FirstOrDefault(p => p.Name.ToUpper() == "EFORM_ID");
+
                 string dcomId = this.Session.DcomId.ToUpper();
 
                 PropertyInfo piOsoba = null;
@@ -151,49 +144,21 @@ namespace WebEas.Esam.ServiceInterface.Office
                 {
                     string riesitel = piRiesitel == null ? null : (string)piRiesitel.GetValue(baseEntity);
                     Guid? tenantId = piTenantId == null ? null : (Guid?)piTenantId.GetValue(baseEntity);
-                    long zaznamId = piZaznamId == null ? 0 : (long?)piZaznamId.GetValue(baseEntity) ?? 0;
                     int pohladId = piPohladId == null ? 0 : (int?)piPohladId.GetValue(baseEntity) ?? 0;
-                    int spisId = piSpisId == null ? 0 : (int?)piSpisId.GetValue(baseEntity) ?? 0;
-                    long iDVytvorenehoZaznamuVPodatelni = piIdVytvorenehoZaznamuVPodatelni == null ? 0 : (long?)piIdVytvorenehoZaznamuVPodatelni.GetValue(baseEntity) ?? 0;
-                    long ePodatelnaId = piEPodatelnaId == null ? 0 : (long?)piEPodatelnaId.GetValue(baseEntity) ?? 0;
                     Guid? osobaId = piOsoba == null ? null : (Guid?)piOsoba.GetValue(baseEntity);
-                    bool zbernySpis = piZbernySpis == null ? false : (bool)piZbernySpis.GetValue(baseEntity);
                     bool jeRiesitel = string.IsNullOrEmpty(riesitel) || dcomId == riesitel.ToUpper();
-                    long podanieId = piPodanieId == null ? 0 : (long?)piPodanieId.GetValue(baseEntity) ?? 0;
-                    string formId = piFormId == null ? null : (string)piFormId.GetValue(baseEntity);
 
                     // AcccessFlag urcuje prava usera na dane akcie pre dany riadok
 
-                    if ((zbernySpis || jeRiesitel) && (piTenantId == null || tenantId.HasValue || this.Session.HasRole(Roles.SysAdmin)))
-                    {
-                        baseEntity.AccessFlag |= (long)(NodeActionFlag.Create | NodeActionFlag.Update | NodeActionFlag.ZmenaStavuPodania | NodeActionFlag.Delete);
-                    }
+                    // if ((zbernySpis || jeRiesitel) && (piTenantId == null || tenantId.HasValue || this.Session.HasRole(Roles.SysAdmin)))
+                    //{
+                        baseEntity.AccessFlag |= (long)(NodeActionFlag.Create | NodeActionFlag.Update | NodeActionFlag.Delete);
+                    //}
 
-                    if (osobaId.HasValue)
-                    {
-                        baseEntity.AccessFlag |= (long)NodeActionFlag.ZobrazOsobu;
-                    }
-                    if (spisId > 0)
-                    {
-                        baseEntity.AccessFlag |= (long)NodeActionFlag.ZobrazSpis;
-                    }
-                    if (iDVytvorenehoZaznamuVPodatelni > 0)
-                    {
-                        baseEntity.AccessFlag |= (long)NodeActionFlag.ZobrazRozhodnutie;
-                    }
-                    if (zaznamId > 0 && pohladId > 0)
-                    {
-                        baseEntity.AccessFlag |= (long)NodeActionFlag.ZobrazDetailRiadku;
-                    }
-
-                    if (ePodatelnaId > 0 && podanieId > 0)
-                    {
-                        baseEntity.AccessFlag |= (long)NodeActionFlag.ZobrazPodanie;
-                        if (!string.IsNullOrEmpty(formId) && formId.Contains("DCOM_DaneAPoplatky_PriznanieKDaniZNehnutelnostiFO_"))
-                        {
-                            baseEntity.AccessFlag |= (long)NodeActionFlag.PriznanieVzorMFSR;
-                        }
-                    }
+                    //if (osobaId.HasValue)
+                    //{
+                    //    baseEntity.AccessFlag |= (long)NodeActionFlag.ZobrazOsobu;
+                    //}
                 }
             }
         }

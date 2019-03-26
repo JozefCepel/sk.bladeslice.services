@@ -16,6 +16,10 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string DKL_C { get; set; }
 
         [DataMember]
+        [PfeColumn(Text = "V", Editable = false, ReadOnly = true)]
+        public bool V { get; set; }
+
+        [DataMember]
         [PfeColumn(Text = "_Položka výdajky", ReadOnly = true)]
         public string VydPol { get; set; }
 

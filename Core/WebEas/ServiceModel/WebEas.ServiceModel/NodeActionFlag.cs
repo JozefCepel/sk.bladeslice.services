@@ -152,22 +152,13 @@ namespace WebEas.ServiceModel
         [EnumMember(Value = "Create")]
         Create = (long)1 << 46,
 
-        [EnumMember(Value = "DeletePriznPril")]
-        DeletePriznPril = (long)1 << 47,
+        #region BDS - zacina od 50
 
-        [EnumMember(Value = "OsobyPodlaPobytu")]
-        OsobyPodlaPobytu = (long)1 << 48,
+        [EnumMember(Value = "VybavitDoklady")]
+        VybavitDoklady = (long)1 << 50,
 
-        [EnumMember(Value = "PriznanieVzorMFSR")]
-        PriznanieVzorMFSR = (long)1 << 49,
-
-        [EnumMember(Value = "VytvoritUrokZOdkladuSplatok")]
-        VytvoritUrokZOdkladuSplatok = (long)1 << 50,
-
-        #region RZP - zacina od 200
-
-        [EnumMember(Value = "PrevziatNavrhRozpoctu")]
-        PrevziatNavrhRozpoctu = (long)1 << 200,
+        [EnumMember(Value = "OdvybavitDoklady")]
+        OdvybavitDoklady = (long)1 << 51,
 
         #endregion
 

@@ -1,4 +1,5 @@
-﻿using WebEas.Esam.ServiceModel.Office;
+﻿using System.Collections.Generic;
+using WebEas.Esam.ServiceModel.Office;
 using WebEas.Esam.ServiceModel.Office.Bds.Dto;
 using WebEas.Esam.ServiceModel.Office.Bds.Types;
 using WebEas.ServiceInterface;
@@ -23,5 +24,16 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
         #endregion
 
 
+        /// <summary>
+        /// Vybaví doklady príjemka
+        /// </summary>
+        /// <param name="request"></param>
+        List<long> GetVybavDokladyPri(GetVybavDokladyPriReq request);
+
+        /// <summary>
+        /// Odvybaví doklady príjemka
+        /// </summary>
+        /// <param name="request"></param>
+        List<long> GetOdvybavDokladyPri(GetOdvybavDokladyPriReq request);
     }
 }

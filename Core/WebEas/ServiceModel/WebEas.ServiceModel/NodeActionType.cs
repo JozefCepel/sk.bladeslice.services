@@ -15,10 +15,12 @@ namespace WebEas.ServiceModel
         [EnumMember(Value = "Read")]
         [PfeCaption("Načítať")]
         Read,
+
         [EnumMember(Value = "Update")]
         [PfeCaption("Uložiť <br/> zmeny")]
         [NodeActionIcon(NodeActionIcons.FloppyO)]
         Update,
+
         [EnumMember(Value = "Delete")]
         [PfeCaption("Zmazať")]
         [NodeActionIcon(NodeActionIcons.Trash)]
@@ -648,11 +650,15 @@ namespace WebEas.ServiceModel
 
         #endregion
 
-        #region RZP
+        #region BDS
 
-        [PfeCaption("Prevziať návrh rozpočtu")]
-        [NodeActionIcon(NodeActionIcons.FilesO)]
-        PrevziatNavrhRozpoctu,
+        [PfeCaption("Vybaviť")]
+        [NodeActionIcon(NodeActionIcons.CheckSquare)]
+        VybavitDoklady,
+
+        [PfeCaption("Odvybaviť")]
+        [NodeActionIcon(NodeActionIcons.Square)]
+        OdvybavitDoklady,
 
         #endregion
 

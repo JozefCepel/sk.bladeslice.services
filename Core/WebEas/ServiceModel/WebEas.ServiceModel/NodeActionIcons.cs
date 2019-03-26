@@ -208,6 +208,10 @@ namespace WebEas.ServiceModel
         [EnumMember(Value = "0xf1da")]
         History = 66,
 
+        [EnumMember(Value = "0xf0c8")]
+        Square = 67,
+
+
         #region DMS
 
         /// <summary>

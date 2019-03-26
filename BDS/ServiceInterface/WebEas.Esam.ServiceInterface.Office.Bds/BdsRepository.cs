@@ -20,6 +20,60 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
     public partial class BdsRepository : RepositoryBase, IBdsRepository
     {
 
+        public List<long> GetOdvybavDokladyPri(GetOdvybavDokladyPriReq request)
+        {
+            return GetVybavOdvybavDokladyPri(request.D_PRI_0.ToList(), false);
+        }
+
+        public List<long> GetVybavDokladyPri(GetVybavDokladyPriReq request)
+        {
+            return GetVybavOdvybavDokladyPri(request.D_PRI_0.ToList(), true);
+        }
+
+        public List<long> GetVybavOdvybavDokladyPri(List<long> request, bool Vybavit)
+        {
+            // Vybavi doklady
+
+            var result = new List<long>();
+
+            System.Data.IDbTransaction transaction = this.BeginTransaction();
+
+            try
+            {
+
+                foreach (var ID in request)
+                {
+                    var doklad = this.Db.SingleById<tblD_PRI_0>(ID);
+                    if (doklad.V != Vybavit)
+                    {
+                        doklad.V = Vybavit;
+                        result.Add(ID);
+                    }
+                    UpdateData(doklad);
+                }
+                transaction.Commit();
+            }
+            catch (WebEasException ex)
+            {
+                transaction.Rollback();
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                throw new WebEasException("Nastala chyba pri vybavovaní dokladu", "Nastala chyba pri vybavovaní dokladu", ex);
+            }
+            finally
+            {
+                this.EndTransaction(transaction);
+            }
+
+            return result;
+
+            //return result;
+        }
+
+
         #region Warehouse
 
         #endregion
@@ -356,14 +410,32 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                 var entityType = e.GetType().GetProperty("Item").PropertyType;
                 var props = new List<PropertyInfo>(entityType.GetProperties());
 
-                var piTenantId = props.FirstOrDefault(p => p.Name.ToUpper() == "D_TENANT_ID");
-                var piStavEntity = props.FirstOrDefault(p => p.Name.ToUpper() == "C_STAVENTITY_ID");
+                //PropertyInfo piTenantId = props.FirstOrDefault(p => p.Name.ToUpper() == "D_TENANT_ID");
+                //PropertyInfo piStavEntity = props.FirstOrDefault(p => p.Name.ToUpper() == "C_STAVENTITY_ID");
+                PropertyInfo piV = props.FirstOrDefault(p => p.Name.ToUpper() == "V");
 
                 foreach (var baseEntity in baseEntityList)
                 {
-                    var tenantId = piTenantId == null ? null : (Guid?)piTenantId.GetValue(baseEntity);
-                    var stavEntity = piStavEntity == null ? null : (int?)piStavEntity.GetValue(baseEntity);
+                    //var tenantId = piTenantId == null ? null : (Guid?)piTenantId.GetValue(baseEntity);
+                    //var stavEntity = piStavEntity == null ? null : (int?)piStavEntity.GetValue(baseEntity);
+                    bool jeVybavene = piV == null ? false : (bool)piV.GetValue(baseEntity);
 
+
+                    //nastavenie flagov podla vybavenia
+                    if (piV != null)
+                    {
+                        if (jeVybavene)
+                        {
+                            baseEntity.AccessFlag = 0;
+                            baseEntity.AccessFlag |= (long)(NodeActionFlag.OdvybavitDoklady | NodeActionFlag.VybavitDoklady);
+                        }
+                        else
+                        {
+                            baseEntity.AccessFlag |= (long)(NodeActionFlag.Create | NodeActionFlag.Update | NodeActionFlag.Delete); // | NodeActionFlag.VybavitDoklady 
+                        }
+                    }
+
+                    /*
                     //nastavenie flagov podla stavu
                     if (stavEntity.HasValue)
                     {
@@ -387,6 +459,8 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                                 break;
                         }
                     }
+                    */
+
                 }
             }
         }

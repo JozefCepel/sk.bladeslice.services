@@ -603,23 +603,14 @@ namespace WebEas.ServiceModel
                 case NodeActionType.Import:
                     accessFlag = NodeActionFlag.Import;
                     break;
-                case NodeActionType.DeletePriznPril:
-                    accessFlag = NodeActionFlag.DeletePriznPril;
-                    break;
-                case NodeActionType.OsobyPodlaPobytu:
-                    accessFlag = NodeActionFlag.OsobyPodlaPobytu;
-                    break;
-                case NodeActionType.PriznanieVzorMFSR:
-                    accessFlag = NodeActionFlag.PriznanieVzorMFSR;
-                    break;
-                case NodeActionType.VytvorenieRozhodnutiaUrokyZOdkladu:
-                    accessFlag = NodeActionFlag.VytvoritUrokZOdkladuSplatok;
-                    break;
 
-                #region RZP
+                #region BDS
 
-                case NodeActionType.PrevziatNavrhRozpoctu:
-                    accessFlag = NodeActionFlag.PrevziatNavrhRozpoctu;
+                case NodeActionType.VybavitDoklady:
+                    accessFlag = NodeActionFlag.VybavitDoklady;
+                    break;
+                case NodeActionType.OdvybavitDoklady:
+                    accessFlag = NodeActionFlag.OdvybavitDoklady;
                     break;
 
                 #endregion

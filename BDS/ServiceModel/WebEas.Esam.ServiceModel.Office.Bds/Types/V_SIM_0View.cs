@@ -30,6 +30,10 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         [PfeCombo(typeof(V_VYD_1View), IdColumnCombo = "D_VYD_1", DisplayColumn = "VydPol")]
         public string VydPol { get; set; }
 
+        [DataMember]
+        [PfeColumn(Text = "V", Editable = false, ReadOnly = true)]
+        public bool V { get; set; }
+        
         //audit stlpce
         [DataMember]
         [PfeColumn(Text = "Vytvoril", Hidden = true, Editable = false, ReadOnly = true)]
