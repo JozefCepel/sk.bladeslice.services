@@ -152,13 +152,13 @@ namespace WebEas.ServiceModel
         [EnumMember(Value = "Create")]
         Create = (long)1 << 46,
 
-        #region BDS - zacina od 50
+        #region BDS - zacina od 200
 
         [EnumMember(Value = "VybavitDoklady")]
-        VybavitDoklady = (long)1 << 50,
+        VybavitDoklady = (long)1 << 200,
 
         [EnumMember(Value = "OdvybavitDoklady")]
-        OdvybavitDoklady = (long)1 << 51,
+        OdvybavitDoklady = (long)1 << 201,
 
         #endregion
 
@@ -166,27 +166,26 @@ namespace WebEas.ServiceModel
         #region DMS - zacina od 900
 
         [EnumMember(Value = "Change")]
-        Change = 1 << 3,
+        Change = (long)1 << 900,
 
         [EnumMember(Value = "OpenDocument")]
-        OpenDocument = 1 << 4,
+        OpenDocument = (long)1 << 901,
 
         [EnumMember(Value = "DownloadFile")]
-        DownloadFile = 1 << 5,
+        DownloadFile = (long)1 << 902,
 
         [EnumMember(Value = "ItemHistory")]
-        ItemHistory = 1 << 8,
+        ItemHistory = (long)1 << 903,
 
         [EnumMember(Value = "ItemPermission")]
-        ItemPermission = 1 << 9,
+        ItemPermission = (long)1 << 904,
 
         [EnumMember(Value = "ItemProperty")]
-        ItemProperty = 1 << 10,
+        ItemProperty = (long)1 << 905,
 
         [EnumMember(Value = "ItemNotification")]
-        ItemNotification = 1 << 11,
+        ItemNotification = (long)1 << 906,
 
         #endregion
-
     }
 }

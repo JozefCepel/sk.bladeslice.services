@@ -146,14 +146,14 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
             Repository.Delete<tblD_PRI_1>(request.D_PRI_1);
         }
 
-        public object Any(GetVybavDokladyPriReq request)
+        public object Any(GetVybavDokladyReq request)
         {
-            return Repository.GetVybavDokladyPri(request);
+            return Repository.GetVybavDoklady(request);
         }
 
-        public object Any(GetOdvybavDokladyPriReq request)
+        public object Any(GetOdvybavDokladyReq request)
         {
-            return Repository.GetOdvybavDokladyPri(request);
+            return Repository.GetOdvybavDoklady(request);
         }
 
         #endregion

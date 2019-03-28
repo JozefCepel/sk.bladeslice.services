@@ -124,23 +124,4 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     }
     #endregion
 
-    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsWriter)]
-    [Route("/GetVybavDokladyPri", "POST")]
-    [Api("Doklady")]
-    [DataContract]
-    public class GetVybavDokladyPriReq : IReturn<List<long>>
-    {
-        [DataMember]
-        public long[] D_PRI_0 { get; set; }
-    }
-
-    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsWriter)]
-    [Route("/GetOdvybavDokladyPri", "POST")]
-    [Api("Doklady")]
-    [DataContract]
-    public class GetOdvybavDokladyPriReq : IReturn<List<long>>
-    {
-        [DataMember]
-        public long[] D_PRI_0 { get; set; }
-    }
 }

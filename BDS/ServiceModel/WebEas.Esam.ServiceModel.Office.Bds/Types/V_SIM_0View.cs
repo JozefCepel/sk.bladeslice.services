@@ -11,6 +11,18 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
     public class V_SIM_0View : tblD_SIM_0
     {
         [DataMember]
+        [PfeCombo(typeof(PV3DCombo), NameColumn = "PV")]
+        [PfeColumn(Text = "Typ")]
+        [Ignore]
+        public string PVText
+        {
+            get
+            {
+                return PV3DCombo.GetText(PV);
+            }
+        }
+
+        [DataMember]
         [PfeColumn(Text = "Príjemka")]
         [PfeCombo(typeof(tblD_PRI_0), IdColumnCombo = "D_PRI_0", DisplayColumn = "DKL_C")]
         public string DKL_C_PRI { get; set; }

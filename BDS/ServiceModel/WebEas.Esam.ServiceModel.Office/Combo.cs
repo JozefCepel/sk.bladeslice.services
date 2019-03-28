@@ -35,6 +35,36 @@ namespace WebEas.Esam.ServiceModel.Office
     }
 
     [DataContract]
+    public class SimulationType : IStaticCombo
+    {
+        [DataMember]
+        public byte id { get; set; }
+
+        [DataMember]
+        public string Popis { get; set; }
+
+        public IWebEasRepositoryBase Repository { get; set; }
+
+        public List<ComboResult> GetComboList(string[] requestFields)
+        {
+            byte[] list = new byte[] { 0, 1, 2, 3 };
+            return list.Select(a => new ComboResult() { Id = a.ToString(), Value = GetText(a) }).ToList();
+        }
+
+        public static string GetText(byte id)
+        {
+            switch (id)
+            {
+                case 0: return "-";
+                case 1: return "Cube";
+                case 2: return "Cube - oriented";
+                case 3: return "Cylinder";
+                default: return id + " (?)";
+            }
+        }
+    }
+
+    [DataContract]
     public class PravoCombo : IStaticCombo
     {
         [DataMember]

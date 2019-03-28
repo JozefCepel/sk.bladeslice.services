@@ -17,11 +17,11 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public int K_TSK_0 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Skupina")]
+        [PfeColumn(Text = "Group")]
         public string TSK { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "3D simulácia")]
+        [PfeColumn(Text = "_3D simulácia")]
         public byte SKL_SIMULATION { get; set; }
 
         [DataMember]

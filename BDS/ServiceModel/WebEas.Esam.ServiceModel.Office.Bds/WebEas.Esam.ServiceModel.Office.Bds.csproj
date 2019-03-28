@@ -67,6 +67,7 @@
     <Compile Include="Defaults\PriVydDefaults.cs" />
     <Compile Include="Dto\ChangeStateDto.cs" />
     <Compile Include="Dto\DataChangesRequest.cs" />
+    <Compile Include="Dto\VybavenieDokladuDto.cs" />
     <Compile Include="Dto\K_MAT_0Dto.cs" />
     <Compile Include="Dto\D_SIM_0Dto.cs" />
     <Compile Include="Dto\D_VYD_0Dto.cs" />

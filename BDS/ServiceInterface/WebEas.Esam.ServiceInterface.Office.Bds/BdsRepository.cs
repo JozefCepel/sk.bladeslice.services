@@ -20,17 +20,17 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
     public partial class BdsRepository : RepositoryBase, IBdsRepository
     {
 
-        public List<long> GetOdvybavDokladyPri(GetOdvybavDokladyPriReq request)
+        public List<long> GetOdvybavDoklady(GetOdvybavDokladyReq request)
         {
-            return GetVybavOdvybavDokladyPri(request.D_PRI_0.ToList(), false);
+            return GetVybavOdvybavDoklady(request.IDs.ToList(), false, request.IdField);
         }
 
-        public List<long> GetVybavDokladyPri(GetVybavDokladyPriReq request)
+        public List<long> GetVybavDoklady(GetVybavDokladyReq request)
         {
-            return GetVybavOdvybavDokladyPri(request.D_PRI_0.ToList(), true);
+            return GetVybavOdvybavDoklady(request.IDs.ToList(), true, request.IdField);
         }
 
-        public List<long> GetVybavOdvybavDokladyPri(List<long> request, bool Vybavit)
+        public List<long> GetVybavOdvybavDoklady(List<long> request, bool Vybavit, string idfield)
         {
             // Vybavi doklady
 
@@ -43,13 +43,26 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
 
                 foreach (var ID in request)
                 {
-                    var doklad = this.Db.SingleById<tblD_PRI_0>(ID);
-                    if (doklad.V != Vybavit)
+                    if (idfield == "D_PRI_0")
                     {
-                        doklad.V = Vybavit;
-                        result.Add(ID);
+                        var doklad = this.Db.SingleById<tblD_PRI_0>(ID);
+                        if (doklad.V != Vybavit)
+                        {
+                            doklad.V = Vybavit;
+                            result.Add(ID);
+                        }
+                        UpdateData(doklad);
                     }
-                    UpdateData(doklad);
+                    else if (idfield == "D_VYD_0")
+                    {
+                        var doklad = this.Db.SingleById<tblD_VYD_0>(ID);
+                        if (doklad.V != Vybavit)
+                        {
+                            doklad.V = Vybavit;
+                            result.Add(ID);
+                        }
+                        UpdateData(doklad);
+                    }
                 }
                 transaction.Commit();
             }
@@ -426,12 +439,19 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                     {
                         if (jeVybavene)
                         {
-                            baseEntity.AccessFlag = 0;
-                            baseEntity.AccessFlag |= (long)(NodeActionFlag.OdvybavitDoklady | NodeActionFlag.VybavitDoklady);
+                            if ((baseEntity.AccessFlag & (long)NodeActionFlag.Create) > 0) baseEntity.AccessFlag -= (long)(NodeActionFlag.Create);
+                            if ((baseEntity.AccessFlag & (long)NodeActionFlag.Update) > 0) baseEntity.AccessFlag -= (long)(NodeActionFlag.Update);
+                            if ((baseEntity.AccessFlag & (long)NodeActionFlag.Delete) > 0) baseEntity.AccessFlag -= (long)(NodeActionFlag.Delete);
+                            if ((baseEntity.AccessFlag & (long)NodeActionFlag.VybavitDoklady) > 0) baseEntity.AccessFlag -= (long)(NodeActionFlag.VybavitDoklady);
+                            if ((baseEntity.AccessFlag & (long)NodeActionFlag.OdvybavitDoklady) == 0) baseEntity.AccessFlag |= (long)(NodeActionFlag.OdvybavitDoklady);
                         }
                         else
                         {
-                            baseEntity.AccessFlag |= (long)(NodeActionFlag.Create | NodeActionFlag.Update | NodeActionFlag.Delete); // | NodeActionFlag.VybavitDoklady 
+                            if ((baseEntity.AccessFlag & (long)NodeActionFlag.OdvybavitDoklady) > 0) baseEntity.AccessFlag -= (long)(NodeActionFlag.OdvybavitDoklady);
+                            if ((baseEntity.AccessFlag & (long)NodeActionFlag.VybavitDoklady) == 0) baseEntity.AccessFlag |= (long)(NodeActionFlag.VybavitDoklady);
+
+                            //baseEntity.AccessFlag |= (long)(NodeActionFlag.VybavitDoklady);
+                            //baseEntity.AccessFlag |= (long)(NodeActionFlag.Create | NodeActionFlag.Update | NodeActionFlag.Delete | NodeActionFlag.VybavitDoklady); 
                         }
                     }
 

@@ -42,8 +42,8 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                                 new NodeAction(NodeActionType.Change, roles_writer),
                                 new NodeAction(NodeActionType.Delete, typeof(DeleteD_PRI_0)) {SelectionMode = PfeSelection.Multi },
                                 new NodeAction(NodeActionType.Update, typeof(UpdateD_PRI_0)),
-                                new NodeAction(NodeActionType.VybavitDoklady, typeof(GetVybavDokladyPriReq), roles_writer) {SelectionMode = PfeSelection.Multi },
-                                new NodeAction(NodeActionType.OdvybavitDoklady, typeof(GetOdvybavDokladyPriReq), roles_writer) {SelectionMode = PfeSelection.Multi }
+                                new NodeAction(NodeActionType.VybavitDoklady, typeof(GetVybavDokladyReq), roles_writer) {SelectionMode = PfeSelection.Multi },
+                                new NodeAction(NodeActionType.OdvybavitDoklady, typeof(GetOdvybavDokladyReq), roles_writer) {SelectionMode = PfeSelection.Multi }
                             }.AddMenuButtonsAll(NodeActionType.Create, typeof(CreateD_PRI_0), roles_writer),
                             Children = new List<HierarchyNode>
                             {
@@ -66,7 +66,9 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                             {
                                 new NodeAction(NodeActionType.Change, roles_writer),
                                 new NodeAction(NodeActionType.Delete, typeof(DeleteD_VYD_0)) {SelectionMode = PfeSelection.Multi },
-                                new NodeAction(NodeActionType.Update, typeof(UpdateD_VYD_0))
+                                new NodeAction(NodeActionType.Update, typeof(UpdateD_VYD_0)),
+                                new NodeAction(NodeActionType.VybavitDoklady, typeof(GetVybavDokladyReq), roles_writer) {SelectionMode = PfeSelection.Multi },
+                                new NodeAction(NodeActionType.OdvybavitDoklady, typeof(GetOdvybavDokladyReq), roles_writer) {SelectionMode = PfeSelection.Multi }
                             }.AddMenuButtonsAll(NodeActionType.Create, typeof(CreateD_VYD_0), roles_writer),
                             Children = new List<HierarchyNode>
                             {

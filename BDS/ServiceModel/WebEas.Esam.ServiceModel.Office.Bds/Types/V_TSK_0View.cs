@@ -10,6 +10,18 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
     [DataContract]
     public class V_TSK_0View : tblK_TSK_0
     {
+        [DataMember]
+        [PfeCombo(typeof(SimulationType), NameColumn = "SKL_SIMULATION")]
+        [PfeColumn(Text = "3D simulation")]
+        [Ignore]
+        public string SKL_SIMULATIONText
+        {
+            get
+            {
+                return SimulationType.GetText(SKL_SIMULATION);
+            }
+        }
+
         //audit stlpce
         [DataMember]
         [PfeColumn(Text = "Vytvoril", Hidden = true, Editable = false, ReadOnly = true)]

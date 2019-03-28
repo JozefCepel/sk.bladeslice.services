@@ -351,7 +351,7 @@ namespace WebEas.ServiceModel
         NastaveniaDaP,
         [PfeCaption("Vyhľadať <br/> vlastníka")]
         [NodeActionIcon(NodeActionIcons.Wrench)]
-        SparovanieOsob= 573,
+        SparovanieOsob,
         [PfeCaption("Preniesť limity do roku")]
         [NodeActionIcon(NodeActionIcons.Clone)]
         PreniestLimityDoRoku,
@@ -650,15 +650,16 @@ namespace WebEas.ServiceModel
 
         #endregion
 
+
         #region BDS
 
         [PfeCaption("Vybaviť")]
         [NodeActionIcon(NodeActionIcons.CheckSquare)]
-        VybavitDoklady,
+        VybavitDoklady = 200,
 
         [PfeCaption("Odvybaviť")]
         [NodeActionIcon(NodeActionIcons.Square)]
-        OdvybavitDoklady,
+        OdvybavitDoklady = 201,
 
         #endregion
 
