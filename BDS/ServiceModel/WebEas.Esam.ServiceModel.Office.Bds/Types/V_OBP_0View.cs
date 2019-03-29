@@ -10,6 +10,10 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
     [DataContract]
     public class V_OBP_0View : tblK_OBP_0
     {
+        [DataMember]
+        [PfeColumn(Text = "Platca DPH", ReadOnly = true)]
+        public bool IS_PLATCA { get; set; }
+
         //audit stlpce
         [DataMember]
         [PfeColumn(Text = "Vytvoril", Hidden = true, Editable = false, ReadOnly = true)]

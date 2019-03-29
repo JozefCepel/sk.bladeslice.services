@@ -78,7 +78,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
         public string EAN { get; set; }
 
         [DataMember]
-        public int? WARRANTY { get; set; }
+        public int WARRANTY { get; set; }
 
         [DataMember]
         public string SN { get; set; }

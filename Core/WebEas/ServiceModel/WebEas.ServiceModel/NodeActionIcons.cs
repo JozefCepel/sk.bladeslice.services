@@ -211,6 +211,9 @@ namespace WebEas.ServiceModel
         [EnumMember(Value = "0xf0c8")]
         Square = 67,
 
+        [EnumMember(Value = "0xf146")]
+        MinusSquare = 68,
+
 
         #region DMS
 

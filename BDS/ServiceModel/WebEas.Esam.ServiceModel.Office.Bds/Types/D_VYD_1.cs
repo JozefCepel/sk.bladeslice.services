@@ -69,7 +69,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 
         [DataMember]
         [PfeColumn(Text = "_WARRANTY", DefaultValue = 0)]
-        public int? WARRANTY { get; set; }
+        public int WARRANTY { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "SN")]

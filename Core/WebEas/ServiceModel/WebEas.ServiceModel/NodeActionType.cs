@@ -658,7 +658,7 @@ namespace WebEas.ServiceModel
         VybavitDoklady = 200,
 
         [PfeCaption("Odvybaviť")]
-        [NodeActionIcon(NodeActionIcons.Square)]
+        [NodeActionIcon(NodeActionIcons.MinusSquare)]
         OdvybavitDoklady = 201,
 
         #endregion

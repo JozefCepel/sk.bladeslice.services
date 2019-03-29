@@ -158,9 +158,5 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         [DataMember]
         [PfeColumn(Text = "Doplňujúci text")]
         public string DOPL_TEXT { get; set; }
-
-        [DataMember]
-        [PfeColumn(Text = "Platca DPH")]
-        public bool? IS_PLATCA { get; set; }
     }
 }

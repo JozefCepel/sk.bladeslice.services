@@ -149,9 +149,6 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
         [DataMember]
         public string DOPL_TEXT { get; set; }
 
-        [DataMember]
-        public bool? IS_PLATCA { get; set; }
-
         /// <summary>
         /// Binds to entity.
         /// </summary>
@@ -194,7 +191,6 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
             data.OBP_C = OBP_C;
             data.OBP_POTENCIAL = OBP_POTENCIAL;
             data.DOPL_TEXT = DOPL_TEXT;
-            data.IS_PLATCA = IS_PLATCA;
         }
     }
     #endregion
