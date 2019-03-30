@@ -5,7 +5,7 @@ using WebEas.ServiceModel;
 
 namespace WebEas.Esam.ServiceModel.Office.Bds.Defaults
 {
-    public class PriVydDefaults
+    public class Pri0Vyd0Defaults
     {
         [DataMember]
         public DateTime DAT_DKL { get; set; }

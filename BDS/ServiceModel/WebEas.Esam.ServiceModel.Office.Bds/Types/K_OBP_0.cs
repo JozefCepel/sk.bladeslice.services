@@ -32,7 +32,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public int? K_OPK_0 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "IČO")]
+        [PfeColumn(Text = "IČO", Mandatory = true)]
         public string ICO { get; set; }
 
         [DataMember]
@@ -44,7 +44,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string IC_DPH { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Názov")]
+        [PfeColumn(Text = "Názov", Mandatory = true)]
         public string NAZOV1 { get; set; }
 
         [DataMember]
@@ -60,7 +60,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string PSC_S { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Obec")]
+        [PfeColumn(Text = "Obec", Mandatory = true)]
         public string OBEC_S { get; set; }
 
         [DataMember]
@@ -92,7 +92,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string NICKNAME { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Číslo OBP")]
+        [PfeColumn(Text = "Číslo OBP", Mandatory = true)]
         public string OBP_C { get; set; }
 
         [DataMember]

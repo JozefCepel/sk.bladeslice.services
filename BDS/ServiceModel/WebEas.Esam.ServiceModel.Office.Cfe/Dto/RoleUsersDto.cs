@@ -8,14 +8,14 @@ using WebEas.ServiceModel;
 namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
 {
     // Create
-    [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeMember)]
+    [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeWriter)]
     [Route("/CreateRoleUsers", "POST")]
     [Api("RoleUsers")]
     [DataContract]
     public class CreateRoleUsers : RoleUsersDto { }
 
     // Update
-    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
+    [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeWriter)]
     [Route("/UpdateRoleUsers", "PUT")]
     [Api("RoleUsers")]
     [DataContract]
@@ -27,7 +27,7 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
     }
 
     // Delete
-    [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeMember)]
+    [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeWriter)]
     [Route("/DeleteRoleUsers", "DELETE")]
     [Api("RoleUsers")]
     [DataContract]

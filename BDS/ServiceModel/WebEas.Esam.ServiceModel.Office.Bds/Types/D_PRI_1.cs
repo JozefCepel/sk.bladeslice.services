@@ -20,7 +20,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public int? D_PRI_0 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_K_TSK_0")]
+        [PfeColumn(Text = "_K_TSK_0", Mandatory = true)]
         public int? K_TSK_0 { get; set; }
 
         [DataMember]
@@ -28,7 +28,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public int K_TYP_0 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Kód")]
+        [PfeColumn(Text = "Kód", Mandatory = true)]
         public string KOD { get; set; }
 
         [DataMember]
@@ -36,7 +36,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string NAZOV { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Počet MJ", DefaultValue = 0)]
+        [PfeColumn(Text = "Počet MJ", DefaultValue = 0, Mandatory = true)]
         public decimal? POC_KS { get; set; }
 
         [DataMember]
@@ -52,7 +52,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public decimal? Z_CENA { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "R", DefaultValue = 1)]
+        [PfeColumn(Text = "R", DefaultValue = 1, Mandatory = true)]
         public int? RANK { get; set; }
 
         [DataMember]

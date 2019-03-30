@@ -16,7 +16,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public int D_VYD_0 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_K_OBP_0")]
+        [PfeColumn(Text = "_K_OBP_0", Mandatory = true)]
         public int? K_OBP_0 { get; set; }
 
         [DataMember]
@@ -44,7 +44,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public bool PS { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Číslo dokladu")]
+        [PfeColumn(Text = "Číslo dokladu", Mandatory = true)]
         public string DKL_C { get; set; }
 
         [DataMember]
@@ -52,7 +52,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string DL_C { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "V", DefaultValue = false, Editable = false)]
+        [PfeColumn(Text = "V", DefaultValue = false, Editable = false, Mandatory = true)]
         public bool V { get; set; }
 
         [DataMember]
@@ -60,7 +60,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public bool Z { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Dátum výdaja", Type = PfeDataType.Date)]
+        [PfeColumn(Text = "Dátum výdaja", Type = PfeDataType.Date, Mandatory = true)]
         public DateTime DAT_DKL { get; set; }
 
         [DataMember]

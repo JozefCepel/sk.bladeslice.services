@@ -16,11 +16,11 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public int K_SKL_2 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_K_SKL_0")]
+        [PfeColumn(Text = "_K_SKL_0", Mandatory = true)]
         public int K_SKL_0 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Position")]
+        [PfeColumn(Text = "Position", Mandatory = true)]
         public string LOCATION { get; set; }
 
         [DataMember]

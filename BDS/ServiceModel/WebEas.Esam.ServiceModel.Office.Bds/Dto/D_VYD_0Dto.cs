@@ -8,14 +8,14 @@ using WebEas.ServiceModel;
 namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
 {
     // Create
-    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsWriter)]
     [Route("/CreateD_VYD_0", "POST")]
     [Api("D_VYD_0")]
     [DataContract]
     public class CreateD_VYD_0 : D_VYD_0Dto { }
 
     // Update
-    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsWriter)]
     [Route("/UpdateD_VYD_0", "PUT")]
     [Api("D_VYD_0")]
     [DataContract]
@@ -27,7 +27,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     }
 
     // Delete
-    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsWriter)]
     [Route("/DeleteD_VYD_0", "DELETE")]
     [Api("D_VYD_0")]
     [DataContract]
@@ -112,7 +112,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
             data.KURZ = 1;   //KURZ;
             data.PS = PS;
             data.DKL_C = DKL_C;
-            data.DL_C = DL_C;
+            data.DL_C = string.IsNullOrEmpty(DL_C) ? "" : DL_C;
             data.V = V;
             data.Z = Z;
             data.P = V; //P;

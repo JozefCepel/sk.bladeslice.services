@@ -8,14 +8,14 @@ using WebEas.ServiceModel;
 namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
 {
     // Create
-    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsWriter)]
     [Route("/CreateD_PRI_1", "POST")]
     [Api("D_PRI_1")]
     [DataContract]
     public class CreateD_PRI_1 : D_PRI_1Dto { }
 
     // Update
-    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsWriter)]
     [Route("/UpdateD_PRI_1", "PUT")]
     [Api("D_PRI_1")]
     [DataContract]
@@ -27,7 +27,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     }
 
     // Delete
-    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsWriter)]
     [Route("/DeleteD_PRI_1", "DELETE")]
     [Api("D_PRI_1")]
     [DataContract]
@@ -105,7 +105,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
             data.K_TSK_0 = K_TSK_0;
             data.K_TYP_0 = 2; //K_TYP_0;
             data.KOD = KOD;
-            data.NAZOV = NAZOV;
+            data.NAZOV = string.IsNullOrEmpty(NAZOV) ? "" : NAZOV;
             data.POC_KS = POC_KS;
             data.BAL_KS = POC_KS; //BAL_KS;
             data.MJ = MJ;

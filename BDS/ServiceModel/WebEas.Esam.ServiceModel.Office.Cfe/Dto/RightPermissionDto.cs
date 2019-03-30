@@ -8,14 +8,14 @@ using WebEas.ServiceModel;
 namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
 {
     // Create
-    [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeMember)]
+    [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeWriter)]
     [Route("/CreateRightPermission", "POST")]
     [Api("RightPermission")]
     [DataContract]
     public class CreateRightPermission : RightPermissionDto { }
 
     // Update
-    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
+    [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeWriter)]
     [Route("/UpdateRightPermission", "PUT")]
     [Api("RightPermission")]
     [DataContract]
@@ -27,7 +27,7 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
     }
 
     // Delete
-    [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeMember)]
+    [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeWriter)]
     [Route("/DeleteRightPermission", "DELETE")]
     [Api("RightPermission")]
     [DataContract]

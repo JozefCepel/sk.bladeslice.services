@@ -8,14 +8,14 @@ using WebEas.ServiceModel;
 namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
 {
     // Create
-    [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeMember)]
+    [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeWriter)]
     [Route("/CreateTreePermission", "POST")]
     [Api("TreePermission")]
     [DataContract]
     public class CreateTreePermission : TreePermissionDto { }
 
     // Update
-    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
+    [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeWriter)]
     [Route("/UpdateTreePermission", "PUT")]
     [Api("TreePermission")]
     [DataContract]
@@ -27,7 +27,7 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
     }
 
     // Delete
-    [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeMember)]
+    [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeWriter)]
     [Route("/DeleteTreePermission", "DELETE")]
     [Api("TreePermission")]
     [DataContract]

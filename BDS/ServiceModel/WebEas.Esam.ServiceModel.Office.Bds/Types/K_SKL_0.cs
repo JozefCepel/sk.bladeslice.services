@@ -16,15 +16,15 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public int K_SKL_0 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Kód")]
+        [PfeColumn(Text = "Kód", Mandatory = true)]
         public string KOD { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Názov")]
+        [PfeColumn(Text = "Názov", Mandatory = true)]
         public string SKL { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Rank")]
+        [PfeColumn(Text = "Rank", Mandatory = true)]
         [PfeSort(Rank = 1, Sort = PfeOrder.Asc)]
         public int Serial_No { get; set; }
 

@@ -129,17 +129,75 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
             {
                 var FirstOrj = GetList<tblK_ORJ_0>().OrderBy(x => x.Serial_No).FirstOrDefault();
                 var FirstSkl = GetList<tblK_SKL_0>().OrderBy(x => x.Serial_No).FirstOrDefault();
-                
-                return new PriVydDefaults()
+
+                return new Pri0Vyd0Defaults()
                 {
                     DAT_DKL = DateTime.Now.Date,
                     K_ORJ_0 = (int)(FirstOrj?.K_ORJ_0 ?? null),
                     K_SKL_0 = (int)(FirstSkl?.K_SKL_0 ?? null)
                 };
             }
-            
+
             #endregion
 
+            #region D_SIM_0
+
+            if (node != null && node.ModelType == typeof(V_SIM_0View))
+            {
+                short r = 1;
+                byte t = 1;
+
+                if (masternode == null || string.IsNullOrEmpty(masterRowId))
+                {
+                    //nic
+                }
+                else if (masternode.ModelType == typeof(V_PRI_0View))
+                {
+                    var poslednaPolozka = GetList<tblD_SIM_0>(x => x.D_PRI_0 == Convert.ToInt16(masterRowId)).OrderByDescending(x => x.RANK).FirstOrDefault();
+                    r = (short)((poslednaPolozka?.RANK ?? 0) + 1);
+                    t = 1; //"+" - PV3DCombo.GetText
+                }
+                else if (masternode.ModelType == typeof(V_VYD_0View))
+                {
+                    var poslednaPolozka = GetList<tblD_SIM_0>(x => x.D_VYD_0 == Convert.ToInt16(masterRowId)).OrderByDescending(x => x.RANK).FirstOrDefault();
+                    r = (short)((poslednaPolozka?.RANK ?? 0) + 1);
+                    t = 2; //"-" - PV3DCombo.GetText
+                }
+                return new SimDefaults()
+                {
+                    RANK = r,
+                    PV = t
+                };
+            }
+
+            #endregion
+
+            #region D_PRI_1, D_VYD_1
+
+            if (node != null && masternode != null && !string.IsNullOrEmpty(masterRowId) && (node.ModelType == typeof(V_PRI_1View) || node.ModelType == typeof(V_VYD_1View)))
+            {
+                Pri1Vyd1Defaults def = new Pri1Vyd1Defaults() { RANK = 1};
+
+                if (masternode.ModelType == typeof(V_PRI_0View))
+                {
+                    var poslednaPolozka = GetList<tblD_PRI_1>(x => x.D_PRI_0 == Convert.ToInt16(masterRowId)).OrderByDescending(x => x.RANK).FirstOrDefault();
+                    if (poslednaPolozka != null) { def.RANK = (short)((poslednaPolozka?.RANK ?? 0) + 1); }
+
+                    var masterRow = GetById<V_PRI_0View>(masterRowId);
+                    if (masterRow != null) { def.K_SKL_0 = masterRow.K_SKL_0; }
+                }
+                else if (masternode.ModelType == typeof(V_VYD_0View))
+                {
+                    var poslednaPolozka = GetList<tblD_VYD_1>(x => x.D_VYD_0 == Convert.ToInt16(masterRowId)).OrderByDescending(x => x.RANK).FirstOrDefault();
+                    if (poslednaPolozka != null) { def.RANK = (short)((poslednaPolozka?.RANK ?? 0) + 1); }
+
+                    var masterRow = GetById<V_VYD_0View>(masterRowId);
+                    if (masterRow != null) {def.K_SKL_0 = masterRow.K_SKL_0; }
+                }
+                return def;
+            }
+
+            #endregion
 
             /*
             #region Programový rozpočet

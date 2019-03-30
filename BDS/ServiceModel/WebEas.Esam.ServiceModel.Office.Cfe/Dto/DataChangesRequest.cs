@@ -11,7 +11,7 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
 {
     [DataContract]
     [Route("/datachanges/{Code}/{RowId}", "GET")]
-    [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeMember)]
+    [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeWriter)]
     public class DataChangesRequest : DataChangesRequestBase
     {
     }

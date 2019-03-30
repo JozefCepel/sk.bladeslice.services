@@ -16,7 +16,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public int K_TYP_0 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Názov")]
+        [PfeColumn(Text = "Názov", Mandatory = true)]
         public string NAZOV { get; set; }
 
         [DataMember]

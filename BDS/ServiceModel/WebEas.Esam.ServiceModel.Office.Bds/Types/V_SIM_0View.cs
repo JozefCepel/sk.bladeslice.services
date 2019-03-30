@@ -24,12 +24,12 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 
         [DataMember]
         [PfeColumn(Text = "Príjemka")]
-        [PfeCombo(typeof(tblD_PRI_0), IdColumnCombo = "D_PRI_0", DisplayColumn = "DKL_C")]
+        [PfeCombo(typeof(tblD_PRI_0), IdColumnCombo = "D_PRI_0", DisplayColumn = "DKL_C")] //, AdditionalWhereSql = "V = 0"
         public string DKL_C_PRI { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Výdajka")]
-        [PfeCombo(typeof(tblD_VYD_0), IdColumnCombo = "D_VYD_0", DisplayColumn = "DKL_C")]
+        [PfeCombo(typeof(tblD_VYD_0), IdColumnCombo = "D_VYD_0", DisplayColumn = "DKL_C")] //, AdditionalWhereSql = "V = 0"
         public string DKL_C_VYD { get; set; }
 
         [DataMember]

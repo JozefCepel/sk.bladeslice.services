@@ -24,7 +24,12 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string VydPol { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Skupina")]
+        [PfeColumn(Text = "_K_SKL_0", ReadOnly = true)] //Iba kvoli RequiredField
+        public int K_SKL_0 { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Skupina", RequiredFields = new[] { "K_SKL_0" })]
+        [PfeCombo(typeof(V_SKL_1View), IdColumnCombo = "K_TSK_0", DisplayColumn = "TSK")]
         public string TSK { get; set; }
 
         //audit stlpce

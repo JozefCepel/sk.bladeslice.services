@@ -32,7 +32,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public int? D_VYD_1 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "R", DefaultValue = 0)]
+        [PfeColumn(Text = "R", DefaultValue = 0, Mandatory = true)]
         public int? RANK { get; set; }
 
         [DataMember]

@@ -64,7 +64,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Defaults\PriVydDefaults.cs" />
+    <Compile Include="Defaults\Pri1Vyd1Defaults.cs" />
+    <Compile Include="Defaults\SimDefaults.cs" />
+    <Compile Include="Defaults\Pri0Vyd0Defaults.cs" />
     <Compile Include="Dto\ChangeStateDto.cs" />
     <Compile Include="Dto\DataChangesRequest.cs" />
     <Compile Include="Dto\VybavenieDokladuDto.cs" />

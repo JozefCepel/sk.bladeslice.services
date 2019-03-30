@@ -6,7 +6,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
 {
     [DataContract]
     [Route("/datachanges/{Code}/{RowId}", "GET")]
-    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember)]
+    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsWriter)]
     public class DataChangesRequest : DataChangesRequestBase
     {
     }

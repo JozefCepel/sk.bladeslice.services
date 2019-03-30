@@ -17,7 +17,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public int K_TSK_0 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Group")]
+        [PfeColumn(Text = "Group name", Mandatory = true)]
         public string TSK { get; set; }
 
         [DataMember]
