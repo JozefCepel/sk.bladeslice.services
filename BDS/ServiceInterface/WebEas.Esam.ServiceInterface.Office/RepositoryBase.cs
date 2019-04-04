@@ -84,6 +84,30 @@ namespace WebEas.Esam.ServiceInterface.Office
         }
 
         /// <summary>
+        /// Gets the name of the current user formatted.
+        /// </summary>
+        /// <value>The name of the current user formatted.</value>
+        public string CurrentCompanyName
+        {
+            get
+            {
+                return this.GetCacheOptimizedLocal(string.Format("curCompName:{0}", Session.TenantId), () => this.Db.Scalar<string>("SELECT TOP 1 NAZOV1 + ', ' + OBEC_S FROM dbo.K_OWN_0"), new TimeSpan(24, 0, 0));
+            }
+        }
+
+        /// <summary>
+        /// Gets the name of the current user formatted.
+        /// </summary>
+        /// <value>The name of the current user formatted.</value>
+        public string CurrentYear
+        {
+            get
+            {
+                return this.Db.Scalar<string>("SELECT TOP 1 Rok FROM dbo.K_OWN_0");
+            }
+        }
+
+        /// <summary>
         /// Gets the data of the current user formatted.
         /// </summary>
         /// <value>The name of the current user formatted.</value>

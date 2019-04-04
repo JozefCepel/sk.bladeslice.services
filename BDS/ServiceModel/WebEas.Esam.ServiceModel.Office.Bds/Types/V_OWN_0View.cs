@@ -6,19 +6,10 @@ using WebEas.ServiceModel;
 namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 {
     [Schema("dbo")]
-    [Alias("V_OBP_0_BDS")]
+    [Alias("V_OWN_0")]
     [DataContract]
-    public class V_OBP_0View : tblK_OBP_0
+    public class V_OWN_0View : tblK_OWN_0
     {
-        [DataMember]
-        [PfeColumn(Text = "Typ OBP")]
-        [PfeCombo(typeof(tblK_TOB_0), IdColumnCombo = "K_TOB_0", DisplayColumn = "TOB")]
-        public string TOB { get; set; }
-
-        [DataMember]
-        [PfeColumn(Text = "Platca DPH", ReadOnly = true)]
-        public bool IS_PLATCA { get; set; }
-
         //audit stlpce
         [DataMember]
         [PfeColumn(Text = "Vytvoril", Hidden = true, Editable = false, ReadOnly = true)]

@@ -28,13 +28,13 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
         {
             Children = new List<HierarchyNode>
             {
-                new HierarchyNode("skl","Warehouse")
+                new HierarchyNode("skl","Stock")
                 {
-                    #region Warehouse
+                    #region Stock
                     
                     Children = new List<HierarchyNode>
                     {
-                        new HierarchyNode<V_PRI_0View>("pri", "Príjemky", null, HierarchyNodeType.DatovaPolozka)
+                        new HierarchyNode<V_PRI_0View>("pri", "Receipts", null, HierarchyNodeType.DatovaPolozka)
                         {
                             SelectionMode = PfeSelection.Multi,
                             Actions = new List<NodeAction>
@@ -47,7 +47,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                             }.AddMenuButtonsAll(NodeActionType.Create, typeof(CreateD_PRI_0), roles_writer),
                             Children = new List<HierarchyNode>
                             {
-                                new HierarchyNode<V_PRI_1View>("pol", "Položky", null, HierarchyNodeType.DatovaPolozka)
+                                new HierarchyNode<V_PRI_1View>("pol", "Items", null, HierarchyNodeType.DatovaPolozka)
                                 {
                                     SelectionMode = PfeSelection.Multi,
                                     Actions = new List<NodeAction>
@@ -59,7 +59,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                                 }
                             }
                         },
-                        new HierarchyNode<V_VYD_0View>("vyd", "Výdajky", null, HierarchyNodeType.DatovaPolozka)
+                        new HierarchyNode<V_VYD_0View>("vyd", "Expenses", null, HierarchyNodeType.DatovaPolozka)
                         {
                             SelectionMode = PfeSelection.Multi,
                             Actions = new List<NodeAction>
@@ -72,7 +72,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                             }.AddMenuButtonsAll(NodeActionType.Create, typeof(CreateD_VYD_0), roles_writer),
                             Children = new List<HierarchyNode>
                             {
-                                new HierarchyNode<V_VYD_1View>("pol", "Položky", null, HierarchyNodeType.DatovaPolozka)
+                                new HierarchyNode<V_VYD_1View>("pol", "Items", null, HierarchyNodeType.DatovaPolozka)
                                 {
                                     SelectionMode = PfeSelection.Multi,
                                     Actions = new List<NodeAction>
@@ -84,7 +84,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                                 }
                             }
                         },
-                        new HierarchyNode<V_SIM_0View>("sim", "3D simulačné dáta", null, HierarchyNodeType.DatovaPolozka)
+                        new HierarchyNode<V_SIM_0View>("sim", "3D simulation data", null, HierarchyNodeType.DatovaPolozka)
                         {
                             SelectionMode = PfeSelection.Multi,
                             Actions = new List<NodeAction>
@@ -94,8 +94,14 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                                 new NodeAction(NodeActionType.Update, typeof(UpdateD_SIM_0))
                             }.AddMenuButtonsAll(NodeActionType.Create, typeof(CreateD_SIM_0), roles_writer)
                         },
-                        new HierarchyNode<BdsDummyData>("sts", "Warehouse info", null, HierarchyNodeType.Program)
+                        new HierarchyNode<BdsDummyData>("sts", "Stock info", null, HierarchyNodeType.Program)
                         {
+                            Children = new List<HierarchyNode>
+                            {
+                                new HierarchyNode<BdsDummyData>("itm", "Stock moves", null, HierarchyNodeType.History)
+                                {
+                                }
+                            }
                         }
                     }
                     
@@ -211,12 +217,20 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                     
                     #endregion
                 },
-                new HierarchyNode("sm", "Modul administration")
+                new HierarchyNode("sm", "Administration")
                 {
                     #region Správa modulu
                     
                     Children = new List<HierarchyNode>
                     {
+                        new HierarchyNode<V_OWN_0View>("own", "My company", null, HierarchyNodeType.University)
+                        {
+                            Actions = new List<NodeAction>
+                            {
+                                new NodeAction(NodeActionType.Change, roles_writer),
+                                new NodeAction(NodeActionType.Update, typeof(UpdateK_OWN_0))
+                            }
+                        },
                         new HierarchyNode<Nastavenie>("mset", "Parameters configuration", null, HierarchyNodeType.Settings)
                         {
                             #region Konfigurácia parametrov modulu
@@ -241,16 +255,16 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
         }
         #region LayoutDependencies
         .SetLayoutDependencies(
-            HierarchyNodeDependency.One2ManyBack2One("bds-cfg-ors-orj", "bds-cfg-ors-orsk", "K_ORJ_0", "Priradenie Warehouseov", "Org. unit"),
-            HierarchyNodeDependency.One2ManyBack2One("bds-cfg-ors-skl", "bds-cfg-ors-orsk", "K_SKL_0", "Priradenie orj", "Warehouse"),
-            HierarchyNodeDependency.One2ManyBack2One("bds-cfg-ors-skl", "bds-cfg-ors-skl-tsk", "K_SKL_0", "Priradenie skupín", "Warehouses"),
-            HierarchyNodeDependency.One2ManyBack2One("bds-cfg-ors-skl", "bds-cfg-ors-skl-loc", "K_SKL_0", "Umiestnenia", "Warehouse"),
-            HierarchyNodeDependency.One2ManyBack2One("bds-skl-pri", "bds-skl-pri-pol", "D_PRI_0", "Položky", "Hlavička"),
-            HierarchyNodeDependency.One2ManyBack2One("bds-skl-vyd", "bds-skl-vyd-pol", "D_VYD_0", "Položky", "Hlavička"),
-            HierarchyNodeDependency.One2ManyBack2One("bds-skl-pri-pol", "bds-skl-sim", "D_PRI_1", "Simulation data", "Položka príjemky"),
-            HierarchyNodeDependency.One2ManyBack2One("bds-skl-vyd-pol", "bds-skl-sim", "D_VYD_1", "Simulation data", "Položka výdajky"),
-            HierarchyNodeDependency.One2ManyBack2One("bds-skl-pri", "bds-skl-sim", "D_PRI_0", "Simulation data", "Príjemka"),
-            HierarchyNodeDependency.One2ManyBack2One("bds-skl-vyd", "bds-skl-sim", "D_VYD_0", "Simulation data", "Výdajka")
+            HierarchyNodeDependency.One2ManyBack2One("bds-cfg-ors-orj", "bds-cfg-ors-orsk", "K_ORJ_0", "Warehouse assign.", "Org. unit"),
+            HierarchyNodeDependency.One2ManyBack2One("bds-cfg-ors-skl", "bds-cfg-ors-orsk", "K_SKL_0", "Org.unit assign.", "Warehouse"),
+            HierarchyNodeDependency.One2ManyBack2One("bds-cfg-ors-skl", "bds-cfg-ors-skl-tsk", "K_SKL_0", "Groups assign.", "Warehouses"),
+            HierarchyNodeDependency.One2ManyBack2One("bds-cfg-ors-skl", "bds-cfg-ors-skl-loc", "K_SKL_0", "Locations", "Warehouse"),
+            HierarchyNodeDependency.One2ManyBack2One("bds-skl-pri", "bds-skl-pri-pol", "D_PRI_0", "Items", "Head"),
+            HierarchyNodeDependency.One2ManyBack2One("bds-skl-vyd", "bds-skl-vyd-pol", "D_VYD_0", "Items", "Head"),
+            HierarchyNodeDependency.One2ManyBack2One("bds-skl-pri-pol", "bds-skl-sim", "D_PRI_1", "Simulation data", "Receipt item"),
+            HierarchyNodeDependency.One2ManyBack2One("bds-skl-vyd-pol", "bds-skl-sim", "D_VYD_1", "Simulation data", "Expenses item"),
+            HierarchyNodeDependency.One2ManyBack2One("bds-skl-pri", "bds-skl-sim", "D_PRI_0", "Simulation data", "Receipt"),
+            HierarchyNodeDependency.One2ManyBack2One("bds-skl-vyd", "bds-skl-sim", "D_VYD_0", "Simulation data", "Expense")
         );
         #endregion
 

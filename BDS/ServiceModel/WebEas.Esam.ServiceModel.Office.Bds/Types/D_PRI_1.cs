@@ -21,14 +21,14 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 
         [DataMember]
         [PfeColumn(Text = "_K_TSK_0", Mandatory = true)]
-        public int? K_TSK_0 { get; set; }
+        public int K_TSK_0 { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "_K_TYP_0")]
         public int K_TYP_0 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Kód", Mandatory = true)]
+        [PfeColumn(Text = "_KOD", Mandatory = true)] //Pole sa napĺňa za KOD_ID, na ktorom je combo
         public string KOD { get; set; }
 
         [DataMember]

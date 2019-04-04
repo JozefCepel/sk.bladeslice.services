@@ -22,7 +22,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 
         [DataMember]
         [PfeColumn(Text = "Customer")]
-        [PfeCombo(typeof(tblK_OBP_0), IdColumnCombo = "K_OBP_0", DisplayColumn = "NAZOV1")]
+        [PfeCombo(typeof(tblK_OBP_0), IdColumnCombo = "K_OBP_0", DisplayColumn = "NAZOV1", AdditionalWhereSql = "K_TOB_0 IN  (1, 3)")] //Odberateľ
         public string NAZOV1 { get; set; }
 
         [DataMember]

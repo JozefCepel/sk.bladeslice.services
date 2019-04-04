@@ -21,7 +21,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 
         [DataMember]
         [PfeColumn(Text = "_K_TSK_0", Mandatory = true)]
-        public int? K_TSK_0 { get; set; }
+        public int K_TSK_0 { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "_K_TYP_0")]

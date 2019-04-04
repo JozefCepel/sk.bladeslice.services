@@ -895,19 +895,20 @@ namespace WebEas.Esam.ServiceInterface.Pfe
 
         public ContextUser GetContextUser(string moduleShortcut)
         {
+            string rok = CurrentYear;
             var user = new ContextUser
             {
                 TenantId = Session.TenantId,
                 ActorId = Session.DcomId,
-                FormattedName = CurrentUserFormattedName,
+                FormattedName = CurrentUserFormattedName + " - " + CurrentCompanyName + " (" + rok + ")",
                 Version = string.IsNullOrEmpty(DbEnvironment) ? Context.Info.ApplicationVersion : string.Format("{0}{1}", Context.Info.ApplicationVersion, DbEnvironment.Substring(0, 1).ToLower()),
                 Released = Context.Info.Updated.ToString("dd.MM.yyyy HH:mm"),
-                Environment = DbEnvironment == null ? "Test": DbEnvironment,
+                Environment = rok, //DbEnvironment == null ? "Test": DbEnvironment,
                 DbReleased = DbDeployTime == null ? "" : DbDeployTime.Value.ToString("dd.MM.yyyy HH:mm"),
                 DcomAdmin = Session.HasRole(Roles.SysAdmin),
                 FilterRok = GetNastavenieI(moduleShortcut, "FilterRok"),
-                DomenaName = "zvolen",
-                VillageName = "Zvolen"
+                DomenaName = "domenaname",
+                VillageName = CurrentCompanyName
             };
 
             if (!string.IsNullOrEmpty(moduleShortcut))

@@ -69,6 +69,7 @@
     <Compile Include="Defaults\Pri0Vyd0Defaults.cs" />
     <Compile Include="Dto\ChangeStateDto.cs" />
     <Compile Include="Dto\DataChangesRequest.cs" />
+    <Compile Include="Dto\K_OWN_0Dto.cs" />
     <Compile Include="Dto\VybavenieDokladuDto.cs" />
     <Compile Include="Dto\K_MAT_0Dto.cs" />
     <Compile Include="Dto\D_SIM_0Dto.cs" />
@@ -93,7 +94,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceModel.cs" />
     <Compile Include="Types\K_MAT_0.cs" />
+    <Compile Include="Types\K_OWN_0.cs" />
+    <Compile Include="Types\K_TOB_0.cs" />
     <Compile Include="Types\V_MAT_0View.cs" />
+    <Compile Include="Types\V_OWN_0View.cs" />
     <Compile Include="Types\V_PRI_0View.cs" />
     <Compile Include="Types\V_PRI_1View.cs" />
     <Compile Include="Types\D_PRI_1.cs" />

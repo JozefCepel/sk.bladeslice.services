@@ -7,52 +7,22 @@ using WebEas.ServiceModel;
 
 namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
 {
-    // Create
-    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsWriter)]
-    [Route("/CreateK_OBP_0", "POST")]
-    [Api("K_OBP_0")]
-    [DataContract]
-    public class CreateK_OBP_0 : K_OBP_0Dto { }
-
     // Update
     [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsWriter)]
-    [Route("/UpdateK_OBP_0", "PUT")]
-    [Api("K_OBP_0")]
+    [Route("/UpdateK_OWN_0", "PUT")]
+    [Api("K_OWN_0")]
     [DataContract]
-    public class UpdateK_OBP_0 : K_OBP_0Dto
+    public class UpdateK_OWN_0 : K_OWN_0Dto
     {
         [PrimaryKey]
         [DataMember(IsRequired = true)]
-        public int K_OBP_0 { get; set; }
-    }
-
-    // Delete
-    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsWriter)]
-    [Route("/DeleteK_OBP_0", "DELETE")]
-    [Api("K_OBP_0")]
-    [DataContract]
-    public class DeleteK_OBP_0
-    {
-        [DataMember(IsRequired = true)]
-        public int K_OBP_0 { get; set; }
+        public int K_OWN_0 { get; set; }
     }
 
     #region DTO
     [DataContract]
-    public class K_OBP_0Dto : BaseDto<tblK_OBP_0>
+    public class K_OWN_0Dto : BaseDto<tblK_OWN_0>
     {
-        [DataMember]
-        public int K_TOB_0 { get; set; }
-
-        //[DataMember]
-        //public int K_PRF_0 { get; set; }
-
-        //[DataMember]
-        //public int K_OPC_0 { get; set; }
-
-        //[DataMember]
-        //public int? K_OPK_0 { get; set; }
-        
         [DataMember]
         public string ICO { get; set; }
 
@@ -93,25 +63,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
         public string STAT { get; set; }
 
         [DataMember]
-        public int? DEALER { get; set; }
-
-        [DataMember]
-        public short? SPLAT { get; set; }
-
-        [DataMember]
-        public decimal? ZLAVA { get; set; }
-
-        [DataMember]
-        public decimal? PENALE { get; set; }
-
-        [DataMember]
-        public int KREDIT { get; set; }
-
-        [DataMember]
-        public string OSOBA { get; set; }
-
-        [DataMember]
-        public string FUNKCIA { get; set; }
+        public string ROK { get; set; }
 
         [DataMember]
         public string TEL1 { get; set; }
@@ -120,10 +72,10 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
         public string TEL2 { get; set; }
 
         [DataMember]
-        public string FAX { get; set; }
+        public string MOBIL { get; set; }
 
         [DataMember]
-        public string MOBIL { get; set; }
+        public string FAX { get; set; }
 
         [DataMember]
         public string EMAIL { get; set; }
@@ -132,33 +84,59 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
         public string WWW { get; set; }
 
         [DataMember]
-        public string POZN { get; set; }
+        public bool? PLATIC_DPH { get; set; }
+
+        [DataMember]
+        public bool? MES_DPH { get; set; }
+
+        [DataMember]
+        public bool? FIFO { get; set; }
+
+        [DataMember]
+        public string REGISTER1 { get; set; }
+
+        [DataMember]
+        public string REGISTER2 { get; set; }
 
         [DataMember]
         public string IC_DPH { get; set; }
 
         [DataMember]
-        public string NICKNAME { get; set; }
+        public decimal? INDEX_DPH { get; set; }
 
         [DataMember]
-        public string OBP_C { get; set; }
+        public byte? START_UCT { get; set; }
 
         [DataMember]
-        public int OBP_POTENCIAL { get; set; }
+        public bool? SKL_SO_UP { get; set; }
 
         [DataMember]
-        public string DOPL_TEXT { get; set; }
+        public bool? DPH_UCT_DIFF_UO { get; set; }
+
+        [DataMember]
+        public bool? VRB_ONLINE { get; set; }
+
+        [DataMember]
+        public bool? SKL_CHRONOL { get; set; }
+
+        [DataMember]
+        public string STAT_P { get; set; }
+
+        [DataMember]
+        public bool? VRB_DIRECT { get; set; }
+
+        [DataMember]
+        public string KONCERN_NO { get; set; }
+
+        [DataMember]
+        public string SK_NACE { get; set; }
 
         /// <summary>
         /// Binds to entity.
         /// </summary>
         /// <param name="data"></param>
-        protected override void BindToEntity(tblK_OBP_0 data)
+        protected override void BindToEntity(tblK_OWN_0 data)
         {
-            data.K_TOB_0 = K_TOB_0;
-            data.K_PRF_0 = 1;  //K_PRF_0;
-            data.K_OPC_0 = 1;  //K_OPC_0;
-            data.K_OPK_0 = 1;  //K_OPK_0;
             data.ICO = ICO;
             data.DRC = DRC;
             data.NAZOV1 = NAZOV1;
@@ -172,25 +150,29 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
             data.PSC_P = PSC_P;
             data.OBEC_P = OBEC_P;
             data.STAT = STAT;
-            data.DEALER = DEALER;
-            data.SPLAT = SPLAT;
-            data.ZLAVA = ZLAVA;
-            data.PENALE = PENALE;
-            data.KREDIT = KREDIT;
-            data.OSOBA = OSOBA;
-            data.FUNKCIA = FUNKCIA;
+            data.ROK = ROK;
             data.TEL1 = TEL1;
             data.TEL2 = TEL2;
-            data.FAX = FAX;
             data.MOBIL = MOBIL;
+            data.FAX = FAX;
             data.EMAIL = EMAIL;
             data.WWW = WWW;
-            data.POZN = string.IsNullOrEmpty(POZN) ? "" : POZN;
+            data.PLATIC_DPH = PLATIC_DPH;
+            data.MES_DPH = MES_DPH;
+            data.FIFO = FIFO;
+            data.REGISTER1 = REGISTER1;
+            data.REGISTER2 = REGISTER2;
             data.IC_DPH = IC_DPH;
-            data.NICKNAME = NICKNAME;
-            data.OBP_C = OBP_C;
-            data.OBP_POTENCIAL = OBP_POTENCIAL;
-            data.DOPL_TEXT = DOPL_TEXT;
+            data.INDEX_DPH = INDEX_DPH;
+            data.START_UCT = START_UCT;
+            data.SKL_SO_UP = SKL_SO_UP;
+            data.DPH_UCT_DIFF_UO = DPH_UCT_DIFF_UO;
+            data.VRB_ONLINE = VRB_ONLINE;
+            data.SKL_CHRONOL = SKL_CHRONOL;
+            data.STAT_P = STAT_P;
+            data.VRB_DIRECT = VRB_DIRECT;
+            data.KONCERN_NO = string.IsNullOrEmpty(KONCERN_NO) ? "" : KONCERN_NO;
+            data.SK_NACE = string.IsNullOrEmpty(SK_NACE) ? "" : SK_NACE;
         }
     }
     #endregion

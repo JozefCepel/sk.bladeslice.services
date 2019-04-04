@@ -45,10 +45,13 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
         public int? D_PRI_0 { get; set; }
 
         [DataMember]
-        public int? K_TSK_0 { get; set; }
+        public int K_TSK_0 { get; set; }
 
         //[DataMember]
         //public int K_TYP_0 { get; set; }
+
+        [DataMember]
+        public string KOD_ID { get; set; }
 
         [DataMember]
         public string KOD { get; set; }
@@ -104,7 +107,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
             data.D_PRI_0 = D_PRI_0;
             data.K_TSK_0 = K_TSK_0;
             data.K_TYP_0 = 2; //K_TYP_0;
-            data.KOD = KOD;
+            data.KOD = KOD != null ? KOD : KOD_ID;
             data.NAZOV = string.IsNullOrEmpty(NAZOV) ? "" : NAZOV;
             data.POC_KS = POC_KS;
             data.BAL_KS = POC_KS; //BAL_KS;

@@ -253,6 +253,13 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
 
         #endregion
 
+        #region K_OWN_0
+        public object Any(UpdateK_OWN_0 request)
+        {
+            return Repository.Update<V_OWN_0View>(request);
+        }
+        #endregion
+
         #region K_ORJ_0
 
         public object Any(CreateK_ORJ_0 request)

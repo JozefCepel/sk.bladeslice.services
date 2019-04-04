@@ -11,6 +11,11 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
     public class V_PRI_1View : tblD_PRI_1
     {
         [DataMember]
+        [PfeColumn(Text = "Kód", RequiredFields = new[] { "K_TSK_0" }, Mandatory = true)] //Pomocne pole iba pre ucel COMBO POLA
+        [PfeCombo(typeof(tblK_MAT_0), IdColumnCombo = "KOD", DisplayColumn = "KOD")]
+        public string KOD_ID { get; set; }
+
+        [DataMember]
         [PfeColumn(Text = "Číslo príjemky")]
         [PfeCombo(typeof(tblD_PRI_0), IdColumnCombo = "D_PRI_0", DisplayColumn = "DKL_C")]
         public string DKL_C { get; set; }

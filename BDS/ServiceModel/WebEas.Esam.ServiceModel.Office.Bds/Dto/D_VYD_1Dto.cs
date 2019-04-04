@@ -46,7 +46,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
         public int D_VYD_0 { get; set; }
 
         [DataMember]
-        public int? K_TSK_0 { get; set; }
+        public int K_TSK_0 { get; set; }
 
         //[DataMember]
         //public int K_TYP_0 { get; set; }
