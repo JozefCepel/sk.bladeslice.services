@@ -19,7 +19,7 @@ namespace WebEas.ServiceModel
         /// <summary>
         /// Konštruktor pre vytvorenie stĺpca
         /// </summary>
-        /// <param name="name">Názov stĺpca</param>
+        /// <param name="name">Name stĺpca</param>
         /// <param name="text">Popis stĺpca</param>
         /// <param name="rank">Poradie stĺpca</param>
         /// <param name="hidden">Skrytie stĺpca (bez dát)</param>
@@ -98,7 +98,7 @@ namespace WebEas.ServiceModel
         public bool IsDecimal { get; set; }
 
         /// <summary>
-        /// Názov stĺpca
+        /// Name stĺpca
         /// </summary>
         /// <value>The name.</value>
         [DataMember(Name = "nam")]
@@ -112,7 +112,7 @@ namespace WebEas.ServiceModel
         public bool IsPrimary { get; set; }
 
         /// <summary>
-        /// Názov stĺpca, ktorý sa vygeneruje, default je pomenovanie property v class-e
+        /// Name stĺpca, ktorý sa vygeneruje, default je pomenovanie property v class-e
         /// </summary>
         /// <value>The type.</value>
         [DataMember(Name = "typ")]

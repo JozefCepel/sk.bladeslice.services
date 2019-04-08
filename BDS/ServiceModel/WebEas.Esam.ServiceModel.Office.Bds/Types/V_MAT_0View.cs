@@ -11,7 +11,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
     public class V_MAT_0View : tblK_MAT_0
     {
         [DataMember]
-        [PfeColumn(Text = "Skupina")]
+        [PfeColumn(Text = "Mat. group")]
         [PfeCombo(typeof(tblK_TSK_0), IdColumnCombo = "K_TSK_0", DisplayColumn = "TSK")]
         public string TSK { get; set; }
 

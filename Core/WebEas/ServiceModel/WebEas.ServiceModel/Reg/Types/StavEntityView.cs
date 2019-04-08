@@ -31,7 +31,7 @@ namespace WebEas.ServiceModel.Reg.Types
         /// </summary>
         /// <value>The nazov.</value>
         [DataMember]
-        [PfeColumn(Text = "Názov", Rank = 3, Width = 220)]
+        [PfeColumn(Text = "Name", Rank = 3, Width = 220)]
         [PfeValueColumn]
         [Required]
         [StringLength(255)]
@@ -51,7 +51,7 @@ namespace WebEas.ServiceModel.Reg.Types
         /// </summary>
         /// <value>The Kod.</value>
         [DataMember]
-        [PfeColumn(Text = "Kód", Rank = 5, Width = 220)]
+        [PfeColumn(Text = "Code", Rank = 5, Width = 220)]
         [Required]
         [StringLength(50)]
         public string Kod { get; set; }

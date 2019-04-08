@@ -26,7 +26,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string NAZOV1 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Názov 2", ReadOnly = true, Editable = false)]
+        [PfeColumn(Text = "Name 2", ReadOnly = true, Editable = false)]
         public string NAZOV2 { get; set; }
 
         [DataMember]

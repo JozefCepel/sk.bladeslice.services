@@ -96,6 +96,7 @@
     <Compile Include="Types\K_MAT_0.cs" />
     <Compile Include="Types\K_OWN_0.cs" />
     <Compile Include="Types\K_TOB_0.cs" />
+    <Compile Include="Types\STS_FIFOView.cs" />
     <Compile Include="Types\V_MAT_0View.cs" />
     <Compile Include="Types\V_OWN_0View.cs" />
     <Compile Include="Types\V_PRI_0View.cs" />
@@ -106,6 +107,7 @@
     <Compile Include="Types\D_VYD_0.cs" />
     <Compile Include="Types\V_VYD_0View.cs" />
     <Compile Include="Types\D_VYD_1.cs" />
+    <Compile Include="Types\STSView.cs" />
     <Compile Include="Types\V_VYD_1View.cs" />
     <Compile Include="Types\K_OBP_0.cs" />
     <Compile Include="Types\V_OBP_0View.cs" />

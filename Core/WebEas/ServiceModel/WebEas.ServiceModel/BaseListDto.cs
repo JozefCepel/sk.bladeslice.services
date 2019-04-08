@@ -63,7 +63,7 @@ namespace WebEas.ServiceModel
         /// Gets or sets the group.
         /// </summary>
         /// <value>The group.</value>
-        [DataMember(Name = "group")]
+        [DataMember(Name = "Mat. group")]
         public string Group { get; set; }
 
         /// <summary>

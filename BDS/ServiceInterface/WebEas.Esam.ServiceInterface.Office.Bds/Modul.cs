@@ -94,11 +94,11 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                                 new NodeAction(NodeActionType.Update, typeof(UpdateD_SIM_0))
                             }.AddMenuButtonsAll(NodeActionType.Create, typeof(CreateD_SIM_0), roles_writer)
                         },
-                        new HierarchyNode<BdsDummyData>("sts", "Stock info", null, HierarchyNodeType.Program)
+                        new HierarchyNode<STS_FIFOView>("sts", "Stock info", null, HierarchyNodeType.Program)
                         {
                             Children = new List<HierarchyNode>
                             {
-                                new HierarchyNode<BdsDummyData>("itm", "Stock moves", null, HierarchyNodeType.History)
+                                new HierarchyNode<STSView>("itm", "Stock moves", null, HierarchyNodeType.History)
                                 {
                                 }
                             }

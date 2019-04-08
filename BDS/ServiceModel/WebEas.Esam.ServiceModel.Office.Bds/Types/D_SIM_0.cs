@@ -100,7 +100,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string POZN { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Šarža")]
+        [PfeColumn(Text = "Batch")]
         public string SARZA { get; set; }
 
         [DataMember]

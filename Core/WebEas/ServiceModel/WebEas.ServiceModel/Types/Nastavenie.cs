@@ -13,7 +13,7 @@ namespace WebEas.ServiceModel.Types
         public string NazovId { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Názov")]
+        [PfeColumn(Text = "Name")]
         [PfeLayoutDependency]
         public string Nazov { get; set; }
 

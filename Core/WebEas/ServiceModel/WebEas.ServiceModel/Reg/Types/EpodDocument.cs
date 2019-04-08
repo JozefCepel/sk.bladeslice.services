@@ -51,7 +51,7 @@ namespace WebEas.ServiceModel.Office.Egov.Reg.Types
         /// </summary>
         /// <value>The name.</value>
         [DataMember(Name = "documentname")]
-        [PfeColumn(Text = "Názov dokumentu")]
+        [PfeColumn(Text = "Name dokumentu")]
         public string DocumentName { get; set; }
 
         /// <summary>

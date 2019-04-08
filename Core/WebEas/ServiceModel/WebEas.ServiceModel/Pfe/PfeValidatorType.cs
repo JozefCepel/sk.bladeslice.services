@@ -33,25 +33,25 @@ namespace WebEas.ServiceModel
         Hidden,
 
         /// <summary>
-        /// SetLabel (+ doplnkové pole "slbl") - nastaví sa do labelu poľa text z atribútu "slbl". Ak hodnota obsahuje v texte názov iného poľa v zobáčikoch <Pole1>, tak sa replacne
+        /// SetLabel (+ doplnkové pole "slbl") - nastaví sa do labelu poľa text z atribútu "slbl". Ak hodnota obsahuje v texte Name iného poľa v zobáčikoch <Pole1>, tak sa replacne
         /// </summary>
         [EnumMember(Value = "SetLabel")]
         SetLabel,
 
         /// <summary>
-        /// SetValue (+ doplnkové pole "sval") - nastaví sa do hodnoty poľa  text zo "sval". Ak hodnota obsahuje v texte názov iného poľa v zobáčikoch <Pole1>, tak sa replacne. Ak je v texte <NULL>, tak sa vloží NULL.
+        /// SetValue (+ doplnkové pole "sval") - nastaví sa do hodnoty poľa  text zo "sval". Ak hodnota obsahuje v texte Name iného poľa v zobáčikoch <Pole1>, tak sa replacne. Ak je v texte <NULL>, tak sa vloží NULL.
         /// </summary>
         [EnumMember(Value = "SetValue")]
         SetValue,
 
         /// <summary>
-        /// SetMin (+ doplnkové pole "smin") - nastaví minimálnu hodnotu poľa z atribútu "smi". Ak hodnota obsahuje v texte názov iného poľa v zobáčikoch <Pole1>, tak sa vloží hodnota z tohto poľa.
+        /// SetMin (+ doplnkové pole "smin") - nastaví minimálnu hodnotu poľa z atribútu "smi". Ak hodnota obsahuje v texte Name iného poľa v zobáčikoch <Pole1>, tak sa vloží hodnota z tohto poľa.
         /// </summary>
         [EnumMember(Value = "SetMin")]
         SetMin,
 
         /// <summary>
-        /// SetMax (+ doplnkové pole "smax") - nastaví maximálnu hodnotu poľa z atribútu "smax". Ak hodnota obsahuje v texte názov iného poľa v zobáčikoch <Pole1>, tak sa vloží hodnota z tohto poľa.
+        /// SetMax (+ doplnkové pole "smax") - nastaví maximálnu hodnotu poľa z atribútu "smax". Ak hodnota obsahuje v texte Name iného poľa v zobáčikoch <Pole1>, tak sa vloží hodnota z tohto poľa.
         /// </summary>
         [EnumMember(Value = "SetMax")]
         SetMax,

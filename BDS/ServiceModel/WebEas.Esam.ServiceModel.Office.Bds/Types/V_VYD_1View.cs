@@ -28,7 +28,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public int K_SKL_0 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Skupina", RequiredFields = new[] { "K_SKL_0" })]
+        [PfeColumn(Text = "Mat. group", RequiredFields = new[] { "K_SKL_0" })]
         [PfeCombo(typeof(V_SKL_1View), IdColumnCombo = "K_TSK_0", DisplayColumn = "TSK")]
         public string TSK { get; set; }
 

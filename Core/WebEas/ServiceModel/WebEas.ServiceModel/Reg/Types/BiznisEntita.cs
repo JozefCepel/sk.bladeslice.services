@@ -72,11 +72,11 @@ namespace WebEas.ServiceModel.Office.Egov.Reg.Types
         public DateTime? DatumVDP { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Číslo dokladu ID")]
+        [PfeColumn(Text = "Doc. number ID")]
         public int? C_Cislovanie_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Číslo dokladu")]
+        [PfeColumn(Text = "Doc. number")]
         public int? Cislo { get; set; }
 
         [DataMember]

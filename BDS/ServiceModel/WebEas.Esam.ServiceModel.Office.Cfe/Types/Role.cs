@@ -15,7 +15,7 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
         public int C_Role_Id { get; set; }                     
 
         [DataMember]
-        [PfeColumn(Text = "Názov", Mandatory = true)]        
+        [PfeColumn(Text = "Name", Mandatory = true)]        
         public string Nazov { get; set; }
 
         [DataMember]

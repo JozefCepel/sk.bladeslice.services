@@ -16,7 +16,7 @@ namespace WebEas.ServiceModel.Office.Egov.Reg.Types
         public int C_PoleFormulara_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Názov")]
+        [PfeColumn(Text = "Name")]
         [Required]
         [StringLength(500)]
         public string Nazov { get; set; }

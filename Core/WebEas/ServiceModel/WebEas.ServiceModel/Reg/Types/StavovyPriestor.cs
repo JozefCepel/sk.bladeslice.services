@@ -39,7 +39,7 @@ namespace WebEas.ServiceModel.Reg.Types
         /// <value>The nazov.</value>
         [DataMember]
         [PfeValueColumn]
-        [PfeColumn(Text = "Názov", Width = 185)]
+        [PfeColumn(Text = "Name", Width = 185)]
         public string Nazov { get; set; }
     }
 

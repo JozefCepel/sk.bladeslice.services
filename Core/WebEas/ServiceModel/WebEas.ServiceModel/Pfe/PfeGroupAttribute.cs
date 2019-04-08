@@ -5,11 +5,11 @@ using System.Runtime.Serialization;
 namespace WebEas.ServiceModel
 {
     [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = true)]
-    [DataContract(Name = "Group")]
+    [DataContract(Name = "Mat. group")]
     public class PfeGroupAttribute : Attribute, IEquatable<PfeGroupAttribute>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Group" /> class.
+        /// Initializes a new instance of the <see cref="Mat. group" /> class.
         /// </summary>
         public PfeGroupAttribute()
         {

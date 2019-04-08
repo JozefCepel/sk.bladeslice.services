@@ -99,7 +99,7 @@ namespace WebEas.ServiceModel.Office.Egov.Reg.Types
         /// Gets or sets the uradny dokument nazov.
         /// </summary>
         /// <value>The uradny dokument nazov.</value>
-        [PfeColumn(Text = "Názov dokumentu", Rank = 2)]
+        [PfeColumn(Text = "Name dokumentu", Rank = 2)]
         [DataMember]
         public string UradnyDokumentNazov { get; set; }
 

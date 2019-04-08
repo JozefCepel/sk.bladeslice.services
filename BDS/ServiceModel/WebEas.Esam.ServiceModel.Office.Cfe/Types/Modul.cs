@@ -15,11 +15,11 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
         public int C_Modul_Id { get; set; }                     
 
         [DataMember]
-        [PfeColumn(Text = "Kód", Mandatory = true)]        
+        [PfeColumn(Text = "Code", Mandatory = true)]        
         public string Kod { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Názov", Mandatory = true)]
+        [PfeColumn(Text = "Name", Mandatory = true)]
         public string Nazov { get; set; }
 
         [DataMember]

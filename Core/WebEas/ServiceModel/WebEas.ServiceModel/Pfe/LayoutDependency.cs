@@ -74,7 +74,7 @@ namespace WebEas.ServiceModel
         /// </summary>
         /// <param name="item">Kod polozky v strome</param>
         /// <param name="idFields">Nazvy stlpcov pre master a detail oddelene ciarkou (ak rovnaky nazov staci jeden..)</param>
-        /// <param name="name">Nazov relacie - potrebné nastaviť identicky ako názov poľa, nad ktorým sa to prepája</param>
+        /// <param name="name">Nazov relacie - potrebné nastaviť identicky ako Name poľa, nad ktorým sa to prepája</param>
         public static LayoutDependency OneToOne(string item, string idFields, string name = null)
         {
             string master, detail;

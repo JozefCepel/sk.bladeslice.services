@@ -70,7 +70,7 @@ namespace WebEas.ServiceModel.Office.Egov.Reg.Types
         /// </summary>
         /// <value>The nazov.</value>
         [DataMember]
-        [PfeColumn(Text = "Názov", Rank = 4)]
+        [PfeColumn(Text = "Name", Rank = 4)]
         [PfeValueColumn]
         public string Nazov { get; set; }
 

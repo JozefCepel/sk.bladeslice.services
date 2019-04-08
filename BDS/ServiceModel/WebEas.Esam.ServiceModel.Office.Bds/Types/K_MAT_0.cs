@@ -20,11 +20,11 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public int K_TSK_0 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Kód", Mandatory = true)]
+        [PfeColumn(Text = "Code", Mandatory = true)]
         public string KOD { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Názov", Mandatory = true)]
+        [PfeColumn(Text = "Name", Mandatory = true)]
         public string NAZOV { get; set; }
 
         [DataMember]
@@ -32,7 +32,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public decimal DPH { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "MJ")]
+        [PfeColumn(Text = "UoM", Tooltip = "Unit of Measure")]
         public string MJ { get; set; }
 
         [DataMember]
@@ -40,7 +40,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string POZN { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Nákupná cena", DefaultValue = 0)]
+        [PfeColumn(Text = "Purchase price", DefaultValue = 0)]
         public decimal N_CENA { get; set; }
 
         [DataMember]
@@ -88,7 +88,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public decimal MAX_MN { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "EAN kód")]
+        [PfeColumn(Text = "EAN code")]
         public string EAN { get; set; }
 
         [DataMember]
@@ -100,11 +100,11 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public decimal VRB_INE { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Hmotnosť / MJ", DefaultValue = 0)]
+        [PfeColumn(Text = "Weight / UoM", DefaultValue = 0)]
         public decimal WT { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "MJ hmotnosti")]
+        [PfeColumn(Text = "Weight UoM")]
         public string WT_MJ { get; set; }
 
         [DataMember]
@@ -124,7 +124,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public DateTime? VALID_TO { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Hustota", DefaultValue = 0)]
+        [PfeColumn(Text = "Density", DefaultValue = 0)]
         public decimal HUST { get; set; }
     }
 }

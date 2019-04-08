@@ -14,7 +14,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string NazovId { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Názov")]
+        [PfeColumn(Text = "Name")]
         [PfeLayoutDependency]
         public string Nazov { get; set; }
 

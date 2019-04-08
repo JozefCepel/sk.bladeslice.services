@@ -13,7 +13,7 @@ namespace WebEas.ServiceModel
         public string Module { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Názov modulu")]
+        [PfeColumn(Text = "Name modulu")]
         public string ModuleName { get; set; }
 
         [DataMember]
@@ -21,7 +21,7 @@ namespace WebEas.ServiceModel
         public string Entity { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Názov tabuľky")]
+        [PfeColumn(Text = "Name tabuľky")]
         public string EntityName { get; set; }
 
         [DataMember]
@@ -29,7 +29,7 @@ namespace WebEas.ServiceModel
         public string Column { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Názov stĺpca")]
+        [PfeColumn(Text = "Name stĺpca")]
         public string ColumnName { get; set; }
 
         [DataMember]

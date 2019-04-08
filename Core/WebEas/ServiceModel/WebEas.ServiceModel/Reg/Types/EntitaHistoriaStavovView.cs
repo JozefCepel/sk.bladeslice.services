@@ -14,7 +14,7 @@ namespace WebEas.ServiceModel.Office.Egov.Reg.Types
         [DataMember]
         public string TypNazov { get; set; }
 
-        [PfeColumn(Text = "Číslo dokladu", Editable = false)]
+        [PfeColumn(Text = "Doc. number", Editable = false)]
         [DataMember]
         public string CisloInterne { get; set; }
 

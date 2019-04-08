@@ -7,6 +7,34 @@ using WebEas.ServiceModel.Types;
 namespace WebEas.Esam.ServiceModel.Office
 {
     [DataContract]
+    public class PrijemVydajCombo : IStaticCombo
+    {
+        [DataMember]
+        public string Kod { get; set; }
+
+        [DataMember]
+        public string Nazov { get; set; }
+
+        public IWebEasRepositoryBase Repository { get; set; }
+
+        public List<ComboResult> GetComboList(string[] requestFields)
+        {
+            byte[] list = new byte[] { 0, 1 };
+            return list.Select(a => new ComboResult() { Id = a.ToString(), Value = GetText(a) }).ToList();
+        }
+
+        public static string GetText(short kod)
+        {
+            switch (kod)
+            {
+                case 0: return "P";
+                case 1: return "V";
+                default: return kod + " (?)";
+            }
+        }
+    }
+
+    [DataContract]
     public class PV3DCombo : IStaticCombo
     {
         [DataMember]

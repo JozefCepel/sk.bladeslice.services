@@ -28,11 +28,11 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string IC_DPH { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Názov", Mandatory = true)]
+        [PfeColumn(Text = "Name", Mandatory = true)]
         public string NAZOV1 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Názov 2")]
+        [PfeColumn(Text = "Name 2")]
         public string NAZOV2 { get; set; }
 
         [DataMember]
@@ -52,11 +52,11 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string STAT { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Názov 1 - Prevádzka")]
+        [PfeColumn(Text = "Name 1 - Prevádzka")]
         public string NAZOV1_P { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Názov 2 - Prevádzka")]
+        [PfeColumn(Text = "Name 2 - Prevádzka")]
         public string NAZOV2_P { get; set; }
 
         [DataMember]

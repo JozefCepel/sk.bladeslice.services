@@ -32,19 +32,19 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string KOD { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Názov")]
+        [PfeColumn(Text = "Name")]
         public string NAZOV { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Počet MJ", DefaultValue = 0, Mandatory = true)]
+        [PfeColumn(Text = "Number of pieces", DefaultValue = 0, Mandatory = true)]
         public decimal? POC_KS { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "MJ")]
+        [PfeColumn(Text = "UoM", Tooltip = "Unit of Measure")]
         public string MJ { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Cena", DefaultValue = 0)]
+        [PfeColumn(Text = "Price", DefaultValue = 0)]
         public decimal? D_CENA { get; set; }
 
         [DataMember]
@@ -60,7 +60,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public decimal? BAL_KS { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "EAN kód")]
+        [PfeColumn(Text = "EAN code")]
         public string EAN { get; set; }
 
         [DataMember]
@@ -84,7 +84,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string NAZOV_EXT { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Šarža")]
+        [PfeColumn(Text = "Batch")]
         public string SARZA { get; set; }
     }
 }

@@ -44,7 +44,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public bool PS { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Číslo dokladu", Mandatory = true)]
+        [PfeColumn(Text = "Doc. number", Mandatory = true)]
         public string DKL_C { get; set; }
 
         [DataMember]

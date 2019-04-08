@@ -25,11 +25,11 @@ namespace WebEas.ServiceModel
         public string Schema { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Názov tabuľky")] 
+        [PfeColumn(Text = "Name tabuľky")] 
         public string NazovTabulky { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Názov stĺpca")] 
+        [PfeColumn(Text = "Name stĺpca")] 
         public string NazovStlpca { get; set; }
 
         [DataMember]

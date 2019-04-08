@@ -21,7 +21,7 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
         public int C_Modul_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Kód")]
+        [PfeColumn(Text = "Code")]
         public string Kod { get; set; }
 
         [DataMember]

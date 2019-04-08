@@ -24,7 +24,7 @@ namespace WebEas.ServiceModel
         /// Gets or sets the nazov.
         /// </summary>
         /// <value>The nazov.</value>
-        [PfeColumn(Text = "Názov")]
+        [PfeColumn(Text = "Name")]
         [DataMember]
         public string Nazov { get; set; }
 

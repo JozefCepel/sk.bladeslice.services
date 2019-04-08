@@ -11,7 +11,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
     public class V_PRI_1View : tblD_PRI_1
     {
         [DataMember]
-        [PfeColumn(Text = "Kód", RequiredFields = new[] { "K_TSK_0" }, Mandatory = true)] //Pomocne pole iba pre ucel COMBO POLA
+        [PfeColumn(Text = "Code", RequiredFields = new[] { "K_TSK_0" }, Mandatory = true)] //Pomocne pole iba pre ucel COMBO POLA
         [PfeCombo(typeof(tblK_MAT_0), IdColumnCombo = "KOD", DisplayColumn = "KOD")]
         public string KOD_ID { get; set; }
 
@@ -33,7 +33,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public int K_SKL_0 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Skupina", RequiredFields = new[] { "K_SKL_0" })]
+        [PfeColumn(Text = "Mat. group", RequiredFields = new[] { "K_SKL_0" })]
         [PfeCombo(typeof(V_SKL_1View), IdColumnCombo = "K_TSK_0", DisplayColumn = "TSK")]
         public string TSK { get; set; }
 

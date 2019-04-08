@@ -21,11 +21,11 @@ namespace WebEas.ServiceModel.Office.Egov.Reg.Types
         public string Schema { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Názov tabuľky", Width = 160)]
+        [PfeColumn(Text = "Name tabuľky", Width = 160)]
         public string NazovTabulky { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Názov stĺpca", Width = 140)]
+        [PfeColumn(Text = "Name stĺpca", Width = 140)]
         public string NazovStlpca { get; set; }
 
         [DataMember]

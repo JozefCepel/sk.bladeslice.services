@@ -21,7 +21,7 @@ namespace WebEas.ServiceModel.Office.Egov.Reg.Types
         public long C_Jazyk_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Názov", Rank = 1, Width = 480)]
+        [PfeColumn(Text = "Name", Rank = 1, Width = 480)]
         public string Nazov { get; set; }
 
         [DataMember]

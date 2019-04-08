@@ -31,7 +31,7 @@ namespace WebEas.ServiceModel.Types
 
         [DataMember]
         [PfeSort]
-        [PfeColumn(Text = "Názov stĺpca", Editable = false, ReadOnly = true)]
+        [PfeColumn(Text = "Name stĺpca", Editable = false, ReadOnly = true)]
         public string NazovStlpca { get; set; }
 
         [DataMember]
