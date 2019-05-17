@@ -14,6 +14,15 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         //[PfeColumn(Text = "_K_SKL_0")]
         //public int? K_SKL_0 { get; set; }
 
+        [PrimaryKey]
+        [DataMember]
+        [PfeColumn(Text = "ID_POL")]
+        public string ID_POL { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "ID_JOIN")]
+        public string ID_JOIN { get; set; }
+
         [DataMember]
         [PfeColumn(Text = "Warehouse")]
         [PfeCombo(typeof(tblK_SKL_0), IdColumnCombo = "K_SKL_0", DisplayColumn = "SKL")]
