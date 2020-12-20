@@ -15,7 +15,9 @@ using WebEas.Esam.ServiceInterface.Office.Reg;
 using WebEas.Esam.ServiceInterface.Office.Rzp;
 using WebEas.Esam.ServiceInterface.Office.Uct;
 using WebEas.Esam.ServiceInterface.Pfe;
+using WebEas.Esam.ServiceModel.Office;
 using WebEas.ServiceInterface;
+using WebEas.ServiceModel;
 
 namespace WebEas.Esam.Pfe
 {
@@ -27,7 +29,7 @@ namespace WebEas.Esam.Pfe
         /// <summary>
         /// Initializes a new instance of the <see cref="AppHost" /> class.
         /// </summary>
-        public AppHost() : base("Egovernment", typeof(PfeService).Assembly)
+        public AppHost() : base("pfe", typeof(PfeService).Assembly)
         {
         }
 
@@ -70,39 +72,17 @@ namespace WebEas.Esam.Pfe
         {
             LogManager.GetLogger("Kernel").Info("Loading kernel");
 
-            kernel.Bind<IRoleList>().To<ServiceModel.Office.Cfe.ServiceModel>();
-            kernel.Bind<IRoleList>().To<ServiceModel.Office.Crm.ServiceModel>();
-            kernel.Bind<IRoleList>().To<ServiceModel.Office.Dap.ServiceModel>();
-            kernel.Bind<IRoleList>().To<ServiceModel.Office.Dms.ServiceModel>();
-            kernel.Bind<IRoleList>().To<ServiceModel.Office.Fin.ServiceModel>();
-            kernel.Bind<IRoleList>().To<ServiceModel.Office.Osa.ServiceModel>();
-            kernel.Bind<IRoleList>().To<ServiceModel.Office.Reg.ServiceModel>();
-            kernel.Bind<IRoleList>().To<ServiceModel.Office.Rzp.ServiceModel>();
-            kernel.Bind<IRoleList>().To<ServiceModel.Office.Uct.ServiceModel>();
+            kernel.Bind<ICfeRepository, IWebEasRepositoryBase>().To<CfeRepository>().InRequestScope();
+            kernel.Bind<ICrmRepository, IWebEasRepositoryBase>().To<CrmRepository>().InRequestScope();
+            kernel.Bind<IDapRepository, IWebEasRepositoryBase>().To<DapRepository>().InRequestScope();
+            kernel.Bind<IDmsRepository, IWebEasRepositoryBase>().To<DmsRepository>().InRequestScope();
+            kernel.Bind<IFinRepository, IWebEasRepositoryBase>().To<FinRepository>().InRequestScope();
+            kernel.Bind<IOsaRepository, IWebEasRepositoryBase>().To<OsaRepository>().InRequestScope();
+            kernel.Bind<IRegRepository, IWebEasRepositoryBase>().To<RegRepository>().InRequestScope();
+            kernel.Bind<IRzpRepository, IWebEasRepositoryBase>().To<RzpRepository>().InRequestScope();
+            kernel.Bind<IUctRepository, IWebEasRepositoryBase>().To<UctRepository>().InRequestScope();
 
-            kernel.Bind<IRoleList>().To<ServiceModel.Office.RolesDefinition.OfficeRoleList>();
-
-            kernel.Bind<IWebEasServiceInterface>().To<ServiceInterface.Office.Cfe.ServiceInterface>();
-            kernel.Bind<IWebEasServiceInterface>().To<ServiceInterface.Office.Crm.ServiceInterface>();
-            kernel.Bind<IWebEasServiceInterface>().To<ServiceInterface.Office.Dap.ServiceInterface>();
-            kernel.Bind<IWebEasServiceInterface>().To<ServiceInterface.Office.Dms.ServiceInterface>();
-            kernel.Bind<IWebEasServiceInterface>().To<ServiceInterface.Office.Fin.ServiceInterface>();
-            kernel.Bind<IWebEasServiceInterface>().To<ServiceInterface.Office.Osa.ServiceInterface>();
-            kernel.Bind<IWebEasServiceInterface>().To<ServiceInterface.Office.Reg.ServiceInterface>();
-            kernel.Bind<IWebEasServiceInterface>().To<ServiceInterface.Office.Rzp.ServiceInterface>();
-            kernel.Bind<IWebEasServiceInterface>().To<ServiceInterface.Office.Uct.ServiceInterface>();
-
-            kernel.Bind<ICfeRepository>().To<CfeRepository>().InRequestScope().WithPropertyValue("StsThumbPrint", GetThumbprint("StsThumbprint"));
-            kernel.Bind<ICrmRepository>().To<CrmRepository>().InRequestScope().WithPropertyValue("StsThumbPrint", GetThumbprint("StsThumbprint"));
-            kernel.Bind<IDapRepository>().To<DapRepository>().InRequestScope().WithPropertyValue("StsThumbPrint", GetThumbprint("StsThumbprint"));
-            kernel.Bind<IDmsRepository>().To<DmsRepository>().InRequestScope().WithPropertyValue("StsThumbPrint", GetThumbprint("StsThumbprint"));
-            kernel.Bind<IFinRepository>().To<FinRepository>().InRequestScope().WithPropertyValue("StsThumbPrint", GetThumbprint("StsThumbprint"));
-            kernel.Bind<IOsaRepository>().To<OsaRepository>().InRequestScope().WithPropertyValue("StsThumbPrint", GetThumbprint("StsThumbprint"));
-            kernel.Bind<IRegRepository>().To<RegRepository>().InRequestScope().WithPropertyValue("StsThumbPrint", GetThumbprint("StsThumbprint"));
-            kernel.Bind<IRzpRepository>().To<RzpRepository>().InRequestScope().WithPropertyValue("StsThumbPrint", GetThumbprint("StsThumbprint"));
-            kernel.Bind<IUctRepository>().To<UctRepository>().InRequestScope().WithPropertyValue("StsThumbPrint", GetThumbprint("StsThumbprint"));
-
-            kernel.Bind<IPfeRepository>().To<PfeRepository>().InRequestScope().WithPropertyValue("StsThumbPrint", GetThumbprint("StsThumbprint"));
+            kernel.Bind<IPfeRepository, IRepositoryBase> ().To<PfeRepository>().InRequestScope();
 
             base.AddNinjectBinding(kernel);
             LogManager.GetLogger("Kernel").Info("Loading kernel done");

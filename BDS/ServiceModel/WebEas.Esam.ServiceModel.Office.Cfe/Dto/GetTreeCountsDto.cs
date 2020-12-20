@@ -11,7 +11,7 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
 {
     [DataContract]
     [Route("/treecounts", "POST")]
-    [WebEasRequiredRole(RolesDefinition.Cfe.Roles.CfeMember)]
+    [Authenticate]
     public class GetTreeCountsDto : BaseGetTreeCounts
     {
     }

@@ -12,7 +12,7 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
     [Route("/getcontextuser/{ModuleShortcut}", "GET")]
     [Route("/getcontextuser", "GET")]
     [Api("ziskanie mena prihlaseneho pouzivatela")]
-    [WebEasAuthenticate]
+    
     public class GetContextUser
     {
         [ApiMember(Name = "ModuleShortcut", Description = "Skratka modulu", DataType = "string")]

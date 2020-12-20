@@ -7,14 +7,17 @@ using WebEas.ServiceModel;
 
 namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
 {
-    // Create - nie je
+    // Create
+    [Route("/CreateTenant", "POST")]
+    [Api("Tenant")]
+    [DataContract]
+    public class CreateTenant : TenantDto, IReturn<TenantView> { }
 
     // Update
-    [WebEasRequiredRole(Roles.Admin)]
     [Route("/UpdateTenant", "PUT")]
     [Api("Tenant")]
     [DataContract]
-    public class UpdateTenant : TenantDto
+    public class UpdateTenant : TenantDto, IReturn<TenantView>
     {
         [PrimaryKey]
         [DataMember(IsRequired = true)]
@@ -22,13 +25,25 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
     }
 
     // Delete - nie je
+    [Route("/DeleteTenant", "DELETE")]
+    [Api("Tenant")]
+    [DataContract]
+    public class DeleteTenant
+    {
+        [PrimaryKey]
+        [DataMember(IsRequired = true)]
+        public Guid[] D_Tenant_Id { get; set; }
+    }
 
     #region DTO
     [DataContract]
     public class TenantDto : BaseDto<Tenant>
     {
         [DataMember]
-        public short C_TenantType_Id { get; set; }
+        public byte C_TenantType_Id { get; set; }
+
+        [DataMember]
+        public int C_OrganizaciaTyp_Id { get; set; }
 
         [DataMember]
         [NotEmptyOrDefault]
@@ -40,6 +55,15 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
         [DataMember]
         public string Databaza { get; set; }
 
+        [DataMember]
+        public Guid? D_Tenant_Id_Externe { get; set; }
+
+        [DataMember]
+        public long? D_PO_Osoba_Id { get; set; }
+
+        [DataMember]
+        public Guid? IsoId { get; set; }
+
         /// <summary>
         /// Binds to entity.
         /// </summary>
@@ -47,9 +71,13 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
         protected override void BindToEntity(Tenant data)
         {
             data.C_TenantType_Id  = C_TenantType_Id;
+            data.C_OrganizaciaTyp_Id = C_OrganizaciaTyp_Id;
             data.Nazov = Nazov;
             data.Server = Server;
             data.Databaza = Databaza;
+            data.D_Tenant_Id_Externe = D_Tenant_Id_Externe;
+            data.D_PO_Osoba_Id = D_PO_Osoba_Id;
+            data.IsoId = IsoId;
         }
     }
     #endregion

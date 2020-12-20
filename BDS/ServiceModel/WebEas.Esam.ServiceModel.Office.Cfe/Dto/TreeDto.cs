@@ -8,14 +8,12 @@ using WebEas.ServiceModel;
 namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
 {
     // Create
-    [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeMember)]
     [Route("/CreateTree", "POST")]
     [Api("Tree")]
     [DataContract]
     public class CreateTree : TreeDto { }
 
     // Update
-    [WebEasRequiredRole(Roles.Admin)]
     [Route("/UpdateTree", "PUT")]
     [Api("Tree")]
     [DataContract]
@@ -23,18 +21,17 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
     {
         [PrimaryKey]
         [DataMember(IsRequired = true)]
-        public long C_Tree_Id { get; set; }
+        public int C_Tree_Id { get; set; }
     }
 
     // Delete
-    [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeMember)]
     [Route("/DeleteTree", "DELETE")]
     [Api("Tree")]
     [DataContract]
     public class DeleteTree
     {
         [DataMember(IsRequired = true)]
-        public long C_Tree_Id { get; set; }
+        public int[] C_Tree_Id { get; set; }
     }
 
     #region DTO

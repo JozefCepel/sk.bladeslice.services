@@ -8,18 +8,16 @@ using WebEas.ServiceModel;
 namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
 {
     // Create
-    [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeMember)]
     [Route("/CreateRole", "POST")]
     [Api("Role")]
     [DataContract]
-    public class CreateRole : RoleDto { }
+    public class CreateRole : RoleDto, IReturn<RoleView> { }
 
     // Update
-    [WebEasRequiredRole(Roles.Admin)]
     [Route("/UpdateRole", "PUT")]
     [Api("Role")]
     [DataContract]
-    public class UpdateRole : RoleDto
+    public class UpdateRole : RoleDto, IReturn<RoleView>
     {
         [PrimaryKey]
         [DataMember(IsRequired = true)]
@@ -27,14 +25,13 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
     }
 
     // Delete
-    [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeMember)]
     [Route("/DeleteRole", "DELETE")]
     [Api("Role")]
     [DataContract]
     public class DeleteRole
     {
         [DataMember(IsRequired = true)]
-        public int C_Role_Id { get; set; }
+        public int[] C_Role_Id { get; set; }
     }
 
     #region DTO
@@ -46,7 +43,7 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
         public string Nazov { get; set; }
 
         [DataMember]
-        public int? C_Roles_Id_Parent { get; set; }
+        public int? C_Role_Id_Parent { get; set; }
 
         /// <summary>
         /// Binds to entity.
@@ -55,7 +52,7 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
         protected override void BindToEntity(Role data)
         {
             data.Nazov = Nazov;
-            data.C_Roles_Id_Parent = C_Roles_Id_Parent;
+            data.C_Role_Id_Parent = C_Role_Id_Parent;
         }
     }
     #endregion

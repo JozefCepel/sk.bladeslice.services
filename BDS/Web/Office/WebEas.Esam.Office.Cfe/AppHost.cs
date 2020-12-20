@@ -1,6 +1,9 @@
 ﻿using Ninject;
 using Ninject.Web.Common;
 using ServiceStack;
+using ServiceStack.Auth;
+using ServiceStack.Web;
+using System.Collections.Generic;
 using WebEas.Auth;
 using WebEas.Esam.ServiceInterface.Office;
 using WebEas.Esam.ServiceInterface.Office.Cfe;
@@ -13,7 +16,7 @@ namespace WebEas.Esam.Office.Cfe
         /// <summary>
         /// Initializes a new instance of the <see cref="AppHost" /> class.
         /// </summary>
-        public AppHost() : base("Egovernment", typeof(CfeService).Assembly)
+        public AppHost() : base("cfe", typeof(CfeService).Assembly)
         {
         }
 
@@ -27,7 +30,6 @@ namespace WebEas.Esam.Office.Cfe
             ServiceStack.OrmLite.OrmLiteConfig.CommandTimeout = 60;
             WebEas.Context.Current.CurrentEndpoint = Context.EndpointType.Office;
             WebEas.Log.WebEasNLogLogger.Application = "CFE";
-
             base.Configure(container);
 
             this.SetConfig(new HostConfig
@@ -55,11 +57,7 @@ namespace WebEas.Esam.Office.Cfe
         {
             base.AddNinjectBinding(kernel);
 
-            kernel.Bind<IRoleList>().To<ServiceModel.Office.Cfe.ServiceModel>();
-            kernel.Bind<IRoleList>().To<ServiceModel.Office.RolesDefinition.OfficeRoleList>();
-
-            kernel.Bind<IWebEasServiceInterface>().To<ServiceInterface.Office.Cfe.ServiceInterface>();
-            kernel.Bind<ICfeRepository>().To<CfeRepository>().InRequestScope().WithPropertyValue("StsThumbPrint", this.GetThumbprint("StsThumbprint"));
+            kernel.Bind<ICfeRepository, ServiceModel.Office.IRepositoryBase>().To<CfeRepository>().InRequestScope();
 
             return kernel;
         }

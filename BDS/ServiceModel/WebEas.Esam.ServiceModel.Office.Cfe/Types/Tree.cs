@@ -17,15 +17,19 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
         public int C_Tree_Id { get; set; }
 
         [DataMember]
+        [PfeColumn(Text = "_TreeParent")]
+        public int? C_Tree_Id_Parent { get; set; }
+
+        [DataMember]
         [PfeColumn(Text = "Modul")]
         public int C_Modul_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Kód")]
+        [PfeColumn(Text = "Kód", ReadOnly = true)]
         public string Kod { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Názov")]
+        [PfeColumn(Text = "Názov", ReadOnly = true)]
         public string Nazov { get; set; }
 
     }

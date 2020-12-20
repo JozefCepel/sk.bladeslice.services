@@ -29,9 +29,6 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
         public bool DcomAdmin { get; set; }
 
         [DataMember]
-        public bool IsWriter { get; set; }
-
-        [DataMember]
         public string Version { get; set; }
 
         [DataMember]
@@ -54,5 +51,8 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
 
         [DataMember]
         public long FilterRok { get; set; }
+
+        [DataMember]
+        public List<string> Roles { get; set; }
     }
 }

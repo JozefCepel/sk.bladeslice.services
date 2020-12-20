@@ -8,7 +8,7 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
     /// </summary>
     [Route("/poller/receive/{TenantId}", "GET")]
     [Api("")]
-    [WebEasAuthenticate]
+    
     [DataContract]
     public class PollerReceive
     {

@@ -5,7 +5,7 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
 {
     [Route("/viewdata/{ItemCode}", "POST")]
     [Api("RS 5 - Zobrazenie údajov")]
-    [WebEasAuthenticate]
+    
     public class GetViewDataFilter
     {
         [DataMember(Name = "itemcode", IsRequired = true)]

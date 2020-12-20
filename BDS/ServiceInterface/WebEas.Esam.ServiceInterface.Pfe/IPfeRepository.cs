@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using WebEas.Egov.Reports;
 using WebEas.Esam.ServiceModel.Office;
 using WebEas.Esam.ServiceModel.Pfe.Dto;
 using WebEas.ServiceModel;
@@ -14,9 +13,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
     /// </summary>
     public partial interface IPfeRepository : IRepositoryBase
     {
-        IList<PohladList> GetPohlady(string kodPolozky);
-
-        PohladView GetPohlad(int id);
+        IList<PohladList> GetPohlady(string kodPolozky, bool browser);
 
         object GetPohlad(GetPohlad request);
 
@@ -26,23 +23,23 @@ namespace WebEas.Esam.ServiceInterface.Pfe
 
         PohladView CreatePohlad(Pohlad pohlad);
 
-        PohladView CreatePohlad(CreatePohlad request, PohladActions source = null);
+        PohladView CreatePohlad(CreatePohlad request);
 
         PohladView UpdatePohlad(Pohlad pohlad);
 
-        void DeletePohlad(int id);
+        void DeletePohlad(int[] ids);
 
-        List<PossibleStateResponse> ListPossibleStates(int idState);
+        PohladView UpdatePohladCustom(PohladDto pohladCustom);
+
+        PohladView DeletePohladCustom(int D_Pohlad_Id);
+
+        List<PossibleStateResponse> ListPossibleStates(int idPriestor, int idState, bool uctovanie, string ItemCode);
 
         List<PohladView> UnLockPohlad(int id, bool zamknut);
 
         List<PohladItem> SelectedViewItems(string kodPolozky);
 
         //string GetBussinessXml(int textationId);
-
-        //Zastarale, uz sa nepouziva
-        //string GetSubmissionFormUrl(long dPodanieId);
-        //string GetDecisionFormUrl(long dEntitaHistoriaStavovId);
 
         List<FileUploadResponse> FileUpload(Dictionary<string, Stream> fileList, FileUpload fileUpload);
 
@@ -56,7 +53,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
 
         List<TranslationDictionary> GetTraslatedExpressions(string uniqueKey);        
 
-        RendererResult GenerateMergeScriptGlobalViews();
+        RendererResult GenerateMergeScriptGlobalViews(MergeScriptGlobalViews request);
 
         List<LogView> PreviewLog(string identifier);
 
@@ -65,5 +62,13 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         PollerReceiveResponse PollerReceive(string tenantId);
 
         void LogRequestDuration(LogRequestDurationReq req);
+
+        List<ListAllModulesResponse> ListAllModules(ListAllModules request);
+
+        object GetModuleTreeView(GetTreeView request);
+
+        HierarchyNode GetHierarchyNodeForModule(string kodPolozky);
+        string GetModuleCode(string itemCode);
+        RendererResult GetReport(GetReportDto request);
     }
 }

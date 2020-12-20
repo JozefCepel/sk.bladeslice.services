@@ -7,16 +7,16 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
     [Schema("cfe")]
     [Alias("V_TenantType")]
     [DataContract]
-    public class TenantTypeView : TenantType
+    public class TenantTypeView : TenantType, IBaseView
     {
         //audit stlpce
         [DataMember]
-        [PfeColumn(Text = "Vytvoril", Hidden = true, Editable = false, ReadOnly = true)]
+        [PfeColumn(Text = "Vytvoril", Hidden = true, Editable = false, ReadOnly = true, LoadWhenVisible = true)]
         [IgnoreInsertOrUpdate]
         public string VytvorilMeno { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Zmenil", Hidden = true, Editable = false, ReadOnly = true)]
+        [PfeColumn(Text = "Zmenil", Hidden = true, Editable = false, ReadOnly = true, LoadWhenVisible = true)]
         [IgnoreInsertOrUpdate]
         public string ZmenilMeno { get; set; }
     }

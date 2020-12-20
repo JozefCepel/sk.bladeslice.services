@@ -11,7 +11,7 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
     [DataContract]
     [Route("/exportgridtoxls", HttpMethods.Post)]
     [Api("Export grid to XLS")]
-    [WebEasAuthenticate]
+    
     public class ExportGridToXLS
     {
         [DataMember]
@@ -22,10 +22,19 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
     }
 
     [DataContract]
+    [Route("/getreport/{ReportId}", HttpMethods.Get)]
+    [Api("Get report")]
+    public class GetReportDto
+    {
+        [DataMember(IsRequired = true)]
+        public string ReportId { get; set; }
+    }
+
+    [DataContract]
     [Route("/fileupload", HttpMethods.Post)]
     [Api("File upload")]
     [Description("File upload pre prilohy")]
-    [WebEasAuthenticate]
+    
     public class FileUpload : IReturn<List<FileUploadResponse>>
     {
         

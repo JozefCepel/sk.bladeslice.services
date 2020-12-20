@@ -5,18 +5,11 @@ using ServiceStack;
 
 namespace WebEas.Esam.ServiceModel.Pfe.Dto
 {
-    [Route("/actualtoken", "GET")]
-    [Api("Info")]
-    public class ActualToken
-    {
-    }
-
     [Route("/lllj/{Identifier}", "GET")]
     [Api("Info")]
     #if DEBUG || INT || DEVELOP
-    [WebEasAuthenticate]
+    
     #else
-    [WebEasRequiredRole(Roles.Admin)]
     #endif
     public class LogViewDto
     {
@@ -27,15 +20,14 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
 
     /*COMMENTED 29.12
     #if DEBUG || INT || DEVELOP || TEST
-    [WebEasAuthenticate]
+    
     #else
-    [WebEasRequiredRole(Roles.Admin)]
     #endif
     */
 
     [Route("/lll/{Identifier}", "GET")]
     [Api("Info")]
-    [WebEasAuthenticate]
+    
     public class LogViewRawDto
     {
         [DataMember]
@@ -46,9 +38,8 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
     [Route("/corrid/{Identifier}", "GET")]
     [Api("Info")]
 #if DEBUG || INT || DEVELOP || TEST
-    [WebEasAuthenticate]
+    
 #else
-    [WebEasRequiredRole(Roles.Admin)]
 #endif
     public class LogViewCorIdRawDto
     {

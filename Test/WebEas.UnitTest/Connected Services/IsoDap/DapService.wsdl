@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://schemas.dcom.sk/integration/dap" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="DapService" targetNamespace="http://schemas.dcom.sk/integration/dap" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsp:Policy wsu:Id="BasicHttpsBinding_IDanePoplatky_policy">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <sp:TransportBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+          <wsp:Policy>
+            <sp:TransportToken>
+              <wsp:Policy>
+                <sp:HttpsToken RequireClientCertificate="false" />
+              </wsp:Policy>
+            </sp:TransportToken>
+            <sp:AlgorithmSuite>
+              <wsp:Policy>
+                <sp:Basic256 />
+              </wsp:Policy>
+            </sp:AlgorithmSuite>
+            <sp:Layout>
+              <wsp:Policy>
+                <sp:Strict />
+              </wsp:Policy>
+            </sp:Layout>
+          </wsp:Policy>
+        </sp:TransportBinding>
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsdl:types>
+    <xs:schema elementFormDefault="qualified" targetNamespace="http://schemas.dcom.sk/integration/dap" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:element name="ReqGetTaxAssessmentItemTypes" type="tns:ReqGetTaxAssessmentItemTypes" />
+      <xs:complexType name="ReqGetTaxAssessmentItemTypes">
+        <xs:complexContent mixed="false">
+          <xs:extension base="tns:ReqBase">
+            <xs:sequence>
+              <xs:element minOccurs="1" maxOccurs="1" name="taxOrFeeTypeCode" nillable="true" type="xs:string" />
+              <xs:element minOccurs="0" maxOccurs="1" name="year" nillable="true" type="xs:int" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="ReqBase" />
+      <xs:complexType name="ReqGetTaxAssessments">
+        <xs:complexContent mixed="false">
+          <xs:extension base="tns:ReqBase">
+            <xs:sequence>
+              <xs:element minOccurs="1" maxOccurs="1" name="taxOrFeeTypeCode" nillable="true" type="xs:string" />
+              <xs:element minOccurs="0" maxOccurs="1" name="year" nillable="true" type="xs:int" />
+              <xs:element minOccurs="0" maxOccurs="1" name="taxAssessmentType" nillable="true" type="tns:TaxAssessmentTypeEnum" />
+              <xs:element minOccurs="0" maxOccurs="1" name="dateFrom" nillable="true" type="xs:date" />
+              <xs:element minOccurs="0" maxOccurs="1" name="dateTo" nillable="true" type="xs:date" />
+              <xs:element minOccurs="0" maxOccurs="1" name="unaccountedOnly" nillable="true" type="xs:boolean" />
+              <xs:element minOccurs="1" maxOccurs="1" name="useAssessmentDate" nillable="true" type="xs:boolean" />
+              <xs:element minOccurs="1" maxOccurs="1" name="variableSymbol" nillable="true" type="xs:string" />
+              <xs:element minOccurs="1" maxOccurs="1" name="identificationNumber" nillable="true" type="xs:string" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:simpleType name="TaxAssessmentTypeEnum">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="DAN" />
+          <xs:enumeration value="ODP" />
+          <xs:enumeration value="PEN" />
+          <xs:enumeration value="POK" />
+          <xs:enumeration value="URO" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:complexType name="ReqBaseList">
+        <xs:complexContent mixed="false">
+          <xs:extension base="tns:ReqBase">
+            <xs:sequence>
+              <xs:element minOccurs="1" maxOccurs="1" name="recordCount" type="xs:int" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="ReqSetTaxAssessmentsRecordStatusList">
+        <xs:complexContent mixed="false">
+          <xs:extension base="tns:ReqBaseList">
+            <xs:sequence>
+              <xs:element minOccurs="0" maxOccurs="1" name="requestRecords" type="tns:ArrayOfTaxAssessmentRecordStatusRecord" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="ArrayOfTaxAssessmentRecordStatusRecord">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="record" type="tns:TaxAssessmentRecordStatusRecord" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="TaxAssessmentRecordStatusRecord">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="decisionID" nillable="true" type="xs:long" />
+          <xs:element minOccurs="0" maxOccurs="1" name="taxAssessmentItemID" nillable="true" type="xs:long" />
+          <xs:element minOccurs="1" maxOccurs="1" name="accounted" type="xs:boolean" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="DcmHeader" type="tns:DcmHeader" />
+      <xs:complexType name="DcmHeader">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="requestId" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="tenantId" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="isoId" type="xs:string" />
+          <xs:element minOccurs="1" maxOccurs="1" name="officeId" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ResGetTaxAssessmentItemTypesList" type="tns:ResGetTaxAssessmentItemTypesList" />
+      <xs:complexType name="ResGetTaxAssessmentItemTypesList">
+        <xs:complexContent mixed="false">
+          <xs:extension base="tns:ResBaseList">
+            <xs:sequence>
+              <xs:element minOccurs="0" maxOccurs="1" name="resultRecords" type="tns:ArrayOfTaxAssessmentItemTypeRecord" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="ResBaseList">
+        <xs:complexContent mixed="false">
+          <xs:extension base="tns:ResBase">
+            <xs:sequence>
+              <xs:element minOccurs="1" maxOccurs="1" name="recordCount" type="xs:int" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="ResBase" />
+      <xs:complexType name="ResErr">
+        <xs:complexContent mixed="false">
+          <xs:extension base="tns:ResBase">
+            <xs:sequence>
+              <xs:element minOccurs="0" maxOccurs="1" name="errorCode" type="xs:string" />
+              <xs:element minOccurs="0" maxOccurs="1" name="errorMessage" type="xs:string" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="ResOk">
+        <xs:complexContent mixed="false">
+          <xs:extension base="tns:ResBase" />
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="ResGetTaxOrFeeTypesList">
+        <xs:complexContent mixed="false">
+          <xs:extension base="tns:ResBaseList">
+            <xs:sequence>
+              <xs:element minOccurs="0" maxOccurs="1" name="resultRecords" type="tns:ArrayOfTaxOrFeeTypeRecord" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="ArrayOfTaxOrFeeTypeRecord">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="record" type="tns:TaxOrFeeTypeRecord" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="TaxOrFeeTypeRecord">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="typeCode" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="description" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ResGetTaxAssessmentsList">
+        <xs:complexContent mixed="false">
+          <xs:extension base="tns:ResBaseList">
+            <xs:sequence>
+              <xs:element minOccurs="0" maxOccurs="1" name="resultRecords" type="tns:ArrayOfTaxAssessmentRecord" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="ArrayOfTaxAssessmentRecord">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="record" type="tns:TaxAssessmentRecord" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="TaxAssessmentRecord">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="year" type="xs:int" />
+          <xs:element minOccurs="0" maxOccurs="1" name="taxOrFeeTypeCode" type="xs:string" />
+          <xs:element minOccurs="1" maxOccurs="1" name="taxAssessmentType" type="tns:TaxAssessmentTypeEnum" />
+          <xs:element minOccurs="1" maxOccurs="1" name="assessmentDate" type="xs:date" />
+          <xs:element minOccurs="1" maxOccurs="1" name="validityDate" type="xs:date" />
+          <xs:element minOccurs="1" maxOccurs="1" name="maturityDate" type="xs:date" />
+          <xs:element minOccurs="1" maxOccurs="1" name="decisionID" type="xs:long" />
+          <xs:element minOccurs="0" maxOccurs="1" name="decisionNumber" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="payersReference" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="collectivePayment" type="xs:string" />
+          <xs:element minOccurs="1" maxOccurs="1" name="taxAssessmentItems" nillable="true" type="tns:ArrayOfTaxAssessmentItem" />
+          <xs:element minOccurs="0" maxOccurs="1" name="person" type="tns:PersonData" />
+          <xs:element minOccurs="0" maxOccurs="1" name="dueDate01" nillable="true" type="xs:date" />
+          <xs:element minOccurs="0" maxOccurs="1" name="amount01" nillable="true" type="xs:decimal" />
+          <xs:element minOccurs="0" maxOccurs="1" name="dueDate02" nillable="true" type="xs:date" />
+          <xs:element minOccurs="0" maxOccurs="1" name="amount02" nillable="true" type="xs:decimal" />
+          <xs:element minOccurs="0" maxOccurs="1" name="dueDate03" nillable="true" type="xs:date" />
+          <xs:element minOccurs="0" maxOccurs="1" name="amount03" nillable="true" type="xs:decimal" />
+          <xs:element minOccurs="0" maxOccurs="1" name="dueDate04" nillable="true" type="xs:date" />
+          <xs:element minOccurs="0" maxOccurs="1" name="amount04" nillable="true" type="xs:decimal" />
+          <xs:element minOccurs="0" maxOccurs="1" name="dueDate05" nillable="true" type="xs:date" />
+          <xs:element minOccurs="0" maxOccurs="1" name="amount05" nillable="true" type="xs:decimal" />
+          <xs:element minOccurs="0" maxOccurs="1" name="dueDate06" nillable="true" type="xs:date" />
+          <xs:element minOccurs="0" maxOccurs="1" name="amount06" nillable="true" type="xs:decimal" />
+          <xs:element minOccurs="0" maxOccurs="1" name="dueDate07" nillable="true" type="xs:date" />
+          <xs:element minOccurs="0" maxOccurs="1" name="amount07" nillable="true" type="xs:decimal" />
+          <xs:element minOccurs="0" maxOccurs="1" name="dueDate08" nillable="true" type="xs:date" />
+          <xs:element minOccurs="0" maxOccurs="1" name="amount08" nillable="true" type="xs:decimal" />
+          <xs:element minOccurs="0" maxOccurs="1" name="dueDate09" nillable="true" type="xs:date" />
+          <xs:element minOccurs="0" maxOccurs="1" name="amount09" nillable="true" type="xs:decimal" />
+          <xs:element minOccurs="0" maxOccurs="1" name="dueDate10" nillable="true" type="xs:date" />
+          <xs:element minOccurs="0" maxOccurs="1" name="amount10" nillable="true" type="xs:decimal" />
+          <xs:element minOccurs="0" maxOccurs="1" name="dueDate11" nillable="true" type="xs:date" />
+          <xs:element minOccurs="0" maxOccurs="1" name="amount11" nillable="true" type="xs:decimal" />
+          <xs:element minOccurs="0" maxOccurs="1" name="dueDate12" nillable="true" type="xs:date" />
+          <xs:element minOccurs="0" maxOccurs="1" name="amount12" nillable="true" type="xs:decimal" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ArrayOfTaxAssessmentItem">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="taxAssessmentItem" type="tns:TaxAssessmentItem" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="TaxAssessmentItem">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="taxAssessmentItemID" type="xs:long" />
+          <xs:element minOccurs="1" maxOccurs="1" name="taxAssessmentItemCode" type="tns:TaxAssessmentItemCodeEnum" />
+          <xs:element minOccurs="0" maxOccurs="1" name="taxAssessmentItemSection" type="xs:string" />
+          <xs:element minOccurs="1" maxOccurs="1" name="amount" type="xs:decimal" />
+          <xs:element minOccurs="1" maxOccurs="1" name="accounted" type="xs:boolean" />
+          <xs:element minOccurs="0" maxOccurs="1" default="1" name="installmentNumber" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:simpleType name="TaxAssessmentItemCodeEnum">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="AUT" />
+          <xs:enumeration value="OST" />
+          <xs:enumeration value="BYT" />
+          <xs:enumeration value="HRA" />
+          <xs:enumeration value="PES" />
+          <xs:enumeration value="POZ" />
+          <xs:enumeration value="STA" />
+          <xs:enumeration value="NAD" />
+          <xs:enumeration value="OSO" />
+          <xs:enumeration value="ZAM" />
+          <xs:enumeration value="PPO" />
+          <xs:enumeration value="PPI" />
+          <xs:enumeration value="PPV" />
+          <xs:enumeration value="POK" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:complexType name="PersonData">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="dcomID" type="xs:string" />
+          <xs:element minOccurs="1" maxOccurs="1" name="physicalPerson" nillable="true" type="tns:PhysicalPerson" />
+          <xs:element minOccurs="1" maxOccurs="1" name="corporateBody" nillable="true" type="tns:CorporateBody" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PhysicalPerson">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="familyName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="1" maxOccurs="1" name="givenName" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="CorporateBody">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="corporateBodyFullName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="1" maxOccurs="1" name="identifier" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ArrayOfTaxAssessmentItemTypeRecord">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="record" type="tns:TaxAssessmentItemTypeRecord" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="TaxAssessmentItemTypeRecord">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="taxOrFeeTypeCode" type="xs:string" />
+          <xs:element minOccurs="1" maxOccurs="1" name="year" type="xs:int" />
+          <xs:element minOccurs="1" maxOccurs="1" name="taxAssessmentType" type="tns:TaxAssessmentTypeEnum" />
+          <xs:element minOccurs="1" maxOccurs="1" name="taxAssessmentItemCode" type="tns:TaxAssessmentItemCodeEnum" />
+          <xs:element minOccurs="0" maxOccurs="1" name="taxAssessmentItemSection" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="description" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ResErr" type="tns:ResErr" />
+      <xs:element name="ReqBase" type="tns:ReqBase" />
+      <xs:element name="ResGetTaxOrFeeTypesList" type="tns:ResGetTaxOrFeeTypesList" />
+      <xs:element name="ReqGetTaxAssessments" type="tns:ReqGetTaxAssessments" />
+      <xs:element name="ResGetTaxAssessmentsList" type="tns:ResGetTaxAssessmentsList" />
+      <xs:element name="ReqSetTaxAssessmentsRecordStatusList" type="tns:ReqSetTaxAssessmentsRecordStatusList" />
+      <xs:element name="ResBase" type="tns:ResBase" />
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="getTaxAssessmentItemTypeReq">
+    <wsdl:part name="ReqGetTaxAssessmentItemTypes" element="tns:ReqGetTaxAssessmentItemTypes" />
+  </wsdl:message>
+  <wsdl:message name="getTaxAssessmentItemTypeReq_Headers">
+    <wsdl:part name="DcmHeader" element="tns:DcmHeader" />
+  </wsdl:message>
+  <wsdl:message name="getTaxAssessmentItemTypeRes">
+    <wsdl:part name="ResGetTaxAssessmentItemTypesList" element="tns:ResGetTaxAssessmentItemTypesList" />
+  </wsdl:message>
+  <wsdl:message name="getTaxAssessmentItemTypeRes_Headers">
+    <wsdl:part name="DcmHeader" element="tns:DcmHeader" />
+  </wsdl:message>
+  <wsdl:message name="IDanePoplatky_getTaxAssessmentItemTypes_ResErr_FaultMessage">
+    <wsdl:part name="detail" element="tns:ResErr" />
+  </wsdl:message>
+  <wsdl:message name="getTaxOrFeeTypesReq">
+    <wsdl:part name="ReqBase" element="tns:ReqBase" />
+  </wsdl:message>
+  <wsdl:message name="getTaxOrFeeTypesReq_Headers">
+    <wsdl:part name="DcmHeader" element="tns:DcmHeader" />
+  </wsdl:message>
+  <wsdl:message name="getTaxOrFeeTypesRes">
+    <wsdl:part name="ResGetTaxOrFeeTypesList" element="tns:ResGetTaxOrFeeTypesList" />
+  </wsdl:message>
+  <wsdl:message name="getTaxOrFeeTypesRes_Headers">
+    <wsdl:part name="DcmHeader" element="tns:DcmHeader" />
+  </wsdl:message>
+  <wsdl:message name="IDanePoplatky_getTaxOrFeeTypes_ResErr_FaultMessage">
+    <wsdl:part name="detail" element="tns:ResErr" />
+  </wsdl:message>
+  <wsdl:message name="getTaxAssessmentsReq">
+    <wsdl:part name="ReqGetTaxAssessments" element="tns:ReqGetTaxAssessments" />
+  </wsdl:message>
+  <wsdl:message name="getTaxAssessmentsReq_Headers">
+    <wsdl:part name="DcmHeader" element="tns:DcmHeader" />
+  </wsdl:message>
+  <wsdl:message name="getTaxAssessmentsRes">
+    <wsdl:part name="ResGetTaxAssessmentsList" element="tns:ResGetTaxAssessmentsList" />
+  </wsdl:message>
+  <wsdl:message name="getTaxAssessmentsRes_Headers">
+    <wsdl:part name="DcmHeader" element="tns:DcmHeader" />
+  </wsdl:message>
+  <wsdl:message name="IDanePoplatky_getTaxAssessments_ResErr_FaultMessage">
+    <wsdl:part name="detail" element="tns:ResErr" />
+  </wsdl:message>
+  <wsdl:message name="setTaxAssessmentsRecordStatusReq">
+    <wsdl:part name="ReqSetTaxAssessmentsRecordStatusList" element="tns:ReqSetTaxAssessmentsRecordStatusList" />
+  </wsdl:message>
+  <wsdl:message name="setTaxAssessmentsRecordStatusReq_Headers">
+    <wsdl:part name="DcmHeader" element="tns:DcmHeader" />
+  </wsdl:message>
+  <wsdl:message name="setTaxAssessmentsRecordStatusRes">
+    <wsdl:part name="ResBase" element="tns:ResBase" />
+  </wsdl:message>
+  <wsdl:message name="setTaxAssessmentsRecordStatusRes_Headers">
+    <wsdl:part name="DcmHeader" element="tns:DcmHeader" />
+  </wsdl:message>
+  <wsdl:message name="IDanePoplatky_setTaxAssessmentsRecordStatus_ResErr_FaultMessage">
+    <wsdl:part name="detail" element="tns:ResErr" />
+  </wsdl:message>
+  <wsdl:portType name="IDanePoplatky">
+    <wsdl:operation name="getTaxAssessmentItemTypes">
+      <wsdl:input wsaw:Action="http://schemas.dcom.sk/integration/dap/IDanePoplatky/getTaxAssessmentItemTypeReq" name="getTaxAssessmentItemTypeReq" message="tns:getTaxAssessmentItemTypeReq" />
+      <wsdl:output wsaw:Action="http://schemas.dcom.sk/integration/dap/IDanePoplatky/getTaxAssessmentItemTypeRes" name="getTaxAssessmentItemTypeRes" message="tns:getTaxAssessmentItemTypeRes" />
+      <wsdl:fault wsaw:Action="http://www.w3.org/2005/08/addressing/soap/fault" name="ResErr" message="tns:IDanePoplatky_getTaxAssessmentItemTypes_ResErr_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getTaxOrFeeTypes">
+      <wsdl:input wsaw:Action="http://schemas.dcom.sk/integration/dap/IDanePoplatky/getTaxOrFeeTypesReq" name="getTaxOrFeeTypesReq" message="tns:getTaxOrFeeTypesReq" />
+      <wsdl:output wsaw:Action="http://schemas.dcom.sk/integration/dap/IDanePoplatky/getTaxOrFeeTypesRes" name="getTaxOrFeeTypesRes" message="tns:getTaxOrFeeTypesRes" />
+      <wsdl:fault wsaw:Action="http://www.w3.org/2005/08/addressing/soap/fault" name="ResErr" message="tns:IDanePoplatky_getTaxOrFeeTypes_ResErr_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getTaxAssessments">
+      <wsdl:input wsaw:Action="http://schemas.dcom.sk/integration/dap/IDanePoplatky/getTaxAssessmentsReq" name="getTaxAssessmentsReq" message="tns:getTaxAssessmentsReq" />
+      <wsdl:output wsaw:Action="http://schemas.dcom.sk/integration/dap/IDanePoplatky/getTaxAssessmentsRes" name="getTaxAssessmentsRes" message="tns:getTaxAssessmentsRes" />
+      <wsdl:fault wsaw:Action="http://www.w3.org/2005/08/addressing/soap/fault" name="ResErr" message="tns:IDanePoplatky_getTaxAssessments_ResErr_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="setTaxAssessmentsRecordStatus">
+      <wsdl:input wsaw:Action="http://schemas.dcom.sk/integration/dap/IDanePoplatky/setTaxAssessmentsRecordStatusReq" name="setTaxAssessmentsRecordStatusReq" message="tns:setTaxAssessmentsRecordStatusReq" />
+      <wsdl:output wsaw:Action="http://schemas.dcom.sk/integration/dap/IDanePoplatky/setTaxAssessmentsRecordStatusRes" name="setTaxAssessmentsRecordStatusRes" message="tns:setTaxAssessmentsRecordStatusRes" />
+      <wsdl:fault wsaw:Action="http://www.w3.org/2005/08/addressing/soap/fault" name="ResErr" message="tns:IDanePoplatky_setTaxAssessmentsRecordStatus_ResErr_FaultMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="BasicHttpBinding_IDanePoplatky" type="tns:IDanePoplatky">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="getTaxAssessmentItemTypes">
+      <soap:operation soapAction="http://schemas.dcom.sk/integration/dap/IDanePoplatky/getTaxAssessmentItemTypeReq" style="document" />
+      <wsdl:input name="getTaxAssessmentItemTypeReq">
+        <soap:header message="tns:getTaxAssessmentItemTypeReq_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getTaxAssessmentItemTypeRes">
+        <soap:header message="tns:getTaxAssessmentItemTypeRes_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ResErr">
+        <soap:fault use="literal" name="ResErr" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTaxOrFeeTypes">
+      <soap:operation soapAction="http://schemas.dcom.sk/integration/dap/IDanePoplatky/getTaxOrFeeTypesReq" style="document" />
+      <wsdl:input name="getTaxOrFeeTypesReq">
+        <soap:header message="tns:getTaxOrFeeTypesReq_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getTaxOrFeeTypesRes">
+        <soap:header message="tns:getTaxOrFeeTypesRes_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ResErr">
+        <soap:fault use="literal" name="ResErr" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTaxAssessments">
+      <soap:operation soapAction="http://schemas.dcom.sk/integration/dap/IDanePoplatky/getTaxAssessmentsReq" style="document" />
+      <wsdl:input name="getTaxAssessmentsReq">
+        <soap:header message="tns:getTaxAssessmentsReq_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getTaxAssessmentsRes">
+        <soap:header message="tns:getTaxAssessmentsRes_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ResErr">
+        <soap:fault use="literal" name="ResErr" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="setTaxAssessmentsRecordStatus">
+      <soap:operation soapAction="http://schemas.dcom.sk/integration/dap/IDanePoplatky/setTaxAssessmentsRecordStatusReq" style="document" />
+      <wsdl:input name="setTaxAssessmentsRecordStatusReq">
+        <soap:header message="tns:setTaxAssessmentsRecordStatusReq_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="setTaxAssessmentsRecordStatusRes">
+        <soap:header message="tns:setTaxAssessmentsRecordStatusRes_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ResErr">
+        <soap:fault use="literal" name="ResErr" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="BasicHttpsBinding_IDanePoplatky" type="tns:IDanePoplatky">
+    <wsp:PolicyReference URI="#BasicHttpsBinding_IDanePoplatky_policy" />
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="getTaxAssessmentItemTypes">
+      <soap:operation soapAction="http://schemas.dcom.sk/integration/dap/IDanePoplatky/getTaxAssessmentItemTypeReq" style="document" />
+      <wsdl:input name="getTaxAssessmentItemTypeReq">
+        <soap:header message="tns:getTaxAssessmentItemTypeReq_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getTaxAssessmentItemTypeRes">
+        <soap:header message="tns:getTaxAssessmentItemTypeRes_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ResErr">
+        <soap:fault use="literal" name="ResErr" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTaxOrFeeTypes">
+      <soap:operation soapAction="http://schemas.dcom.sk/integration/dap/IDanePoplatky/getTaxOrFeeTypesReq" style="document" />
+      <wsdl:input name="getTaxOrFeeTypesReq">
+        <soap:header message="tns:getTaxOrFeeTypesReq_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getTaxOrFeeTypesRes">
+        <soap:header message="tns:getTaxOrFeeTypesRes_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ResErr">
+        <soap:fault use="literal" name="ResErr" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTaxAssessments">
+      <soap:operation soapAction="http://schemas.dcom.sk/integration/dap/IDanePoplatky/getTaxAssessmentsReq" style="document" />
+      <wsdl:input name="getTaxAssessmentsReq">
+        <soap:header message="tns:getTaxAssessmentsReq_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getTaxAssessmentsRes">
+        <soap:header message="tns:getTaxAssessmentsRes_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ResErr">
+        <soap:fault use="literal" name="ResErr" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="setTaxAssessmentsRecordStatus">
+      <soap:operation soapAction="http://schemas.dcom.sk/integration/dap/IDanePoplatky/setTaxAssessmentsRecordStatusReq" style="document" />
+      <wsdl:input name="setTaxAssessmentsRecordStatusReq">
+        <soap:header message="tns:setTaxAssessmentsRecordStatusReq_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="setTaxAssessmentsRecordStatusRes">
+        <soap:header message="tns:setTaxAssessmentsRecordStatusRes_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ResErr">
+        <soap:fault use="literal" name="ResErr" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="DapService">
+    <wsdl:port name="BasicHttpBinding_IDanePoplatky" binding="tns:BasicHttpBinding_IDanePoplatky">
+      <soap:address location="http://isodatalan.intra.dcom.sk/DCOMService/DapService.svc" />
+    </wsdl:port>
+    <wsdl:port name="BasicHttpsBinding_IDanePoplatky" binding="tns:BasicHttpsBinding_IDanePoplatky">
+      <soap:address location="https://isodatalan.intra.dcom.sk/DCOMService/DapService.svc" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

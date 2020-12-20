@@ -20,6 +20,11 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
 
         [DataMember]
         [PfeColumn(Text = "_Nadradená rola")]
-        public int? C_Roles_Id_Parent { get; set; }
+        public int? C_Role_Id_Parent { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Doménová")]
+        public bool AD { get; set; }
+
     }
 }

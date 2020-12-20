@@ -35,6 +35,9 @@ namespace WebEas.ServiceModel.Pfe.Types
         [DataMember]
         public bool DefaultView { get; set; }
 
+        [DataMember]
+        public string Data { get; set; }
+
         [IgnoreDataMember]
         public string KodPolozky { get; set; }
 

@@ -5,8 +5,9 @@ using ServiceStack;
 namespace WebEas.Esam.ServiceModel.Pfe.Dto
 {
     [Route("/possiblestates/{itemcode}/{id}", "GET")]
+    [Route("/possiblestates/{itemcode}/{id}/{uctovanie}", "GET")]
     [Api("Zoznam možných stavov")]
-    [WebEasAuthenticate]
+    [DataContract]
     public class PossibleStates : IReturn<List<PossibleStateResponse>>
     {
         [ApiMember(Name = "ItemCode", Description = "Kód položky", DataType = "string", IsRequired = true)]
@@ -16,6 +17,10 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
         [ApiMember(Name = "Id", Description = "ID záznamu", DataType = "int", IsRequired = true)]
         [DataMember(Name = "id")]
         public long Id { get; set; }
+
+        [ApiMember(Name = "Uctovanie", Description = "Zoznam prechodov, ktoré nie sú manuálne a slúžia na zaúčtovanie a odúčtovanie", DataType = "bool", IsRequired = false)]
+        [DataMember(Name = "uctovanie")]
+        public bool Uctovanie { get; set; }
     }
 
     [DataContract]
@@ -76,7 +81,7 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
         /// </summary>
         /// <value>The formular id.</value>
         [DataMember(Name = "formularid")]
-        public int C_Formular_Id { get; set; }
+        public int? C_Formular_Id { get; set; }
 
         /// <summary>
         /// Gets or sets the name of action.

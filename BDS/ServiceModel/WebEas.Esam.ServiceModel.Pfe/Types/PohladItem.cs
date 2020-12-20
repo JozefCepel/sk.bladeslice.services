@@ -1,11 +1,8 @@
-﻿using System;
-using System.Linq;
+﻿using ServiceStack.DataAnnotations;
 using System.Runtime.Serialization;
-using ServiceStack.DataAnnotations;
-using ServiceStack.Model;
 
 namespace WebEas.ServiceModel.Pfe.Types
-{ 
+{
     [Schema("pfe")]
     [Alias("D_Pohlad")]
     [TenantUpdatable]

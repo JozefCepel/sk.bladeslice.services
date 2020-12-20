@@ -8,7 +8,7 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
     [Schema("cfe")]
     [Alias("V_TreePermission")]
     [DataContract]
-    public class TreePermissionView : BaseEntity
+    public class TreePermissionView : BaseEntity, IBaseView
     {
         [PrimaryKey]
         [AutoIncrement]
@@ -26,11 +26,11 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
 
         [DataMember]
         [PfeColumn(Text = "_Pravo")]
-        public short Pravo { get; set; }
+        public byte Pravo { get; set; }
 
         [DataMember]
-        [PfeCombo(typeof(PravoCombo), NameColumn = "Pravo")]
-        [PfeColumn(Text = "Právo")]
+        [PfeCombo(typeof(PravoCombo), IdColumn = nameof(Pravo))]
+        [PfeColumn(Text = "Prístup")]
         [Ignore]
         public string PravoText
         {
@@ -41,10 +41,18 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
         }
 
         [DataMember]
-        public int C_Role_Id { get; set; }
+        public int? C_Role_Id { get; set; }
 
         [DataMember]
-        public Guid D_User_Id { get; set; }
+        public Guid? D_User_Id { get; set; }
 
+        //audit stlpce
+        [DataMember]
+        [PfeColumn(Text = "Vytvoril", Hidden = true, Editable = false, ReadOnly = true, LoadWhenVisible = true)]
+        public string VytvorilMeno { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Zmenil", Hidden = true, Editable = false, ReadOnly = true, LoadWhenVisible = true)]
+        public string ZmenilMeno { get; set; }
     }
 }

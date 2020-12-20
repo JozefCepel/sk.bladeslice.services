@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using ServiceStack;
+﻿using ServiceStack;
 
 namespace WebEas.Esam.ServiceModel.Pfe.Dto
 {

@@ -1,9 +1,5 @@
-﻿using System;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
-using ServiceStack.DataAnnotations;
-using ServiceStack.Model;
-using System.Collections.Generic;
 
 namespace WebEas.ServiceModel.Pfe.Types
 {
@@ -46,16 +42,13 @@ namespace WebEas.ServiceModel.Pfe.Types
         [DataMember(Name = "vsh")]
         public int ViewSharing { get; set; }
 
+        [DataMember(Name = "vshc")]
+        public int? ViewSharing_Custom { get; set; }
+
         [DataMember(Name = "pgs")]
         public int PageSize { get; set; }
 
         [DataMember(Name = "rbf")]
         public string RibbonFilters { get; set; }
-
-        /// <summary>
-        /// id pre detail view pohlad a bude sa posielat len pre formular a grid
-        /// </summary>
-        [DataMember(Name = "dvi")]
-        public int? DetailViewId { get; set; }
     }
 }

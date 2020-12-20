@@ -26,7 +26,9 @@ namespace WebEas.ServiceModel.Pfe.Types
         [DataMember]
         public string Typ { get; set; }
 
-        [DataMember]
+        /* Dohoda s Ludkou aby sa necistil kod polozky - zatial tu necham keby nieco
+         * private string kodPolozky { get; set; }
+         * [DataMember]
         public string KodPolozky
         {
             get
@@ -37,7 +39,10 @@ namespace WebEas.ServiceModel.Pfe.Types
             {
                 this.kodPolozky = CleanCode(value);
             }
-        }
+        }*/
+
+        [DataMember]
+        public string KodPolozky { get; set; }
 
         [DataMember]
         public bool ShowInActions { get; set; }
@@ -67,11 +72,6 @@ namespace WebEas.ServiceModel.Pfe.Types
         public string RibbonFilters { get; set; }
 
         [DataMember]
-        public int? DetailViewId { get; set; }
-
-        private string kodPolozky { get; set; }
-
-        [DataMember]
         public Guid? D_Tenant_Id { get; set; }
 
         /// <summary>
@@ -86,11 +86,12 @@ namespace WebEas.ServiceModel.Pfe.Types
                 return code;
             }
 
-            if (code.Contains('!'))
+            if (code.StartsWith("dms-id"))
             {
-                return Regex.Replace(code, "(![^-]*)", "");
+                code = "dms-id";
             }
-            return code;
+
+            return code.Contains('!') ? Regex.Replace(code, "(![^-]*)", "") : code;
         }
 
         /// <summary>

@@ -14,11 +14,11 @@ using WebEas.ServiceModel;
 
 namespace WebEas.Esam.ServiceInterface.Office
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    public class ServiceBase : WebEasCoreServiceBase, IEsamService
+    [Authenticate]
+    public class ServiceBase : WebEasCoreServiceBase, ServiceModel.Office.IServiceBase
     {
+        public IServerEvents ServerEvents { get; set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ServiceBase" /> class.
         /// </summary>
@@ -31,11 +31,11 @@ namespace WebEas.Esam.ServiceInterface.Office
         /// Gets or sets the repository.
         /// </summary>
         /// <value>The repository.</value>
-        public virtual new IRepositoryBase Repository
+        public new IRepositoryBase Repository
         {
             get
             {
-                return (IRepositoryBase)this.repository;
+                return (IRepositoryBase)repository;
             }
         }
 
@@ -46,10 +46,95 @@ namespace WebEas.Esam.ServiceInterface.Office
         public override void Dispose()
         {
             base.Dispose();
-            if (this.repository != null)
+            if (repository != null)
             {
-                this.repository.Dispose();
+                repository.Dispose();
             }
+        }
+
+        public override void OnBeforeExecute(object requestDto)
+        {
+            var webeasRepositoryBase = (IRepositoryBase)repository;
+            webeasRepositoryBase.Session = SessionAs<IWebEasSession>();
+
+            if (HostContext.ServiceName != "pfe" && requestDto.GetType().Name != "NotifyPersonDataChangeDto" && requestDto.GetType().Name != "LongOperationListDto")
+            {
+                if (requestDto.GetType().HasAttribute<RouteAttribute>())
+                {
+                    var rootNode = webeasRepositoryBase.RenderModuleRootNode(webeasRepositoryBase.Code);
+                    var routeUrl = requestDto.GetType().FirstAttribute<RouteAttribute>().Path;
+                    var usernoderights = webeasRepositoryBase.GetUserTreeRights(webeasRepositoryBase.Code);
+                    var hierarchyNodesWithUrl = rootNode.Children.RecursiveSelect(w => w.Children).Where(x => x.Actions.Any(z => z.Url != null && z.Url.Contains(routeUrl)));
+
+                    //kontrola na akciu
+                    foreach (var node in hierarchyNodesWithUrl)
+                    {
+                        var userTreeRight = usernoderights.FirstOrDefault(r => r.Kod == RepairNodeKey(node.KodPolozky));
+
+                        foreach (NodeAction act in node.Actions.Where(z => z.Url != null && z.Url.Contains(routeUrl)))
+                        {
+                            if (act.ActionType is NodeActionType.MenuButtonsAll)
+                            {
+                                act.MenuButtons.ForEach((x) => {
+                                    if (!HierarchyNode.HasRolePrivileges(x, userTreeRight))
+                                    {
+                                        throw new WebEasUnauthorizedAccessException();
+                                    }
+                                });
+                            }
+                            else
+                            {
+                                if (!HierarchyNode.HasRolePrivileges(act, userTreeRight))
+                                {
+                                    throw new WebEasUnauthorizedAccessException();
+                                }
+                            }
+                        }
+                    }
+
+                    // kontrola na ListDto
+                    if (requestDto.GetType().HasInterface(typeof(IListDto)))
+                    {
+                        var userTreeRight = usernoderights.FirstOrDefault(r => r.Kod == RepairNodeKey(((IListDto)requestDto).KodPolozky));
+
+                        if (userTreeRight == null || userTreeRight.Pravo == 0)
+                        {
+                            throw new WebEasUnauthorizedAccessException();
+                        }
+                    }
+
+                    // kontrola na ListComboDto
+                    if (requestDto.GetType().HasInterface(typeof(IListComboDto)))
+                    {
+                        var userTreeRight = usernoderights.FirstOrDefault(r => r.Kod == RepairNodeKey(((IListComboDto)requestDto).KodPolozky));
+
+                        if (userTreeRight == null || userTreeRight.Pravo == 0)
+                        {
+                            throw new WebEasUnauthorizedAccessException();
+                        }
+                    }
+
+                }
+            }
+
+            base.OnBeforeExecute(requestDto);
+        }
+
+        private static string RepairNodeKey(string nodeKey)
+        {
+            if (nodeKey.ToLower().StartsWith("all-"))
+            {
+                if (nodeKey.Contains("!"))
+                {
+                    nodeKey = HierarchyNodeExtensions.CleanKodPolozky(nodeKey);
+                }
+                else
+                {
+                    nodeKey = HostContext.ServiceName + nodeKey.Substring(3); //Namiesto "all" dám meno modulu
+                }
+            }
+
+            return HierarchyNodeExtensions.RemoveParametersFromKodPolozky(nodeKey);
         }
 
         /// <summary>
@@ -59,7 +144,7 @@ namespace WebEas.Esam.ServiceInterface.Office
         /// <returns></returns>
         public object GetList(IListDto request)
         {
-            HierarchyNode node = Modules.FindNode(request.KodPolozky);
+            HierarchyNode node = Repository.RenderModuleRootNode(request.KodPolozky).FindNode(request.KodPolozky);
             var pagging = new PaggingParameters { PageNumber = request.Page, PageSize = request.Limit };
 
             var keys = this.Request.QueryString.AllKeys.Except(new string[] { "KodPolozky", "_dc", "page", "start", "limit", "filters", "group", "sort" }).ToList();
@@ -98,12 +183,12 @@ namespace WebEas.Esam.ServiceInterface.Office
         {
             return new
             {
-                Version = WebEas.Context.Info.ApplicationVersion,
-                Released = WebEas.Context.Info.Updated.ToString("dd.MM.yyyy HH:mm"),
+                Version = Context.Info.ApplicationVersion,
+                Released = Context.Info.Updated.ToString("dd.MM.yyyy HH:mm"),
                 Environment = this.Repository.DbEnvironment,
-                DbDeployed = this.Repository.DbDeployTime == null ? null : this.Repository.DbDeployTime.Value.ToString("dd.MM.yyyy HH:mm"),
+                DbDeployed = Repository.DbDeployTime?.ToString("dd.MM.yyyy HH:mm"),
                 IsRedisCache = Cache is ServiceStack.Redis.RedisClientManagerCacheClient,
-                Session = Repository.Session
+                Repository.Session
             };
         }
 
@@ -116,7 +201,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                 string name = p.HasAttribute<DataMemberAttribute>() ? string.IsNullOrEmpty(p.FirstAttribute<DataMemberAttribute>().Name) ? p.Name.ToLower() : p.FirstAttribute<DataMemberAttribute>().Name.ToLower() : p.Name.ToLower();
                 string dbName = p.HasAttribute<AliasAttribute>() ? p.FirstAttribute<AliasAttribute>().Name : p.Name;
 
-                properties.Add(name, dbName);
+                properties.AddIfNotExists(name, dbName);
             }
 
             return properties;
@@ -132,19 +217,7 @@ namespace WebEas.Esam.ServiceInterface.Office
             if (request.Codes == null || request.Codes.Length == 0)
                 return null;
 
-            var result = new List<TreeNodeCount>(request.Codes.Length);
-
-            //randomize array to achieve better (quicker) results
-            //because GetTreeCounts() syncs access to cache
-            var random = new Random();
-            foreach (var code in request.Codes.OrderBy(a => random.Next()))
-            {
-                int rows = -1;
-                int allrows = -1;
-                this.Repository.GetTreeCounts(code, out rows, out allrows);
-                result.Add(new TreeNodeCount() { Count = rows, CountAll = allrows, Code = code });
-            }
-            return result;
+            return Repository.GetTreeCounts(request);
         }
 
         public List<T> NacitatZoznam<T>(Expression<Func<T, bool>> filter, string tenantId) where T : class

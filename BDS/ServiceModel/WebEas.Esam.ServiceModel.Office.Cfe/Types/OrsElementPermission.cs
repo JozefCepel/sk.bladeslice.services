@@ -13,7 +13,6 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
         [DataMember]
         [AutoIncrement]
         [PrimaryKey]
-        [PfeColumn(Text = "ID povolenia na element")]
         public int D_OrsElementPermission_Id { get; set; }
 
         [DataMember]
@@ -29,7 +28,7 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
         public Guid? D_User_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Právo")]
+        [PfeColumn(Text = "Prístup")]
         public byte Pravo { get; set; }
 
     }
