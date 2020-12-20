@@ -12,7 +12,7 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
         [PrimaryKey]
         [AutoIncrement]
         [DataMember]        
-        public short C_TenantType_Id { get; set; }
+        public byte C_TenantType_Id { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Typ", Mandatory = true)]

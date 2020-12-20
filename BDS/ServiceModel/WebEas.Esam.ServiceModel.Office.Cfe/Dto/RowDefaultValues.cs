@@ -12,7 +12,6 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
     /// </summary>
     [Route("/GetRowDefaultValues", "GET")]
     [Api("GetRowDefaultValues")]
-    [WebEasRequiredRole(RolesDefinition.Cfe.Roles.CfeMember)]
     public class RowDefaultValues
     {
         [ApiMember(Name = "Code", Description = "kod aktualnej polozky v strome", DataType = "string", IsRequired = true)]

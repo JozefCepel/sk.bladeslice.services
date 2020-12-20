@@ -9,7 +9,7 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
     /// </summary>
     [Route("/treeview/{SkratkaModulu}", "GET")]
     [Api("RS 2 - Strom vybraného modulu")]
-    [WebEasAuthenticate]
+    
     [DataContract]
     public class GetTreeView
     {

@@ -4,37 +4,44 @@ using System;
 using System.Runtime.Serialization;
 using WebEas.Esam.ServiceModel.Office.Cfe.Types;
 using WebEas.ServiceModel;
+using WebEas.ServiceModel.Types;
 
 namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
 {
-    // Create
-    [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeWriter)]
-    [Route("/CreateTreePermission", "POST")]
-    [Api("TreePermission")]
+    [Route("/TreeSetRightNo", "POST")]
+    [Api("OrsElementType")]
     [DataContract]
-    public class CreateTreePermission : TreePermissionDto { }
-
-    // Update
-    [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeWriter)]
-    [Route("/UpdateTreePermission", "PUT")]
-    [Api("TreePermission")]
-    [DataContract]
-    public class UpdateTreePermission : TreePermissionDto
+    public class TreeSetRightNo
     {
-        [PrimaryKey]
         [DataMember(IsRequired = true)]
-        public long D_TreePermission_Id { get; set; }
+        public string[] IDs { get; set; }
     }
 
-    // Delete
-    [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeWriter)]
-    [Route("/DeleteTreePermission", "DELETE")]
-    [Api("TreePermission")]
+    [Route("/TreeSetRightRead", "POST")]
+    [Api("OrsElementType")]
     [DataContract]
-    public class DeleteTreePermission
+    public class TreeSetRightRead
     {
         [DataMember(IsRequired = true)]
-        public long D_TreePermission_Id { get; set; }
+        public string[] IDs { get; set; }
+    }
+
+    [Route("/TreeSetRightUpdate", "POST")]
+    [Api("OrsElementType")]
+    [DataContract]
+    public class TreeSetRightUpdate
+    {
+        [DataMember(IsRequired = true)]
+        public string[] IDs { get; set; }
+    }
+
+    [Route("/TreeSetRightFull", "POST")]
+    [Api("OrsElementType")]
+    [DataContract]
+    public class TreeSetRightFull
+    {
+        [DataMember(IsRequired = true)]
+        public string[] IDs { get; set; }
     }
 
     #region DTO

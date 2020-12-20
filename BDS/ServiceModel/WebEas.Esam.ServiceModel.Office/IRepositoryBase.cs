@@ -1,46 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using WebEas.Core;
+using WebEas.Esam.ServiceModel.Office.Dto;
+using WebEas.Esam.ServiceModel.Office.Types.Reg;
 using WebEas.ServiceModel;
 using WebEas.ServiceModel.Dto;
-using WebEas.ServiceModel.Types;
+using WebEas.ServiceModel.Office.Egov.Reg.Types;
 
 namespace WebEas.Esam.ServiceModel.Office
 {
-    public interface IRepositoryBase : IWebEasCoreRepositoryBase
+    public interface IRepositoryBase : IWebEasRepositoryBase
     {
-        /// <summary>
-        /// Gets the name of the current user formatted.
-        /// </summary>
-        /// <value>The name of the current user formatted.</value>
-        string CurrentUserFormattedName { get; }
-
-        /// <summary>
-        /// Gets the record.
-        /// </summary>
-        /// <typeparam name="T">The type of the T.</typeparam>
-        /// <param name="id">The id.</param>
-        /// <returns></returns>
-        T GetRecord<T>(object id) where T : class;
-
-        /// <summary>
-        /// Gets the by id filled.
-        /// </summary>
-        /// <param name="data">The data.</param>
-        /// <returns></returns>
-        IBaseEntity GetByIdFilled(IDto data);
-
-        /// <summary>
-        /// Gets the by id filled.
-        /// </summary>
-        /// <typeparam name="T">The type of the T.</typeparam>
-        /// <param name="data">The data.</param>
-        /// <param name="id">The id.</param>
-        /// <returns></returns>
-        T GetByIdFilled<T>(IDto data, object id) where T : class, IBaseEntity;
-
         /// <summary>
         /// Gets the db environment.
         /// </summary>
@@ -54,105 +23,6 @@ namespace WebEas.Esam.ServiceModel.Office
         DateTime? DbDeployTime { get; }
 
         /// <summary>
-        /// Gets the list.
-        /// </summary>
-        /// <typeparam name="T">The type of the T.</typeparam>
-        /// <param name="filter">The filter.</param>
-        /// <param name="pagging">The pagging.</param>
-        /// <returns></returns>
-        List<T> GetList<T>(Filter filter = null, PaggingParameters pagging = null) where T : class;
-
-        /// <summary>
-        /// Gets the list.
-        /// </summary>
-        /// <typeparam name="T">The type of the T.</typeparam>
-        /// <param name="filter">The filter.</param>
-        /// <returns></returns>
-        List<T> GetList<T>(Filter filter, PaggingParameters pagging, List<PfeSortAttribute> userSort = null, List<string> columnsWithData = null, Filter ribbonFilter = null) where T : class;
-
-        /// <summary>
-        /// Gets the list.
-        /// </summary>
-        /// <typeparam name="T">The type of the T.</typeparam>
-        /// <param name="filter">The filter.</param>
-        /// <returns></returns>
-        List<T> GetList<T>(Expression<Func<T, bool>> filter) where T : class;
-
-        /// <summary>
-        /// Gets the list.
-        /// </summary>
-        /// <typeparam name="T">The type of the T.</typeparam>
-        /// <param name="filter">The filter.</param>
-        /// <returns></returns>
-        List<T> GetList<T>(BaseListDto listDto, HierarchyNode node = null, PaggingParameters pagging = null) where T : class;
-
-        /// <summary>
-        /// Gets the list combo.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
-        List<ComboResult> GetListCombo(IListComboDto request);
-
-        /// <summary>
-        /// Gets the list combo.
-        /// </summary>
-        /// <param name="modelType">Type of the model.</param>
-        /// <param name="col">The col.</param>
-        /// <param name="requestFields">The request fields.</param>
-        /// <returns></returns>
-        List<ComboResult> GetListCombo(Type modelType, string col, string[] requestFields = null);
-
-        /// <summary>
-        /// Deletes the entity.
-        /// </summary>
-        /// <typeparam name="T">The type of the entity.</typeparam>
-        int Delete<T>(object id) where T : class, IBaseEntity;
-
-        /// <summary>
-        /// Creates the ciselnik row.
-        /// </summary>
-        /// <typeparam name="T">The type of the T.</typeparam>
-        /// <param name="obj">The obj.</param>
-        /// <returns></returns>
-        int Create<T>(T obj) where T : class, IBaseEntity;
-
-        /// <summary>
-        /// Creates the specified data.
-        /// </summary>
-        /// <typeparam name="T">The type of the T.</typeparam>
-        /// <param name="data">The data.</param>
-        /// <returns></returns>
-        T Create<T>(IDto data)
-            where T : class, IBaseEntity, new();
-
-        /// <summary>
-        /// Updates the ciselnik row.
-        /// </summary>
-        /// <typeparam name="T">The type of the T.</typeparam>
-        /// <param name="obj">The obj.</param>
-        int Update<T>(T obj) where T : class, IBaseEntity;
-
-        /// <summary>
-        /// Updates the specified data.
-        /// </summary>
-        /// <typeparam name="T">The type of the T.</typeparam>
-        /// <param name="data">The data.</param>
-        /// <returns></returns>
-        T Update<T>(IDto data) where T : class, IBaseEntity, new();
-
-        /// <summary>
-        /// Updates the only.
-        /// </summary>
-        /// <param name="data">The data.</param>
-        void UpdateOnly(IDto data);
-
-        /// <summary>
-        /// Sets the access flag.
-        /// </summary>
-        /// <param name="viewData">The view data.</param>
-        void SetAccessFlag(object viewData);
-
-        /// <summary>
         /// Changes the state.
         /// </summary>
         /// <param name="state">The state.</param>
@@ -164,41 +34,94 @@ namespace WebEas.Esam.ServiceModel.Office
         /// <typeparam name="T">The type of the T.</typeparam>
         /// <param name="entityId">The entity id.</param>
         /// <param name="newStateId">The new state id.</param>
-        void ChangeState<T>(long entityId, int newStateId) where T : class, IBaseEntity, IHasStateId;
-
-        /// <summary>
-        /// Check if there is configured logging on some column in specified table (reg.C_LoggingConfig)
-        /// </summary>
-        bool IsTableLogged(string schema, string table);
-
-        /// <summary>
-        /// Check if there is configured logging on some column in specified tables via attribute list (reg.C_LoggingConfig)
-        /// </summary>
-        bool IsTableLogged(SourceTableAttribute[] list);
+        /// <param name="stavovyPriestor">Stavovy priestor v ktorom sa to ma skontrolovat</param>
+        /// <returns>povodny stav entity</returns>
+        int ChangeState<T>(long entityId, int newStateId, int stavovyPriestor) where T : class, IBaseEntity, IHasStateId;
 
         /// <summary>
         /// Get counts to be displayed in tree node with specified code (kod polozky)
         /// </summary>
-        void GetTreeCounts(string code, out int countState, out int countAll);
-        
-        /// <summary>
-        /// Get list of changes for specified row Id in specified node
-        /// </summary>
-        /// <param name="code">Kod polozky</param>
-        /// <param name="rowId">Unique row ID (source data primary key)</param>
-        List<LoggingView> GetTableLogging(string code, long rowId);
+        List<TreeNodeCount> GetTreeCounts(IGetTreeCounts treeCounts);
 
         #region Long operation
 
-        LongOperationStatus LongOperationStart(string operationName, string operationParameters, string operationInfo);
+        LongOperationStatus LongOperationStart(LongOperationStartDtoBase request);
         LongOperationStatus LongOperationRestart(string processKey);
         LongOperationStatus LongOperationStatus(string processKey);
         object LongOperationResult(string processKey);
         LongOperationStatus LongOperationCancel(string processKey, bool notRemove);
-        IOrderedEnumerable<LongOperationStatus> LongOperationList(bool perTenant, int skip, int take);
+        List<LongOperationStatus> LongOperationList(bool perTenant, int skip, int take);
 
         #endregion
 
-        object GetRowDefaultValues(string code, string masterCode, string masterRowId);
+        #region Nastavenie
+
+        /// <summary>
+        /// Update nastavenia v aktuálnom module
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        WebEas.ServiceModel.Types.NastavenieView UpdateNastavenie(UpdateNastavenieBase updateNastavenie);
+
+        /// <summary>
+        /// Update nastavenie do konkrétneho modulu
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        WebEas.ServiceModel.Types.NastavenieView UpdateNastavenie(UpdateNastavenieBase updateNastavenie, string explicitModul);
+
+        /// <summary>
+        /// Vráti hodnotu používateľského alebo tenantského nastavenia podľa zadaných kritérií.
+        /// Ak sa dopytuje na používateľské nastavenie ktoré používateľ nemá zadané, použije sa príslušné tenantské. Ak nastavenie nie je zadané vôbec, vráti sa preddefinovaná hodnota.
+        /// </summary>
+        /// <param name="modul">Kód modulu</param>
+        /// <param name="kod">Kód nastavenia</param>
+        /// <returns>Boolean</returns>
+        bool GetNastavenieB(string modul, string kod);
+
+        /// <summary>
+        /// Vráti hodnotu používateľského alebo tenantského nastavenia podľa zadaných kritérií.
+        /// Ak sa dopytuje na používateľské nastavenie ktoré používateľ nemá zadané, použije sa príslušné tenantské. Ak nastavenie nie je zadané vôbec, vráti sa preddefinovaná hodnota.
+        /// </summary>
+        /// <param name="modul">Kód modulu</param>
+        /// <param name="kod">Kód nastavenia</param>
+        /// <returns>Long</returns>
+        long GetNastavenieI(string modul, string kod);
+
+        /// <summary>
+        /// Vráti hodnotu používateľského alebo tenantského nastavenia podľa zadaných kritérií.
+        /// Ak sa dopytuje na používateľské nastavenie ktoré používateľ nemá zadané, použije sa príslušné tenantské. Ak nastavenie nie je zadané vôbec, vráti sa preddefinovaná hodnota.
+        /// </summary>
+        /// <param name="modul">Kód modulu</param>
+        /// <param name="kod">Kód nastavenia</param>
+        /// <returns>String</returns>
+        string GetNastavenieS(string modul, string kod);
+
+        /// <summary>
+        /// Vráti hodnotu používateľského alebo tenantského nastavenia podľa zadaných kritérií.
+        /// Ak sa dopytuje na používateľské nastavenie ktoré používateľ nemá zadané, použije sa príslušné tenantské. Ak nastavenie nie je zadané vôbec, vráti sa preddefinovaná hodnota.
+        /// </summary>
+        /// <param name="modul">Kód modulu</param>
+        /// <param name="kod">Kód nastavenia</param>
+        /// <returns>String</returns>
+        DateTime? GetNastavenieD(string modul, string kod);
+
+        string GetTypBiznisEntityNastav(TypBiznisEntityEnum typBiznisEntity, LokalitaEnum lokalita);
+
+        #endregion
+
+        #region Doklady
+
+        void SetCislovanie();
+
+        void DeleteDoklad<T>(long[] id) where T : class, IBaseEntity;
+
+        #endregion
+
+        List<TypBiznisEntityNastavView> GetTypBiznisEntityNastavView();
+
+        string FormatujUcet(string ucet, string fmt);
+
+        void OdstranitFormatovanieUctuFiltra(string ucet, ref Filter filter);
     }
 }

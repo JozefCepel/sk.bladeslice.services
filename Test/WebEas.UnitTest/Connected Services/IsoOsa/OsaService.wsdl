@@ -1,0 +1,771 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://schemas.dcom.sk/integration/osa/v21" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="OsaService" targetNamespace="http://schemas.dcom.sk/integration/osa/v21" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsp:Policy wsu:Id="BasicHttpsBinding_OsobyAdresy_policy">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <sp:TransportBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+          <wsp:Policy>
+            <sp:TransportToken>
+              <wsp:Policy>
+                <sp:HttpsToken RequireClientCertificate="false" />
+              </wsp:Policy>
+            </sp:TransportToken>
+            <sp:AlgorithmSuite>
+              <wsp:Policy>
+                <sp:Basic256 />
+              </wsp:Policy>
+            </sp:AlgorithmSuite>
+            <sp:Layout>
+              <wsp:Policy>
+                <sp:Strict />
+              </wsp:Policy>
+            </sp:Layout>
+          </wsp:Policy>
+        </sp:TransportBinding>
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsdl:types>
+    <xs:schema elementFormDefault="qualified" targetNamespace="http://schemas.dcom.sk/integration/osa/v21" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:element name="ReqFindPersonId" type="tns:ReqFindPersonId" />
+      <xs:complexType name="ReqFindPersonId">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="physicalPersonSearchCriteria" type="tns:PhysicalPersonSearchCriteria" />
+          <xs:element minOccurs="0" maxOccurs="1" name="corporateBodySearchCriteria" type="tns:CorporateBodySearchCriteria" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PhysicalPersonSearchCriteria">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="birthNumber" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="yearOfBirth" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="name" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="surname" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="givenSurname" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="foreignerID" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="ID1" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="ID2" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="nationality" type="tns:Country" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Country">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="name" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="code" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="CorporateBodySearchCriteria">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="IDOfOrganization" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="corporateBodyFullName" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="DcmHeader" type="tns:DcmHeader" />
+      <xs:complexType name="DcmHeader">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="requestId" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="tenantId" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="isoId" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="officeId" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ResFindPersonId" type="tns:ArrayOfPersonDescription" />
+      <xs:complexType name="ArrayOfPersonDescription">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="person" type="tns:PersonDescription" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PersonDescription">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="DCOMPersonId" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="description" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="taxId" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="VATId" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="IDOfOrganization" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="OSAFault" type="tns:OSAFault" />
+      <xs:complexType name="OSAFault">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="errorCode" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="errorMessage" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ReqGetAddressesByPersonId" type="tns:ReqGetAddressesByPersonId" />
+      <xs:complexType name="ReqGetAddressesByPersonId">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="DCOMPersonId" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="ISOuser" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="purpose" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ResGetAddressesByPersonId" type="tns:ArrayOfPersonAddress" />
+      <xs:complexType name="ArrayOfPersonAddress">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="address" type="tns:PersonAddress" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PersonAddress">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="pobox" type="tns:POBOX" />
+          <xs:element minOccurs="0" maxOccurs="1" name="source" type="tns:SourceType" />
+          <xs:element minOccurs="0" maxOccurs="1" name="location" type="tns:Address" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="POBOX">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="number" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="postalCode" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="SourceType">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="code" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Address">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="DCOMAddressId" type="xs:long" />
+          <xs:element minOccurs="0" maxOccurs="1" name="streetName" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="buildingNumber" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="buildingChar" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="propertyRegistrationNumber" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="district" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="postalCode" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="habitable" type="xs:boolean" />
+          <xs:element minOccurs="0" maxOccurs="1" name="containsApartments" type="xs:boolean" />
+          <xs:element minOccurs="0" maxOccurs="1" name="flatNumber" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="floor" type="xs:int" />
+          <xs:element minOccurs="0" maxOccurs="1" name="houseIndex" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="county" type="tns:County" />
+          <xs:element minOccurs="0" maxOccurs="1" name="unstructuredAddress" type="tns:AddressLine" />
+          <xs:element minOccurs="0" maxOccurs="1" name="municipality" type="tns:Municipality" />
+          <xs:element minOccurs="0" maxOccurs="1" name="country" type="tns:Country" />
+          <xs:element minOccurs="0" maxOccurs="1" name="addressPoint" type="tns:AddressPoint" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="County">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="name" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="code" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="AddressLine">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="addressLine" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Municipality">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="name" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="code" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="AddressPoint">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="x" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="y" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="h" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ReqGetPhysicalPersonPermanentResidence" type="tns:ReqGetPhysicalPersonPermanentResidence" />
+      <xs:complexType name="ReqGetPhysicalPersonPermanentResidence">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="ISOuser" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="purpose" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="birthNumber" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="dateOfBirth" type="xs:date" />
+          <xs:element minOccurs="0" maxOccurs="1" name="yearOfBirth" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="name" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="surname" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="givenSurname" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ResGetPhysicalPersonPermanentResidence" type="tns:ResGetPhysicalPersonPermanentResidence" />
+      <xs:complexType name="ResGetPhysicalPersonPermanentResidence">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="permanentResidence" type="tns:Residence" />
+          <xs:element minOccurs="0" maxOccurs="1" name="temporaryResidence" type="tns:Residence" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Residence">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="dateFrom" type="xs:date" />
+          <xs:element minOccurs="1" maxOccurs="1" name="dateTo" type="xs:date" />
+          <xs:element minOccurs="0" maxOccurs="1" name="address" type="tns:Address" />
+          <xs:element minOccurs="0" maxOccurs="1" name="residenceAtMunicipality" type="xs:boolean" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ReqGetPhysicalPersonBankConnection" type="tns:ReqGetPhysicalPersonBankConnection" />
+      <xs:complexType name="ReqGetPhysicalPersonBankConnection">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="DCOMPersonId" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="ISOuser" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="purpose" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ResGetPhysicalPersonBankConnection" type="tns:ArrayOfBankConnection" />
+      <xs:complexType name="ArrayOfBankConnection">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="bankConnection" type="tns:BankConnection" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="BankConnection">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="DCOMId" type="xs:long" />
+          <xs:element minOccurs="0" maxOccurs="1" name="accountNumberPrefix" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="accountNumber" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="bankCode" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="IBAN" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="BIC" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="source" type="tns:SourceType" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ReqGetCorporateBodyData" type="tns:ReqGetCorporateBodyData" />
+      <xs:complexType name="ReqGetCorporateBodyData">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="DCOMPersonId" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ResGetCorporateBodyData" type="tns:ResGetCorporateBodyData" />
+      <xs:complexType name="ResGetCorporateBodyData">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="DCOMPersonId" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="IDOfOrganization" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="businessName" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="taxId" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="VATId" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="bankConnection" type="tns:BankConnection" />
+          <xs:element minOccurs="0" maxOccurs="1" name="registeredSeat" type="tns:Address" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ReqFindAddressRA" type="tns:ReqFindAddressRA" />
+      <xs:complexType name="ReqFindAddressRA">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="streetName" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="buildingNumber" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="buildingChar" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="propertyRegistrationNumber" type="xs:string" />
+          <xs:element minOccurs="1" maxOccurs="1" name="addressPoints" type="xs:boolean" />
+          <xs:element minOccurs="0" maxOccurs="1" name="postalCode" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="municipality" type="tns:Municipality" />
+          <xs:element minOccurs="0" maxOccurs="1" name="county" type="tns:County" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ResFindAddressRA" type="tns:ArrayOfAddress" />
+      <xs:complexType name="ArrayOfAddress">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="address" type="tns:Address" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ReqReplicatePerson" type="tns:ReqReplicatePerson" />
+      <xs:complexType name="ReqReplicatePerson">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" default="false" name="withHistory" type="xs:boolean" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="replicate" type="tns:ReplicateFilter" />
+          <xs:element minOccurs="0" maxOccurs="1" name="startWith" type="tns:PersonCursor" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:simpleType name="ReplicateFilter">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="BasicData" />
+          <xs:enumeration value="SensitiveData" />
+          <xs:enumeration value="PermanentResidences" />
+          <xs:enumeration value="RegisteredSeat" />
+          <xs:enumeration value="ContactAddresses" />
+          <xs:enumeration value="BankAccounts" />
+          <xs:enumeration value="Dates" />
+          <xs:enumeration value="TemporaryResidences" />
+          <xs:enumeration value="LegalCapacityRestriction" />
+          <xs:enumeration value="BirthAndDeath" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:complexType name="PersonCursor">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="from" type="xs:dateTime" />
+          <xs:element minOccurs="0" maxOccurs="1" name="to" type="xs:dateTime" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="personId" type="tns:DCOMPersonId" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="DCOMPersonId">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="DCOMPersonId" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ResReplicatePerson" type="tns:ResReplicatePerson" />
+      <xs:complexType name="ResReplicatePerson">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="replicatedPerson" type="tns:ReplicatedPerson" />
+          <xs:element minOccurs="0" maxOccurs="1" name="hasMore" type="tns:PersonCursor" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ReplicatedPerson">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="lastUpdate" type="xs:dateTime" />
+          <xs:element minOccurs="0" maxOccurs="1" name="newPersonId" type="tns:DCOMPersonId" />
+          <xs:element minOccurs="1" maxOccurs="1" name="change" type="tns:ChangeType" />
+          <xs:element minOccurs="0" maxOccurs="1" name="personData" type="tns:ReplicatedPersonData" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:simpleType name="ChangeType">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="NEW" />
+          <xs:enumeration value="UPDATE" />
+          <xs:enumeration value="REMOVE" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:complexType name="ReplicatedPersonData" abstract="true">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="personId" type="tns:DCOMPersonId" />
+          <xs:element minOccurs="0" maxOccurs="1" name="obsoletePersonIds" type="tns:ArrayOfString" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ArrayOfString">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="id" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ReplicatedPPData">
+        <xs:complexContent mixed="false">
+          <xs:extension base="tns:ReplicatedPersonData">
+            <xs:sequence>
+              <xs:element minOccurs="0" maxOccurs="1" name="basicData" type="tns:PPData" />
+              <xs:element minOccurs="0" maxOccurs="1" name="sensitiveData" type="tns:PPDataSensitive" />
+              <xs:element minOccurs="0" maxOccurs="unbounded" name="permanentResidence" type="tns:Residence" />
+              <xs:element minOccurs="0" maxOccurs="unbounded" name="contactAddress" type="tns:PersonAddress" />
+              <xs:element minOccurs="0" maxOccurs="unbounded" name="bankAccount" type="tns:BankConnection" />
+              <xs:element minOccurs="0" maxOccurs="1" name="dates" type="tns:PPDates" />
+              <xs:element minOccurs="0" maxOccurs="unbounded" name="temporaryResidence" type="tns:Residence" />
+              <xs:element minOccurs="0" maxOccurs="unbounded" name="legalCapacityRestriction" type="tns:LegalCapacityRestricted" />
+              <xs:element minOccurs="0" maxOccurs="1" name="placeOfBirth" type="tns:BirthDeathPlace" />
+              <xs:element minOccurs="0" maxOccurs="1" name="placeOfDeath" type="tns:BirthDeathPlace" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="PPData">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="name" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="surname" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="givenSurname" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="namePrefix" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="namePostfix" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PPDataSensitive">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="birthNumber" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="foreignerID" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="ID1" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="ID2" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="citizenship" type="tns:Country" />
+          <xs:element minOccurs="0" maxOccurs="1" name="nationality" type="tns:Nationality" />
+          <xs:element minOccurs="0" maxOccurs="1" name="civilStatus" type="tns:CivilStatus" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Nationality">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="name" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="CivilStatus">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="code" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="title" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PPDates">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="dateOfBirth" type="xs:date" />
+          <xs:element minOccurs="0" maxOccurs="1" name="dateOfDeath" type="xs:date" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="LegalCapacityRestricted">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="code" type="xs:long" />
+          <xs:element minOccurs="0" maxOccurs="1" name="name" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="BirthDeathPlace">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="county" type="tns:County" />
+          <xs:element minOccurs="0" maxOccurs="1" name="municipality" type="tns:Municipality" />
+          <xs:element minOccurs="0" maxOccurs="1" name="country" type="tns:Country" />
+          <xs:element minOccurs="0" maxOccurs="1" name="place" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ReplicatedCBData">
+        <xs:complexContent mixed="false">
+          <xs:extension base="tns:ReplicatedPersonData">
+            <xs:sequence>
+              <xs:element minOccurs="0" maxOccurs="1" name="basicData" type="tns:CBData" />
+              <xs:element minOccurs="0" maxOccurs="1" name="registeredSeat" type="tns:Address" />
+              <xs:element minOccurs="0" maxOccurs="unbounded" name="contactAddress" type="tns:PersonAddress" />
+              <xs:element minOccurs="0" maxOccurs="unbounded" name="bankAccount" type="tns:BankConnection" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="CBData">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="IDOfOrganization" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="businessName" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="taxId" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="VATId" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="findPersonIdReq">
+    <wsdl:part name="ReqFindPersonId" element="tns:ReqFindPersonId" />
+  </wsdl:message>
+  <wsdl:message name="findPersonIdReq_Headers">
+    <wsdl:part name="DcmHeader" element="tns:DcmHeader" />
+  </wsdl:message>
+  <wsdl:message name="findPersonIdRes">
+    <wsdl:part name="ResFindPersonId" element="tns:ResFindPersonId" />
+  </wsdl:message>
+  <wsdl:message name="findPersonIdRes_Headers">
+    <wsdl:part name="DcmHeader" element="tns:DcmHeader" />
+  </wsdl:message>
+  <wsdl:message name="OsobyAdresy_findPersonId_OSAFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:OSAFault" />
+  </wsdl:message>
+  <wsdl:message name="getAddressesByPersonIdReq">
+    <wsdl:part name="ReqGetAddressesByPersonId" element="tns:ReqGetAddressesByPersonId" />
+  </wsdl:message>
+  <wsdl:message name="getAddressesByPersonIdReq_Headers">
+    <wsdl:part name="DcmHeader" element="tns:DcmHeader" />
+  </wsdl:message>
+  <wsdl:message name="getAddressesByPersonIdRes">
+    <wsdl:part name="ResGetAddressesByPersonId" element="tns:ResGetAddressesByPersonId" />
+  </wsdl:message>
+  <wsdl:message name="getAddressesByPersonIdRes_Headers">
+    <wsdl:part name="DcmHeader" element="tns:DcmHeader" />
+  </wsdl:message>
+  <wsdl:message name="OsobyAdresy_getAddressesByPersonId_OSAFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:OSAFault" />
+  </wsdl:message>
+  <wsdl:message name="getPhysicalPersonPermanentResidenceReq">
+    <wsdl:part name="ReqGetPhysicalPersonPermanentResidence" element="tns:ReqGetPhysicalPersonPermanentResidence" />
+  </wsdl:message>
+  <wsdl:message name="getPhysicalPersonPermanentResidenceReq_Headers">
+    <wsdl:part name="DcmHeader" element="tns:DcmHeader" />
+  </wsdl:message>
+  <wsdl:message name="getPhysicalPersonPermanentResidenceRes">
+    <wsdl:part name="ResGetPhysicalPersonPermanentResidence" element="tns:ResGetPhysicalPersonPermanentResidence" />
+  </wsdl:message>
+  <wsdl:message name="getPhysicalPersonPermanentResidenceRes_Headers">
+    <wsdl:part name="DcmHeader" element="tns:DcmHeader" />
+  </wsdl:message>
+  <wsdl:message name="OsobyAdresy_getPhysicalPersonPermanentResidence_OSAFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:OSAFault" />
+  </wsdl:message>
+  <wsdl:message name="getPhysicalPersonBankConnectionReq">
+    <wsdl:part name="ReqGetPhysicalPersonBankConnection" element="tns:ReqGetPhysicalPersonBankConnection" />
+  </wsdl:message>
+  <wsdl:message name="getPhysicalPersonBankConnectionReq_Headers">
+    <wsdl:part name="DcmHeader" element="tns:DcmHeader" />
+  </wsdl:message>
+  <wsdl:message name="getPhysicalPersonBankConnectionRes">
+    <wsdl:part name="ResGetPhysicalPersonBankConnection" element="tns:ResGetPhysicalPersonBankConnection" />
+  </wsdl:message>
+  <wsdl:message name="getPhysicalPersonBankConnectionRes_Headers">
+    <wsdl:part name="DcmHeader" element="tns:DcmHeader" />
+  </wsdl:message>
+  <wsdl:message name="OsobyAdresy_getPhysicalPersonBankConnection_OSAFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:OSAFault" />
+  </wsdl:message>
+  <wsdl:message name="getCorporateBodyDataReq">
+    <wsdl:part name="ReqGetCorporateBodyData" element="tns:ReqGetCorporateBodyData" />
+  </wsdl:message>
+  <wsdl:message name="getCorporateBodyDataReq_Headers">
+    <wsdl:part name="DcmHeader" element="tns:DcmHeader" />
+  </wsdl:message>
+  <wsdl:message name="getCorporateBodyDataRes">
+    <wsdl:part name="ResGetCorporateBodyData" element="tns:ResGetCorporateBodyData" />
+  </wsdl:message>
+  <wsdl:message name="getCorporateBodyDataRes_Headers">
+    <wsdl:part name="DcmHeader" element="tns:DcmHeader" />
+  </wsdl:message>
+  <wsdl:message name="OsobyAdresy_getCorporateBodyData_OSAFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:OSAFault" />
+  </wsdl:message>
+  <wsdl:message name="findAddresRAReq">
+    <wsdl:part name="ReqFindAddressRA" element="tns:ReqFindAddressRA" />
+  </wsdl:message>
+  <wsdl:message name="findAddresRAReq_Headers">
+    <wsdl:part name="DcmHeader" element="tns:DcmHeader" />
+  </wsdl:message>
+  <wsdl:message name="findAddresRARes">
+    <wsdl:part name="ResFindAddressRA" element="tns:ResFindAddressRA" />
+  </wsdl:message>
+  <wsdl:message name="findAddresRARes_Headers">
+    <wsdl:part name="DcmHeader" element="tns:DcmHeader" />
+  </wsdl:message>
+  <wsdl:message name="OsobyAdresy_findAddressRA_OSAFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:OSAFault" />
+  </wsdl:message>
+  <wsdl:message name="replicatePersonReq">
+    <wsdl:part name="ReqReplicatePerson" element="tns:ReqReplicatePerson" />
+  </wsdl:message>
+  <wsdl:message name="replicatePersonReq_Headers">
+    <wsdl:part name="DcmHeader" element="tns:DcmHeader" />
+  </wsdl:message>
+  <wsdl:message name="replicatePersonRes">
+    <wsdl:part name="ResReplicatePerson" element="tns:ResReplicatePerson" />
+  </wsdl:message>
+  <wsdl:message name="replicatePersonRes_Headers">
+    <wsdl:part name="DcmHeader" element="tns:DcmHeader" />
+  </wsdl:message>
+  <wsdl:message name="OsobyAdresy_replicatePerson_OSAFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:OSAFault" />
+  </wsdl:message>
+  <wsdl:portType name="OsobyAdresy">
+    <wsdl:operation name="findPersonId">
+      <wsdl:input wsaw:Action="http://schemas.dcom.sk/integration/osa/v21/OsobyAdresy/findPersonIdReq" name="findPersonIdReq" message="tns:findPersonIdReq" />
+      <wsdl:output wsaw:Action="http://schemas.dcom.sk/integration/osa/v21/OsobyAdresy/findPersonIdRes" name="findPersonIdRes" message="tns:findPersonIdRes" />
+      <wsdl:fault wsaw:Action="http://www.w3.org/2005/08/addressing/soap/fault" name="OSAFault" message="tns:OsobyAdresy_findPersonId_OSAFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getAddressesByPersonId">
+      <wsdl:input wsaw:Action="http://schemas.dcom.sk/integration/osa/v21/OsobyAdresy/getAddressesByPersonIdReq" name="getAddressesByPersonIdReq" message="tns:getAddressesByPersonIdReq" />
+      <wsdl:output wsaw:Action="http://schemas.dcom.sk/integration/osa/v21/OsobyAdresy/getAddressesByPersonIdRes" name="getAddressesByPersonIdRes" message="tns:getAddressesByPersonIdRes" />
+      <wsdl:fault wsaw:Action="http://www.w3.org/2005/08/addressing/soap/fault" name="OSAFault" message="tns:OsobyAdresy_getAddressesByPersonId_OSAFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getPhysicalPersonPermanentResidence">
+      <wsdl:input wsaw:Action="http://schemas.dcom.sk/integration/osa/v21/OsobyAdresy/getPhysicalPersonPermanentResidenceReq" name="getPhysicalPersonPermanentResidenceReq" message="tns:getPhysicalPersonPermanentResidenceReq" />
+      <wsdl:output wsaw:Action="http://schemas.dcom.sk/integration/osa/v21/OsobyAdresy/getPhysicalPersonPermanentResidenceRes" name="getPhysicalPersonPermanentResidenceRes" message="tns:getPhysicalPersonPermanentResidenceRes" />
+      <wsdl:fault wsaw:Action="http://www.w3.org/2005/08/addressing/soap/fault" name="OSAFault" message="tns:OsobyAdresy_getPhysicalPersonPermanentResidence_OSAFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getPhysicalPersonBankConnection">
+      <wsdl:input wsaw:Action="http://schemas.dcom.sk/integration/osa/v21/OsobyAdresy/getPhysicalPersonBankConnectionReq" name="getPhysicalPersonBankConnectionReq" message="tns:getPhysicalPersonBankConnectionReq" />
+      <wsdl:output wsaw:Action="http://schemas.dcom.sk/integration/osa/v21/OsobyAdresy/getPhysicalPersonBankConnectionRes" name="getPhysicalPersonBankConnectionRes" message="tns:getPhysicalPersonBankConnectionRes" />
+      <wsdl:fault wsaw:Action="http://www.w3.org/2005/08/addressing/soap/fault" name="OSAFault" message="tns:OsobyAdresy_getPhysicalPersonBankConnection_OSAFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getCorporateBodyData">
+      <wsdl:input wsaw:Action="http://schemas.dcom.sk/integration/osa/v21/OsobyAdresy/getCorporateBodyDataReq" name="getCorporateBodyDataReq" message="tns:getCorporateBodyDataReq" />
+      <wsdl:output wsaw:Action="http://schemas.dcom.sk/integration/osa/v21/OsobyAdresy/getCorporateBodyDataRes" name="getCorporateBodyDataRes" message="tns:getCorporateBodyDataRes" />
+      <wsdl:fault wsaw:Action="http://www.w3.org/2005/08/addressing/soap/fault" name="OSAFault" message="tns:OsobyAdresy_getCorporateBodyData_OSAFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="findAddressRA">
+      <wsdl:input wsaw:Action="http://schemas.dcom.sk/integration/osa/v21/OsobyAdresy/findAddresRAReq" name="findAddresRAReq" message="tns:findAddresRAReq" />
+      <wsdl:output wsaw:Action="http://schemas.dcom.sk/integration/osa/v21/OsobyAdresy/findAddresRARes" name="findAddresRARes" message="tns:findAddresRARes" />
+      <wsdl:fault wsaw:Action="http://www.w3.org/2005/08/addressing/soap/fault" name="OSAFault" message="tns:OsobyAdresy_findAddressRA_OSAFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="replicatePerson">
+      <wsdl:input wsaw:Action="http://schemas.dcom.sk/integration/osa/v21/OsobyAdresy/replicatePersonReq" name="replicatePersonReq" message="tns:replicatePersonReq" />
+      <wsdl:output wsaw:Action="http://schemas.dcom.sk/integration/osa/v21/OsobyAdresy/replicatePersonRes" name="replicatePersonRes" message="tns:replicatePersonRes" />
+      <wsdl:fault wsaw:Action="http://www.w3.org/2005/08/addressing/soap/fault" name="OSAFault" message="tns:OsobyAdresy_replicatePerson_OSAFault_FaultMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="BasicHttpBinding_OsobyAdresy" type="tns:OsobyAdresy">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="findPersonId">
+      <soap:operation soapAction="http://schemas.dcom.sk/integration/osa/v21/OsobyAdresy/findPersonIdReq" style="document" />
+      <wsdl:input name="findPersonIdReq">
+        <soap:header message="tns:findPersonIdReq_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="findPersonIdRes">
+        <soap:header message="tns:findPersonIdRes_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="OSAFault">
+        <soap:fault use="literal" name="OSAFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getAddressesByPersonId">
+      <soap:operation soapAction="http://schemas.dcom.sk/integration/osa/v21/OsobyAdresy/getAddressesByPersonIdReq" style="document" />
+      <wsdl:input name="getAddressesByPersonIdReq">
+        <soap:header message="tns:getAddressesByPersonIdReq_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getAddressesByPersonIdRes">
+        <soap:header message="tns:getAddressesByPersonIdRes_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="OSAFault">
+        <soap:fault use="literal" name="OSAFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getPhysicalPersonPermanentResidence">
+      <soap:operation soapAction="http://schemas.dcom.sk/integration/osa/v21/OsobyAdresy/getPhysicalPersonPermanentResidenceReq" style="document" />
+      <wsdl:input name="getPhysicalPersonPermanentResidenceReq">
+        <soap:header message="tns:getPhysicalPersonPermanentResidenceReq_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getPhysicalPersonPermanentResidenceRes">
+        <soap:header message="tns:getPhysicalPersonPermanentResidenceRes_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="OSAFault">
+        <soap:fault use="literal" name="OSAFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getPhysicalPersonBankConnection">
+      <soap:operation soapAction="http://schemas.dcom.sk/integration/osa/v21/OsobyAdresy/getPhysicalPersonBankConnectionReq" style="document" />
+      <wsdl:input name="getPhysicalPersonBankConnectionReq">
+        <soap:header message="tns:getPhysicalPersonBankConnectionReq_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getPhysicalPersonBankConnectionRes">
+        <soap:header message="tns:getPhysicalPersonBankConnectionRes_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="OSAFault">
+        <soap:fault use="literal" name="OSAFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getCorporateBodyData">
+      <soap:operation soapAction="http://schemas.dcom.sk/integration/osa/v21/OsobyAdresy/getCorporateBodyDataReq" style="document" />
+      <wsdl:input name="getCorporateBodyDataReq">
+        <soap:header message="tns:getCorporateBodyDataReq_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getCorporateBodyDataRes">
+        <soap:header message="tns:getCorporateBodyDataRes_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="OSAFault">
+        <soap:fault use="literal" name="OSAFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="findAddressRA">
+      <soap:operation soapAction="http://schemas.dcom.sk/integration/osa/v21/OsobyAdresy/findAddresRAReq" style="document" />
+      <wsdl:input name="findAddresRAReq">
+        <soap:header message="tns:findAddresRAReq_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="findAddresRARes">
+        <soap:header message="tns:findAddresRARes_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="OSAFault">
+        <soap:fault use="literal" name="OSAFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="replicatePerson">
+      <soap:operation soapAction="http://schemas.dcom.sk/integration/osa/v21/OsobyAdresy/replicatePersonReq" style="document" />
+      <wsdl:input name="replicatePersonReq">
+        <soap:header message="tns:replicatePersonReq_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="replicatePersonRes">
+        <soap:header message="tns:replicatePersonRes_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="OSAFault">
+        <soap:fault use="literal" name="OSAFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="BasicHttpsBinding_OsobyAdresy" type="tns:OsobyAdresy">
+    <wsp:PolicyReference URI="#BasicHttpsBinding_OsobyAdresy_policy" />
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="findPersonId">
+      <soap:operation soapAction="http://schemas.dcom.sk/integration/osa/v21/OsobyAdresy/findPersonIdReq" style="document" />
+      <wsdl:input name="findPersonIdReq">
+        <soap:header message="tns:findPersonIdReq_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="findPersonIdRes">
+        <soap:header message="tns:findPersonIdRes_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="OSAFault">
+        <soap:fault use="literal" name="OSAFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getAddressesByPersonId">
+      <soap:operation soapAction="http://schemas.dcom.sk/integration/osa/v21/OsobyAdresy/getAddressesByPersonIdReq" style="document" />
+      <wsdl:input name="getAddressesByPersonIdReq">
+        <soap:header message="tns:getAddressesByPersonIdReq_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getAddressesByPersonIdRes">
+        <soap:header message="tns:getAddressesByPersonIdRes_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="OSAFault">
+        <soap:fault use="literal" name="OSAFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getPhysicalPersonPermanentResidence">
+      <soap:operation soapAction="http://schemas.dcom.sk/integration/osa/v21/OsobyAdresy/getPhysicalPersonPermanentResidenceReq" style="document" />
+      <wsdl:input name="getPhysicalPersonPermanentResidenceReq">
+        <soap:header message="tns:getPhysicalPersonPermanentResidenceReq_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getPhysicalPersonPermanentResidenceRes">
+        <soap:header message="tns:getPhysicalPersonPermanentResidenceRes_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="OSAFault">
+        <soap:fault use="literal" name="OSAFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getPhysicalPersonBankConnection">
+      <soap:operation soapAction="http://schemas.dcom.sk/integration/osa/v21/OsobyAdresy/getPhysicalPersonBankConnectionReq" style="document" />
+      <wsdl:input name="getPhysicalPersonBankConnectionReq">
+        <soap:header message="tns:getPhysicalPersonBankConnectionReq_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getPhysicalPersonBankConnectionRes">
+        <soap:header message="tns:getPhysicalPersonBankConnectionRes_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="OSAFault">
+        <soap:fault use="literal" name="OSAFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getCorporateBodyData">
+      <soap:operation soapAction="http://schemas.dcom.sk/integration/osa/v21/OsobyAdresy/getCorporateBodyDataReq" style="document" />
+      <wsdl:input name="getCorporateBodyDataReq">
+        <soap:header message="tns:getCorporateBodyDataReq_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getCorporateBodyDataRes">
+        <soap:header message="tns:getCorporateBodyDataRes_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="OSAFault">
+        <soap:fault use="literal" name="OSAFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="findAddressRA">
+      <soap:operation soapAction="http://schemas.dcom.sk/integration/osa/v21/OsobyAdresy/findAddresRAReq" style="document" />
+      <wsdl:input name="findAddresRAReq">
+        <soap:header message="tns:findAddresRAReq_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="findAddresRARes">
+        <soap:header message="tns:findAddresRARes_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="OSAFault">
+        <soap:fault use="literal" name="OSAFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="replicatePerson">
+      <soap:operation soapAction="http://schemas.dcom.sk/integration/osa/v21/OsobyAdresy/replicatePersonReq" style="document" />
+      <wsdl:input name="replicatePersonReq">
+        <soap:header message="tns:replicatePersonReq_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="replicatePersonRes">
+        <soap:header message="tns:replicatePersonRes_Headers" part="DcmHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="OSAFault">
+        <soap:fault use="literal" name="OSAFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="OsaService">
+    <wsdl:port name="BasicHttpBinding_OsobyAdresy" binding="tns:BasicHttpBinding_OsobyAdresy">
+      <soap:address location="http://isodatalan.intra.dcom.sk/DCOMService/OsaService.svc" />
+    </wsdl:port>
+    <wsdl:port name="BasicHttpsBinding_OsobyAdresy" binding="tns:BasicHttpsBinding_OsobyAdresy">
+      <soap:address location="https://isodatalan.intra.dcom.sk/DCOMService/OsaService.svc" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

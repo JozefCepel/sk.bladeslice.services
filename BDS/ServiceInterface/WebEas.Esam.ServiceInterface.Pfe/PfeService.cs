@@ -1,18 +1,22 @@
 ﻿using ServiceStack;
 using ServiceStack.DataAnnotations;
+using ServiceStack.OrmLite;
 using ServiceStack.Text;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using WebEas.Egov.Reports;
 using WebEas.Esam.ServiceInterface.Office;
+using WebEas.Esam.ServiceModel.Office;
+using WebEas.Esam.ServiceModel.Office.Rzp.Types;
 using WebEas.Esam.ServiceModel.Pfe.Dto;
 using WebEas.ServiceInterface;
 using WebEas.ServiceModel;
+using WebEas.ServiceModel.Dto;
 using WebEas.ServiceModel.Pfe.Dto;
 using WebEas.ServiceModel.Pfe.Types;
+using WebEas.ServiceModel.Reg.Types;
 using WebEas.ServiceModel.Types;
 
 namespace WebEas.Esam.ServiceInterface.Pfe
@@ -39,7 +43,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         {
             get
             {
-                return (IPfeRepository)this.repository;
+                return (IPfeRepository)repository;
             }
         }
 
@@ -50,45 +54,9 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns></returns>
-        public object Get(ListModul request)
-        {
-            HashSet<string> sessionRoles = this.Repository.Session.Roles;
-            object modules = (from m in Modules.HierarchyNodeList
-                              where m.IsInRole(sessionRoles)
-                              select new { Kod = m.Kod, Nazov = m.Nazov }).ToList();
-
-            return modules;
-        }
-
-        /// <summary>
-        /// Zoznam dostupnych modulov
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         public object Get(ListAllModules request)
         {
-            HashSet<string> sessionRoles = this.Repository.Session.Roles;
-            var modules = (from m in Modules.HierarchyNodeList
-                           where m.IsInRole(sessionRoles)
-                           select new { Kod = m.Kod, Nazov = m.Nazov }).ToList();
-
-            List<ListAllModulesResponse> result = new List<ListAllModulesResponse>();
-
-            foreach (var module in modules)
-            {
-                var Item = new ListAllModulesResponse
-                {
-                    Kod = module.Kod,
-                    Nazov = module.Nazov,
-#if DEBUG || DEVELOP
-                    Url = $"http://localhost:85/{module.Kod.ToUpper()}/",
-#endif
-                    Separator = false
-                };
-                result.Add(Item);
-            }
-
-            return result;
+            return Repository.ListAllModules(request);
         }
 
         /// <summary>
@@ -98,56 +66,31 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// <returns></returns>
         public object Get(GetTreeView request)
         {
-            var disabledNodes = new List<string>();
-
-            /*
-            if (!((Office.RepositoryBase)repository).GetNastavenieB("bds", "VydProgrBds"))
-            {
-                disabledNodes.AddRange(
-                    new string[]
-                    {
-                        "bds-xxx-bbb",
-                        "bds-yyy-aaa"
-                });
-            }
-            */
-
-            //Pre DMS musime vycistit adresarovy strom
-            Modules.HierarchyNodeList = null;
-
-            // staticky strom pre celu app - definicia
-            HierarchyNode module = Modules.HierarchyNodeList.FirstOrDefault(nav => nav.Kod == request.SkratkaModulu.ToLower());
-            if (module == null)
-            {
-                throw new WebEasException(null, string.Format("Modul s názvom {0} neexistuje!", request.SkratkaModulu));
-            }
-
-            // renderovanim sa prisposobi pre pouzivatela alebo dotiahnu data
-            return module.Render(this.Repository.Session.Roles, disabledNodes);
+            return Repository.GetModuleTreeView(request);
         }
 
         #endregion Modules
 
         #region UI's views
 
-        #region CRUD
-
         /// <summary>
         /// Vytvorenie pohľadu.
         /// </summary>
         /// <param name="request">The request.</param>
-        public object Any(CreatePohlad request)
+        public PohladViewResponse Any(CreatePohlad request)
         {
-            return Repository.CreatePohlad(request);
+            var poh = Repository.CreatePohlad(request);
+            return CreatePohladViewResponse(request.KodPolozky, poh);
         }
 
         /// <summary>
         /// Uprava pohľadu.
         /// </summary>
         /// <param name="request">The request.</param>
-        public object Any(UpdatePohlad request)
+        public PohladViewResponse Any(UpdatePohlad request)
         {
-            return this.Repository.UpdatePohlad(request.ConvertTo<Pohlad>());
+            var poh = Repository.UpdatePohlad(request.ConvertTo<Pohlad>());
+            return CreatePohladViewResponse(request.KodPolozky, poh);
         }
 
         /// <summary>
@@ -156,7 +99,58 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// <param name="request">The request.</param>
         public void Any(DeletePohlad request)
         {
-            this.Repository.DeletePohlad(request.Id);
+            Repository.DeletePohlad(request.Id);
+        }
+
+        /// <summary>
+        /// Uprava pohľadu.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        public PohladViewResponse Any(UpdatePohladCustom request)
+        {
+            //return Repository.UpdatePohladCustom(request.ConvertTo<Pohlad>());
+            var poh = Repository.UpdatePohladCustom(request);
+            return CreatePohladViewResponse(request.KodPolozky, poh);
+        }
+
+        /// <summary>
+        /// Vymazanie pohľadu.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        public PohladViewResponse Any(DeletePohladCustom request)
+        {
+            var poh = Repository.DeletePohladCustom(request.Id);
+            return CreatePohladViewResponse(request.KodPolozky, poh);
+        }
+
+        private PohladViewResponse CreatePohladViewResponse(string kodPolozky, PohladView poh)
+        {
+            var pa = (PohladActions)Repository.GetPohlad(new GetPohlad
+            {
+                Id = poh.Id,
+                KodPolozky = string.IsNullOrEmpty(kodPolozky) ? poh.KodPolozky : kodPolozky
+            });
+
+            //Skopírovanie pohľadu a pridanie akcii
+            PohladViewResponse res = new PohladViewResponse()
+            {
+                Id = pa.Id,
+                KodPolozky = string.IsNullOrEmpty(kodPolozky) ? pa.KodPolozky : kodPolozky,
+                Nazov = pa.Nazov,
+                Typ = pa.Typ,
+                Zamknuta = pa.Zamknuta,
+                Data = JsonSerializer.SerializeToString(pa.Data),
+                Actions = JsonSerializer.SerializeToString(pa.Actions),
+                DefaultView = pa.DefaultView,
+                FilterText = pa.FilterText,
+                PageSize = pa.PageSize,
+                RibbonFilters = pa.RibbonFilters,
+                ShowInActions = pa.ShowInActions,
+                TypAkcie = pa.TypAkcie,
+                ViewSharing = pa.ViewSharing,
+                ViewSharing_Custom = pa.ViewSharing_Custom
+            };
+            return res;
         }
 
         /// <summary>
@@ -176,7 +170,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// <returns></returns>
         public object Get(ListPohlady request)
         {
-            return this.Repository.GetPohlady(request.KodPolozky);
+            return Repository.GetPohlady(request.KodPolozky, false);
         }
 
         /// <summary>
@@ -186,7 +180,15 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// <returns></returns>
         public object Get(ListPohladyWithDefault request)
         {
-            IList<PohladList> pohlady = this.Repository.GetPohlady(request.KodPolozky);
+
+            //DTLNESAMINT-229 : pouzitie jedneho pohladu na vsetky adresare v DMS
+            //if (request.KodPolozky.StartsWith("dms-id"))
+            //{
+            //    request.KodPolozky = "dms-id";
+            //}
+
+            // var pohlady = Repository.GetPohlady(request.KodPolozky.StartsWith("dms-id") ? "dms-id" : request.KodPolozky);
+            var pohlady = Repository.GetPohlady(request.KodPolozky, request.Browser ?? false);
 
             int idPohladu = 0;
             if (request.Id.HasValue && request.Id != 0 && pohlady.Any(nav => nav.Id == request.Id.Value))
@@ -206,12 +208,42 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                 }
             }
 
-            object pohlad = this.Get(new GetPohlad { Id = idPohladu, KodPolozky = request.KodPolozky, Filter = request.Filter });
+            if (request.Browser.GetValueOrDefault())
+            {
+                var pohladDataModels = pohlady.Select(poh => new { pohlad = poh, dataModel = JsonSerializer.DeserializeFromString<PfeDataModel>(poh.Data) }).Where(w => w.dataModel != null && w.dataModel.UseAsBrowser.GetValueOrDefault());
+                if (pohladDataModels.Any())
+                {
+                    idPohladu = pohladDataModels.OrderBy(x => x.dataModel.UseAsBrowserRank).FirstOrDefault().pohlad.Id;
+                    pohlady = pohladDataModels.OrderBy(x => x.dataModel.UseAsBrowserRank).Select(z => z.pohlad).ToList();
+                }
+                else
+                {
+                    return new
+                    {
+                        Pohlady = (object[])null,
+                        PohladDefault = (object)null
+                    };
+                }
+            }
+
+            object defaultPohlad = Repository.GetPohlad(new GetPohlad { Id = idPohladu, KodPolozky = request.KodPolozky, Filter = request.Filter });
+            var pohladActions = defaultPohlad as PohladActions;
+
+            // Na FE nebudeme zbytocne posielat data
+            foreach (var pohlad in pohlady)
+            {
+                pohlad.Data = null;
+            }
+
+            //if (pohladActions != null && pohladActions.Typ == "pivot")
+            //{
+            //    pohladActions.Data.Fields = null;
+            //}
 
             return new
             {
                 Pohlady = pohlady,
-                PohladDefault = pohlad
+                PohladDefault = pohladActions ?? defaultPohlad
             };
         }
 
@@ -222,10 +254,8 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// <returns></returns>        
         public object Post(SavePohlad request)
         {
-            return this.Repository.SavePohlad(request.ConvertTo<Pohlad>());
+            return Repository.SavePohlad(request.ConvertTo<Pohlad>());
         }
-
-        #endregion CRUD
 
         /// <summary>
         /// Gets the all view's dependencies from item codes for layout.
@@ -239,7 +269,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
 
             try
             {
-                HierarchyNode expItem = Modules.FindNode(kodPolozky);
+                HierarchyNode expItem = Repository.GetHierarchyNodeForModule(request.ItemCode);
 
                 // Add actual item with item code
                 if (expItem.LayoutDependencies == null)
@@ -278,7 +308,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
 
                         if (item.Item.ToLower().StartsWith("all-")) //Riesenie pre cross-modulove polozy stromu
                         {
-                            HierarchyNode resNode = Modules.FindNode(item.Item);
+                            HierarchyNode resNode = Repository.GetHierarchyNodeForModule(item.Item.Contains("!") ? item.Item : string.Concat(item.Item, "!", Repository.GetModuleCode(request.ItemCode)));
                             itemName += string.Format("{0}/", resNode.Nazov);
                         }
                         else if (codes.Length > 0)
@@ -286,7 +316,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                             foreach (string code in codes)
                             {
                                 currCode += code;
-                                HierarchyNode resNode = Modules.FindNode(currCode);
+                                HierarchyNode resNode = Repository.GetHierarchyNodeForModule(currCode);
                                 itemName += string.Format("{0}/", resNode.Nazov);
                                 currCode += "-";
                             }
@@ -304,7 +334,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                         //                : Filter.AndElements(FilterElement.Eq("KodPolozky", item.Item), FilterElement.Eq("Zamknuta", "1", PfeDataType.Boolean));
 
                         // Actual views for selected item
-                        List<Pohlad> resultViews = this.Repository.GetList<Pohlad>(filter);
+                        List<Pohlad> resultViews = Repository.GetList<Pohlad>(filter);
 
                         #region Docasne riesenie - o chvilu refactoring
 
@@ -318,12 +348,12 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                                 {
                                     foreach (LayoutDependencyRelations relation in item.Relations)
                                     {
-                                        dependencies.Add(this.CreateLayoutDependence(view, itemName, relation, fieldName));
+                                        dependencies.Add(CreateLayoutDependence(view, itemName, relation, fieldName));
                                     }
                                 }
                                 else
                                 {
-                                    dependencies.Add(this.CreateLayoutDependence(view, itemName, null, fieldName));
+                                    dependencies.Add(CreateLayoutDependence(view, itemName, null, fieldName));
                                 }
                             }
                         }
@@ -337,12 +367,12 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                                 {
                                     foreach (LayoutDependencyRelations relation in item.Relations)
                                     {
-                                        dependencies.Add(this.CreateLayoutDependence(view, itemName, relation, fieldName));
+                                        dependencies.Add(CreateLayoutDependence(view, itemName, relation, fieldName));
                                     }
                                 }
                                 else
                                 {
-                                    dependencies.Add(this.CreateLayoutDependence(view, itemName, null, fieldName));
+                                    dependencies.Add(CreateLayoutDependence(view, itemName, null, fieldName));
                                 }
                             }
                         }
@@ -365,12 +395,12 @@ namespace WebEas.Esam.ServiceInterface.Pfe
 
         public object Get(UnlockLayoutRequest request)
         {
-            return this.Repository.UnLockPohlad(request.Id, false);
+            return Repository.UnLockPohlad(request.Id, false);
         }
 
         public object Get(LockLayoutRequest request)
         {
-            return this.Repository.UnLockPohlad(request.Id, true);
+            return Repository.UnLockPohlad(request.Id, true);
         }
 
         #endregion UI's views CRUD
@@ -384,17 +414,19 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// <returns></returns>
         public object Get(ListComboDto request)
         {
-            return this.Repository.GetListCombo(request);
+            return Repository.GetListCombo(request);
         }
 
         #endregion Combo
 
         public object Get(ClearCache request)
         {
-            //Mazeme iba pfe:*
-            Repository.Cache.RemoveByRegex("pfe:.*");
+            Repository.Cache.RemoveByRegex("cb:.*");       //Zmaže cb:WebEas.Esam.ServiceModel.Office.Cfe.Types.TenantType
+            Repository.Cache.RemoveByRegex("cfe:.*");      //Zmaže cfe:Modul
+            Repository.Cache.RemoveByRegex("ten:.*");      //Zmaže zapamätané nastavenia; pfe: poh, pohItrems, pohl
+            Repository.Cache.RemoveByRegex("sessions:.*"); //Zmaže iba "pfe:UserTenants"
             //Cache.FlushAll();
-            WebEas.Context.Current.LocalMachineCache.FlushAll();
+            Context.Current.LocalMachineCache.FlushAll();
             return "OK";
         }
 
@@ -408,7 +440,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns></returns>
-        public object Get(ListDto request)
+        public object Any(ListDto request)
         {
             return base.GetList(request);
         }
@@ -420,20 +452,24 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// <returns></returns>
         public object Get(PossibleStates request)
         {
-            HierarchyNode node = Modules.FindNode(request.ItemCode);
+            HierarchyNode node = Repository.GetHierarchyNodeForModule(request.ItemCode);
+            var method = Repository.GetType().GetMethod("GetById", new Type[] { typeof(object), typeof(string[]) }).MakeGenericMethod(node.ModelType);
+            var columnsToSelect = new string[] { "C_StavEntity_Id", "C_StavovyPriestor_Id" };
+            object entity = method.Invoke(Repository, new object[] { request.Id, columnsToSelect });
+            object idStav = node.ModelType.GetProperty("C_StavEntity_Id").GetValue(entity);
+            object idPriestor;
 
-            try
-            {
-                object entity = this.Repository.GetType().GetMethod("GetById", new Type[] { typeof(object) }).MakeGenericMethod(node.ModelType).Invoke(this.Repository, new object[] { request.Id });
-                object idStav = node.ModelType.GetProperty("C_StavEntity_Id").GetValue(entity);
-                return Repository.ListPossibleStates((int)idStav);
+            if (node.ModelType == typeof(RzpView)) // neobsahuje C_StavovyPriestor_Id 
+            { 
+                idPriestor = StavovyPriestorEnum.Rozpocet;
             }
-            catch (Exception)
+            else
             {
-                return new List<PossibleStateResponse>();
+                idPriestor = node.ModelType.GetProperty("C_StavovyPriestor_Id").GetValue(entity);
             }
+
+            return Repository.ListPossibleStates((int)idPriestor, (int)idStav, request.Uctovanie, request.ItemCode);
         }
-        
 
         /// <summary>
         /// Upload suborov na BE, ktore sa budu dalej posielat do DMS
@@ -443,16 +479,21 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         //[AddHeader(ContentType = "text/plain")]
         public object Post(FileUpload request)
         {
-            if (this.Request.Files.Length == 0)
+            if (Request.Files.Length == 0)
             {
                 throw new FileNotFoundException("UploadError", "Nebol vybraný žiadny súbor na upload.");
             }
             return new HttpResult(
                 string.Concat(
                     "<html><head><script type=\"text/javascript\">document.domain = \"dcom.sk\";</script></head><body><textarea>",
-                    this.Repository.FileUpload(this.Request.Files.ToDictionary(x => RepositoryExtension.CleanFileName(x.FileName), x => x.InputStream), request).ToJson(),
+                    Repository.FileUpload(Request.Files.ToDictionary(x => RepositoryExtension.CleanFileName(x.FileName), x => x.InputStream), request).ToJson(),
                     "</textarea></body></html>"),
                 "text/html");
+        }
+
+        public object Get(GetReportDto request)
+        {
+            return GetServiceStackAttachment(Repository.GetReport(request));
         }
 
         /// <summary>
@@ -462,7 +503,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// <returns>The XLS file.</returns>
         public object Post(ExportGridToXLS request)
         {
-            return this.GetServiceStackAttachment(this.Repository.ExportGrid(request.Title, request.Xml));
+            return GetServiceStackAttachment(Repository.ExportGrid(request.Title, request.Xml));
         }
 
         /// <summary>
@@ -472,12 +513,13 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// <returns></returns>
         public object Post(ExportDto request)
         {
-            var layoutExportData = new Egov.Reports.Types.Pfe.LayoutExportData
+            var session = SessionAs<EsamSession>();
+            var layoutExportData = new LayoutExportData
             {
-                CityName = "CityName",
-                UserName = this.Repository.CurrentUserFormattedName,
+                CityName = session.TenantName,
+                UserName = session.DisplayName,
                 DocumentTitle = string.IsNullOrEmpty(request.KodPolozky) ? (string.IsNullOrEmpty(request.DocumentTitle) ? string.Empty : request.DocumentTitle) : string.Format("Export {0} {1}", request.KodPolozky, DateTime.Now.ToString("dd_MM_yyyy HH_mm")),
-                Items = new List<Egov.Reports.Types.Pfe.LayoutExportData.LayoutExportItem>()
+                Items = new List<LayoutExportData.LayoutExportItem>()
             };
 
             List<ExportItemDto> rItems = JsonSerializer.DeserializeFromString<List<ExportItemDto>>(request.Items);
@@ -486,12 +528,12 @@ namespace WebEas.Esam.ServiceInterface.Pfe
             {
                 foreach (ExportItemDto item in rItems)
                 {
-                    var eItem = new Egov.Reports.Types.Pfe.LayoutExportData.LayoutExportItem
+                    var eItem = new LayoutExportData.LayoutExportItem
                     {
                         ViewName = item.PohladNazov != null && (item.PohladNazov.Length > 30) ? item.PohladNazov.Substring(0, 30) : item.PohladNazov ?? string.Empty,
-                        Name = string.IsNullOrEmpty(request.KodPolozky) ? string.Empty : Modules.FindNode(request.KodPolozky).PartialName,
+                        Name = string.IsNullOrEmpty(request.KodPolozky) ? string.Empty : Repository.GetHierarchyNodeForModule(request.KodPolozky).PartialName,
                         FilterText = item.TextFilter,
-                        ColumnData = new List<Egov.Reports.Types.Pfe.LayoutExportData.LayoutExportColumnData>()
+                        ColumnData = new List<LayoutExportData.LayoutExportColumnData>()
                     };
 
                     if (item.Columns != null)
@@ -500,48 +542,48 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                         {
                             var aligment = JsonSerializer.DeserializeFromString<PfeAligment>(col.Align);
 
-                            Egov.Reports.Types.Pfe.LayoutExportData.LayoutExportColumnData.AligmentType align = Egov.Reports.Types.Pfe.LayoutExportData.LayoutExportColumnData.AligmentType.Unknown;
+                            LayoutExportData.LayoutExportColumnData.AligmentType align = LayoutExportData.LayoutExportColumnData.AligmentType.Unknown;
                             switch (aligment)
                             {
                                 case PfeAligment.Left:
-                                    align = Egov.Reports.Types.Pfe.LayoutExportData.LayoutExportColumnData.AligmentType.Left;
+                                    align = LayoutExportData.LayoutExportColumnData.AligmentType.Left;
                                     break;
                                 case PfeAligment.Right:
-                                    align = Egov.Reports.Types.Pfe.LayoutExportData.LayoutExportColumnData.AligmentType.Right;
+                                    align = LayoutExportData.LayoutExportColumnData.AligmentType.Right;
                                     break;
                                 case PfeAligment.Center:
-                                    align = Egov.Reports.Types.Pfe.LayoutExportData.LayoutExportColumnData.AligmentType.Center;
+                                    align = LayoutExportData.LayoutExportColumnData.AligmentType.Center;
                                     break;
                                 case PfeAligment.Default:
-                                    align = Egov.Reports.Types.Pfe.LayoutExportData.LayoutExportColumnData.AligmentType.Justify;
+                                    align = LayoutExportData.LayoutExportColumnData.AligmentType.Justify;
                                     break;
                             }
 
                             var dataType = JsonSerializer.DeserializeFromString<PfeDataType>(col.Type);
-                            Egov.Reports.Types.Pfe.LayoutExportData.LayoutExportColumnData.DataType colType = Egov.Reports.Types.Pfe.LayoutExportData.LayoutExportColumnData.DataType.Unknown;
+                            LayoutExportData.LayoutExportColumnData.DataType colType = LayoutExportData.LayoutExportColumnData.DataType.Unknown;
                             switch (dataType)
                             {
                                 case PfeDataType.Boolean:
-                                    colType = Egov.Reports.Types.Pfe.LayoutExportData.LayoutExportColumnData.DataType.Boolean;
+                                    colType = LayoutExportData.LayoutExportColumnData.DataType.Boolean;
                                     break;
                                 case PfeDataType.Date:
-                                    colType = Egov.Reports.Types.Pfe.LayoutExportData.LayoutExportColumnData.DataType.Date;
+                                    colType = LayoutExportData.LayoutExportColumnData.DataType.Date;
                                     break;
                                 case PfeDataType.DateTime:
-                                    colType = Egov.Reports.Types.Pfe.LayoutExportData.LayoutExportColumnData.DataType.DateTime;
+                                    colType = LayoutExportData.LayoutExportColumnData.DataType.DateTime;
                                     break;
                                 case PfeDataType.Number:
-                                    colType = Egov.Reports.Types.Pfe.LayoutExportData.LayoutExportColumnData.DataType.Number;
+                                    colType = LayoutExportData.LayoutExportColumnData.DataType.Number;
                                     break;
                                 case PfeDataType.Text:
-                                    colType = Egov.Reports.Types.Pfe.LayoutExportData.LayoutExportColumnData.DataType.Text;
+                                    colType = LayoutExportData.LayoutExportColumnData.DataType.Text;
                                     break;
                                 case PfeDataType.Time:
-                                    colType = Egov.Reports.Types.Pfe.LayoutExportData.LayoutExportColumnData.DataType.Time;
+                                    colType = LayoutExportData.LayoutExportColumnData.DataType.Time;
                                     break;
                             }
 
-                            eItem.ColumnData.Add(new Egov.Reports.Types.Pfe.LayoutExportData.LayoutExportColumnData
+                            eItem.ColumnData.Add(new LayoutExportData.LayoutExportColumnData
                             {
                                 ColumnName = col.Name,
                                 Caption = col.Text,
@@ -571,53 +613,130 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                 }
             }
 
-            RendererResult result = Renderer.RenderPfeExcel(layoutExportData);
-            return this.GetServiceStackAttachment(result);
+            RendererResult result = ((Office.RepositoryBase)Repository).RenderExcel(layoutExportData);
+            return GetServiceStackAttachment(result);
         }
 
         #region Info
 
 #if DEBUG || DEVELOP || INT || TEST
 
-        public object Get(WebEas.ServiceModel.Dto.SessionInfo request)
+        public object Get(SessionInfo request)
         {
-            return this.GetSessionInfo();
+            return GetSessionInfo();
         }
 
         public object Any(ListInfo request)
         {
             var headerVal = new Dictionary<string, string>();
 
-            foreach (string val in this.Request.Headers.AllKeys)
+            foreach (string val in Request.Headers.AllKeys)
             {
-                headerVal.Add(val, this.Request.Headers[val]);
+                headerVal.Add(val, Request.Headers[val]);
             }
 
             return headerVal;
         }
 
 #endif
+        public object Get(GetContextTenants request)
+        {
+            return ((WebEasRepositoryBase)Repository).GetCacheOptimizedSession("pfe:UserTenants", () =>
+            {
+                var data = Repository.Db.Select<(Guid TenantId, string Nazov)>("SELECT D_Tenant_Id, Nazov FROM cfe.V_Tenant WHERE D_Tenant_Id IN (@tenantId)", 
+                    new { tenantId = SessionAs<EsamSession>().TenantIds }); ;
+                return data.Select(x => new DialEntity<Guid>{ ItemCode = x.TenantId, ItemName = x.Nazov });
+            }, new TimeSpan(3, 0, 0));
+        }
+
+        public object Get(CheckContext request)
+        {
+            var session = SessionAs<EsamSession>();
+            var tenantIdActual = session.TenantIdGuid;
+
+            if (request.TenantId == session.TenantIdGuid.Value)
+            {
+                return new { Response = new { TenantId = request.TenantId.ToString().ToUpper(), Changed = false, TenantIdActual = session.TenantId } };
+            }
+            else
+            {
+                bool dcomRezim = Repository.GetNastavenieI("reg", "eSAMRezim") == 1;
+
+#if DEBUG || DEVELOP
+                dcomRezim = false;
+#endif
+                if (dcomRezim)
+                {
+                    var webAddr = "https://lbiamc.intra.dcom.sk/openam/json/users?_action=setTenantContext";
+                    var httpWebRequest = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(webAddr);
+                    httpWebRequest.ContentType = "application/json; charset=utf-8";
+                    httpWebRequest.Method = "POST";
+
+                    var ignoreList = new List<string> { "Connection", "Accept", "Accept-Encoding", "Accept-Language", "Host", "User-Agent", "Referer" };
+
+                    foreach (string key in Request.Headers.AllKeys)
+                    {
+                        string value = Request.Headers[key];
+
+                        if (!httpWebRequest.Headers.AllKeys.Any(nav => nav == key) && !ignoreList.Contains(key))
+                        {
+                            httpWebRequest.Headers.Add(key, value);
+                            Log.Debug(string.Format("Adding to header in checkContext {0} > {1}", key, value));
+                        }
+                    }
+
+                    var tenantIdExterne = Db.Single<Guid>("SELECT D_Tenant_Id_Externe FROM cfe.D_Tenant WHERE D_Tenant_Id = @tenantId", new { tenantId = request.TenantId });
+
+                    using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
+                    {
+                        string json = "{\"TenantId\":\"" + tenantIdExterne.ToString().ToLower() + "\"}";
+
+                        streamWriter.Write(json);
+                        streamWriter.Flush();
+                    }
+
+                    var httpResponse = (System.Net.HttpWebResponse)httpWebRequest.GetResponse();
+                    using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                    {
+                        streamReader.ReadToEnd();
+                    }
+
+                    var sessionPattern = IdUtils.CreateUrn<ServiceStack.Auth.IAuthSession>(string.Empty); //= urn:iauthsession:
+                    var sessionKeys = Cache.GetKeysStartingWith(sessionPattern).ToList();
+                    if (sessionKeys.Any())
+                    {
+                        var allSessions = Cache.GetAll<EsamSession>(sessionKeys);
+                        foreach (var ses in allSessions.Where(x => x.Value.D_Tenant_Id_Externe == tenantIdExterne))
+                        {
+                            Request.RemoveSession(ses.Value.Id);
+                        }
+                    }
+
+                    return new { Response = new { TenantId = request.TenantId.ToString().ToUpper(), Changed = true, tenantIdActual } };
+                }
+
+                session.TenantId = request.TenantId.ToString();
+                EsamCredentialsAuthProvider.SetUserTenantSession(ref session, this);
+                Request.SaveSession(session);
+                return new { Response = new { TenantId = request.TenantId.ToString().ToUpper(), Changed = true, tenantIdActual } };
+            }
+        }
 
         public object Get(GetContextUser request)
         {
-            return this.Repository.GetContextUser(request.ModuleShortcut);
-        }
-
-        public object Any(ActualToken request)
-        {
-            return new HttpResult(this.Repository.Session.IamDcomToken, "text/plain; charset=utf-8");
+            return Repository.GetContextUser(request.ModuleShortcut);
         }
 
         public object Get(LogViewDto request)
         {
-            return this.Repository.PreviewLog(request.Identifier);
+            return Repository.PreviewLog(request.Identifier);
         }
 
         public object Get(LogViewCorIdRawDto request)
         {
             var sb = new StringBuilder();
 
-            List<LogView> data = this.Repository.PreviewLogCorId(request.Identifier);
+            List<LogView> data = Repository.PreviewLogCorId(request.Identifier);
             if (data.Count > 1)
             {
                 sb.AppendFormat("Počet záznamov {0}{1}", data.Count, Environment.NewLine);
@@ -670,7 +789,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         {
             var sb = new StringBuilder();
 
-            List<LogView> data = this.Repository.PreviewLog(request.Identifier);
+            List<LogView> data = Repository.PreviewLog(request.Identifier);
             if (data.Count > 1)
             {
                 sb.AppendFormat("Počet záznamov {0}{1}", data.Count, Environment.NewLine);
@@ -728,7 +847,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// <returns></returns>
         public object GetServiceStackAttachment(RendererResult report)
         {
-            return this.GetDownloadResponse(report.DocumentBytes, string.Format("{0}.{1}", report.DocumentName, report.Extension), report.MimeType);
+            return GetDownloadResponse(report.DocumentBytes, string.Format("{0}.{1}", report.DocumentName, report.Extension), report.MimeType);
         }
 
         #region Moduly eSluzieb - hierarchia modulu (debug)
@@ -747,7 +866,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
             {
                 return "Invalid request parameters";
             }
-            HierarchyNode module = Modules.HierarchyNodeList.FirstOrDefault(nav => nav.Kod == request.modul.ToLower());
+            HierarchyNode module = Repository.GetHierarchyNodeForModule(request.modul.ToLower());
             if (module == null)
             {
                 return "requested module not found";
@@ -789,7 +908,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
 
             foreach (HierarchyNode node in module.Children)
             {
-                this.DescribeTreeNode(node, sb, string.Format("{0}-", module.Kod), module.Roles.Join(","));
+                DescribeTreeNode(node, sb, string.Format("{0}-", module.Kod));
             }
 
             sb.AppendLine("</tbody></table>");
@@ -797,19 +916,18 @@ namespace WebEas.Esam.ServiceInterface.Pfe
             return sb.ToString();
         }
 
-        private void DescribeTreeNode(HierarchyNode node, System.Text.StringBuilder sb, string prefix, string defrole)
+        private void DescribeTreeNode(HierarchyNode node, System.Text.StringBuilder sb, string prefix)
         {
             int uroven = prefix.Count(f => f == '-');
 
-            string defroles = node.Roles.Count > 0 ? node.Roles.Join(",") : defrole;
 
             //akcie (predpriprava)
             var actionSb = new StringBuilder(1000);
-            int cnt_actions = this.DescribeTreeActions(node.AllActions, actionSb, defroles);
-            if (actionSb.Length == 0)
+            int cnt_actions = DescribeTreeActions(node.AllActions, actionSb);
+            /*if (actionSb.Length == 0)
             {
-                actionSb.AppendFormat("<td></td><td></td><td>{0}</td><td></td><td></td></tr>", defroles);
-            }
+                actionSb.AppendFormat($"<td></td><td></td><td>{module.Roles.Join(",")}</td><td></td><td></td></tr>");
+            }*/
 
             string rowspan = cnt_actions > 1 ? string.Format(" rowspan=\"{0}\"", cnt_actions) : "";
 
@@ -872,27 +990,17 @@ namespace WebEas.Esam.ServiceInterface.Pfe
 
             foreach (HierarchyNode subnode in node.Children)
             {
-                this.DescribeTreeNode(subnode, sb, string.Format("{0}{1}-", prefix, node.Kod), defroles);
+                DescribeTreeNode(subnode, sb, string.Format("{0}{1}-", prefix, node.Kod));
             }
         }
 
-        private int DescribeTreeActions(IEnumerable<NodeAction> list, StringBuilder sb, string defroles, string parent = "")
+        private int DescribeTreeActions(IEnumerable<NodeAction> list, StringBuilder sb,  string parent = "")
         {
             int cnt = 0;
             bool first = true;
             foreach (NodeAction action in list)
             {
                 cnt++;
-
-                string actroles = defroles;
-                if (action.RequiredRoles != null)
-                {
-                    actroles = string.Join(" &amp; ", action.RequiredRoles);
-                }
-                else if (action.RequiredAnyRoles != null)
-                {
-                    actroles = string.Join(" | ", action.RequiredAnyRoles);
-                }
 
                 if (first)
                 {
@@ -905,12 +1013,12 @@ namespace WebEas.Esam.ServiceInterface.Pfe
 
                 bool isMenu = action.MenuButtons != null || action.ActionType == NodeActionType.MenuButtons;
                 sb.AppendFormat("<td>{0}{1}{2}{7}</td><td>{3}</td><td>{4}</td><td>{5}</td><td>{6}</td></tr>",
-                    parent, action.Caption, isMenu ? " (MENU)" : "", action.ActionIcon, actroles, 
+                    parent, action.Caption, isMenu ? " (MENU)" : "", action.ActionIcon, string.Empty,
                     action.ActionType, action.IdField, action.SelectionMode == PfeSelection.Multi ? " (MS)" : ""); //, action.mu);
 
                 if (isMenu)
                 {
-                    cnt += this.DescribeTreeActions(action.MenuButtons, sb, defroles, string.Format("{0}/", action.Caption));
+                    cnt += DescribeTreeActions(action.MenuButtons, sb, string.Format("{0}/", action.Caption));
                 }
             }
             return cnt;
@@ -928,7 +1036,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
             {
                 return "Invalid request parameters";
             }
-            HierarchyNode module = Modules.HierarchyNodeList.FirstOrDefault(nav => nav.Kod == request.modul.ToLower());
+            HierarchyNode module = Repository.GetHierarchyNodeForModule(request.modul.ToLower());
             if (module == null)
             {
                 return "requested module not found";
@@ -964,7 +1072,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
 
             foreach (HierarchyNode node in module.Children)
             {
-                this.DescribeTreeDependency(node, sb, string.Format("{0}-", module.Kod));
+                DescribeTreeDependency(node, sb, string.Format("{0}-", module.Kod));
             }
 
             sb.AppendLine("</tbody></table>");
@@ -1005,7 +1113,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                     {
                         continue;
                     }
-                    HierarchyNode relnode = Modules.TryFindNode(dependency.Item);
+                    HierarchyNode relnode = Repository.GetHierarchyNodeForModule(dependency.Item);
                     foreach (LayoutDependencyRelations relation in dependency.Relations)
                     {
                         if (first)
@@ -1087,7 +1195,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
 
             foreach (HierarchyNode subnode in node.Children)
             {
-                this.DescribeTreeDependency(subnode, sb, string.Format("{0}{1}-", prefix, node.Kod));
+                DescribeTreeDependency(subnode, sb, string.Format("{0}{1}-", prefix, node.Kod));
             }
         }
 
@@ -1105,7 +1213,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
             {
                 return "Invalid request parameters";
             }
-            HierarchyNode module = Modules.HierarchyNodeList.FirstOrDefault(nav => nav.Kod == request.modul.ToLower());
+            HierarchyNode module = Repository.GetHierarchyNodeForModule(request.modul.ToLower());
             if (module == null)
             {
                 return "requested module not found";
@@ -1114,7 +1222,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
             //prepare data
             var typeTable = new Dictionary<string, string>(50);
             var pkTable = new Dictionary<string, string>(50);
-            this.PrepareRelationInfoData(module, request.common, typeTable, pkTable);
+            PrepareRelationInfoData(module, request.common, typeTable, pkTable);
 
             var sb = new System.Text.StringBuilder(10000);
             sb.AppendFormat("<h1>Analyza dependency relations pre '{0}'</h1>", request.modul).AppendLine();
@@ -1144,7 +1252,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
 
             foreach (HierarchyNode node in module.Children)
             {
-                this.DescribeTreeAnalyze(node, sb, string.Format("{0}-", module.Kod), typeTable, pkTable);
+                DescribeTreeAnalyze(node, sb, string.Format("{0}-", module.Kod), typeTable, pkTable);
             }
 
             sb.AppendLine("</tbody></table>");
@@ -1183,7 +1291,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
             }
             foreach (HierarchyNode subnode in node.Children)
             {
-                this.PrepareRelationInfoData(subnode, common, typetable, pktable);
+                PrepareRelationInfoData(subnode, common, typetable, pktable);
             }
         }
 
@@ -1243,7 +1351,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
 
             foreach (HierarchyNode subnode in node.Children)
             {
-                this.DescribeTreeAnalyze(subnode, sb, string.Format("{0}{1}-", prefix, node.Kod), typetable, pktable);
+                DescribeTreeAnalyze(subnode, sb, string.Format("{0}{1}-", prefix, node.Kod), typetable, pktable);
             }
         }
 
@@ -1255,7 +1363,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
 
         public object Any(ListTranslatedExpressionsTest request)
         {
-            return this.Repository.GetTraslatedExpressions(request.UniqueKey);
+            return Repository.GetTraslatedExpressions(request.UniqueKey);
         }
 
         public object Any(ListTranslatedExpressions request)
@@ -1273,7 +1381,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                     value = decodeFilters.First(nav => nav.Config.Contains("UniqueIdentifier")).Value;
                 }
 
-                return this.Repository.GetTraslatedExpressions(value);
+                return Repository.GetTraslatedExpressions(value);
             }
             return new List<TranslationDictionary>();
         }
@@ -1284,11 +1392,11 @@ namespace WebEas.Esam.ServiceInterface.Pfe
             {
                 //REG modul nema na preklady cross-modulovu polozku stromu, ktore eviduju modul az za vykricnikom
                 //REG ma nazov modulu na zaciatku
-                return this.ToOptimizedResultUsingCache(request, () => this.Repository.GetTranslationColumns("reg"));
+                return ToOptimizedResultUsingCache(request, () => Repository.GetTranslationColumns("reg"));
             }
             else
             {
-                return this.ToOptimizedResultUsingCache(request, () => this.Repository.GetTranslationColumns(request.KodPolozky.Substring(request.KodPolozky.Length - 3, 3)));
+                return ToOptimizedResultUsingCache(request, () => Repository.GetTranslationColumns(request.KodPolozky.Substring(request.KodPolozky.Length - 3, 3)));
             }
         }
 
@@ -1335,7 +1443,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
 
         public object Get(MergeScriptGlobalViews request)
         {
-            return this.GetServiceStackAttachment(this.Repository.GenerateMergeScriptGlobalViews());
+            return GetServiceStackAttachment(Repository.GenerateMergeScriptGlobalViews(request));
         }
 #endif
 
@@ -1370,7 +1478,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
 
         public object Get(PollerReceive request)
         {
-            return this.Repository.PollerReceive(request.TenantId);
+            return Repository.PollerReceive(request.TenantId);
         }
 
         #endregion Poller

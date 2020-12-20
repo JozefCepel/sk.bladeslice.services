@@ -1,5 +1,7 @@
-﻿using ServiceStack;
+﻿using Ninject;
+using ServiceStack;
 using ServiceStack.OrmLite;
+using ServiceStack.OrmLite.Dapper;
 using ServiceStack.Text;
 using System;
 using System.Collections.Generic;
@@ -7,10 +9,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using WebEas.Egov.Reports;
+using WebEas.Esam.ServiceModel.Office;
+using WebEas.Esam.ServiceModel.Office.Types.Reg;
 using WebEas.Esam.ServiceModel.Pfe.Dto;
-using WebEas.ServiceInterface;
 using WebEas.ServiceModel;
+using WebEas.ServiceModel.Office.Egov.Reg.Types;
 using WebEas.ServiceModel.Pfe.Types;
 using WebEas.ServiceModel.Reg.Types;
 using WebEas.ServiceModel.Types;
@@ -19,6 +22,9 @@ namespace WebEas.Esam.ServiceInterface.Pfe
 {
     public partial class PfeRepository : Office.RepositoryBase, IPfeRepository
     {
+        private List<IWebEasRepositoryBase> modules;
+
+
         #region CRUD
 
         /// <summary>
@@ -36,13 +42,20 @@ namespace WebEas.Esam.ServiceInterface.Pfe
             else
             {
                 pohlad.ViewSharing = 0;
-                pohlad.D_Tenant_Id = this.Session.TenantIdGuid;
+                pohlad.D_Tenant_Id = Session.TenantIdGuid;
             }
 
-            this.InsertData(pohlad);
-            PohladView result = this.GetById<PohladView>(pohlad.Id);
-            this.RemoveFromCacheByRegex(string.Format("pfe:poh[^:]*:{0}.*", pohlad.KodPolozky));
-            this.SetToCache(string.Format("pfe:poh:{0}", pohlad.Id), result, new TimeSpan(24, 0, 0));
+            if (pohlad.KodPolozky.Contains("!"))
+            {
+                pohlad.KodPolozky = HierarchyNodeExtensions.RemoveParametersFromKodPolozky(pohlad.KodPolozky);
+            }
+
+            InsertData(pohlad);
+            PohladView result = GetById<PohladView>(pohlad.Id);
+
+            //Prim vytvoreni noveho pohladu nemoze byt nikdy globalny, takze nemusim riesit za tenantov
+            RemoveFromCacheByRegexOptimizedTenant(string.Format("pfe:poh[^:]*:{0}.*", pohlad.KodPolozky));
+            SetToCacheOptimizedTenant(string.Format("pfe:poh:{0}:{1}", pohlad.Id, Session.UserId), result, new TimeSpan(24, 0, 0));
 
             return result;
         }
@@ -51,55 +64,73 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// Vytvorenie pohľadu.
         /// </summary>
         /// <param name="request">The request.</param>
-        public PohladView CreatePohlad(CreatePohlad request, PohladActions source = null)
+        public PohladView CreatePohlad(CreatePohlad request)
+        {
+            PohladView pohlad;
+            using (var transaction = BeginTransaction())
+            {
+                try
+                {
+                    pohlad = VytvorPohlad(request, null);
+                    transaction.Commit();
+                }
+                catch (WebEasValidationException)
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+                catch (WebEasException)
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+            }
+
+            return pohlad;
+        }
+
+        private PohladView VytvorPohlad(CreatePohlad request, PohladActions source)
         {
             PohladView res = null;
-
-            bool outerTransactionExist = false;
-            var transaction = GetActiveTransaction();
-            if (transaction == null)
-            {
-                transaction = BeginTransaction();
-            }
-            else
-            {
-                outerTransactionExist = true;
-            }
 
             try
             {
                 if (request.SourceId.HasValue)
                 {
-                    var pohladActions = GetPohlad(new GetPohlad { Id = request.SourceId.Value, KodPolozky = request.KodPolozky }) as PohladActions;
-                    if (pohladActions.Typ != request.Typ)
+                    var sourceView = GetPohlad(new GetPohlad { Id = request.SourceId.Value, KodPolozky = request.KodPolozky }) as PohladActions;
+                    if (sourceView.Typ != request.Typ)
                     {
                         throw new WebEasValidationException("Nastala chyba pri vytvarani pohladu", "Kopírovaný pohľad musí byť toho istého typu");
                     }
 
                     request.SourceId = null;
-                    var pohladRes = CreatePohlad(request, pohladActions);
-                    transaction.Commit();
+                    var pohladRes = VytvorPohlad(request, sourceView);
                     return pohladRes;
-                }                               
+                }
 
                 if (source != null && source.Data != null)
                 {
                     request.Data = null;
                     res = CreatePohlad(request.ConvertTo<Pohlad>());
-                    var pohladActions = GetPohlad(new GetPohlad { Id = res.Id, KodPolozky = request.KodPolozky }) as PohladActions;
+
+                    PohladActions pohladActions = GetPohlad(new GetPohlad { Id = res.Id, KodPolozky = request.KodPolozky }) as PohladActions;
                     if (pohladActions != null && pohladActions.Data != null)
                     {
                         pohladActions.Data = source.Data;
-                        if (pohladActions.Data.Fields != null)
+                        if (pohladActions.Data.Fields != null && (pohladActions.Typ == "grid" || pohladActions.Typ == "pivot"))
                         {
-                            pohladActions.Data.Fields.RemoveAll(x => x.Hidden || x.Text.StartsWith("_"));
+                            pohladActions.Data.Fields.RemoveAll(x => x.Hidden);
+                            pohladActions.Data.Fields.ForEach((x) => x.DoNotSerializeProperty = true);
+                        }
+                        else
+                        {
+                            pohladActions.Data.Fields = null;
                         }
 
                         res.Data = JsonSerializer.SerializeToString(pohladActions.Data);
                         res.FilterText = source.FilterText;
                         res.PageSize = source.PageSize;
                         res.RibbonFilters = source.RibbonFilters;
-                        res.DetailViewId = source.DetailViewId;
 
                         res = UpdatePohlad(res.ConvertTo<Pohlad>());
                     }
@@ -112,19 +143,27 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                     {
                         request.Data = null;
                         res = CreatePohlad(request.ConvertTo<Pohlad>());
-                        var pohladActions = GetPohlad(new GetPohlad { Id = res.Id, KodPolozky = request.KodPolozky }) as PohladActions;
-                        if (pohladActions != null && pohladActions.Data != null)
+
+                        if (GetPohlad(new GetPohlad { Id = res.Id, KodPolozky = request.KodPolozky }) is PohladActions pohladActions && pohladActions.Data != null)
                         {
-                            // Pozor! pri serializacii stratime info vo fieldoch PfeColumnAttribute.hidden, kedze je ignore datamember (pri deserializacii v model = model.Merge(ServiceStack.Text.JsonSerializer.DeserializeFromString<PfeDataModel>(configuredData.Data));)
+                            // Pozor! pri serializacii stratime info vo fieldoch PfeColumnAttribute.hidden, kedze je ignore datamember (pri deserializacii v model = model.Merge(JsonSerializer.DeserializeFromString<PfeDataModel>(configuredData.Data));)
                             // cize zobereme vsetko okrem fieldov = Hidden, preto aj request.Data = null;
-                            if (pohladActions.Data.Fields != null)
+                            if (pohladActions.Data.Fields != null && (pohladActions.Typ == "grid" || pohladActions.Typ == "pivot"))
                             {
-                                pohladActions.Data.Fields.RemoveAll(x => x.Hidden || x.Text.StartsWith("_"));
+                                pohladActions.Data.Fields.RemoveAll(x => x.Hidden);
+                                pohladActions.Data.Fields.ForEach((x) => x.DoNotSerializeProperty = true);
+                            }
+                            else
+                            {
+                                pohladActions.Data.Fields = null;
                             }
 
                             // Zatial sa vytvara iba dca a layout
                             pohladActions.Data.DoubleClickAction = parsedPfeModel.DoubleClickAction;
                             pohladActions.Data.Layout = parsedPfeModel.Layout;
+                            pohladActions.Data.UseAsBrowser = parsedPfeModel.UseAsBrowser;
+                            pohladActions.Data.UseAsBrowserRank = parsedPfeModel.UseAsBrowserRank;
+                            pohladActions.Data.Pivot = parsedPfeModel.Pivot;
                             res.Data = JsonSerializer.SerializeToString(pohladActions.Data);
                             res = UpdatePohlad(res.ConvertTo<Pohlad>());
                         }
@@ -133,36 +172,16 @@ namespace WebEas.Esam.ServiceInterface.Pfe
 
                 if (res == null)
                 {
-                    res = CreatePohlad(request.ConvertTo<Pohlad>()); ;
-                }
-
-                if (!outerTransactionExist)
-                {
-                    transaction.Commit();
+                    res = CreatePohlad(request.ConvertTo<Pohlad>());
                 }
             }
-            catch (WebEasException ex)
+            catch (WebEasException)
             {
-                if (!outerTransactionExist)
-                {
-                    transaction.Rollback();
-                }
-                throw ex;
+                throw;
             }
             catch (Exception ex)
             {
-                if (!outerTransactionExist)
-                {
-                    transaction.Rollback();
-                }
                 throw new WebEasException("Nastala chyba pri vytvarani pohladu", "Pohľad sa nepodarilo vytvoriť kvôli internej chybe", ex);
-            }
-            finally
-            {
-                if (!outerTransactionExist)
-                {
-                    EndTransaction(transaction);
-                }
             }
 
             return res;
@@ -175,18 +194,18 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// <returns>Vytvoreny pohlad</returns>
         public PohladView UpdatePohlad(Pohlad pohlad)
         {
-            Pohlad staryPohlad = this.GetById<Pohlad>(pohlad.Id);
+            Pohlad staryPohlad = GetById<Pohlad>(pohlad.Id);
 
             if (pohlad.KodPolozky.IsNullOrEmpty())
             {
                 throw new WebEasException(null, "Kód položky musí byť zadaný!");
             }
 
-            string moduleShortcut = Modules.FindModule(pohlad.KodPolozky);
+            string moduleShortcut = GetModuleCode(pohlad.KodPolozky);
 
             if (staryPohlad != null)
             {
-                if (!(staryPohlad.Zamknuta && pohlad.Zamknuta) && this.CheckUpdatePermissionForViewSharing(staryPohlad, pohlad, moduleShortcut))
+                if (!(staryPohlad.Zamknuta && pohlad.Zamknuta) && CheckUpdatePermissionForViewSharing(staryPohlad, pohlad, moduleShortcut))
                 {
                     if (pohlad.ViewSharing == 2)
                     {
@@ -194,12 +213,12 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                     }
                     else
                     {
-                        pohlad.D_Tenant_Id = this.Session.TenantIdGuid;
+                        pohlad.D_Tenant_Id = Session.TenantIdGuid;
                     }
-
+                    pohlad.KodPolozky = Pohlad.CleanCode(pohlad.KodPolozky);
                     UpdateData(pohlad);
                 }
-                else if (staryPohlad.Zamknuta && pohlad.Zamknuta && this.CheckUpdatePermissionForViewSharing(staryPohlad, pohlad, moduleShortcut))
+                else if (staryPohlad.Zamknuta && pohlad.Zamknuta && CheckUpdatePermissionForViewSharing(staryPohlad, pohlad, moduleShortcut))
                 {
                     staryPohlad.Nazov = pohlad.Nazov ?? staryPohlad.Nazov;
                     staryPohlad.ViewSharing = pohlad.ViewSharing;
@@ -211,11 +230,12 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                     }
                     else
                     {
-                        staryPohlad.D_Tenant_Id = this.Session.TenantIdGuid;
+                        staryPohlad.D_Tenant_Id = Session.TenantIdGuid;
                         if (staryPohlad.DefaultView == true)
                             staryPohlad.DefaultView = false; //Defaultny moze byt len public pohlad
                     }
 
+                    staryPohlad.KodPolozky = Pohlad.CleanCode(staryPohlad.KodPolozky);
                     UpdateData(staryPohlad);
                 }
                 else
@@ -224,9 +244,19 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                 }
             }
 
-            PohladView result = this.GetById<PohladView>(pohlad.Id);
-            this.RemoveFromCacheByRegex(string.Format("pfe:poh[^:]*:{0}.*", pohlad.KodPolozky));
-            this.SetToCache(string.Format("pfe:poh:{0}", pohlad.Id), result, new TimeSpan(24, 0, 0));
+            PohladView result = GetById<PohladView>(pohlad.Id);
+
+            if (Session.AdminLevel == AdminLevel.SysAdmin) //Odstránenie z CACHE všetkých tenantov
+            {
+                RemoveFromCacheByRegex(string.Format("ten:[^:]*:pfe:poh[^:]*:{0}.*", staryPohlad.KodPolozky));
+                RemoveFromCacheByRegex(string.Format("ten:[^:]*:pfe:poh:{0}.*", pohlad.Id));
+            }
+            else
+            {
+                RemoveFromCacheByRegexOptimizedTenant(string.Format("pfe:poh[^:]*:{0}.*", staryPohlad.KodPolozky));
+            }
+            SetToCacheOptimizedTenant(string.Format("pfe:poh:{0}:{1}", pohlad.Id, Session.UserId), result, new TimeSpan(24, 0, 0));
+
             return result;
         }
 
@@ -239,21 +269,24 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         {
             if (request.Id == 0)
             {
-                HierarchyNode node = Modules.FindNode(request.KodPolozky);
+                HierarchyNode node = GetHierarchyNodeForModule(request.KodPolozky);
 
                 PohladView rs = GetPohladModel(request.Id);
 
-                if (rs != null && rs.KodPolozky != request.KodPolozky)
-                {
-                    throw new Exception(String.Format("Nezhodný kód položky pre zvolené ID pohľadu! {0}/{1}", request.KodPolozky, rs.KodPolozky));
-                }
-
-                return node.GetDataModel(this, rs);
+                return rs != null && rs.KodPolozky != request.KodPolozky
+                    ? throw new Exception($"Nezhodný kód položky pre zvolené ID pohľadu! {request.KodPolozky}/{rs.KodPolozky}")
+                    : node.GetDataModel(this, rs);
             }
 
-            var result = new PohladActions();
+            // 19.9.2019 toto by sa na eSame nemalo stat, neskor to bude treba vyhodit/preverit, ak budeme chciet widgety iba podla idecka
+            if (string.IsNullOrEmpty(request.KodPolozky))
+            {
+                throw new Exception($"Kód položky nebol zadaný!");
+            }
 
-            PohladView selectedView = this.GetPohlad(request.Id);
+            PohladActions result = new PohladActions();
+
+            PohladView selectedView = GetPohlad(request.Id);
             if (selectedView != null)
             {
                 HierarchyNode selected = null;
@@ -263,7 +296,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                     request.KodPolozky.ToLower().StartsWith(selectedView.KodPolozky.ToLower()) &&
                     request.KodPolozky.ToLower().StartsWith("all-"))
                 {
-                    selected = Modules.FindNode(request.KodPolozky);
+                    selected = GetHierarchyNodeForModule(request.KodPolozky);
                     current = selected;
                 }
                 else
@@ -283,7 +316,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                             {
                                 itemCode = string.Format("{0}!{1}", itemCode, request.KodPolozky.Substring(0, 3));
                             }
-                            selected = Modules.FindNode(itemCode);
+                            selected = GetHierarchyNodeForModule(itemCode);
                         }
                     }
 
@@ -291,18 +324,18 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                     {
                         if (!string.IsNullOrEmpty(request.KodPolozky))
                         {
-                            selected = Modules.FindNode(selectedView.KodPolozky == Regex.Replace(request.KodPolozky, @"[!\d]", string.Empty) ? request.KodPolozky : selectedView.KodPolozky);
+                            selected = GetHierarchyNodeForModule(selectedView.KodPolozky == Regex.Replace(request.KodPolozky, @"[!\d]", string.Empty) ? request.KodPolozky : selectedView.KodPolozky);
                         }
                         else
                         {
-                            selected = Modules.FindNode(selectedView.KodPolozky);
+                            selected = GetHierarchyNodeForModule(selectedView.KodPolozky);
                         }
 
                     }
 
                     if (!string.IsNullOrEmpty(request.KodPolozky))
                     {
-                        current = selectedView.KodPolozky == Regex.Replace(request.KodPolozky, @"[!\d]", string.Empty) ? selected : Modules.FindNode(request.KodPolozky);
+                        current = selectedView.KodPolozky == Regex.Replace(request.KodPolozky, @"[!\d]", string.Empty) ? selected : GetHierarchyNodeForModule(request.KodPolozky);
                     }
 
                 }
@@ -311,7 +344,12 @@ namespace WebEas.Esam.ServiceInterface.Pfe
 
                 if (selectedNode != null)
                 {
-                    PfeDataModel dataModel = selectedNode.GetDataModel(this, selectedView, null, request.Filter);
+                    if (selectedNode.TyBiznisEntity != null && selectedNode.TyBiznisEntity.Any())
+                    {
+                        selectedNode.DefaultValues.Add(new NodeFieldDefaultValue(nameof(BiznisEntita.C_TypBiznisEntity_Id), (short)selectedNode.TyBiznisEntity.First()));
+                    }
+
+                    PfeDataModel dataModel = selectedNode.GetDataModel(this, selectedView, null, request.Filter, current?.Parameter, current?.Kod);
 
                     // DCOMDEUS-1173
                     // ak nadradena polozka ma parameter prenesieme ju aj do podradenej
@@ -331,10 +369,32 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                         }
                     }
 
+                    //Specialny pripad CROSS MODULOV-ych poloziek. Treba vratit aj s modulom na konci
+                    if (request.KodPolozky != null &&
+                    request.KodPolozky.ToLower().StartsWith(selectedView.KodPolozky.ToLower()) &&
+                    request.KodPolozky.ToLower().StartsWith("all-"))
+                    {
+                        result.KodPolozky = request.KodPolozky;
+                    }
+                    else if (request.KodPolozky != null && request.KodPolozky.StartsWith("dms-id"))
+                    {
+                        result.KodPolozky = request.KodPolozky;
+                        // Pri DMS akcie dotiahneme pre aktualnu polozku
+                        // Kedze sa pouziva ten isty pohlad (vsetky fieldy idu z root), musime nastavit default hodnotu pre aktualny adresar
+                        if (current != null)
+                        {
+                            selectedNode = current;
+                            dataModel.Fields.First(x => x.Name == "D_Adresar_Id").DefaultValue = selectedNode.Parameter;
+                        }
+                    }
+                    else
+                    {
+                        result.KodPolozky = string.IsNullOrEmpty(kodPolozkyWithParams) ? selectedView.KodPolozky : kodPolozkyWithParams;
+                    }
+
                     result.Id = selectedView.Id;
                     result.Nazov = selectedView.Nazov;
                     result.Typ = selectedView.Typ;
-                    result.KodPolozky = string.IsNullOrEmpty(kodPolozkyWithParams) ? selectedView.KodPolozky : kodPolozkyWithParams;
                     result.ShowInActions = selectedView.ShowInActions;
                     result.DefaultView = selectedView.DefaultView;
                     result.FilterText = selectedView.FilterText;
@@ -342,17 +402,19 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                     result.Actions = new List<NodeAction>();
                     result.TypAkcie = selectedView.TypAkcie;
                     result.ViewSharing = selectedView.ViewSharing;
+                    result.ViewSharing_Custom = selectedView.ViewSharing_Custom;
                     result.PageSize = selectedView.PageSize;
                     result.RibbonFilters = selectedView.RibbonFilters;
-                    result.DetailViewId = selectedView.DetailViewId;
 
                     if (dataModel.Layout != null && dataModel.Layout.Count > 0)
                     {
                         foreach (PfeLayout layout in dataModel.Layout)
                         {
                             FillLayoutPagesTitle(layout);
+                            RemovePredkontRzpForExtIND(layout, current);
                         }
                     }
+
                     result.Data = dataModel;
 
                     List<PohladItem> selectedViewItems = SelectedViewItems(selectedView.KodPolozky);
@@ -360,23 +422,18 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                     if (selectedViewItems != null && selectedViewItems.Count > 0)
                     {
                         var otherActions = new List<NodeAction>();
-                        HashSet<string> roles = Session.Roles;
+                        //HashSet<string> roles = Session.Roles;
                         foreach (PohladItem item in selectedViewItems)
                         {
                             NodeActionType? testActionType = null;
-                            NodeActionType actionType;
-                            string[] requiredRoles = null;
-                            string[] requiredAnyRoles = null;
                             NodeActionIcons icon = NodeActionIcons.Default;
 
-                            if (Enum.TryParse<NodeActionType>(item.TypAkcie, out actionType))
+                            if (Enum.TryParse(item.TypAkcie, out NodeActionType actionType))
                             {
                                 testActionType = actionType;
                                 if (selectedNode.AllActions.Any(nav => nav.Type == actionType.ToString()))
                                 {
                                     NodeAction node = selectedNode.AllActions.First(x => x.Type == actionType.ToString());
-                                    requiredRoles = node.RequiredRoles;
-                                    requiredAnyRoles = node.RequiredAnyRoles;
                                     icon = node.ActionIcon;
                                 }
                             }
@@ -386,9 +443,17 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                             {
                                 icon = NodeActionIcons.InfoCircle;
                             }
-                            if (item.Nazov == "Evidencia psov")
+                            else if (item.Nazov == "Evidencia psov")
                             {
                                 icon = NodeActionIcons.Paw;
+                            }
+                            else if (item.Nazov.ToLower().Contains("história"))
+                            {
+                                icon = NodeActionIcons.History;
+                            }
+                            else if (item.Nazov.ToLower().Contains("prehľad rozpočtu"))
+                            {
+                                icon = NodeActionIcons.MoneyBillAlt;
                             }
 
                             var act = new NodeAction(NodeActionType.ShowInActions)
@@ -397,12 +462,10 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                                 Url = string.Format("/#viewId={0}", item.Id),
                                 IdField = selectedNode.Actions.FirstOrDefault(a => a.Type == "ReadList").IdField,
                                 CustomActionType = testActionType,
-                                RequiredRoles = requiredRoles,
-                                RequiredAnyRoles = requiredAnyRoles,
                                 ActionIcon = icon
                             };
 
-                            if (HierarchyNode.HasRolePrivileges(act, roles))
+                            if (HierarchyNode.HasRolePrivileges(act, new UserNodeRight() { D_User_Id = Session.UserIdGuid.Value, Pravo = 3, Kod = request.KodPolozky }))
                             {
                                 otherActions.Add(act);
                             }
@@ -414,14 +477,15 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                         }
                     }
 
+                    var userTreeRight = GetUserTreeRights(request.KodPolozky).FirstOrDefault();
                     if (typeof(IPfeCustomizeActions).IsAssignableFrom(selectedNode.ModelType))
                     {
                         var modelObject = (IPfeCustomizeActions)Activator.CreateInstance(selectedNode.ModelType);
-                        result.Actions.AddRange(modelObject.CustomizeActions(selectedNode.Actions.FilterByAccess(this), this));
+                        result.Actions.AddRange(modelObject.CustomizeActions(selectedNode.Actions.FilterByAccess(userTreeRight), this));
                     }
                     else
                     {
-                        foreach (NodeAction act in selectedNode.Actions.FilterByAccess(this))
+                        foreach (NodeAction act in selectedNode.Actions.FilterByAccess(userTreeRight))
                         {
                             if (act.ActionType == NodeActionType.ReadList)
                             {
@@ -433,6 +497,27 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                             {
                                 result.Actions.Add(act);
                             }
+                        }
+                    }
+
+                    //Pridanie akcie Kopirovat ak existuje akcia Create
+                    if (result.Actions.Any(x => x.ActionType == NodeActionType.Create) || result.Actions.Any(x => x.MenuButtons != null && x.MenuButtons.Any(z => z.ActionType == NodeActionType.Create)))
+                    {
+                        //pridavame za Delete
+                        var actionDeleteIndex = result.Actions.FindIndex(x => x.ActionType == NodeActionType.Delete);
+                        var nodeActionCreate = result.Actions.FirstOrDefault(x => x.ActionType == NodeActionType.Create);
+                        if (nodeActionCreate == null)
+                        {
+                            nodeActionCreate = result.Actions.FirstOrDefault(x => x.MenuButtons != null && x.MenuButtons.Any(z => z.ActionType == NodeActionType.Create))?.MenuButtons?.FirstOrDefault(x => x.ActionType == NodeActionType.Create);
+                        }
+
+                        if (actionDeleteIndex == -1)
+                        {
+                            result.Actions.Add(new NodeAction(NodeActionType.Copy) { Url = nodeActionCreate?.Url });
+                        }
+                        else
+                        {
+                            result.Actions.Insert(actionDeleteIndex + 1, new NodeAction(NodeActionType.Copy) { Url = nodeActionCreate?.Url });
                         }
                     }
 
@@ -450,8 +535,10 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                                 NodeAction menu = result.Actions.FirstOrDefault(a => a.ActionType == NodeActionType.MenuButtons && a.Caption == "Zobraziť");
                                 if (menu == null)
                                 {
-                                    menu = new NodeAction(NodeActionType.MenuButtons);
-                                    menu.MenuButtons = new List<NodeAction>(1);
+                                    menu = new NodeAction(NodeActionType.MenuButtons)
+                                    {
+                                        MenuButtons = new List<NodeAction>(1)
+                                    };
                                     //myslim ze neni treba nastavovat, uz sa to nikde nevyuzije?
                                     //menu.RequiredRoles = rlAction.RequiredRoles;
                                     //menu.RequiredAnyRoles = rlAction.RequiredAnyRoles;
@@ -481,13 +568,13 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// <returns>Povolenie/zakaz upravit pohlad</returns>
         private bool CheckUpdatePermissionForViewSharing(Pohlad originalView, Pohlad newView, string moduleShortcut)
         {
-            bool isSysAdmin = this.Session.HasRole(Roles.SysAdmin);
-            bool isModuleAdmin = this.Session.HasRole(string.Format("{0}_ADMIN", moduleShortcut.ToUpper()));
+            bool isDcomAdmin = Session.AdminLevel == AdminLevel.SysAdmin;
+            bool isModuleAdmin = Session.HasRole(string.Format("{0}_ADMIN", moduleShortcut.ToUpper()));
 
             switch (originalView.ViewSharing)
             {
                 case 0:
-                    if (isSysAdmin || isModuleAdmin || (originalView.Vytvoril == this.Session.DcomId && newView.ViewSharing == 0))
+                    if (isDcomAdmin || isModuleAdmin || (originalView.Vytvoril == Session.UserIdGuid && newView.ViewSharing == 0))
                     {
                         return true;
                     }
@@ -525,46 +612,43 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// <returns>Povolenie/zakaz upravit (odomknut) pohlad</returns>
         private bool CheckUpdatePermissionForViewSharing(PohladLockModel originalView, string moduleShortcut)
         {
-            bool isSysAdmin = this.Session.HasRole(Roles.SysAdmin);
-            bool isModuleAdmin = this.Session.HasRole(string.Format("{0}_ADMIN", moduleShortcut.ToUpper()));
+            bool isDcomAdmin = Session.AdminLevel == AdminLevel.SysAdmin;
+            bool isModuleAdmin = Session.HasRole(string.Format("{0}_ADMIN", moduleShortcut.ToUpper()));
 
-            switch (originalView.ViewSharing)
+            return originalView.ViewSharing switch
             {
-                case 0:
-                    return isSysAdmin || isModuleAdmin || originalView.Vytvoril == this.Session.DcomId;
-                case 1:
-                    return isSysAdmin || isModuleAdmin;
-                case 2:
-                    return isSysAdmin;
-            }
-            return false;
+                0 => isDcomAdmin || isModuleAdmin || originalView.Vytvoril == Session.UserIdGuid,
+                1 => isDcomAdmin || isModuleAdmin,
+                2 => isDcomAdmin,
+                _ => false,
+            };
         }
 
         /// <summary>
         /// Odstráni pohľad
         /// </summary>
         /// <param name="id">id</param>
-        public void DeletePohlad(int id)
+        public void DeletePohlad(int[] ids)
         {
-            Pohlad pohl = this.GetById<Pohlad>(id);
-
-            if (pohl != null)
+            foreach (var id in ids)
             {
-                this.Db.Delete<Pohlad>(x => x.Id == id);
+                Pohlad pohl = GetById<Pohlad>(id);
 
-                this.RemoveFromCache(string.Format("pfe:pohItems:{0}", pohl.KodPolozky));
-
-                if (pohl.D_Tenant_Id.HasValue)
+                if (pohl != null)
                 {
-                    this.RemoveFromCacheByRegex(string.Format("pfe:poh[^:]*:{0}:{1}.*", pohl.KodPolozky, pohl.D_Tenant_Id.ToString().ToUpper()));
+                    Db.Delete<Pohlad>(x => x.Id == id);
+                }
+                if (Session.AdminLevel == AdminLevel.SysAdmin) //Odstránenie z CACHE všetkých tenantov 
+                {
+                    RemoveFromCacheByRegex(string.Format("ten:[^:]*:pfe:poh[^:]*:{0}.*", pohl.KodPolozky));
+                    RemoveFromCacheByRegex(string.Format("ten:[^:]*:pfe:poh:{0}.*", id));
                 }
                 else
                 {
-                    this.RemoveFromCacheByRegex(string.Format("pfe:poh[^:]*:{0}.*", pohl.KodPolozky));
+                    RemoveFromCacheByRegexOptimizedTenant(string.Format("pfe:poh[^:]*:{0}.*", pohl.KodPolozky));
+                    RemoveFromCacheByRegexOptimizedTenant(string.Format("pfe:poh:{0}.*", id));
                 }
             }
-
-            this.RemoveFromCache(string.Format("pfe:poh:{0}", id));
         }
 
         /// <summary>
@@ -572,9 +656,9 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// </summary>
         /// <param name="id">id</param>
         /// <returns>Pohlad</returns>
-        public PohladView GetPohlad(int id)
+        private PohladView GetPohlad(int id)
         {
-            return this.GetCacheOptimized(string.Format("pfe:poh:{0}", id), () => this.GetById<PohladView>(id), new TimeSpan(24, 0, 0));
+            return GetCacheOptimizedTenant(string.Format("pfe:poh:{0}:{1}", id, Session.UserId), () => GetById<PohladView>(id), new TimeSpan(24, 0, 0));
         }
 
         /// <summary>
@@ -585,9 +669,9 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         public List<PohladItem> SelectedViewItems(string kodPolozky)
         {
             //Tenanta filtruje security mechanizmus
-            Filter fRights = new Filter("ViewSharing", 2).Or(new Filter("ViewSharing", 1)).Or(new Filter("Vytvoril", this.Session.DcomId));
+            Filter fRights = new Filter("ViewSharing", 2).Or(new Filter("ViewSharing", 1)).Or(new Filter("Vytvoril", Session.UserId));
             Filter f = new Filter("KodPolozky", kodPolozky).AndEq("ShowInActions", true).And(fRights);
-            return this.GetCacheOptimized(string.Format("pfe:pohItems:{0}", kodPolozky), () => this.GetList<PohladItem>(f));
+            return GetCacheOptimizedTenant(string.Format("pfe:pohItems:{0}:{1}", kodPolozky, Session.UserId), () => GetList<PohladItem>(f));
         }
 
         /// <summary>
@@ -595,13 +679,12 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// </summary>
         /// <param name="kodPolozky">Kód položky</param>
         /// <returns>Pohlad</returns>
-        public IList<PohladList> GetPohlady(string kodPolozky)
+        public IList<PohladList> GetPohlady(string kodPolozky, bool browser)
         {
-            string key = string.Format("pfe:pohl:{0}:{1}:{2}", kodPolozky, this.Session.TenantId, this.Session.DcomId);
-            return this.GetCacheOptimized(key, () =>
+            return GetCacheOptimizedTenant(string.Format("pfe:pohl:{0}:{1}:{2}", kodPolozky, Session.UserId, browser ? 1 : 0), () =>
             {
-                string pouzivatelId = this.Session.DcomId;
-                Guid? tenantId = this.Session.TenantIdGuid;
+                string pouzivatelId = Session.UserId;
+                Guid? tenantId = Session.TenantIdGuid;
                 kodPolozky = Pohlad.CleanCode(kodPolozky);
 
                 if (pouzivatelId == null)
@@ -611,13 +694,13 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                     Filter globalViewsharing = new Filter("ViewSharing", 2).Or(localViewSharing);
                     Filter globalLocalViews = new Filter("KodPolozky", kodPolozky).And(globalViewsharing);
 
-                    return this.GetList<PohladList>(globalLocalViews);
+                    return GetList<PohladList>(globalLocalViews);
                 }
                 else
                 {
                     string sflt = "";
                     //Admin vidi aj subpohlady. Normalny uradnici nevidia tie, ktore su pouzite na nejakych LAYOUT-och
-                    if (!this.Session.HasRole(Roles.SysAdmin))
+                    if (Session.AdminLevel != AdminLevel.SysAdmin && !browser)
                     {
                         sflt = "D_Pohlad_Id NOT IN ( " + Environment.NewLine +
                                 "  SELECT DISTINCT p.D_Pohlad_Id FROM pfe.D_Pohlad p, pfe.D_Pohlad lay " + Environment.NewLine +
@@ -638,7 +721,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                     Filter privateGlobalViewsharing = new Filter("Viewsharing", 2).And(f).Or(privateLocalViewSharing).Or(privateViewSharing);
                     Filter privateGlobalLocalViews = new Filter("KodPolozky", kodPolozky).And(privateGlobalViewsharing);
 
-                    return this.GetList<PohladList>(privateGlobalLocalViews);
+                    return GetList<PohladList>(privateGlobalLocalViews);
                 }
             }, new TimeSpan(24, 0, 0));
         }
@@ -650,17 +733,17 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// <returns>Pohlad</returns>
         public PohladView SavePohlad(Pohlad pohlad)
         {
-            if (pohlad.Id == default(int))
+            if (pohlad.Id == default)
             {
                 pohlad.ViewSharing = 0;
-                pohlad.D_Tenant_Id = this.Session.TenantIdGuid;
-                this.InsertData(pohlad);
+                pohlad.D_Tenant_Id = Session.TenantIdGuid;
+                InsertData(pohlad);
             }
             else
             {
-                Pohlad staryPohlad = this.GetById<Pohlad>(pohlad.Id);
+                Pohlad staryPohlad = GetById<Pohlad>(pohlad.Id);
 
-                string moduleShortcut = Modules.FindModule(pohlad.KodPolozky);
+                string moduleShortcut = GetModuleCode(pohlad.KodPolozky);
 
                 if (staryPohlad != null)
                 {
@@ -669,7 +752,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                         // DOCASNE RIESENIE
                         //if (WebEas.Context.Current.Session.HasRole(Roles.Admin) || WebEas.Context.Current.Session.HasRole(moduleShortcut.ToUpper() + "_ADMIN") || pohlad.Vytvoril == WebEas.Context.Current.Session.DcomId)
                         //{
-                        this.UpdateData(pohlad);
+                        UpdateData(pohlad);
                         //}
                         //else
                         //{
@@ -682,24 +765,24 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                         switch (pohlad.ViewSharing)
                         {
                             case 0:
-                                if (this.Session.HasRole(Roles.SysAdmin) && staryPohlad.ViewSharing == 2)
+                                if (Session.AdminLevel == AdminLevel.SysAdmin && staryPohlad.ViewSharing == 2)
                                 {
                                     staryPohlad.ViewSharing = pohlad.ViewSharing;
-                                    staryPohlad.D_Tenant_Id = this.Session.TenantIdGuid;
+                                    staryPohlad.D_Tenant_Id = Session.TenantIdGuid;
                                 }
-                                else if (this.Session.HasRole(string.Format("{0}_ADMIN", moduleShortcut.ToUpper())) && staryPohlad.ViewSharing == 1)
+                                else if (Session.HasRole(string.Format("{0}_ADMIN", moduleShortcut.ToUpper())) && staryPohlad.ViewSharing == 1)
                                 {
                                     staryPohlad.ViewSharing = pohlad.ViewSharing;
                                 }
                                 break;
                             case 1:
-                                if (this.Session.HasRole(Roles.SysAdmin) || this.Session.HasRole(string.Format("{0}_ADMIN", moduleShortcut.ToUpper())))
+                                if (Session.AdminLevel == AdminLevel.SysAdmin || Session.HasRole(string.Format("{0}_ADMIN", moduleShortcut.ToUpper())))
                                 {
                                     staryPohlad.ViewSharing = pohlad.ViewSharing;
                                 }
                                 break;
                             case 2:
-                                if (this.Session.HasRole(Roles.SysAdmin))
+                                if (Session.AdminLevel == AdminLevel.SysAdmin)
                                 {
                                     staryPohlad.ViewSharing = pohlad.ViewSharing;
                                     staryPohlad.D_Tenant_Id = null;
@@ -707,14 +790,23 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                                 break;
                         }
                         staryPohlad.Nazov = pohlad.Nazov;
-                        this.UpdateData(staryPohlad);
+                        UpdateData(staryPohlad);
                     }
                 }
             }
 
-            PohladView result = this.GetById<PohladView>(pohlad.Id);
-            this.SetToCache(string.Format("pfe:poh:{0}", pohlad.Id), result, new TimeSpan(24, 0, 0));
-            this.RemoveFromCacheByRegex(string.Format("pfe:poh[^:]*:{0}.*", pohlad.KodPolozky));
+            PohladView result = GetById<PohladView>(pohlad.Id);
+            if (Session.AdminLevel == AdminLevel.SysAdmin) //Odstránenie z CACHE všetkých tenantov
+            {
+                RemoveFromCacheByRegex(string.Format("ten:[^:]*:pfe:poh[^:]*:{0}.*", pohlad.KodPolozky));
+                RemoveFromCacheByRegex(string.Format("ten:[^:]*:pfe:poh:{0}.*", pohlad.Id));
+            }
+            else
+            {
+                RemoveFromCacheByRegexOptimizedTenant(string.Format("pfe:poh[^:]*:{0}.*", pohlad.KodPolozky));
+            }
+            SetToCacheOptimizedTenant(string.Format("pfe:poh:{0}:{1}", pohlad.Id, Session.UserId), result, new TimeSpan(24, 0, 0));
+
             return result;
         }
 
@@ -722,25 +814,23 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         {
             var result = new List<PohladView>();
 
-            System.Data.IDbTransaction transaction = this.BeginTransaction();
-            try
+            using (var transaction = BeginTransaction())
             {
-                UnLockPohladRecursive(id, zamknut, result);
-                transaction.Commit();
-            }
-            catch (WebEasException ex)
-            {
-                transaction.Rollback();
-                throw ex;
-            }
-            catch (Exception ex)
-            {
-                transaction.Rollback();
-                throw new WebEasException("Nastala chyba pri rekurzivnom odomknuti/zamknuti pohladu", "Pohľady sa nepodarilo odomknúť/zamknúť kvôli internej chybe", ex);
-            }
-            finally
-            {
-                this.EndTransaction(transaction);
+                try
+                {
+                    UnLockPohladRecursive(id, zamknut, result);
+                    transaction.Commit();
+                }
+                catch (WebEasException ex)
+                {
+                    transaction.Rollback();
+                    throw ex;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebEasException("Nastala chyba pri rekurzivnom odomknuti/zamknuti pohladu", "Pohľady sa nepodarilo odomknúť/zamknúť kvôli internej chybe", ex);
+                }
             }
 
             if (result.Count > 0)
@@ -748,8 +838,17 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                 //refresh cache
                 foreach (var pohlad in result)
                 {
-                    this.RemoveFromCacheByRegex(string.Format("pfe:poh[^:]*:{0}.*", pohlad.KodPolozky));
-                    this.SetToCache(string.Format("pfe:poh:{0}", pohlad.Id), pohlad, new TimeSpan(24, 0, 0));
+                    if (Session.AdminLevel == AdminLevel.SysAdmin) //Odstránenie z CACHE všetkých tenantov
+                    {
+                        RemoveFromCacheByRegex(string.Format("ten:[^:]*:pfe:poh[^:]*:{0}.*", pohlad.KodPolozky));
+                        RemoveFromCacheByRegex(string.Format("ten:[^:]*:pfe:poh:{0}.*", pohlad.Id));
+                    }
+                    else
+                    {
+                        RemoveFromCacheByRegexOptimizedTenant(string.Format("pfe:poh[^:]*:{0}.*", pohlad.KodPolozky));
+                    }
+
+                    SetToCacheOptimizedTenant(string.Format("pfe:poh:{0}:{1}", pohlad.Id, Session.UserId), pohlad, new TimeSpan(24, 0, 0));
                 }
             }
 
@@ -761,33 +860,41 @@ namespace WebEas.Esam.ServiceInterface.Pfe
             //check if not already in stack..
             if (stack.Any(a => a.Id == id)) return;
 
-            var pohlad = this.Db.SingleById<PohladLockModel>(id);
+            var pohlad = Db.SingleById<PohladLockModel>(id);
             if (pohlad == null)
                 return;
 
-            string moduleShortcut = Modules.FindModule(pohlad.KodPolozky);
+            string moduleShortcut = GetModuleCode(pohlad.KodPolozky);
 
-            if (pohlad.Zamknuta != zamknut && this.CheckUpdatePermissionForViewSharing(pohlad, moduleShortcut))
+            if (pohlad.Zamknuta != zamknut)
             {
-                if (pohlad.ViewSharing == 2)
+                if (CheckUpdatePermissionForViewSharing(pohlad, moduleShortcut))
                 {
-                    pohlad.D_Tenant_Id = null;
+                    if (pohlad.ViewSharing == 2)
+                    {
+                        pohlad.D_Tenant_Id = null;
+                    }
+                    else
+                    {
+                        pohlad.D_Tenant_Id = Session.TenantIdGuid;
+                    }
+
+                    pohlad.Zamknuta = zamknut;
+                    UpdateData(pohlad);
+
+                    PohladView result = GetById<PohladView>(pohlad.Id);
+                    stack.Add(result);
                 }
                 else
                 {
-                    pohlad.D_Tenant_Id = this.Session.TenantIdGuid;
+                    //Error
+                    throw new WebEasException(null, "Nemáte právo odomknúť/zamknúť aktuálny pohľad!");
                 }
-
-                pohlad.Zamknuta = zamknut;
-                this.UpdateData(pohlad);
-
-                PohladView result = this.GetById<PohladView>(pohlad.Id);
-                stack.Add(result);
             }
 
             if (pohlad.Typ == "layout")
             {
-                PfeDataModel currentLayout = ServiceStack.Text.JsonSerializer.DeserializeFromString<PfeDataModel>(pohlad.Data);
+                PfeDataModel currentLayout = JsonSerializer.DeserializeFromString<PfeDataModel>(pohlad.Data);
                 foreach (var subpohlad in currentLayout.Layout)
                 {
                     UnLockPfeLayoutRecursive(subpohlad, zamknut, stack);
@@ -821,6 +928,44 @@ namespace WebEas.Esam.ServiceInterface.Pfe
             }
         }
 
+        public List<string> GetUserModulRights(string modul)
+        {
+            var reader = Db.ExecuteReader($"SELECT Kod FROM [cfe].[V_RightUser] WHERE ModulKod = '{modul}' AND D_User_Id = '{Session.UserId}' AND HasRight = 1");
+            var p = reader.Parse<string>().ToList();
+            reader.Close();
+
+            return p;
+        }
+
+        public List<ListAllModulesResponse> ListAllModules(ListAllModules request)
+        {
+            var rights = new List<string>() { "MEMBER", "ADMIN", "SYS_ADMIN" };
+
+            var modules = (from m in EsamModules
+                           where (rights.Intersect(GetUserModulRights(m.Kod)).Any())
+                           select new { m.Kod, m.Nazov }).ToList();
+
+            var result = new List<ListAllModulesResponse>();
+
+            foreach (var module in modules.OrderBy(x => x.Nazov))
+            {
+                // ak user nema ani pravo citat, nezobrazit modul v menu
+                //var usernoderights = GetUserTreeRights(module.Kod).FirstOrDefault();
+                //if (usernoderights == null || usernoderights.Pravo == 0)
+                //    continue;
+
+                result.Add(new ListAllModulesResponse
+                {
+                    Kod = module.Kod,
+                    Nazov = module.Nazov,
+                    Url = $"#{module.Kod.ToUpper()}/",
+                    Separator = false
+                });
+            }
+
+            return result;
+        }
+
         #endregion CRUD
 
         #region Ostatne - docasny region
@@ -830,23 +975,37 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// </summary>
         /// <param name="idState">The id of actual state.</param>
         /// <returns></returns>
-        public List<PossibleStateResponse> ListPossibleStates(int idState)
+        public List<PossibleStateResponse> ListPossibleStates(int idPriestor, int idState, bool uctovanie, string ItemCode)
         {
-            return GetCacheOptimizedLocal(string.Format("pfe:posState:{0}", idState), () =>
+            return GetCacheOptimized(string.Format("pfe:posStates:{0}-{1}-{2}-{3}", idPriestor, idState, uctovanie ? 1 : 0, ItemCode), () =>
             {
                 var filter = new Filter();
+                filter.AndEq("C_StavovyPriestor_Id", idPriestor);
                 filter.AndEq("C_StavEntity_Id_Parent", idState);
-                filter.AndEq("ManualnyPrechodPovoleny", true);
+                filter.AndEq("ManualnyPrechodPovoleny", !uctovanie);
+                if (uctovanie)
+                {
+                    //Pre získanie stavov na dialóg účtovania/odúčtovania chcem nemanuálne prechody okrem "Nový". Na to je iná akcia.
+                    filter.And(FilterElement.NotEq("C_StavEntity_Id_Child", (int)StavEntityEnum.NOVY));
+                }
+
+                if (ItemCode  != null && ItemCode == "uct-evi-exd-dap")
+                {
+                    //Pre získanie stavov na dialóg účtovania/odúčtovania chcem pri ID-DaP extra odfiltrovať stavy čiastkových účtovaní iba do RZP alebo UCT.
+                    filter.And(FilterElement.NotEq("C_StavEntity_Id_Child", (int)StavEntityEnum.ZAUCTOVANY_RZP));
+                    filter.And(FilterElement.NotEq("C_StavEntity_Id_Child", (int)StavEntityEnum.ZAUCTOVANY_UCT));
+                }
+
                 filter.AndNotDeleted();
 
-                List<StavEntityStavEntity> naslStavy = this.GetList<StavEntityStavEntity>(filter);
+                List<StavEntityStavEntity> naslStavy = GetList<StavEntityStavEntity>(filter);
                 if (naslStavy.IsNullOrEmpty())
                 {
                     return new List<PossibleStateResponse>();
                 }
 
-                var listStavov = this.GetList<WebEas.ServiceModel.Pfe.Types.StavEntity>(FilterElement.In("C_StavEntity_Id", naslStavy.Select(x => x.C_StavEntity_Id_Child)).ToFilter());
-                return listStavov.Select(x => new PossibleStateResponse
+                var listStavov = GetList<StavEntity>(FilterElement.In("C_StavEntity_Id", naslStavy.Select(x => x.C_StavEntity_Id_Child)).ToFilter());
+                var res = listStavov.Select(x => new PossibleStateResponse
                 {
                     BiznisAction = x.BiznisAkcia,
                     Code = x.Kod,
@@ -857,6 +1016,18 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                     C_Formular_Id = x.C_Formular_Id,
                     NazovUkonu = naslStavy.First(a => a.C_StavEntity_Id_Child == x.C_StavEntity_Id).NazovUkonu
                 }).ToList();
+
+
+                if (ItemCode != null && ItemCode == "uct-evi-exd-dap")
+                {
+                    //Musím zmeniť popisky pre zmenmy stavov, keďže stavový priestor pre ID-DaP je špeciálne upravovaný
+                    foreach (var item in res)
+                    {
+                        item.NazovUkonu = item.NazovUkonu.Replace(" a RZP", "");
+                    }
+                }
+
+                return res;
             });
         }
 
@@ -867,9 +1038,9 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// <returns>Pohlad</returns>
         public PohladView GetPohladModel(int id)
         {
-            return this.GetCacheOptimized(string.Format("pfe:pohModel:{0}", id), () => this.GetById<PohladView>(id));
+            return GetCacheOptimizedTenant(string.Format("pfe:pohModel:{0}", id), () => GetById<PohladView>(id));
         }
-        
+
         /// <summary>
         /// Docasne ulozenie suborov pre DMS - do cache - redisu
         /// </summary>
@@ -885,12 +1056,24 @@ namespace WebEas.Esam.ServiceInterface.Pfe
             foreach (KeyValuePair<string, Stream> file in fileList)
             {
                 cFile = new CachedFile(file.Key, file.Value.ToBytes());
-                this.SaveFileToCache(cFile);
+                SaveFileToCache(cFile);
 
                 resultList.Add(new FileUploadResponse() { FileName = cFile.FileName, TempId = cFile.TempId, success = true });
             }
 
             return resultList;
+        }
+
+        public RendererResult GetReport(GetReportDto request)
+        {
+            var reportId = string.Concat("Report:", request.ReportId);
+            var report = GetFromCache<RendererResult>(reportId, useGzipCompression: true);
+            
+            if (report == null)
+            {
+                throw new WebEasValidationException(null, $"Report {reportId} nenájdený !");
+            }
+            return report;
         }
 
         public ContextUser GetContextUser(string moduleShortcut)
@@ -899,27 +1082,25 @@ namespace WebEas.Esam.ServiceInterface.Pfe
             var user = new ContextUser
             {
                 TenantId = Session.TenantId,
-                ActorId = Session.DcomId,
-                FormattedName = CurrentUserFormattedName + " - " + CurrentCompanyName + " (" + rok + ")",
+                ActorId = Session.UserId,
+                FormattedName = Session.DisplayName,
                 Version = string.IsNullOrEmpty(DbEnvironment) ? Context.Info.ApplicationVersion : string.Format("{0}{1}", Context.Info.ApplicationVersion, DbEnvironment.Substring(0, 1).ToLower()),
                 Released = Context.Info.Updated.ToString("dd.MM.yyyy HH:mm"),
-                Environment = rok, //DbEnvironment == null ? "Test": DbEnvironment,
+                Environment = DbEnvironment ?? "Test",
                 DbReleased = DbDeployTime == null ? "" : DbDeployTime.Value.ToString("dd.MM.yyyy HH:mm"),
-                DcomAdmin = Session.HasRole(Roles.SysAdmin),
-                FilterRok = GetNastavenieI(moduleShortcut, "FilterRok"),
-                DomenaName = "domenaname",
-                VillageName = CurrentCompanyName
+                DcomAdmin = Session.AdminLevel == AdminLevel.SysAdmin,
+                FilterRok = GetNastavenieI(moduleShortcut.ToLower(), "FilterRok"),
+                DomenaName = "NOTIMPLEMENTED",
+                VillageName = Session.TenantName,
+                HasMultipleTenants = Session.TenantIds != null && Session.TenantIds.Count > 1,
+                OperationType = GetNastavenieI("reg", "eSAMRezim") == 1 ? "DCOM" : null,
+                Roles = Session.Roles
             };
 
             if (!string.IsNullOrEmpty(moduleShortcut))
             {
-                user.ModuleAdmin = this.Session.HasRole(string.Format("{0}_ADMIN", moduleShortcut.ToUpper()));
-                user.IsWriter = this.Session.HasRole(string.Format("{0}_WRITER", moduleShortcut.ToUpper()));
+                user.ModuleAdmin = Session.HasRole(string.Format("{0}_ADMIN", moduleShortcut.ToUpper()));
             }
-
-#if INT || DEBUG
-            user.OperationType = "DCOM";
-#endif
 
             return user;
         }
@@ -937,7 +1118,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                 {
                     foreach (PfeLayoutPages page in layout.Center.Pages)
                     {
-                        Pohlad pohlad = this.GetById<Pohlad>(page.Id);
+                        Pohlad pohlad = GetById<Pohlad>(page.Id);
                         if (pohlad != null)
                         {
                             page.Title = pohlad.Nazov;
@@ -947,7 +1128,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                         }
                     }
                 }
-                this.FillLayoutPagesTitle(layout.Center);
+                FillLayoutPagesTitle(layout.Center);
             }
 
             if (layout.Other != null)
@@ -956,7 +1137,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                 {
                     foreach (PfeLayoutPages page in layout.Other.Pages)
                     {
-                        Pohlad pohlad = this.GetById<Pohlad>(page.Id);
+                        Pohlad pohlad = GetById<Pohlad>(page.Id);
                         if (pohlad != null)
                         {
                             page.Title = pohlad.Nazov;
@@ -966,7 +1147,34 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                         }
                     }
                 }
-                this.FillLayoutPagesTitle(layout.Other);
+                FillLayoutPagesTitle(layout.Other);
+            }
+
+            return layout;
+        }
+
+        /// <summary>
+        /// Pre externé IND - DAP, MJT, MZD odstraňuje tab s predkontáciou RZP
+        /// </summary>
+        /// <param name="layout">The current layout.</param>
+        /// <returns>Modified layout's pages</re
+        public PfeLayout RemovePredkontRzpForExtIND(PfeLayout layout, HierarchyNode current)
+        {
+            if (layout.Other == null || current == null || current.Parameter == null || !current.KodPolozky.StartsWith("uct-def-kont-kd")) return layout;
+
+            int par = int.Parse(current.Parameter.ToString());
+
+            if (par == (int)TypBiznisEntity_KnihaEnum.Externe_doklady_DaP ||
+                par == (int)TypBiznisEntity_KnihaEnum.Externe_doklady_majetok ||
+                par == (int)TypBiznisEntity_KnihaEnum.Externe_doklady_mzdy ||
+                par == (int)TypBiznisEntity_KnihaEnum.Externe_doklady_sklad)
+            {
+                if (layout.Other.Pages != null && layout.Other.Pages.Count > 0)
+                {
+                    layout.Other.Pages.RemoveAll(x => x.CustomTitle == "Rozpočet");
+                    return layout;
+                }
+                RemovePredkontRzpForExtIND(layout.Other, current);
             }
 
             return layout;
@@ -982,11 +1190,12 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         {
             try
             {
-                var ret = new RendererResult();
-
-                ret.DocumentBytes = Convert.FromBase64String(xml);
-                ret.DocumentName = title;
-                ret.Extension = "xls";
+                var ret = new RendererResult
+                {
+                    DocumentBytes = Convert.FromBase64String(xml),
+                    DocumentName = title,
+                    Extension = "xls"
+                };
 
                 return ret;
             }
@@ -1004,14 +1213,14 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// <returns>List of translated columns</returns>
         public List<TranslationColumnEntity> GetTranslationColumns(string module)
         {
-            return this.GetCacheOptimizedLocal(string.Format("pfe:pfe:transCols:{0}", module), () =>
+            return GetCacheOptimized(string.Format("pfe:pfe:transCols:{0}", module), () =>
             {
                 var translateColumns = new List<TranslationColumnEntity>();
 
                 try
                 {
                     /*
-                    List<Modul> modules = this.Db.Select<Modul>();
+                    List<Modul> modules = Db.Select<Modul>();
                     foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies().Where(nav => nav.FullName.Contains("WebEas.ServiceModel")))
                     {
                         foreach (Type type in assembly.GetTypes())
@@ -1080,9 +1289,9 @@ namespace WebEas.Esam.ServiceInterface.Pfe
 
                     string sql = String.Format("SELECT D_PrekladovySlovnik_Id AS [D_PrekladovySlovnik_Id], '{0}' AS ModulName, '{1}' as TableName, '{2}' as ColumnName, CAST(\"{3}\" AS NVARCHAR(10)) AS [Identifier], \"{4}\" AS [PovodnaHodnota], [En], [Cs], [Hu], [Pl], [De], [Uk], [Rom], [Rue], '{9}' AS UniqueIdentifier{10}, coalesce(s.Vytvoril,p.Vytvoril) AS Vytvoril, coalesce(s.DatumVytvorenia,p.DatumVytvorenia) AS DatumVytvorenia, coalesce(s.Zmenil,p.Zmenil) AS Zmenil, coalesce(s.DatumZmeny,p.DatumZmeny) AS DatumZmeny, p.Poznamka, CONCAT('{7}',\"{8}\") AS Kluc FROM {5}.{6} p LEFT OUTER JOIN reg.D_PrekladovySlovnik s ON CONCAT('{7}',\"{8}\") = [Kluc] WHERE p.DatumPlatnosti IS NULL", modelDefinition.Schema, modelDefinition.ModelName, columnName, modelDefinition.PrimaryKey.Name, columnName, modelDefinition.Schema, modelDefinition.ModelName, key, modelDefinition.PrimaryKey.Name, uniqueKey, currType.GetProperties().Any(nav => nav.Name == "D_Tenant_Id") ? ", p.D_Tenant_Id" : "");
 
-                    results = this.Db.Select<TranslationDictionary>(sql);
+                    results = Db.Select<TranslationDictionary>(sql);
 
-                    this.SetAccessFlag(results);
+                    SetAccessFlag(results);
                 }
             }
             catch (Exception ex)
@@ -1101,27 +1310,42 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// Generate post deploy script for tranfering of all global views
         /// </summary>
         /// <returns>Post deploy script</returns>
-        public RendererResult GenerateMergeScriptGlobalViews()
+        public RendererResult GenerateMergeScriptGlobalViews(MergeScriptGlobalViews request)
         {
-            if (this.DbEnvironment == "INT" || this.DbEnvironment == "TEST")
+            if (DbEnvironment == "Develop" || DbEnvironment == "TEST")
             {
-                //Filter kodPolozkyFilter = new Filter(FilterElement.Like("KodPolozky", "evi-%")).Or(FilterElement.Like("KodPolozky", "map-%")).Or(FilterElement.Like("KodPolozky", "obs-%")).Or(FilterElement.Like("KodPolozky", "soc-%"));
+                
                 var nzrModulesFilter = new Filter("ViewSharing", 2);//.And(kodPolozkyFilter);
+                if(request.FW)
+                {
+                    nzrModulesFilter.And(new Filter(FilterElement.Like("KodPolozky", "all-%")).
+                                                 Or(FilterElement.Like("KodPolozky", "dms-%")).
+                                                 Or(FilterElement.Like("KodPolozky", "reg-%")).
+                                                 Or(FilterElement.Like("KodPolozky", "cfe-%")).
+                                                 Or(FilterElement.Like("KodPolozky", "osa-%")))
+                                    .And(new Filter(FilterElement.NotLike("KodPolozky", "osa-oso")))
+                                    .And(new Filter(FilterElement.NotLike("KodPolozky", "osa-oso-po"))); //eSanitka má pre PO už svoje pohľady
+                }
 
-                List<Pohlad> globalViews = this.GetList<Pohlad>(nzrModulesFilter);//.OrderBy(p => p.KodPolozky);
+                List<Pohlad> globalViews = GetList<Pohlad>(nzrModulesFilter);//.OrderBy(p => p.KodPolozky);
                 //.Where(p => p.KodPolozky.Contains("evi")/* || p.KodPolozky.Contains("map") || p.KodPolozky.Contains("obs") || p.KodPolozky.Contains("soc")*/).OrderBy(p => p.KodPolozky);
                 var refDictionaryViews = new Dictionary<int, int>();
                 // Od -6 kvoli fixnym pohladom v dennej agende
                 int negativeCounter = 0;
+                string moduleFilter = (request.FW) ? "AND left(KodPolozky, 3) IN ('all', 'dms', 'reg', 'cfe', 'osa') " +
+                                                     "AND KodPolozky NOT IN('osa-oso', 'osa-oso-po')" : ""; //eSanitka má pre PO už svoje pohľady
+
                 StringBuilder resultMergeScript = new StringBuilder("")
+                    .AppendLine().Append("USE eXXX;")
+                    .AppendLine().Append("begin tran;")
                     .AppendLine().Append("declare @context varbinary(max);")
                     .AppendLine().Append("declare @tenantId uniqueidentifier = '00000000-0000-0000-0000-000000000000';")
-                    .AppendLine().Append("declare @osobaId uniqueidentifier = '00000000-0000-0000-0000-000000000000';")
+                    .AppendLine().Append("declare @osobaId uniqueidentifier = '00000000-0000-0000-0000-000000000001';")
                     .AppendLine().Append("set @context = convert(varbinary(16),convert(uniqueidentifier,@tenantId)) + 0x4f + convert(varbinary(16),convert(uniqueidentifier, @osobaId));")
                     .AppendLine().Append("set context_info @context;")
-                    .AppendLine().Append("ALTER TABLE reg.T_EgovMigCheckDefault DROP CONSTRAINT FK_C_EgovMigCheckDefault_D_Pohlad_Id_Widget")
+                    .AppendLine().Append("SET IDENTITY_INSERT [pfe].[D_Pohlad] ON")
                     .AppendLine().Append("")
-                    .AppendLine().Append("DELETE FROM [pfe].[D_Pohlad] WHERE ViewSharing = 2;")
+                    .AppendLine().Append($"DELETE FROM [pfe].[D_Pohlad] WHERE ViewSharing = 2 { moduleFilter };")
                     .AppendLine().Append("PRINT '[pfe].[D_Pohlad]'")
                     .AppendLine().Append("GO")
                     .AppendLine().Append("MERGE INTO [pfe].[D_Pohlad] t")
@@ -1145,17 +1369,18 @@ namespace WebEas.Esam.ServiceInterface.Pfe
 
                 foreach (Pohlad layout in globalViews.Where(p => p.Typ == "layout"))
                 {
-                    PfeDataModel currentLayout = ServiceStack.Text.JsonSerializer.DeserializeFromString<PfeDataModel>(layout.Data);
+                    PfeDataModel currentLayout = JsonSerializer.DeserializeFromString<PfeDataModel>(layout.Data);
                     if (currentLayout.Layout.Count > 0)
                     {
-                        PfeLayout changedLayout = this.ChangeLayoutViewReferences(currentLayout.Layout.First(), refDictionaryViews);
-                        var newLayout = new PfeLayoutRepair();
-                        newLayout.MasterView = this.GetMasterIdValue(changedLayout);
-                        newLayout.Layout = new PfeLayout[] { changedLayout };
-                        newLayout.DoubleClickAction = currentLayout.DoubleClickAction;
-                        newLayout.WaitForInputData = currentLayout.WaitForInputData;
-                        newLayout.UseAsBrowser = currentLayout.UseAsBrowser;
-                        newLayout.UseAsBrowserRank = currentLayout.UseAsBrowserRank;
+                        PfeLayout changedLayout = ChangeLayoutViewReferences(currentLayout.Layout.First(), refDictionaryViews);
+                        var newLayout = new PfeLayoutRepair
+                        {
+                            Layout = new PfeLayout[] { changedLayout },
+                            DoubleClickAction = currentLayout.DoubleClickAction,
+                            WaitForInputData = currentLayout.WaitForInputData,
+                            UseAsBrowser = currentLayout.UseAsBrowser,
+                            UseAsBrowserRank = currentLayout.UseAsBrowserRank
+                        };
 
                         if (newLayout.DoubleClickAction != null)
                         {
@@ -1171,6 +1396,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                                     {
                                         //Chcem si zadebugovat ze je to ine :)
                                         url = urlNew;
+                                        newLayout.DoubleClickAction.Url = url;
                                     }
                                 }
                                 else
@@ -1180,27 +1406,18 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                             }
                         }
 
-                        string resultLayout = ServiceStack.Text.JsonSerializer.SerializeToString<PfeLayoutRepair>(newLayout);
+                        string resultLayout = JsonSerializer.SerializeToString(newLayout);
                         layout.Data = resultLayout;
-                    }
-                }
-
-                foreach (Pohlad poh in globalViews.Where(p => p.Typ != "layout"))
-                {
-                    if (poh.DetailViewId != null && poh.DetailViewId != 0)
-                    {
-                        poh.DetailViewId = refDictionaryViews.FirstOrDefault(p => p.Value == poh.DetailViewId).Key;
-                        // Debug.Write(poh.Nazov);
                     }
                 }
 
                 foreach (Pohlad form in globalViews.Where(p => p.Typ == "form"))
                 {
-                    PfeDataModel currentForm = ServiceStack.Text.JsonSerializer.DeserializeFromString<PfeDataModel>(form.Data);
+                    PfeDataModel currentForm = JsonSerializer.DeserializeFromString<PfeDataModel>(form.Data);
                     if (currentForm != null && currentForm.Pages != null)
                     {
                         var pages = new PfePageSerialization() { Pages = currentForm.Pages };
-                        form.Data = ServiceStack.Text.JsonSerializer.SerializeToString<PfePageSerialization>(pages);
+                        form.Data = JsonSerializer.SerializeToString(pages);
                     }
                 }
 
@@ -1208,52 +1425,69 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                 {
                     if (globalViews.Last() != viewItem)
                     {
-                        resultMergeScript.AppendFormat("({0},{1},'{2}','{3}','{4}',{5},{6},'{7}','{8}',{9},'{10}',{11},{12},'{13}',{14}),",
-                            viewItem.Id, string.IsNullOrEmpty(viewItem.D_Tenant_Id.ToString()) ? "null" : string.Format("'{0}'", viewItem.D_Tenant_Id), viewItem.Nazov, viewItem.Typ, viewItem.KodPolozky,
+                        resultMergeScript.AppendFormat("({0},{1},'{2}','{3}','{4}',{5},{6},'{7}','{8}',{9},'{10}',{11},{12},'{13}'),",
+                            viewItem.Id,
+                            string.IsNullOrEmpty(viewItem.D_Tenant_Id?.ToString()) ? "null" : string.Format("'{0}'",viewItem.D_Tenant_Id),
+                            viewItem.Nazov,
+                            viewItem.Typ,
+                            viewItem.KodPolozky,
                             viewItem.ShowInActions ? 1 : 0, //{5}
                             viewItem.DefaultView ? 1 : 0,  //{6}
-                            viewItem.Data, viewItem.FilterText, 1, viewItem.TypAkcie, viewItem.ViewSharing, viewItem.PageSize, viewItem.RibbonFilters,
-                            viewItem.DetailViewId == null || viewItem.DetailViewId == 0 ? "null" : viewItem.DetailViewId.ToString()
+                            viewItem.Data,
+                            viewItem.FilterText,
+                            1,
+                            viewItem.TypAkcie,
+                            viewItem.ViewSharing,
+                            viewItem.PageSize,
+                            viewItem.RibbonFilters
                             ).AppendLine();
                     }
                     else
                     {
-                        resultMergeScript.AppendFormat("({0},{1},'{2}','{3}','{4}',{5},{6},'{7}','{8}',{9},'{10}',{11},{12},'{13}',{14})",
-                            viewItem.Id, string.IsNullOrEmpty(viewItem.D_Tenant_Id.ToString()) ? "null" : string.Format("'{0}'", viewItem.D_Tenant_Id), viewItem.Nazov, viewItem.Typ, viewItem.KodPolozky,
+                        resultMergeScript.AppendFormat("({0},{1},'{2}','{3}','{4}',{5},{6},'{7}','{8}',{9},'{10}',{11},{12},'{13}')",
+                            viewItem.Id,
+                            string.IsNullOrEmpty(viewItem.D_Tenant_Id?.ToString()) ? "null" : string.Format("'{0}'", viewItem.D_Tenant_Id),
+                            viewItem.Nazov,
+                            viewItem.Typ,
+                            viewItem.KodPolozky,
                             viewItem.ShowInActions ? 1 : 0,
                             viewItem.DefaultView ? 1 : 0,
-                            viewItem.Data, viewItem.FilterText, 1, viewItem.TypAkcie, viewItem.ViewSharing, viewItem.PageSize, viewItem.RibbonFilters,
-                            viewItem.DetailViewId == null || viewItem.DetailViewId == 0 ? "null" : viewItem.DetailViewId.ToString()
+                            viewItem.Data,
+                            viewItem.FilterText,
+                            1,
+                            viewItem.TypAkcie,
+                            viewItem.ViewSharing,
+                            viewItem.PageSize,
+                            viewItem.RibbonFilters
                             ).AppendLine();
                     }
                 }
 
                 resultMergeScript.Append(") s (D_Pohlad_Id, D_Tenant_Id, Nazov, Typ, KodPolozky, ShowInActions, DefaultView,")
-                                 .AppendLine().Append("\t Data, FilterText, Zamknuta, TypAkcie, ViewSharing, PageSize, RibbonFilters, DetailViewId)")
+                                 .AppendLine().Append("\t Data, FilterText, Zamknuta, TypAkcie, ViewSharing, PageSize, RibbonFilters)")
                                  .AppendLine().Append("\t ON t.D_Pohlad_Id = s.D_Pohlad_Id")
                                  .AppendLine().Append("WHEN MATCHED THEN UPDATE SET D_Tenant_Id = s.D_Tenant_Id, Nazov = s.Nazov, Typ = s.Typ, KodPolozky = s.KodPolozky, ShowInActions = s.ShowInActions,")
                                  .AppendLine().Append("                             DefaultView = s.DefaultView, Data = s.Data, FilterText = s.FilterText,")
-                                 .AppendLine().Append("                             Zamknuta = s.Zamknuta, TypAkcie = s.TypAkcie, ViewSharing = s.ViewSharing, PageSize = s.PageSize, RibbonFilters = s.RibbonFilters, DetailViewId = s.DetailViewId")
-                                 .AppendLine().Append("WHEN NOT MATCHED BY TARGET THEN INSERT (D_Pohlad_Id, D_Tenant_Id, Nazov, Typ, KodPolozky, ShowInActions, DefaultView, Data, FilterText, Zamknuta, TypAkcie, ViewSharing, PageSize, RibbonFilters, DetailViewId)")
-                                 .AppendLine().Append("VALUES                                 (D_Pohlad_Id, D_Tenant_Id, Nazov, Typ, KodPolozky, ShowInActions, DefaultView, Data, FilterText, Zamknuta, TypAkcie, ViewSharing, PageSize, RibbonFilters, DetailViewId);")
+                                 .AppendLine().Append("                             Zamknuta = s.Zamknuta, TypAkcie = s.TypAkcie, ViewSharing = s.ViewSharing, PageSize = s.PageSize, RibbonFilters = s.RibbonFilters")
+                                 .AppendLine().Append("WHEN NOT MATCHED BY TARGET THEN INSERT (D_Pohlad_Id, D_Tenant_Id, Nazov, Typ, KodPolozky, ShowInActions, DefaultView, Data, FilterText, Zamknuta, TypAkcie, ViewSharing, PageSize, RibbonFilters)")
+                                 .AppendLine().Append("VALUES                                 (D_Pohlad_Id, D_Tenant_Id, Nazov, Typ, KodPolozky, ShowInActions, DefaultView, Data, FilterText, Zamknuta, TypAkcie, ViewSharing, PageSize, RibbonFilters);")
                                  .AppendLine().Append("DELETE FROM pfe.D_Pohlad WHERE D_Pohlad_Id IN")
                                  .AppendLine().Append("\t (SELECT a.D_Pohlad_Id FROM pfe.D_Pohlad a JOIN pfe.D_Pohlad b ON")
                                  .AppendLine().Append("\t\t a.Nazov = b.Nazov AND")
                                  .AppendLine().Append("\t\t a.KodPolozky = b.KodPolozky AND")
                                  .AppendLine().Append("\t\t b.ViewSharing = 2 WHERE a.ViewSharing <> 2)")
-                                 .AppendLine().Append("ALTER TABLE reg.T_EgovMigCheckDefault  WITH NOCHECK ADD CONSTRAINT FK_C_EgovMigCheckDefault_D_Pohlad_Id_Widget FOREIGN KEY(D_Pohlad_Id_Widget)")
-                                 .AppendLine().Append("REFERENCES pfe.T_Pohlad (D_Pohlad_Id)")
-                                 .AppendLine().Append("GO")
-                                 .AppendLine().Append("ALTER TABLE reg.T_EgovMigCheckDefault CHECK CONSTRAINT FK_C_EgovMigCheckDefault_D_Pohlad_Id_Widget")
+                                 .AppendLine().Append("SET IDENTITY_INSERT [pfe].[D_Pohlad] OFF")
+                                 .AppendLine().Append("commit tran;")
                                  .AppendLine();
 
                 try
                 {
-                    var ret = new RendererResult();
-
-                    ret.DocumentBytes = System.Text.Encoding.UTF8.GetBytes(resultMergeScript.ToString());
-                    ret.DocumentName = string.Format("PostDeployScript-{0}", System.DateTime.Now.ToString("yyyyMMdd_HH-mm-ss"));
-                    ret.Extension = "sql";
+                    var ret = new RendererResult
+                    {
+                        DocumentBytes = Encoding.UTF8.GetBytes(resultMergeScript.ToString()),
+                        DocumentName = string.Format("PostDeployScript-{0}", System.DateTime.Now.ToString("yyyyMMdd_HH-mm-ss")),
+                        Extension = "sql"
+                    };
 
                     return ret;
                 }
@@ -1266,25 +1500,6 @@ namespace WebEas.Esam.ServiceInterface.Pfe
             {
                 throw new WebEasException(null, "Generovanie skriptu pre prenos pohľadov je možné iba na INT a TEST prostredí!");
             }
-        }
-
-        /// <summary>
-        /// Ziskanie id pre master pohlad
-        /// </summary>
-        /// <param name="layout">Aktualny layout</param>
-        /// <returns>Id master pohladu</returns>
-        private int GetMasterIdValue(PfeLayout layout)
-        {
-            var layouts = new List<PfeLayout> { layout.Center.Center, layout.Center.Other, layout.Other.Center, layout.Other.Other };
-
-            foreach (PfeLayout item in layouts)
-            {
-                if (item != null && item.Master == true && item.Widget == PfeLayoutWidgetType.View && (item.Layout == PfeLayoutType.None || item.Layout == null))
-                {
-                    return (int)item.Id;
-                }
-            }
-            return 0;
         }
 
         /// <summary>
@@ -1307,7 +1522,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                         page.Id = refDictionaryViews.FirstOrDefault(p => p.Value == page.Id).Key;
                     }
                 }
-                this.ChangeLayoutViewReferences(layout.Center, refDictionaryViews);
+                ChangeLayoutViewReferences(layout.Center, refDictionaryViews);
             }
 
             if (layout.Other != null)
@@ -1323,7 +1538,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                         page.Id = refDictionaryViews.FirstOrDefault(p => p.Value == page.Id).Key;
                     }
                 }
-                this.ChangeLayoutViewReferences(layout.Other, refDictionaryViews);
+                ChangeLayoutViewReferences(layout.Other, refDictionaryViews);
             }
 
             return layout;
@@ -1375,15 +1590,15 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                 TenantId = ""
             };
 
-            if (String.Compare(this.Session.TenantId, tenantId, true) == 0)
+            if (String.Compare(Session.TenantId, tenantId, true) == 0)
             {
                 result.Changed = false;
-                result.TenantId = this.Session.TenantId;
+                result.TenantId = Session.TenantId;
             }
             else
             {
                 result.Changed = true;
-                result.TenantId = this.Session.TenantId;
+                result.TenantId = Session.TenantId;
             };
             return result;
         }
@@ -1400,6 +1615,144 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         {
             LogRequestDuration(req.ServiceUrl, req.ElapsedMilliseconds, req.Operation);
         }
-    }
 
+        public HierarchyNode GetHierarchyNodeForModule(string kodPolozky)
+        {
+            if (modules == null)
+            {
+                modules = Ninject.NinjectServiceLocator.Kernel.GetAll<IWebEasRepositoryBase>().ToList();
+            }
+
+            try
+            {
+                var webEasRepositoryBase = modules.Single(x => x.Code == GetModuleCode(kodPolozky));
+                //pass session            
+                webEasRepositoryBase.Session = Session;
+                var parentNode = webEasRepositoryBase.RenderModuleRootNode(kodPolozky);
+                if (kodPolozky.ToLower() == parentNode.KodPolozky)
+                {
+                    return parentNode;
+                }
+                return parentNode.FindNode(kodPolozky);
+            }
+            catch (Exception)
+            {
+                throw new WebEasValidationException(null, $"Adresa '{kodPolozky}' nebola nájdená! Boli ste presmerovaný na prvú položku v strome.");
+            }
+        }
+
+        public string GetModuleCode(string kodPolozky)
+        {
+            var kodPolozkyClean = HierarchyNodeExtensions.RemoveParametersFromKodPolozky(HierarchyNodeExtensions.CleanKodPolozky(kodPolozky.ToLower()));
+            return kodPolozkyClean.Split('-')[0];
+        }
+
+        public object GetModuleTreeView(GetTreeView request)
+        {
+            var disabledNodes = new List<string>();
+
+            if (!GetNastavenieB("rzp", "VydProgrRzp"))
+            {
+                disabledNodes.AddRange(
+                    new string[]
+                    {
+                        "rzp-evi-ciel",
+                        "rzp-evi-ciel-ukazov",
+                        "rzp-prh-prgrzp",
+                        "rzp-def-prr",
+                        "rzp-def-prs",
+                        "rzp-def-ciel",
+                        "rzp-def-ciel-ukazovatel"
+                });
+            }
+
+            if (GetNastavenieI("reg", "eSAMRezim") != 1)
+            {
+                disabledNodes.AddRange(
+                    new string[]
+                    {
+                        "osa-oso-log"
+                });
+            }
+
+            //fin, uct, rzp, crm
+            var finDisabled = GetTypBiznisEntityNastav().Where(x => !x.Value).Select(x => x.Key).ToList();
+            if (finDisabled.Count > 0)
+                disabledNodes.AddRange(finDisabled);
+
+            //Pre DMS musime vycistit adresarovy strom
+            //Modules.Load<Office.Dms.IDmsRepository>().ClearDirCache();
+            //Modules.HierarchyNodeList = null;
+
+            // staticky strom pre celu app - definicia
+            HierarchyNode module = GetHierarchyNodeForModule(request.SkratkaModulu.ToLower());
+            if (module == null)
+            {
+                throw new WebEasException(null, string.Format("Modul s názvom {0} neexistuje!", request.SkratkaModulu));
+            }
+
+            var usernoderights = GetUserTreeRights(request.SkratkaModulu);
+
+            // renderovanim sa prisposobi pre pouzivatela alebo dotiahnu data
+            var resp = module.Render(usernoderights, disabledNodes);
+            return resp;
+        }
+
+        public PohladView UpdatePohladCustom(PohladDto pohladCustom)
+        {
+            PohladCustom p = GetList<PohladCustom>(x => x.D_Pohlad_Id_Master == pohladCustom.Id && x.Vytvoril == Session.UserIdGuid).FirstOrDefault();
+            Pohlad pMaster = GetById<Pohlad>(pohladCustom.Id);
+            bool add = (p == null);
+
+            if (add)
+            {
+                p = new PohladCustom();
+            }
+
+            p.D_Pohlad_Id_Master = pohladCustom.Id;
+            p.ViewSharing = pohladCustom.ViewSharing;
+
+            p.Nazov          = pohladCustom.Nazov         == pMaster.Nazov         || string.IsNullOrEmpty(pohladCustom.Nazov)         ? null : pohladCustom.Nazov;
+            p.RibbonFilters  = pohladCustom.RibbonFilters == pMaster.RibbonFilters || string.IsNullOrEmpty(pohladCustom.RibbonFilters) ? null : pohladCustom.RibbonFilters;
+            p.FilterText     = pohladCustom.FilterText    == pMaster.FilterText    || string.IsNullOrEmpty(pohladCustom.FilterText)    ? null : pohladCustom.FilterText;
+            p.Data           = pohladCustom.Data          == pMaster.Data          || string.IsNullOrEmpty(pohladCustom.Data)          ? null : pohladCustom.Data;
+            p.TypAkcie       = pohladCustom.TypAkcie      == pMaster.TypAkcie      || string.IsNullOrEmpty(pohladCustom.TypAkcie)      ? null : pohladCustom.TypAkcie;
+
+            p.ShowInActions  = pohladCustom.ShowInActions == pMaster.ShowInActions || pohladCustom.ShowInActions == null ? null : pohladCustom.ShowInActions;
+            p.DefaultView    = pohladCustom.DefaultView   == pMaster.DefaultView   || pohladCustom.DefaultView   == null ? null : pohladCustom.DefaultView;
+            p.PageSize       = pohladCustom.PageSize      == pMaster.PageSize      || pohladCustom.PageSize      == null || pohladCustom.PageSize == 0 ? null : pohladCustom.PageSize;
+
+            if (add)
+            {
+                var id = InsertData(p);
+                //PohladCustom result = Create<PohladCustom>(p);
+            }
+            else 
+            {
+                UpdateData(p);
+            }
+            //Upravuje sa iba CUSTOM - nie je potrebné mazať za všetkých tenantov
+            RemoveFromCacheByRegexOptimizedTenant(string.Format("pfe:poh[^:]*:{0}.*", pMaster.KodPolozky));
+            RemoveFromCacheByRegexOptimizedTenant(string.Format("pfe:poh:{0}.*", pohladCustom.Id));
+
+            return GetById<PohladView>(pohladCustom.Id);
+        }
+
+        public PohladView DeletePohladCustom(int masterId)
+        {
+            Pohlad pohl = GetById<Pohlad>(masterId);
+
+            if (pohl != null)
+            {
+                RemoveFromCacheByRegexOptimizedTenant(string.Format("pfe:poh[^:]*:{0}.*", pohl.KodPolozky));
+            }
+            //Upravuje sa iba CUSTOM - nie je potrebné mazať za všetkých tenantov
+            RemoveFromCacheByRegexOptimizedTenant(string.Format("pfe:poh:{0}.*", masterId));
+            //Zmažem obidve možnosti ViewSharing - Lokálny aj Súkromný. Aj tak môže byť aktívna iba jedna.
+            Db.Delete<PohladCustom>(e => e.D_Pohlad_Id_Master == masterId && e.Vytvoril == Session.UserIdGuid);
+
+            return GetById<PohladView>(masterId);
+        }
+
+    }
 }

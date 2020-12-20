@@ -8,7 +8,7 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
 {
     [Route("/exportxlsx", "POST")]
     [Api("Export")]
-    [WebEasAuthenticate]
+    
     [DataContract]
     public class ExportDto
     {

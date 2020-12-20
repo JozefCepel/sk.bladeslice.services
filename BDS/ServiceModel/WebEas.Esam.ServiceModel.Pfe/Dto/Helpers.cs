@@ -8,13 +8,19 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
     /// Generate merge script for all global views
     /// </summary>
     [Route("/generatescriptglobalviews", "GET")]
+    [Route("/generatescriptglobalviews/{FW}", "GET")]
     [Api("Prenos globálnych pohľadov")]
-    [WebEasAuthenticate]
+    
     [DataContract]
-    public class MergeScriptGlobalViews { }
+    public class MergeScriptGlobalViews
+    {
+        [ApiMember(Name = "FW", Description = "ak ide iba o framworkové pohľady, tak TRUE", DataType = "bool", IsRequired = false)]
+        [DataMember]
+        public bool FW { get; set; }
+    }
 
     [Route("/CachedValue")]
-    [WebEasAuthenticate]
+    
     public class CachedValueReq : IReturn<string>
     {
         [ApiMember(Name = "Key", DataType = "string")]
@@ -28,7 +34,7 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
 
     [Route("/LogRequestDuration", "POST")]
     [Api("Log Request Duration from FE")]
-    [WebEasAuthenticate]
+    
     public class LogRequestDurationReq
     {
         [DataMember]

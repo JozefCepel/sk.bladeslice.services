@@ -1,23 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Reflection;
-using System.Web.Configuration;
-using Ninject;
+﻿using Ninject;
 using ServiceStack;
 using ServiceStack.Api.OpenApi;
+using ServiceStack.Auth;
 using ServiceStack.Data;
-using ServiceStack.Formats;
+using ServiceStack.Host;
+using ServiceStack.Messaging;
+using ServiceStack.Messaging.Redis;
 using ServiceStack.MiniProfiler;
 using ServiceStack.MiniProfiler.Data;
 using ServiceStack.OrmLite;
+using ServiceStack.OrmLite.SqlServer;
+using ServiceStack.Redis;
+using ServiceStack.Request.Correlation;
 using ServiceStack.Text.EnumMemberSerializer;
-using ServiceStack.Web;
-using WebEas.Core;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Reflection;
 using WebEas.Core.Base;
 using WebEas.Esam.ServiceModel.Office;
 using WebEas.ServiceModel;
+using WebEas.ServiceModel.Dto;
 
 namespace WebEas.Esam.ServiceInterface.Office
 {
@@ -32,9 +34,9 @@ namespace WebEas.Esam.ServiceInterface.Office
         /// <param name="serviceName">Name of the service.</param>
         /// <param name="assembliesWithServices">The assemblies with services.</param>
         protected EsamAppHostBase(string serviceName, params System.Reflection.Assembly[] assembliesWithServices) : base(serviceName, assembliesWithServices)
-        {            
+        {
 #if DEBUG
-            WebEas.Log.WebEasNLogConfig.SetConfig(ConfigurationManager.ConnectionStrings["EsamLogConnString"].ConnectionString, console:true);
+            WebEas.Log.WebEasNLogConfig.SetConfig(ConfigurationManager.ConnectionStrings["EsamLogConnString"].ConnectionString, console: true);
 #else
             WebEas.Log.WebEasNLogConfig.SetConfig(ConfigurationManager.ConnectionStrings["EsamLogConnString"].ConnectionString, console:false);
 #endif
@@ -46,50 +48,42 @@ namespace WebEas.Esam.ServiceInterface.Office
         /// <param name="container">The container.</param>
         public override void Configure(Funq.Container container)
         {
-            this.Plugins.RemoveAll(x => x is MarkdownFormat);
+#if DEBUG
+            System.Net.ServicePointManager.ServerCertificateValidationCallback = ((sender, cert, chain, errors) =>
+            {
+                return cert.Subject.Contains("isodatalan.intra.dcom.sk");
+            });
+#endif
+            //this.Plugins.RemoveAll(x => x is MarkdownFormat);
             base.Configure(container);
+
+            //Plugins.Add(new CancellableRequestsFeature());
+            Plugins.Add(new MiniProfilerFeature());
+            //Plugins.Add(new RequestCorrelationFeature());
 
 #if DEBUG || DEVELOP || INT || TEST
             Plugins.Add(new OpenApiFeature());
 #endif
-
             new EnumSerializerConfigurator().WithAssemblies(new List<Assembly> { typeof(HierarchyNode).Assembly }).Configure();
-        }
-
-        /// <summary>
-        /// Called when [uncaught exception].
-        /// </summary>
-        /// <param name="httpReq">The HTTP req.</param>
-        /// <param name="httpRes">The HTTP res.</param>
-        /// <param name="operationName">Name of the operation.</param>
-        /// <param name="ex">The ex.</param>
-        public override void OnUncaughtException(IRequest httpReq, IResponse httpRes, string operationName, Exception ex)
-        {
-            HttpError response = WebEasErrorHandling.CreateErrorResponse(httpReq, null, ex);
-
-            #if INT || DEVELOP || DEBUG
-
-            if (response.Response is WebEas.Exceptions.WebEasResponseStatus)
-            {
+            Plugins.Add(new AuthFeature(() =>
+                new EsamSession(),
+                    new IAuthProvider[] {
+                    new EsamCredentialsAuthProvider(),
+                    }, htmlRedirect: "/#login"));
+                    
 #if DEBUG || DEVELOP
-                ((WebEas.Exceptions.WebEasResponseStatus)response.Response).DetailMessage += $"{Environment.NewLine}http://localhost:85/esam/api/pfe/lll/{ex.GetIdentifier()}";
+            Config.UseSecureCookies = false;
 #endif
-
-            }
-            #endif
             
-            httpRes.WriteToResponse(httpReq, response);
-        }
+            Config.UseSameSiteCookies = true;
 
-        /// <summary>
-        /// Creates the service runner.
-        /// </summary>
-        /// <typeparam name="TRequest">The type of the T request.</typeparam>
-        /// <param name="actionContext">The action context.</param>
-        /// <returns></returns>
-        public override IServiceRunner<TRequest> CreateServiceRunner<TRequest>(ServiceStack.Host.ActionContext actionContext)
-        {
-            return new EsamServiceRunner<TRequest>(this, actionContext);
+            //TODO: do buducnosti
+            /*Plugins.Add(new ServerEventsFeature());
+
+            container.Register<IServerEvents>(c =>
+                new RedisServerEvents(c.Resolve<IRedisClientsManager>()));
+
+            container.Resolve<IServerEvents>().Start();*/
         }
 
         /// <summary>
@@ -106,10 +100,7 @@ namespace WebEas.Esam.ServiceInterface.Office
             //dialect.EnsureUtc(true);            
             // Kvôli lepsej konfigurovatelnosti pouzijem MSSql Provider - ak bude cas, potvrdte/vyvratte mi tento nazor
             // SqlServerDialect.Provider
-            var provider = new WebEasOrmLiteDialectProvider
-            {
-                SelectIdentitySql = "SELECT SCOPE_IDENTITY() AS 'Identity'"
-            };
+            var provider = new SqlServerOrmLiteDialectProvider();
 
             var olcf = new OrmLiteConnectionFactory(ConfigurationManager.ConnectionStrings["EsamConnString"].ConnectionString, provider)
             {
@@ -118,19 +109,44 @@ namespace WebEas.Esam.ServiceInterface.Office
 
             kernel.Bind<IDbConnectionFactory>().ToMethod(c => olcf);
 
-            kernel.Bind<IWebEasSessionProvider>().To<EsamSessionProvider>().When(x => System.Web.HttpContext.Current != null).InSingletonScope();
-            kernel.Bind<IWebEasSessionProvider>().To<EsamSessionProvider>().When(x => System.Web.HttpContext.Current == null).InThreadScope();
-
             return kernel;
         }
 
-        protected string GetThumbprint(string name)
+        protected void ConfigureMessageServiceForLongOperations<T>(Funq.Container container, bool startMessageService = true) where T : LongOperationStartDtoBase
         {
-            if (String.IsNullOrEmpty(WebConfigurationManager.AppSettings[name]))
+            container.Register<IMessageService>(c => new RedisMqServer(c.Resolve<IRedisClientsManager>()));
+            container.Resolve<IMessageService>().RegisterHandler<T>(m =>
             {
-                throw new WebEasException(string.Format("{0} is not defined in appsettings of the web.config", name));
+                var req = new BasicRequest
+                {
+                    Verb = HttpMethods.Post
+                };
+
+                req.Headers["X-ss-id"] = m.GetBody().SessionId;
+                var response = ExecuteMessage(m, req);
+                return response;
+            });
+
+            if (startMessageService)
+            {
+                container.Resolve<IMessageService>().Start();
             }
-            return WebConfigurationManager.AppSettings[name];
+        }
+
+        public static void ProcessLongOperationStatus(LongOperationStatus longOperationStatus, IRedisClient redisClient)
+        {
+            //TODO: HASH NIEJE SORTOVANY, odstranit podla datumu
+            var hashId = string.Concat("LongOperationStatus:", longOperationStatus.ProcessKey.Split('!')[0], ":", longOperationStatus.TenantId);
+            redisClient.SetEntryInHashIfNotExists(hashId, string.Concat(longOperationStatus.UserId, "!", longOperationStatus.ProcessKey), longOperationStatus.ToJson());
+
+            if (redisClient.GetHashCount(hashId) > 99)
+            {
+                var allKeys = redisClient.GetHashKeys(hashId);
+                for (int i = 49; i < allKeys.Count - 1; i++)
+                {
+                    redisClient.RemoveEntryFromHash(hashId, allKeys[i]);
+                }
+            }
         }
     }
 }

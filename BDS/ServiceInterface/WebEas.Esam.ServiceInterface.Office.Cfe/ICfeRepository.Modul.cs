@@ -8,6 +8,10 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
 {
     public partial interface ICfeRepository
     {
-        List<DatabaseHierarchyNode> RenderPouzivateliaModuly(DatabaseHierarchyNode staticData);
+        List<DatabaseHierarchyNode> RenderPouzivateliaModuly(DatabaseHierarchyNode staticData);        
+        List<DatabaseHierarchyNode> RenderORSElementsModuly(DatabaseHierarchyNode staticData);
+        List<DatabaseHierarchyNode> RenderORSElementsModulyRoot(DatabaseHierarchyNode staticData);
+        List<DatabaseHierarchyNode> RenderORSElementTypesModuly(DatabaseHierarchyNode staticData);
     }
+
 }

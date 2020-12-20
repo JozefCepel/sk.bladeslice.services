@@ -10,9 +10,8 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
     // Create
     [Route("/createpohlad", "POST")]
     [Api("Vytvorenie nového pohľadu")]
-    [WebEasAuthenticate]
     [DataContract]
-    public class CreatePohlad : PohladDto
+    public class CreatePohlad : PohladDto, IReturn<PohladViewResponse>
     {
         /// <summary>
         /// copy from view - id zdrojoveho pohladu
@@ -24,9 +23,8 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
     // Update
     [Route("/updatepohlad", "PUT")]
     [Api("Úprava existujúceho pohľadu")]
-    [WebEasAuthenticate]
     [DataContract]
-    public class UpdatePohlad : PohladDto
+    public class UpdatePohlad : PohladDto, IReturn<PohladViewResponse>
     {
         [PrimaryKey]
         [DataMember(IsRequired = true)]
@@ -36,12 +34,36 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
     // Delete
     [Route("/deletepohlad", "DELETE")]
     [Api("Zmazanie existujucého pohľadu")]
-    [WebEasAuthenticate]
+    
     [DataContract]
     public class DeletePohlad
     {
         [DataMember]
+        public int[] Id { get; set; }
+    }
+
+    // Update
+    [Route("/updatepohladcustom", "PUT")]
+    [Api("Úprava customizácie existujúceho pohľadu")]
+    [DataContract]
+    public class UpdatePohladCustom : PohladDto, IReturn<PohladViewResponse>
+    {
+        [PrimaryKey]
+        [DataMember(IsRequired = true)]
+        public long D_Pohlad_Id { get; set; }
+    }
+
+    // Delete
+    [Route("/deletepohladcustom", "DELETE")]
+    [Api("Zmazanie existujúcej customizácie pohľadu")]
+    [DataContract]
+    public class DeletePohladCustom : IReturn<PohladViewResponse>
+    {
+        [DataMember]
         public int Id { get; set; }
+
+        [DataMember]
+        public string KodPolozky { get; set; }
     }
 
     #endregion CRUD
@@ -51,7 +73,6 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
     /// </summary>
     [Route("/pohlady/{KodPolozky}", "GET")]
     [Api("Získanie existujúcich pohľadov pre kód položky")]
-    [WebEasAuthenticate]
     [DataContract]
     public class ListPohlady
     {
@@ -65,8 +86,8 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
     /// </summary>
     [Route("/pohladyWithDefault/{KodPolozky}", "GET")]
     [Route("/pohladyWithDefault/{KodPolozky}/{Id}", "GET")]
-    [Api("Získanie existujúcich pohľadov pre kód položky")]
-    [WebEasAuthenticate]
+    [Route("/pohladyWithDefault/{KodPolozky}/{Id}/{Browser}", "GET")]
+    [Api("Získanie existujúcich pohľadov pre kód položky")]    
     [DataContract]
     public class ListPohladyWithDefault
     {
@@ -78,6 +99,10 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
         [DataMember]
         public int? Id { get; set; }
 
+        [ApiMember(Name = "Browser", Description = "Vráť pohľady, ktoré sú zaškrtnuté ako BrowserDialóg", DataType = "bool", IsRequired = false)]
+        [DataMember]
+        public bool? Browser { get; set; }
+
         [DataMember(Name = "filters")]
         public string Filter { get; set; }
     }
@@ -85,9 +110,8 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
     [Route("/pohlad/{Id}", "GET")]
     [Route("/pohlad/{Id}/{KodPolozky}", "GET")]
     [Api("Získanie pohľadu")]
-    [WebEasAuthenticate]
     [DataContract]
-    public class GetPohlad : IReturn<Pohlad>
+    public class GetPohlad  //: IReturn<Pohlad> - NEPLATÍ vracia rôzne response
     {
         [ApiMember(Name = "Id", Description = "Id pohladu", DataType = "int", IsRequired = true)]
         [DataMember]
@@ -103,7 +127,6 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
 
     [Route("/pohlad", "POST")]
     [Api("Uloženie pohľadu")]
-    [WebEasAuthenticate]
     [DataContract]
     public class SavePohlad : IReturn<Pohlad>
     {
@@ -148,9 +171,6 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
 
         [DataMember]
         public string RibbonFilters { get; set; }
-
-        [DataMember]
-        public int? DetailViewId { get; set; }
     }
 
     /// <summary>
@@ -158,7 +178,6 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
     /// </summary>
     [Route("/layout/{ItemCode}", "GET")]
     [Api("Získanie všetkých pohľadov pre zadané kódy položiek.")]
-    [WebEasAuthenticate]
     [DataContract]
     public class ListLayoutDependencies
     {
@@ -174,7 +193,6 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
     /// </summary>
     [Route("/layout2/{ItemCode}", "GET")]
     [Api("Získanie všetkých pohľadov pre zadané kódy položiek.")]
-    [WebEasAuthenticate]
     [DataContract]
     public class ListLayoutDependencies2
     {
@@ -198,10 +216,10 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
         public string KodPolozky { get; set; }
 
         [DataMember(Name = "sia")]
-        public bool ShowInActions { get; set; }
+        public bool? ShowInActions { get; set; }
 
         [DataMember(Name = "dvw")]
-        public bool DefaultView { get; set; }
+        public bool? DefaultView { get; set; }
 
         [DataMember(Name = "dat")]
         public string Data { get; set; }
@@ -222,22 +240,14 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
         public int ViewSharing { get; set; }
 
         [DataMember(Name = "pgs")]
-        public int PageSize { get; set; }
+        public int? PageSize { get; set; }
 
         [DataMember(Name = "rbf")]
         public string RibbonFilters { get; set; }
-
-        /// <summary>
-        /// id pre detail view pohlad a bude sa posielat len pre formular a grid
-        /// </summary>
-        [DataMember(Name = "dvi")]
-        public int? DetailViewId { get; set; }
     }
-
 
     [Route("/locklayout/{Id}", "GET")]
     [Api("Zamknutie pohladu")]
-    [WebEasAuthenticate]
     public class LockLayoutRequest
     {
         [DataMember]
@@ -246,7 +256,6 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
 
     [Route("/unlocklayout/{Id}", "GET")]
     [Api("Odomknutie pohladu")]
-    [WebEasAuthenticate]
     public class UnlockLayoutRequest
     {
         [DataMember]

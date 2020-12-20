@@ -8,7 +8,9 @@ using WebEas.Esam.ServiceInterface.Office;
 using WebEas.Esam.ServiceInterface.Office.Cfe;
 using WebEas.Esam.ServiceInterface.Office.Bds;
 using WebEas.Esam.ServiceInterface.Pfe;
+using WebEas.Esam.ServiceModel.Office;
 using WebEas.ServiceInterface;
+using WebEas.ServiceModel;
 
 namespace WebEas.Esam.Pfe
 {
@@ -20,7 +22,7 @@ namespace WebEas.Esam.Pfe
         /// <summary>
         /// Initializes a new instance of the <see cref="AppHost" /> class.
         /// </summary>
-        public AppHost() : base("Egovernment", typeof(PfeService).Assembly)
+        public AppHost() : base("pfe", typeof(PfeService).Assembly)
         {
         }
 
@@ -62,13 +64,18 @@ namespace WebEas.Esam.Pfe
         public override IKernel AddNinjectBinding(IKernel kernel)
         {
             LogManager.GetLogger("Kernel").Info("Loading kernel");
-            kernel.Bind<IRoleList>().To<ServiceModel.Office.Bds.ServiceModel>();
-            kernel.Bind<IRoleList>().To<ServiceModel.Office.Cfe.ServiceModel>();
 
-            kernel.Bind<IRoleList>().To<ServiceModel.Office.RolesDefinition.OfficeRoleList>();
+            kernel.Bind<ICfeRepository, IWebEasRepositoryBase>().To<CfeRepository>().InRequestScope();
+            kernel.Bind<ICrmRepository, IWebEasRepositoryBase>().To<CrmRepository>().InRequestScope();
+            kernel.Bind<IDapRepository, IWebEasRepositoryBase>().To<DapRepository>().InRequestScope();
+            kernel.Bind<IDmsRepository, IWebEasRepositoryBase>().To<DmsRepository>().InRequestScope();
+            kernel.Bind<IFinRepository, IWebEasRepositoryBase>().To<FinRepository>().InRequestScope();
+            kernel.Bind<IOsaRepository, IWebEasRepositoryBase>().To<OsaRepository>().InRequestScope();
+            kernel.Bind<IRegRepository, IWebEasRepositoryBase>().To<RegRepository>().InRequestScope();
+            kernel.Bind<IRzpRepository, IWebEasRepositoryBase>().To<RzpRepository>().InRequestScope();
+            kernel.Bind<IUctRepository, IWebEasRepositoryBase>().To<UctRepository>().InRequestScope();
 
-            kernel.Bind<IWebEasServiceInterface>().To<WebEas.Esam.ServiceInterface.Office.Bds.ServiceInterface>();
-            kernel.Bind<IWebEasServiceInterface>().To<WebEas.Esam.ServiceInterface.Office.Cfe.ServiceInterface>();
+            kernel.Bind<IPfeRepository, IRepositoryBase> ().To<PfeRepository>().InRequestScope();
 
             kernel.Bind<IPfeRepository>().To<PfeRepository>().InRequestScope().WithPropertyValue("StsThumbPrint", this.GetThumbprint("StsThumbprint"));
             kernel.Bind<IBdsRepository>().To<BdsRepository>().InRequestScope().WithPropertyValue("StsThumbPrint", this.GetThumbprint("StsThumbprint"));

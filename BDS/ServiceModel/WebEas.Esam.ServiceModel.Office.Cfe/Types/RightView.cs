@@ -8,23 +8,20 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
     [DataContract]
     [Schema("cfe")]
     [Alias("V_Right")]
-    public class RightView : Right
+    public class RightView : Right, IBaseView
     {
         [DataMember]
         [PfeColumn(Text = "Modul")]
-        [PfeCombo(typeof(ModulView), NameColumn = "C_Modul_Id", DisplayColumn = "ModulNazov")]
-        [IgnoreInsertOrUpdate]
+        [PfeCombo(typeof(ModulView), IdColumn = nameof(C_Modul_Id), ComboDisplayColumn = nameof(ModulView.Nazov))]
         public string ModulNazov { get; set; }
 
         //audit stlpce
         [DataMember]
-        [PfeColumn(Text = "Vytvoril", Hidden = true, Editable = false, ReadOnly = true)]
-        [IgnoreInsertOrUpdate]
+        [PfeColumn(Text = "Vytvoril", Hidden = true, Editable = false, ReadOnly = true, LoadWhenVisible = true)]
         public string VytvorilMeno { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Zmenil", Hidden = true, Editable = false, ReadOnly = true)]
-        [IgnoreInsertOrUpdate]
+        [PfeColumn(Text = "Zmenil", Hidden = true, Editable = false, ReadOnly = true, LoadWhenVisible = true)]
         public string ZmenilMeno { get; set; }
 
     }

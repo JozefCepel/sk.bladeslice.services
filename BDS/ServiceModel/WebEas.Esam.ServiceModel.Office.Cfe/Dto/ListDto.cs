@@ -10,9 +10,8 @@ using WebEas.ServiceModel;
 namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
 {
     [DataContract]
-    [Route("/list/{KodPolozky}", "GET")]
-    [Route("/list/{Code}/{KodPolozky}", "GET")]
-    [WebEasRequiredRole(RolesDefinition.Cfe.Roles.CfeMember)]
+    [Route("/list/{KodPolozky}", "GET,POST")]
+    [Route("/list/{Code}/{KodPolozky}", "GET,POST")]
     public class ListDto : BaseListDto
     {
     }

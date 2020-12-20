@@ -17,6 +17,10 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
         public int C_Tree_Id { get; set; }
 
         [DataMember]
+        [PfeColumn(Text = "_TreeParent")]
+        public int? C_Tree_Id_Parent { get; set; }
+
+        [DataMember]
         [PfeColumn(Text = "Modul")]
         public int C_Modul_Id { get; set; }
 

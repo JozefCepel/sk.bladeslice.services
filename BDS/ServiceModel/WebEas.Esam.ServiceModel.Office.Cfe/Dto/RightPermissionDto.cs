@@ -4,37 +4,34 @@ using System;
 using System.Runtime.Serialization;
 using WebEas.Esam.ServiceModel.Office.Cfe.Types;
 using WebEas.ServiceModel;
+using WebEas.ServiceModel.Types;
 
 namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
 {
-    // Create
-    [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeWriter)]
-    [Route("/CreateRightPermission", "POST")]
+    // AddRightPermission
+    [Route("/AddRightPermission", "POST")]
     [Api("RightPermission")]
     [DataContract]
-    public class CreateRightPermission : RightPermissionDto { }
-
-    // Update
-    [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeWriter)]
-    [Route("/UpdateRightPermission", "PUT")]
-    [Api("RightPermission")]
-    [DataContract]
-    public class UpdateRightPermission : RightPermissionDto
+    public class AddRightPermission : RightPermissionDto
     {
-        [PrimaryKey]
         [DataMember(IsRequired = true)]
-        public long D_RightPermission_Id { get; set; }
+        public string IdField { get; set; }
+
+        [DataMember(IsRequired = true)]
+        public string[] IDs { get; set; }
     }
 
-    // Delete
-    [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeWriter)]
-    [Route("/DeleteRightPermission", "DELETE")]
+    // RemoveRightPermission
+    [Route("/RemoveRightPermission", "POST")]
     [Api("RightPermission")]
     [DataContract]
-    public class DeleteRightPermission
+    public class RemoveRightPermission
     {
         [DataMember(IsRequired = true)]
-        public long D_RightPermission_Id { get; set; }
+        public string IdField { get; set; }
+
+        [DataMember(IsRequired = true)]
+        public string[] IDs { get; set; }
     }
 
     #region DTO

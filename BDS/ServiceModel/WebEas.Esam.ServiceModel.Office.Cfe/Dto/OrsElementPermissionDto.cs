@@ -7,34 +7,40 @@ using WebEas.ServiceModel;
 
 namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
 {
-    // Create
-    [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeWriter)]
-    [Route("/CreateOrsElementPermission", "POST")]
-    [Api("OrsElementPermission")]
+    [Route("/OESetRightNo", "POST")]
+    [Api("OrsElementType")]
     [DataContract]
-    public class CreateOrsElementPermission : OrsElementPermissionDto { }
-
-    // Update
-    [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeWriter)]
-    [Route("/UpdateOrsElementPermission", "PUT")]
-    [Api("OrsElementPermission")]
-    [DataContract]
-    public class UpdateOrsElementPermission : OrsElementPermissionDto
+    public class OESetRightNo
     {
-        [PrimaryKey]
         [DataMember(IsRequired = true)]
-        public long D_OrsElementPermission_Id { get; set; }
+        public string[] IDs { get; set; }
     }
 
-    // Delete
-    [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeWriter)]
-    [Route("/DeleteOrsElementPermission", "DELETE")]
-    [Api("OrsElementPermission")]
+    [Route("/OESetRightRead", "POST")]
+    [Api("OrsElementType")]
     [DataContract]
-    public class DeleteOrsElementPermission
+    public class OESetRightRead
     {
         [DataMember(IsRequired = true)]
-        public long D_OrsElementPermission_Id { get; set; }
+        public string[] IDs { get; set; }
+    }
+
+    [Route("/OESetRightUpdate", "POST")]
+    [Api("OrsElementType")]
+    [DataContract]
+    public class OESetRightUpdate
+    {
+        [DataMember(IsRequired = true)]
+        public string[] IDs { get; set; }
+    }
+
+    [Route("/OESetRightFull", "POST")]
+    [Api("OrsElementType")]
+    [DataContract]
+    public class OESetRightFull
+    {
+        [DataMember(IsRequired = true)]
+        public string[] IDs { get; set; }
     }
 
     #region DTO

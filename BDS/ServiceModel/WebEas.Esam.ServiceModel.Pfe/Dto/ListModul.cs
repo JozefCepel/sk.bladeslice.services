@@ -5,24 +5,12 @@ using ServiceStack.DataAnnotations;
 namespace WebEas.Esam.ServiceModel.Pfe.Dto
 {
     /// <summary>
-    /// RS 1 - Zoznam Modulov
-    /// </summary>
-    [Route("/ListModul", "GET,OPTIONS")]
-    [Api("RS 1 - Zoznam Modulov")]
-    [Description("RS 1 - Zoznam Modulov")]
-    [WebEasAuthenticate]
-    [DataContract]
-    public class ListModul
-    {
-    }
-
-    /// <summary>
     /// RS 1 - Zoznam Modulov aj s epo, bpm, oso
     /// </summary>
     [Route("/ListAllModules", "GET,OPTIONS")]
     [Api("RS 2 - Zoznam Modulov")]
     [Description("RS 2 - Zoznam Modulov")]
-    [WebEasAuthenticate]
+    
     [DataContract]
     public class ListAllModules
     {

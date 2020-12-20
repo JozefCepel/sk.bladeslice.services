@@ -3,19 +3,18 @@ using ServiceStack.DataAnnotations;
 using System;
 using System.Runtime.Serialization;
 using WebEas.Esam.ServiceModel.Office.Cfe.Types;
+using WebEas.Esam.ServiceModel.Office.Types.Cfe;
 using WebEas.ServiceModel;
 
 namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
 {
     // Create ors
-    [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeWriter)]
     [Route("/CreateOrsElementType", "POST")]
     [Api("OrsElementType")]
     [DataContract]
     public class CreateOrsElementType : OrsElementTypeDto { }
 
     // Update
-    [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeWriter)]
     [Route("/UpdateOrsElementType", "PUT")]
     [Api("OrsElementType")]
     [DataContract]
@@ -27,7 +26,6 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
     }
 
     // Delete
-    [WebEasRequiresAnyRole(RolesDefinition.Cfe.Roles.CfeWriter)]
     [Route("/DeleteOrsElementType", "DELETE")]
     [Api("OrsElementType")]
     [DataContract]
@@ -35,6 +33,16 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
     {
         [DataMember(IsRequired = true)]
         public long C_OrsElementType_Id { get; set; }
+    }
+
+    // Obnov ORS Elementy
+    [Route("/ObnovitZoznamORS", "POST")]
+    [Api("OrsElementType")]
+    [DataContract]
+    public class ObnovitZoznamORS
+    {
+        [DataMember(IsRequired = true)]
+        public int[] IDs { get; set; }
     }
 
     #region DTO

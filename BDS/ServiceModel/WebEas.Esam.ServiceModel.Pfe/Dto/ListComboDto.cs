@@ -7,10 +7,10 @@ using WebEas.ServiceModel;
 namespace WebEas.Esam.ServiceModel.Pfe.Dto
 {
     [DataContract]
-    [WebEasAuthenticate]
+    
     [Api("Hodnoty číselnika")]
     [Route("/combo/{KodPolozky}/{Column}", "GET")]
-    [Route("/combo/{KodPolozky}/{Column}/{RequiredField*}", "GET")]                
+    [Route("/combo/{KodPolozky}/{Column}/{RequiredField*}", "GET")]
     public class ListComboDto : BaseListComboDto
     {
     }

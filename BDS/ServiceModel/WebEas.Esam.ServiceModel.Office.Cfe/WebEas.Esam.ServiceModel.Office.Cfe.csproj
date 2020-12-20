@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>WebEas.Esam.ServiceModel.Office.Cfe</RootNamespace>
     <AssemblyName>WebEas.Esam.ServiceModel.Office.Cfe</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,14 +30,34 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Develop|AnyCPU'">
+    <OutputPath>bin\Develop\</OutputPath>
+    <DefineConstants>TRACE;DEVELOP</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Test|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;TEST</DefineConstants>
+    <Optimize>true</Optimize>
+    <ExcludeGeneratedDebugSymbol>true</ExcludeGeneratedDebugSymbol>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Prod|AnyCPU'">
+    <OutputPath>bin\PROD\</OutputPath>
+    <DefineConstants>TRACE;PROD</DefineConstants>
+    <Optimize>true</Optimize>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ServiceStack">
-      <HintPath>..\..\..\Core\Libraries\ServiceStack.dll</HintPath>
-    </Reference>
-    <Reference Include="ServiceStack.Interfaces">
-      <HintPath>..\..\..\Core\Libraries\ServiceStack.Interfaces.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -47,21 +68,22 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="WebEas.Core.Common">
-      <HintPath>..\..\..\Core\Libraries\WebEas.Core.Common.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dto\DcomIamDto.cs" />
+    <Compile Include="Dto\OrsElementDto.cs" />
+    <Compile Include="Dto\NastavenieDto.cs" />
+    <Compile Include="Dto\OrsElementTypePermissionDto.cs" />
     <Compile Include="Dto\OrsElementPermissionDto.cs" />
     <Compile Include="Dto\OrsElementTypeDto.cs" />
     <Compile Include="Dto\RightPermissionDto.cs" />
-    <Compile Include="Dto\RightDto.cs" />
+    <Compile Include="Dto\ModulDto.cs" />
     <Compile Include="Dto\RoleDto.cs" />
     <Compile Include="Dto\TenantDto.cs" />
     <Compile Include="Dto\TreePermissionDto.cs" />
     <Compile Include="Dto\UserDto.cs" />
-    <Compile Include="Dto\TenantUsersDto.cs" />
-    <Compile Include="Dto\RoleUsersDto.cs" />
+    <Compile Include="Dto\UserTenantDto.cs" />
+    <Compile Include="Dto\UserRoleDto.cs" />
     <Compile Include="Dto\ChangeStateDto.cs" />
     <Compile Include="Dto\DataChangesRequest.cs" />
     <Compile Include="Dto\GetTreeCountsDto.cs" />
@@ -70,39 +92,51 @@
     <Compile Include="Dto\LongOperations.cs" />
     <Compile Include="Dto\RowDefaultValues.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ServiceModel.cs" />
     <Compile Include="Types\CfeDummyView.cs" />
     <Compile Include="Types\Modul.cs" />
+    <Compile Include="Types\OrsElementTypePermissionView.cs" />
+    <Compile Include="Types\OrganizaciaTyp.cs" />
+    <Compile Include="Types\OrganizaciaTypView.cs" />
+    <Compile Include="Types\TreeUserView.cs" />
+    <Compile Include="Types\RightUserView.cs" />
     <Compile Include="Types\OrsElementPermission.cs" />
-    <Compile Include="Types\OrsElementType.cs" />
     <Compile Include="Dto\TreeDto.cs" />
     <Compile Include="Types\OrsElementPermissionView.cs" />
-    <Compile Include="Types\TreePermission.cs" />
+    <Compile Include="Types\OrsElementView.cs" />
     <Compile Include="Types\TreeView.cs" />
-    <Compile Include="Types\RightPermission.cs" />
     <Compile Include="Types\OrsElementTypeView.cs" />
-    <Compile Include="Types\RightPermissionView.cs" />
     <Compile Include="Types\RightView.cs" />
     <Compile Include="Types\Right.cs" />
     <Compile Include="Types\Tree.cs" />
     <Compile Include="Types\Role.cs" />
     <Compile Include="Types\ModulView.cs" />
-    <Compile Include="Types\RoleUsers.cs" />
+    <Compile Include="Types\UserRole.cs" />
     <Compile Include="Types\Tenant.cs" />
     <Compile Include="Types\TenantType.cs" />
     <Compile Include="Types\TenantTypeView.cs" />
-    <Compile Include="Types\TenantUsers.cs" />
     <Compile Include="Types\TreePermissionView.cs" />
     <Compile Include="Types\TenantView.cs" />
-    <Compile Include="Types\TenantUsersView.cs" />
-    <Compile Include="Types\RoleUsersView.cs" />
+    <Compile Include="Types\UserTenantView.cs" />
+    <Compile Include="Types\UserRoleView.cs" />
     <Compile Include="Types\RoleView.cs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Core\WebEas\ServiceModel\WebEas.ServiceModel\WebEas.ServiceModel.csproj">
-      <Project>{1b40e5ee-7311-46e7-8241-d9f0c443905d}</Project>
+    <PackageReference Include="ServiceStack.Interfaces">
+      <Version>5.10.2</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\WebEas\ServiceModel\WebEas.ServiceModel\WebEas.ServiceModel.csproj">
+      <Project>{1B40E5EE-7311-46E7-8241-D9F0C443905D}</Project>
       <Name>WebEas.ServiceModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\WebEas\WebEas.Core.Common\WebEas.Core.Common.csproj">
+      <Project>{362E3C3F-9257-4CE5-8522-2C50A1B1D044}</Project>
+      <Name>WebEas.Core.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WebEas.Esam.ServiceModel.Office.Osa\WebEas.Esam.ServiceModel.Office.Osa.csproj">
+      <Project>{A904E184-E082-4F85-B402-721A956B2990}</Project>
+      <Name>WebEas.Esam.ServiceModel.Office.Osa</Name>
     </ProjectReference>
     <ProjectReference Include="..\WebEas.Esam.ServiceModel.Office\WebEas.Esam.ServiceModel.Office.csproj">
       <Project>{b368a929-aa16-4823-87ec-69e90901d0ed}</Project>

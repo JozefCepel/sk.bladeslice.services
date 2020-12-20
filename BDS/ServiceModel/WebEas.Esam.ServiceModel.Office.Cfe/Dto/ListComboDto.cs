@@ -10,7 +10,6 @@ using WebEas.ServiceModel;
 namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
 {
     [DataContract]
-    [WebEasRequiredRole(RolesDefinition.Cfe.Roles.CfeMember)]
     [Api("Hodnoty číselnika")]
     [Route("/combo/{KodPolozky}/{Column}", "GET")]
     [Route("/combo/{KodPolozky}/{Column}/{RequiredField*}", "GET")]
