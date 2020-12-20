@@ -193,10 +193,6 @@
       <Project>{471a05f5-03ba-4aba-9d1f-eaedd4da5570}</Project>
       <Name>WebEas.Esam.Reports</Name>
     </ProjectReference>
-    <ProjectReference Include="..\WebEas.Esam.ServiceModel.Urbis\WebEas.Esam.ServiceModel.Urbis.csproj">
-      <Project>{BF87DA80-9CFB-497D-8B32-DC4A0EACECB4}</Project>
-      <Name>WebEas.Esam.ServiceModel.Urbis</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="ServiceStack.Interfaces">

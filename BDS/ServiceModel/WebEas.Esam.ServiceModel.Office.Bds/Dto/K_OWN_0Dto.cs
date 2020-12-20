@@ -8,7 +8,6 @@ using WebEas.ServiceModel;
 namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
 {
     // Update
-    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsWriter)]
     [Route("/UpdateK_OWN_0", "PUT")]
     [Api("K_OWN_0")]
     [DataContract]

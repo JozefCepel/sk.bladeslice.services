@@ -71,7 +71,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
 
         public object Post(LongOperationStartDto request)
         {
-            return Repository.LongOperationStart(request.OperationName, request.OperationParameters, request.OperationInfo);
+            return Repository.LongOperationStart(request);
         }
 
         public object Post(LongOperationRestartDto request)

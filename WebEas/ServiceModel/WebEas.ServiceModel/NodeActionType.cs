@@ -546,6 +546,20 @@ namespace WebEas.ServiceModel
 
         #endregion
 
+        #region BDS
+
+        [PfeCaption("Vybaviť")]
+        [NodeActionIcon(NodeActionIcons.CheckSquare)]
+        [PfeRight(Pravo.Upravovat)]
+        VybavitDoklady = 200,
+
+        [PfeCaption("Odvybaviť")]
+        [NodeActionIcon(NodeActionIcons.MinusSquare)]
+        [PfeRight(Pravo.Upravovat)]
+        OdvybavitDoklady = 201,
+
+        #endregion
+		
         #region UCT
 
         [PfeCaption("Účtovný denník")]

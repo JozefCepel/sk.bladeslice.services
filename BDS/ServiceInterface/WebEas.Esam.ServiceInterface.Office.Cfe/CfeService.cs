@@ -475,7 +475,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
 
         public void Post(SynchronizeDcomUsersDto request)
         {
-            Repository.SynchronizeDcomUsers(request);
+            //Repository.SynchronizeDcomUsers(request);
         }
 
         #endregion

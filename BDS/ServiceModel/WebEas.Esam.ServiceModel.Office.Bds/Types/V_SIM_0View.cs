@@ -11,7 +11,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
     public class V_SIM_0View : tblD_SIM_0
     {
         [DataMember]
-        [PfeCombo(typeof(PV3DCombo), NameColumn = "PV")]
+        [PfeCombo(typeof(PV3DCombo), IdColumn = "PV")]
         [PfeColumn(Text = "Typ")]
         [Ignore]
         public string PVText
@@ -24,22 +24,22 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 
         [DataMember]
         [PfeColumn(Text = "Príjemka")]
-        [PfeCombo(typeof(tblD_PRI_0), IdColumnCombo = "D_PRI_0", DisplayColumn = "DKL_C")] //, AdditionalWhereSql = "V = 0"
+        [PfeCombo(typeof(tblD_PRI_0), ComboIdColumn = "D_PRI_0", ComboDisplayColumn = "DKL_C")] //, AdditionalWhereSql = "V = 0"
         public string DKL_C_PRI { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Výdajka")]
-        [PfeCombo(typeof(tblD_VYD_0), IdColumnCombo = "D_VYD_0", DisplayColumn = "DKL_C")] //, AdditionalWhereSql = "V = 0"
+        [PfeCombo(typeof(tblD_VYD_0), ComboIdColumn = "D_VYD_0", ComboDisplayColumn = "DKL_C")] //, AdditionalWhereSql = "V = 0"
         public string DKL_C_VYD { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Položka príjemky", RequiredFields = new[] { "D_PRI_0" })]
-        [PfeCombo(typeof(V_PRI_1View), IdColumnCombo = "D_PRI_1", DisplayColumn = "PriPol")]
+        [PfeCombo(typeof(V_PRI_1View), ComboIdColumn = "D_PRI_1", ComboDisplayColumn = "PriPol")]
         public string PriPol { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Položka výdajky", RequiredFields = new[] { "D_VYD_0" })]
-        [PfeCombo(typeof(V_VYD_1View), IdColumnCombo = "D_VYD_1", DisplayColumn = "VydPol")]
+        [PfeCombo(typeof(V_VYD_1View), ComboIdColumn = "D_VYD_1", ComboDisplayColumn = "VydPol")]
         public string VydPol { get; set; }
 
         [DataMember]

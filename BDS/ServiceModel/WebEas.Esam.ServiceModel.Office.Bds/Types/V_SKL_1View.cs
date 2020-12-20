@@ -12,12 +12,12 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
     {
         [DataMember]
         [PfeColumn(Text = "Warehouse")]
-        [PfeCombo(typeof(tblK_SKL_0), IdColumnCombo = "K_SKL_0", DisplayColumn = "SKL")]
+        [PfeCombo(typeof(tblK_SKL_0), ComboIdColumn = "K_SKL_0", ComboDisplayColumn = "SKL")]
         public string SKL { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Mat. group")]
-        [PfeCombo(typeof(tblK_TSK_0), IdColumnCombo = "K_TSK_0", DisplayColumn = "TSK")]
+        [PfeCombo(typeof(tblK_TSK_0), ComboIdColumn = "K_TSK_0", ComboDisplayColumn = "TSK")]
         public string TSK { get; set; }
 
         //audit stlpce

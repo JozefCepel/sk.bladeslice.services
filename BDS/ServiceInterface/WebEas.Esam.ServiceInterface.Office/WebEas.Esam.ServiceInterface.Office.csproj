@@ -58,9 +58,6 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ClosedXML">
-      <HintPath>..\..\..\TelerikLibraries\ClosedXML.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -83,11 +80,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\WebEas\ServiceInterface\WebEas.ServiceInterface\WebEas.ServiceInterface.csproj">
-      <Project>{E2A6581B-C2D4-42E4-A5D6-14EA0753EE7D}</Project>
+      <Project>{cea4b7a0-01d0-4e0d-a6af-d929bd5671ff}</Project>
       <Name>WebEas.ServiceInterface</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\WebEas\ServiceModel\WebEas.ServiceModel\WebEas.ServiceModel.csproj">
-      <Project>{1B40E5EE-7311-46E7-8241-D9F0C443905D}</Project>
+      <Project>{dbeb833f-907c-4abc-8cb1-5fc579690d28}</Project>
       <Name>WebEas.ServiceModel</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\WebEas\WebEas.Core.Common\WebEas.Core.Common.csproj">
@@ -101,10 +98,6 @@
     <ProjectReference Include="..\..\ServiceModel\WebEas.Esam.ServiceModel.Office\WebEas.Esam.ServiceModel.Office.csproj">
       <Project>{b368a929-aa16-4823-87ec-69e90901d0ed}</Project>
       <Name>WebEas.Esam.ServiceModel.Office</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\WebEas.Esam.DcomWs\WebEas.Esam.DcomWs.csproj">
-      <Project>{1EEB9B6E-4027-4F87-A9EC-4D4259902024}</Project>
-      <Name>WebEas.Esam.DcomWs</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\WebEas.Esam.Reports\WebEas.Esam.Reports.csproj">
       <Project>{471a05f5-03ba-4aba-9d1f-eaedd4da5570}</Project>

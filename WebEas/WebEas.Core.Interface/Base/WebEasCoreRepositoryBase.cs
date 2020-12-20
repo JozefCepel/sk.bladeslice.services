@@ -157,7 +157,7 @@ namespace WebEas.Core.Base
                 Log.Debug(string.Format("SET CONTEXT_INFO {0};", BitConverter.ToString(context)));
                 Log.Debug(string.Format("Value - tenant:           {0};", this.Session.TenantId));
                 Log.Debug(string.Format("Value - (string)endpoint: {0};", Context.Current.CurrentEndpoint));
-                Log.Debug(string.Format("Value - DcomId:           {0};", this.Session.UserId));
+                Log.Debug(string.Format("Value - UserId:           {0};", this.Session.UserId));
                 #endif
 
                 if(Session.OrsElementPermisions != null)

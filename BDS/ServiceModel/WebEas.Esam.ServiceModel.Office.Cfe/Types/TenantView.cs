@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
-using WebEas.Esam.ServiceModel.Office.Osa;
+//using WebEas.Esam.ServiceModel.Office.Osa;
 using WebEas.Esam.ServiceModel.Office.Types.Osa;
 using WebEas.ServiceModel;
 
@@ -59,6 +59,7 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
 
         public void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, object masterNodeParameter, string masterNodeKey)
         {
+            /*
             if (model.Fields != null)
             {
                 var icoField = model.Fields.FirstOrDefault(p => p.Name == nameof(ICO));
@@ -76,6 +77,7 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
                     };
                 }
             }
+            */
         }
     }
 }

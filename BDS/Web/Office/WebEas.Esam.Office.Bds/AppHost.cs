@@ -13,7 +13,7 @@ namespace WebEas.Esam.Office.Bds
         /// <summary>
         /// Initializes a new instance of the <see cref="AppHost" /> class.
         /// </summary>
-        public AppHost() : base("Egovernment", typeof(BdsService).Assembly)
+        public AppHost() : base("bds", typeof(BdsService).Assembly)
         {
         }
 
@@ -33,7 +33,7 @@ namespace WebEas.Esam.Office.Bds
             this.SetConfig(new HostConfig
             {
                 WsdlServiceNamespace = "http://schemas.webeas.sk/office/esam/office/1.0",
-                SoapServiceName = "EsamOfficeObs",
+                SoapServiceName = "EsamOfficeBds",
 #if DEBUG || DEVELOP || INT
                 DebugMode = true,
                 EnableFeatures = Feature.All.Remove(this.disableFeaturesDebug),
@@ -44,6 +44,8 @@ namespace WebEas.Esam.Office.Bds
                 DefaultContentType = MimeTypes.Json,
                 AllowJsonpRequests = true
             });
+
+            ConfigureMessageServiceForLongOperations<ServiceModel.Office.Bds.Dto.LongOperationStartDto>(container);
         }
 
         /// <summary>
@@ -54,13 +56,7 @@ namespace WebEas.Esam.Office.Bds
         public override IKernel AddNinjectBinding(IKernel kernel)
         {
             base.AddNinjectBinding(kernel);
-
-            kernel.Bind<IRoleList>().To<ServiceModel.Office.Bds.ServiceModel>();
-            kernel.Bind<IRoleList>().To<ServiceModel.Office.RolesDefinition.OfficeRoleList>();
-
-            kernel.Bind<IWebEasServiceInterface>().To<ServiceInterface.Office.Bds.ServiceInterface>();
-            kernel.Bind<IBdsRepository>().To<BdsRepository>().InRequestScope().WithPropertyValue("StsThumbPrint", this.GetThumbprint("StsThumbprint"));
-
+            kernel.Bind<IBdsRepository, ServiceModel.Office.IRepositoryBase>().To<BdsRepository>().InRequestScope();
             return kernel;
         }
     }

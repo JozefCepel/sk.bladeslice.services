@@ -12,12 +12,12 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
     {
         [DataMember]
         [PfeColumn(Text = "Code", RequiredFields = new[] { "K_TSK_0" }, Mandatory = true)] //Pomocne pole iba pre ucel COMBO POLA
-        [PfeCombo(typeof(tblK_MAT_0), IdColumnCombo = "KOD", DisplayColumn = "KOD")]
+        [PfeCombo(typeof(tblK_MAT_0), ComboIdColumn = "KOD", ComboDisplayColumn = "KOD")]
         public string KOD_ID { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Číslo príjemky")]
-        [PfeCombo(typeof(tblD_PRI_0), IdColumnCombo = "D_PRI_0", DisplayColumn = "DKL_C")]
+        [PfeCombo(typeof(tblD_PRI_0), ComboIdColumn = "D_PRI_0", ComboDisplayColumn = "DKL_C")]
         public string DKL_C { get; set; }
 
         [DataMember]
@@ -34,7 +34,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 
         [DataMember]
         [PfeColumn(Text = "Mat. group", RequiredFields = new[] { "K_SKL_0" })]
-        [PfeCombo(typeof(V_SKL_1View), IdColumnCombo = "K_TSK_0", DisplayColumn = "TSK")]
+        [PfeCombo(typeof(V_SKL_1View), ComboIdColumn = "K_TSK_0", ComboDisplayColumn = "TSK")]
         public string TSK { get; set; }
 
         //audit stlpce

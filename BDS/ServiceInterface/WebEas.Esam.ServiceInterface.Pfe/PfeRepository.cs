@@ -13,9 +13,9 @@ using WebEas.Esam.ServiceModel.Office;
 using WebEas.Esam.ServiceModel.Office.Types.Reg;
 using WebEas.Esam.ServiceModel.Pfe.Dto;
 using WebEas.ServiceModel;
-using WebEas.ServiceModel.Office.Egov.Reg.Types;
+//using WebEas.ServiceModel.Office.Egov.Reg.Types;
 using WebEas.ServiceModel.Pfe.Types;
-using WebEas.ServiceModel.Reg.Types;
+//using WebEas.ServiceModel.Reg.Types;
 using WebEas.ServiceModel.Types;
 
 namespace WebEas.Esam.ServiceInterface.Pfe
@@ -568,13 +568,13 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// <returns>Povolenie/zakaz upravit pohlad</returns>
         private bool CheckUpdatePermissionForViewSharing(Pohlad originalView, Pohlad newView, string moduleShortcut)
         {
-            bool isDcomAdmin = Session.AdminLevel == AdminLevel.SysAdmin;
+            bool isSysAdmin = Session.AdminLevel == AdminLevel.SysAdmin;
             bool isModuleAdmin = Session.HasRole(string.Format("{0}_ADMIN", moduleShortcut.ToUpper()));
 
             switch (originalView.ViewSharing)
             {
                 case 0:
-                    if (isDcomAdmin || isModuleAdmin || (originalView.Vytvoril == Session.UserIdGuid && newView.ViewSharing == 0))
+                    if (isSysAdmin || isModuleAdmin || (originalView.Vytvoril == Session.UserIdGuid && newView.ViewSharing == 0))
                     {
                         return true;
                     }
@@ -612,14 +612,14 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// <returns>Povolenie/zakaz upravit (odomknut) pohlad</returns>
         private bool CheckUpdatePermissionForViewSharing(PohladLockModel originalView, string moduleShortcut)
         {
-            bool isDcomAdmin = Session.AdminLevel == AdminLevel.SysAdmin;
+            bool isSysAdmin = Session.AdminLevel == AdminLevel.SysAdmin;
             bool isModuleAdmin = Session.HasRole(string.Format("{0}_ADMIN", moduleShortcut.ToUpper()));
 
             return originalView.ViewSharing switch
             {
-                0 => isDcomAdmin || isModuleAdmin || originalView.Vytvoril == Session.UserIdGuid,
-                1 => isDcomAdmin || isModuleAdmin,
-                2 => isDcomAdmin,
+                0 => isSysAdmin || isModuleAdmin || originalView.Vytvoril == Session.UserIdGuid,
+                1 => isSysAdmin || isModuleAdmin,
+                2 => isSysAdmin,
                 _ => false,
             };
         }
@@ -750,7 +750,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                     if (!(staryPohlad.Zamknuta && pohlad.Zamknuta))
                     {
                         // DOCASNE RIESENIE
-                        //if (WebEas.Context.Current.Session.HasRole(Roles.Admin) || WebEas.Context.Current.Session.HasRole(moduleShortcut.ToUpper() + "_ADMIN") || pohlad.Vytvoril == WebEas.Context.Current.Session.DcomId)
+                        //if (WebEas.Context.Current.Session.HasRole(Roles.Admin) || WebEas.Context.Current.Session.HasRole(moduleShortcut.ToUpper() + "_ADMIN") || pohlad.Vytvoril == WebEas.Context.Current.Session.UserId)
                         //{
                         UpdateData(pohlad);
                         //}
@@ -998,6 +998,8 @@ namespace WebEas.Esam.ServiceInterface.Pfe
 
                 filter.AndNotDeleted();
 
+                return new List<PossibleStateResponse>();
+                /*
                 List<StavEntityStavEntity> naslStavy = GetList<StavEntityStavEntity>(filter);
                 if (naslStavy.IsNullOrEmpty())
                 {
@@ -1028,6 +1030,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                 }
 
                 return res;
+                */
             });
         }
 

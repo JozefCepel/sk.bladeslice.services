@@ -1,10 +1,12 @@
 ﻿using Ninject;
 using Ninject.Web.Common;
 using ServiceStack;
-using WebEas.Auth;
+using ServiceStack.Host;
+using ServiceStack.Messaging;
+using ServiceStack.Messaging.Redis;
+using ServiceStack.Redis;
 using WebEas.Esam.ServiceInterface.Office;
 using WebEas.Esam.ServiceInterface.Office.Reg;
-using WebEas.ServiceInterface;
 
 namespace WebEas.Esam.Office.Reg
 {
@@ -16,7 +18,7 @@ namespace WebEas.Esam.Office.Reg
         /// <summary>
         /// Initializes a new instance of the <see cref="AppHost" /> class.
         /// </summary>
-        public AppHost() : base("Egovernment", typeof(RegService).Assembly)
+        public AppHost() : base("reg", typeof(RegService).Assembly)
         {
         }
 
@@ -55,6 +57,28 @@ namespace WebEas.Esam.Office.Reg
             //{
             //    Console.WriteLine(ex.Message);
             //};
+
+            ConfigureMessageService(container);
+        }
+
+        /// <summary>
+        /// Configure message service for long time operations
+        /// </summary>
+        private void ConfigureMessageService(Funq.Container container)
+        {
+            ConfigureMessageServiceForLongOperations<ServiceModel.Office.Reg.Dto.RegLongOperationStartDto>(container, startMessageService: false);
+
+            container.Resolve<IMessageService>().RegisterHandler<WebEas.ServiceModel.Dto.LongOperationStatus>(m =>
+            {
+                using (var redisClient = base.Resolve<IRedisClientsManager>().GetClient())
+                {
+                    var longOperationStatus = m.GetBody();
+                    ProcessLongOperationStatus(longOperationStatus, redisClient);
+                }
+                return null;
+            });
+
+            container.Resolve<IMessageService>().Start();
         }
 
         /// <summary>
@@ -66,13 +90,7 @@ namespace WebEas.Esam.Office.Reg
         {
             base.AddNinjectBinding(kernel);
 
-            kernel.Bind<IRoleList>().To<ServiceModel.Office.Reg.ServiceModel>();
-            kernel.Bind<IRoleList>().To<ServiceModel.Office.Bds.ServiceModel>();
-            kernel.Bind<IRoleList>().To<ServiceModel.Office.Cfe.ServiceModel>();
-
-            kernel.Bind<IRoleList>().To<ServiceModel.Office.RolesDefinition.OfficeRoleList>();
-            kernel.Bind<IWebEasServiceInterface>().To<ServiceInterface.Office.Reg.ServiceInterface>();
-            kernel.Bind<IRegRepository>().To<RegRepository>().InRequestScope().WithPropertyValue("StsThumbPrint", GetThumbprint("StsThumbprint"));            
+            kernel.Bind<IRegRepository, ServiceModel.Office.IRepositoryBase>().To<RegRepository>().InRequestScope();
 
             return kernel;
         }

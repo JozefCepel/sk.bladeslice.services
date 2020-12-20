@@ -127,16 +127,12 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\WebEas\ServiceModel\WebEas.ServiceModel\WebEas.ServiceModel.csproj">
-      <Project>{1B40E5EE-7311-46E7-8241-D9F0C443905D}</Project>
+      <Project>{dbeb833f-907c-4abc-8cb1-5fc579690d28}</Project>
       <Name>WebEas.ServiceModel</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\WebEas\WebEas.Core.Common\WebEas.Core.Common.csproj">
       <Project>{362E3C3F-9257-4CE5-8522-2C50A1B1D044}</Project>
       <Name>WebEas.Core.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\WebEas.Esam.ServiceModel.Office.Osa\WebEas.Esam.ServiceModel.Office.Osa.csproj">
-      <Project>{A904E184-E082-4F85-B402-721A956B2990}</Project>
-      <Name>WebEas.Esam.ServiceModel.Office.Osa</Name>
     </ProjectReference>
     <ProjectReference Include="..\WebEas.Esam.ServiceModel.Office\WebEas.Esam.ServiceModel.Office.csproj">
       <Project>{b368a929-aa16-4823-87ec-69e90901d0ed}</Project>

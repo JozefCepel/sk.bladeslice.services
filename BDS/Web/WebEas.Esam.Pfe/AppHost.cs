@@ -66,20 +66,18 @@ namespace WebEas.Esam.Pfe
             LogManager.GetLogger("Kernel").Info("Loading kernel");
 
             kernel.Bind<ICfeRepository, IWebEasRepositoryBase>().To<CfeRepository>().InRequestScope();
-            kernel.Bind<ICrmRepository, IWebEasRepositoryBase>().To<CrmRepository>().InRequestScope();
-            kernel.Bind<IDapRepository, IWebEasRepositoryBase>().To<DapRepository>().InRequestScope();
-            kernel.Bind<IDmsRepository, IWebEasRepositoryBase>().To<DmsRepository>().InRequestScope();
-            kernel.Bind<IFinRepository, IWebEasRepositoryBase>().To<FinRepository>().InRequestScope();
-            kernel.Bind<IOsaRepository, IWebEasRepositoryBase>().To<OsaRepository>().InRequestScope();
-            kernel.Bind<IRegRepository, IWebEasRepositoryBase>().To<RegRepository>().InRequestScope();
-            kernel.Bind<IRzpRepository, IWebEasRepositoryBase>().To<RzpRepository>().InRequestScope();
-            kernel.Bind<IUctRepository, IWebEasRepositoryBase>().To<UctRepository>().InRequestScope();
+            kernel.Bind<IBdsRepository, IWebEasRepositoryBase>().To<BdsRepository>().InRequestScope();
+            //kernel.Bind<ICrmRepository, IWebEasRepositoryBase>().To<CrmRepository>().InRequestScope();
+            //kernel.Bind<IDapRepository, IWebEasRepositoryBase>().To<DapRepository>().InRequestScope();
+            //kernel.Bind<IDmsRepository, IWebEasRepositoryBase>().To<DmsRepository>().InRequestScope();
+            //kernel.Bind<IFinRepository, IWebEasRepositoryBase>().To<FinRepository>().InRequestScope();
+            //kernel.Bind<IOsaRepository, IWebEasRepositoryBase>().To<OsaRepository>().InRequestScope();
+            //kernel.Bind<IRegRepository, IWebEasRepositoryBase>().To<RegRepository>().InRequestScope();
+            //kernel.Bind<IRzpRepository, IWebEasRepositoryBase>().To<RzpRepository>().InRequestScope();
+            //kernel.Bind<IUctRepository, IWebEasRepositoryBase>().To<UctRepository>().InRequestScope();
 
             kernel.Bind<IPfeRepository, IRepositoryBase> ().To<PfeRepository>().InRequestScope();
 
-            kernel.Bind<IPfeRepository>().To<PfeRepository>().InRequestScope().WithPropertyValue("StsThumbPrint", this.GetThumbprint("StsThumbprint"));
-            kernel.Bind<IBdsRepository>().To<BdsRepository>().InRequestScope().WithPropertyValue("StsThumbPrint", this.GetThumbprint("StsThumbprint"));
-            kernel.Bind<ICfeRepository>().To<CfeRepository>().InRequestScope().WithPropertyValue("StsThumbPrint", this.GetThumbprint("StsThumbprint"));
             base.AddNinjectBinding(kernel);
             LogManager.GetLogger("Kernel").Info("Loading kernel done");
             return kernel;

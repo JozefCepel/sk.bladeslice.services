@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>WebEas.Esam.ServiceInterface.Office.Bds</RootNamespace>
     <AssemblyName>WebEas.Esam.ServiceInterface.Office.Bds</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Develop|AnyCPU'">
     <OutputPath>bin\Develop\</OutputPath>
@@ -38,50 +40,43 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ServiceStack">
-      <HintPath>..\..\..\Core\Libraries\ServiceStack.dll</HintPath>
-    </Reference>
-    <Reference Include="ServiceStack.Interfaces">
-      <HintPath>..\..\..\Core\Libraries\ServiceStack.Interfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="ServiceStack.OrmLite, Version=4.5.12.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Core\Libraries\ServiceStack.OrmLite.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="WebEas.Core.Common">
-      <HintPath>..\..\..\Core\Libraries\WebEas.Core.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="WebEas.Core.Interface">
-      <HintPath>..\..\..\Core\Libraries\WebEas.Core.Interface.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IBdsRepository.cs" />
-    <Compile Include="Modul.cs" />
     <Compile Include="BdsRepository.cs" />
     <Compile Include="BdsRepository.Modul.cs" />
     <Compile Include="BdsService.cs" />
-    <Compile Include="ServiceInterface.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Core\WebEas\ServiceInterface\WebEas.ServiceInterface\WebEas.ServiceInterface.csproj">
-      <Project>{e2a6581b-c2d4-42e4-a5d6-14ea0753ee7d}</Project>
+    <ProjectReference Include="..\..\..\WebEas\ServiceInterface\WebEas.ServiceInterface\WebEas.ServiceInterface.csproj">
+      <Project>{cea4b7a0-01d0-4e0d-a6af-d929bd5671ff}</Project>
       <Name>WebEas.ServiceInterface</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Core\WebEas\ServiceModel\WebEas.ServiceModel\WebEas.ServiceModel.csproj">
-      <Project>{1b40e5ee-7311-46e7-8241-d9f0c443905d}</Project>
+    <ProjectReference Include="..\..\..\WebEas\ServiceModel\WebEas.ServiceModel\WebEas.ServiceModel.csproj">
+      <Project>{dbeb833f-907c-4abc-8cb1-5fc579690d28}</Project>
       <Name>WebEas.ServiceModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\WebEas\WebEas.Core.Common\WebEas.Core.Common.csproj">
+      <Project>{362e3c3f-9257-4ce5-8522-2c50a1b1d044}</Project>
+      <Name>WebEas.Core.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\WebEas\WebEas.Core.Interface\WebEas.Core.Interface.csproj">
+      <Project>{e5782d41-fab9-4cd1-b035-c644dd77c8af}</Project>
+      <Name>WebEas.Core.Interface</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\ServiceModel\WebEas.Esam.ServiceModel.Office.Bds\WebEas.Esam.ServiceModel.Office.Bds.csproj">
       <Project>{630888ec-7671-47df-aecd-18bad4ec52ac}</Project>
@@ -97,7 +92,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IBdsRepository.Modul.cs" />
+    <PackageReference Include="Ninject.Extensions.Conventions">
+      <Version>3.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="ServiceStack">
+      <Version>5.10.2</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{1B40E5EE-7311-46E7-8241-D9F0C443905D}</ProjectGuid>
+    <ProjectGuid>{DBEB833F-907C-4ABC-8CB1-5FC579690D28}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>WebEas.ServiceModel</RootNamespace>

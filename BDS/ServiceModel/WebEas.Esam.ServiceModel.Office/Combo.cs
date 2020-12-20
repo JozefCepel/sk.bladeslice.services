@@ -4,9 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
-using WebEas.Esam.ServiceModel.Office.Types.Reg;
 using WebEas.ServiceModel;
-using WebEas.ServiceModel.Office.Egov.Reg.Types;
 using WebEas.ServiceModel.Types;
 
 
@@ -78,36 +76,32 @@ namespace WebEas.Esam.ServiceModel.Office
     }
 
     [DataContract]
-    public class SimulationType : IStaticCombo
+    public class SimulationType
     {
         [DataMember]
         public byte id { get; set; }
 
         [DataMember]
-        public string Nazov { get; set; }
-        
-        public string KodPolozky { get; set; }
+        public string Popis { get; set; }
 
         public IWebEasRepositoryBase Repository { get; set; }
 
-        public Dictionary<string, string> RequiredFields { get; set; }
-
-        public List<IComboResult> GetComboList(string[] requestFields)
+        public List<ComboResult> GetComboList(string[] requestFields)
         {
-            short[] list = new short[] { 0, 1, 2, 3 };
-            return list.Select(a => new ComboResult() { Id = a.ToString(), Value = GetText(a) }).ToList<IComboResult>();
+            byte[] list = new byte[] { 0, 1, 2, 3 };
+            return list.Select(a => new ComboResult() { Id = a.ToString(), Value = GetText(a) }).ToList();
         }
 
         public static string GetText(byte id)
         {
-            return kod switch
+            switch (id)
             {
-                0 => "<žiadny>",// none
-                1 => "Čítať",// read
-                2 => "Upravovať",// read, insert, update
-                3 => "Plný",// read, insert, update, delete
-                _ => kod + " (?)",
-            };
+                case 0: return "-";
+                case 1: return "Cube";
+                case 2: return "Cube - oriented";
+                case 3: return "Cylinder";
+                default: return id + " (?)";
+            }
         }
     }
 
@@ -700,167 +694,6 @@ namespace WebEas.Esam.ServiceModel.Office
                 50 => new string[] { "DatumVyrubenia", "DatumPravoplatnosti", "DatumVykonatelnosti" },
                 _ => null,
             };
-        }
-    }
-
-    [DataContract]
-    public class VSCombo : IStaticCombo, IComboResult, IPfeCustomizeCombo
-    {
-        [DataMember(Name = "id")]
-        public string Id { get; set; }
-
-        [DataMember(Name = "value")]
-        public string Value { get; set; }
-
-        [DataMember]
-        public decimal? DM_Neuhradene { get; set; }
-
-        [DataMember]
-        public decimal? DM_Nevyfakturovane { get; set; }
-
-        [DataMember]
-        public DateTime? DatumUhrady { get; set; }
-
-        [DataMember]
-        public long? D_BiznisEntita_Id_ZF { get; set; }
-
-        [DataMember]
-        public string Popis { get; set; }
-
-        public string KodPolozky { get; set; }
-
-        public IWebEasRepositoryBase Repository { get; set; }
-
-        public Dictionary<string, string> RequiredFields { get; set; }
-
-        // dvojicka UhradaParovanieView, ak sa nieco meni kukni aj tam
-        public List<IComboResult> GetComboList(string[] requestFields)
-        {
-            string additionalOsobaFilter = "";
-            int typ = 0;
-            long osobaId = 0;
-            int rok = 0;
-            if (RequiredFields != null)
-            {
-                if (RequiredFields.Any())
-                {
-                    if (RequiredFields.ContainsKey("D_Osoba_Id"))
-                    {
-                        long.TryParse(RequiredFields["D_Osoba_Id"], out osobaId);
-                        if (osobaId != 0)
-                        {
-                            additionalOsobaFilter = $"D_Osoba_Id = {osobaId} AND ";
-                        }
-                    }
-                    if (RequiredFields.ContainsKey("C_Typ_Id"))
-                    {
-                        int.TryParse(RequiredFields["C_Typ_Id"], out typ);
-                    }
-                    if (RequiredFields.ContainsKey("Rok"))
-                    {
-                        int.TryParse(RequiredFields["Rok"], out rok);
-                    }
-                }
-            }
-
-            //Filter musí byť identický ako v "ComboCustomize" - nižšie v kóde
-            if (KodPolozky == "crm-vaz-zal")
-            {
-                List<(string VS, long Predpis_Id, long? D_BiznisEntita_Id_ZF, decimal Nevyfakturovane, DateTime? DatumUhrady, string Popis)> list = null;
-                switch (typ)
-                {
-                    case (int)TypEnum.UhradaDZF:
-                        list = Repository.Db.Select<(string VS, long Predpis_Id, long? D_BiznisEntita_Id_ZF, decimal Nevyfakturovane, DateTime? DatumUhrady, string Popis)>($"SELECT VS, D_UhradaParovanie_Id, D_BiznisEntita_Id_Predpis, DM_Nevyfakturovane, DatumPohybu, ISNULL(Popis, UH_Popis) FROM fin.V_UhradaParovanie WHERE {additionalOsobaFilter} C_Typ_Id = {typ} AND C_StavEntity_Id > 1 AND DM_Nevyfakturovane <> 0 ORDER BY VS");
-                        break;
-                    case (int)TypEnum.UhradaOZF:
-                        list = Repository.Db.Select<(string VS, long Predpis_Id, long? D_BiznisEntita_Id_ZF, decimal Nevyfakturovane, DateTime? DatumUhrady, string Popis)>($"SELECT VS, D_UhradaParovanie_Id, D_BiznisEntita_Id_Predpis, DM_Nevyfakturovane, DatumPohybu, ISNULL(Popis, UH_Popis) FROM fin.V_UhradaParovanie WHERE {additionalOsobaFilter} C_Typ_Id = {typ} AND C_StavEntity_Id > 1 AND DM_Nevyfakturovane <> 0 ORDER BY VS");
-                        break;
-                    case (int)TypEnum.ZalohyPoskytnute:
-                        list = Repository.Db.Select<(string VS, long Predpis_Id, long? D_BiznisEntita_Id_ZF, decimal Nevyfakturovane, DateTime? DatumUhrady, string Popis)>($"SELECT VS, Zaloha_Id, NULL, DM_Nevyfakturovane, DatumPohybu, Popis FROM fin.V_ZalohyPoskytnutePrijate WHERE (D_Osoba_Id = {osobaId} OR D_Osoba_Id IS NULL AND YEAR(DatumPohybu) = {rok}) AND C_Typ_Id = {typ} AND DM_Nevyfakturovane <> 0 ORDER BY VS");
-                        break;
-                    case (int)TypEnum.ZalohyPrijate:
-                        list = Repository.Db.Select<(string VS, long Predpis_Id, long? D_BiznisEntita_Id_ZF, decimal Nevyfakturovane, DateTime? DatumUhrady, string Popis)>($"SELECT VS, Zaloha_Id, NULL, DM_Nevyfakturovane, DatumPohybu, Popis FROM fin.V_ZalohyPoskytnutePrijate WHERE (D_Osoba_Id = {osobaId} OR D_Osoba_Id IS NULL AND YEAR(DatumPohybu) = {rok}) AND C_Typ_Id = {typ} AND DM_Nevyfakturovane <> 0 ORDER BY VS");
-                        break;
-                    default:
-                        // vratime prazdne combo
-                        return new List<IComboResult>();
-                }
-                return list.Select(a => new VSCombo() { Id = a.Predpis_Id.ToString(), Value = a.VS, D_BiznisEntita_Id_ZF = a.D_BiznisEntita_Id_ZF, DM_Nevyfakturovane = a.Nevyfakturovane, DatumUhrady = a.DatumUhrady, Popis = a.Popis }).ToList<IComboResult>();
-            }
-            else
-            {
-                List<(string VS, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)> list = null;
-                switch (typ)
-                {
-                    case (int)TypEnum.UhradaDFA:
-                        list = Repository.Db.Select<(string VS, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT VS, D_BiznisEntita_Id, DM_Neuhradene, DatumUhrady FROM crm.V_DokladDFA WHERE {additionalOsobaFilter} R = 1 ORDER BY VS");
-                        break;
-                    case (int)TypEnum.UhradaOFA:
-                        list = Repository.Db.Select<(string VS, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT VS, D_BiznisEntita_Id, DM_Neuhradene, DatumUhrady FROM crm.V_DokladOFA WHERE {additionalOsobaFilter} S = 1 ORDER BY VS");
-                        break;
-                    case (int)TypEnum.UhradaDZF:
-                        list = Repository.Db.Select<(string VS, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT VS, D_BiznisEntita_Id, DM_Neuhradene, DatumUhrady FROM crm.V_DokladDZF WHERE {additionalOsobaFilter} R = 1 ORDER BY VS");
-                        break;
-                    case (int)TypEnum.UhradaOZF:
-                        list = Repository.Db.Select<(string VS, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT VS, D_BiznisEntita_Id, DM_Neuhradene, DatumUhrady FROM crm.V_DokladOZF WHERE {additionalOsobaFilter} S = 1 ORDER BY VS");
-                        break;
-
-                    case (int)TypEnum.DobropisDFA:
-                        list = Repository.Db.Select<(string VS, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT VS, D_BiznisEntita_Id, DM_Neuhradene, DatumUhrady FROM crm.V_DokladDFA WHERE {additionalOsobaFilter} DM_Suma < 0 AND R = 1 ORDER BY VS");
-                        break;
-                    case (int)TypEnum.DobropisOFA:
-                        list = Repository.Db.Select<(string VS, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT VS, D_BiznisEntita_Id, DM_Neuhradene, DatumUhrady FROM crm.V_DokladOFA WHERE {additionalOsobaFilter} DM_Suma < 0 AND S = 1 ORDER BY VS");
-                        break;
-
-                    //Nastavenie "0 AS DM_Neuhradene, NULL AS DatumUhrady" je preto, lebo sa musí neskôr vybrať položka rozhodnutia
-                    case (int)TypEnum.DaPUhradaDane:
-                        list = Repository.Db.Select<(string VS, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT VS, D_Vymer_Id, 0 AS DM_Neuhradene, NULL AS DatumUhrady FROM dap.V_Vymer WHERE {additionalOsobaFilter} C_VymerTyp_Id = 1 ORDER BY VS"); // VymerTypEnum.DAN
-                        break;
-                    case (int)TypEnum.DaPUhradaUrokuZOmeskania:
-                        list = Repository.Db.Select<(string VS, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT VS, D_Vymer_Id, 0 AS DM_Neuhradene, NULL AS DatumUhrady FROM dap.V_Vymer WHERE {additionalOsobaFilter} C_VymerTyp_Id = 4 ORDER BY VS"); // VymerTypEnum.PEN
-                        break;
-                    case (int)TypEnum.DaPUhradaPokuty:
-                        list = Repository.Db.Select<(string VS, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT VS, D_Vymer_Id, 0 AS DM_Neuhradene, NULL AS DatumUhrady FROM dap.V_Vymer WHERE {additionalOsobaFilter} C_VymerTyp_Id = 5 ORDER BY VS"); // VymerTypEnum.POK
-                        break;
-                    case (int)TypEnum.DaPUhradaUrokuZOdlozeniaSplatok:
-                        list = Repository.Db.Select<(string VS, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT VS, D_Vymer_Id, 0 AS DM_Neuhradene, NULL AS DatumUhrady FROM dap.V_Vymer WHERE {additionalOsobaFilter} C_VymerTyp_Id = 7 ORDER BY VS"); // VymerTypEnum.URO
-                        break;
-                    default:
-                        // vratime prazdne combo
-                        return new List<IComboResult>();
-                }
-                return list.Select(a => new VSCombo() { Id = a.Predpis_Id.ToString(), Value = a.VS, DM_Neuhradene = a.Neuhradene, DatumUhrady = a.DatumUhrady }).ToList<IComboResult>();
-            }
-        }
-
-        public static string GetText(string kod)
-        {
-            return null;
-        }
-
-        public void ComboCustomize(IWebEasRepositoryBase repository, string column, string kodPolozky, ref PfeComboAttribute comboAttribute)
-        {
-            if (column.ToLower() == "vs" && kodPolozky == "fin-pol-par")
-            {
-                //Filter musí byť identický ako v "switch (typ)" - vyššie v kóde
-                comboAttribute.AdditionalWhereSql = Environment.NewLine +
-                                                    $"CASE WHEN @C_Typ_Id IN ({(int)TypEnum.UhradaDFA  },{(int)TypEnum.UhradaDZF  }) AND R = 1 THEN 1 " +
-                                                    $"     WHEN @C_Typ_Id IN ({(int)TypEnum.UhradaOFA  },{(int)TypEnum.UhradaOZF  }) AND S = 1 THEN 1 " +
-                                                    $"     WHEN @C_Typ_Id IN ({(int)TypEnum.DobropisDFA}                           ) AND R = 1 AND DM_Suma < 0 THEN 1 " +
-                                                    $"     WHEN @C_Typ_Id IN ({(int)TypEnum.DobropisOFA}                           ) AND S = 1 AND DM_Suma < 0 THEN 1 " +
-                                                    $"     WHEN @C_Typ_Id = {(int)TypEnum.DaPUhradaDane                  } AND C_VymerTyp_Id = 1 THEN 1 " +  // VymerTypEnum.DAN
-                                                    $"     WHEN @C_Typ_Id = {(int)TypEnum.DaPUhradaUrokuZOmeskania       } AND C_VymerTyp_Id = 4 THEN 1 " +  // VymerTypEnum.PEN
-                                                    $"     WHEN @C_Typ_Id = {(int)TypEnum.DaPUhradaPokuty                } AND C_VymerTyp_Id = 5 THEN 1 " +  // VymerTypEnum.POK
-                                                    $"     WHEN @C_Typ_Id = {(int)TypEnum.DaPUhradaUrokuZOdlozeniaSplatok} AND C_VymerTyp_Id = 7 THEN 1 " +  // VymerTypEnum.URO
-                                                    $"     END = 1 AND (D_Osoba_Id = @D_Osoba_Id OR @D_Osoba_Id IS NULL)";
-            } 
-            else if (column.ToLower() == "vs" && kodPolozky == "crm-vaz-zal")
-            {
-                //Filter musí byť identický ako v "switch (typ)" - vyššie v kóde
-                comboAttribute.AdditionalWhereSql = Environment.NewLine +
-                                                    $"CASE WHEN @C_Typ_Id IN ({(int)TypEnum.UhradaDZF},{(int)TypEnum.UhradaOZF}) AND C_StavEntity_Id > 1 AND DM_Nevyfakturovane <> 0 THEN 1 " +
-                                                    $"     END = 1 AND (D_Osoba_Id = @D_Osoba_Id OR @D_Osoba_Id IS NULL)";
-            }
         }
     }
 

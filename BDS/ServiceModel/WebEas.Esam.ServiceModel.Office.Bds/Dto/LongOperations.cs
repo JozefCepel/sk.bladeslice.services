@@ -14,7 +14,6 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
         public const string InternyPoplatok = "InternyPoplatok";
     }
 
-    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember, RolesDefinition.Bds.Roles.BdsAdmin)]
     [Route("/long/{OperationName}/_start", "POST")]
     [Api("Bds")]
     [DataContract]
@@ -22,7 +21,6 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     {
     }
 
-    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember, RolesDefinition.Bds.Roles.BdsAdmin)]
     [Route("/long/restart/{ProcessKey}", "POST")]
     [Api("Bds")]
     [DataContract]
@@ -30,7 +28,6 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     {
     }
 
-    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember, RolesDefinition.Bds.Roles.BdsAdmin)]
     [Route("/long/{OperationName}/_progress/{ProcessKey}", "GET")]
     [Api("Bds")]
     [DataContract]
@@ -38,7 +35,6 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     {
     }
 
-    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember, RolesDefinition.Bds.Roles.BdsAdmin)]
     [Route("/long/{OperationName}/_result/{ProcessKey}", "GET")]
     [Api("Bds")]
     [DataContract]
@@ -46,7 +42,6 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     {
     }
 
-    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember, RolesDefinition.Bds.Roles.BdsAdmin)]
     [Route("/long/{OperationName}/_cancel/{ProcessKey}", "POST")]
     [Api("Bds")]
     [DataContract]
@@ -54,7 +49,6 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     {
     }
 
-    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsMember, RolesDefinition.Bds.Roles.BdsAdmin)]
     [Route("/long/list", "GET")]
     [Api("Bds")]
     [DataContract]

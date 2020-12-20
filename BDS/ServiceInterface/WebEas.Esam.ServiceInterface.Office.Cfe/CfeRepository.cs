@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using WebEas.Core.Log;
-using WebEas.Esam.DcomWs.UserService;
+//using WebEas.Esam.DcomWs.UserService;
 using WebEas.Esam.ServiceModel.Office;
 using WebEas.Esam.ServiceModel.Office.Cfe.Dto;
 using WebEas.Esam.ServiceModel.Office.Cfe.Types;
@@ -188,29 +188,8 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
                     case "cfe":
                         modulesInterfaces.Add(typeof(CfeRepository));
                         break;
-                    case "crm":
-                        modulesInterfaces.Add(typeof(Crm.CrmRepository));
-                        break;
-                    case "dap":
-                        modulesInterfaces.Add(typeof(Dap.DapRepository));
-                        break;
-                    case "dms":
-                        modulesInterfaces.Add(typeof(Dms.DmsRepository));
-                        break;
-                    case "fin":
-                        modulesInterfaces.Add(typeof(Fin.FinRepository));
-                        break;
-                    case "osa":
-                        modulesInterfaces.Add(typeof(Osa.OsaRepository));
-                        break;
-                    case "reg":
-                        modulesInterfaces.Add(typeof(Reg.RegRepository));
-                        break;
-                    case "rzp":
-                        modulesInterfaces.Add(typeof(Rzp.RzpRepository));
-                        break;
-                    case "uct":
-                        modulesInterfaces.Add(typeof(Uct.UctRepository));
+                    case "bds":
+                        modulesInterfaces.Add(typeof(Bds.BdsRepository));
                         break;
                     default:
                         throw new NotImplementedException($"Add '{kodModulu}' to modulesInterfaces!");
@@ -680,6 +659,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
             bool isRoot = TreeIdParent == null;
             string myName = NazovParrent + (string.IsNullOrEmpty(NazovParrent) ? "" : " / ") + hNode.Nazov + ((hNode is DatabaseHierarchyNode) ? " []" : "");
 
+            /*
             // v dms vylucit adresare bez SysKod
             if (!hNode.IsRoot && hNode.KodRoot == "dms")
             {
@@ -691,6 +671,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
                         return;
                 }
             }
+            */
 
             string kodPolozky = HierarchyNodeExtensions.RemoveParametersFromKodPolozky(HierarchyNodeExtensions.CleanKodPolozky(hNode.KodPolozky));
 
@@ -730,6 +711,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
 
         #region DCOM
 
+        /*
         public void SynchronizeDcomUsers(SynchronizeDcomUsersDto request)
         {
             if (Session.AdminLevel != AdminLevel.SysAdmin)
@@ -849,6 +831,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
                 }
             }
         }
+        */
 
         #endregion
     }

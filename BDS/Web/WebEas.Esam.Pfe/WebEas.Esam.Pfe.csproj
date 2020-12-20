@@ -110,11 +110,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\WebEas\ServiceInterface\WebEas.ServiceInterface\WebEas.ServiceInterface.csproj">
-      <Project>{e2a6581b-c2d4-42e4-a5d6-14ea0753ee7d}</Project>
+      <Project>{cea4b7a0-01d0-4e0d-a6af-d929bd5671ff}</Project>
       <Name>WebEas.ServiceInterface</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\WebEas\ServiceModel\WebEas.ServiceModel\WebEas.ServiceModel.csproj">
-      <Project>{1b40e5ee-7311-46e7-8241-d9f0c443905d}</Project>
+      <Project>{dbeb833f-907c-4abc-8cb1-5fc579690d28}</Project>
       <Name>WebEas.ServiceModel</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\WebEas\WebEas.Core.Common\WebEas.Core.Common.csproj">

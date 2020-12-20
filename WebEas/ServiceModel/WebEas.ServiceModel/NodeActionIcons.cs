@@ -253,6 +253,21 @@ namespace WebEas.ServiceModel
         [EnumMember(Value = "0xf3d1")]
         MoneyBillAlt = 83,
 
+
+        #region BDS
+
+        [EnumMember(Value = "0xf046")]
+        CheckSquareO = 801,
+        
+        [EnumMember(Value = "0xf0c8")]
+        Square = 802,
+        
+        [EnumMember(Value = "0xf146")]
+        MinusSquare = 803,
+
+        #endregion
+
+
         #region DMS
 
         /// <summary>

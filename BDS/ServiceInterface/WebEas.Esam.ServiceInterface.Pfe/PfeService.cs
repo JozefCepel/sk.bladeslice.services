@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using WebEas.Esam.ServiceInterface.Office;
 using WebEas.Esam.ServiceModel.Office;
-using WebEas.Esam.ServiceModel.Office.Rzp.Types;
+//using WebEas.Esam.ServiceModel.Office.Rzp.Types;
 using WebEas.Esam.ServiceModel.Pfe.Dto;
 using WebEas.ServiceInterface;
 using WebEas.ServiceModel;
@@ -459,6 +459,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
             object idStav = node.ModelType.GetProperty("C_StavEntity_Id").GetValue(entity);
             object idPriestor;
 
+            /*
             if (node.ModelType == typeof(RzpView)) // neobsahuje C_StavovyPriestor_Id 
             { 
                 idPriestor = StavovyPriestorEnum.Rozpocet;
@@ -467,6 +468,8 @@ namespace WebEas.Esam.ServiceInterface.Pfe
             {
                 idPriestor = node.ModelType.GetProperty("C_StavovyPriestor_Id").GetValue(entity);
             }
+            */
+            idPriestor = node.ModelType.GetProperty("C_StavovyPriestor_Id").GetValue(entity);
 
             return Repository.ListPossibleStates((int)idPriestor, (int)idStav, request.Uctovanie, request.ItemCode);
         }

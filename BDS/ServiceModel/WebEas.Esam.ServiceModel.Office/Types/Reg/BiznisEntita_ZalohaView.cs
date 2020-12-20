@@ -56,9 +56,9 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         [DataMember]
         [PfeColumn(Text = "VS", Tooltip = "Variabilný symbol", Xtype = PfeXType.SearchFieldSS,
                    RequiredFields = new[] { nameof(C_Typ_Id), nameof(D_Osoba_Id), nameof(Rok) })]
-        [PfeCombo(typeof(VSCombo), IdColumn = nameof(Zaloha_Id), ComboIdColumn = nameof(VSCombo.Id), ComboDisplayColumn = nameof(VSCombo.Value),
-                  AdditionalFields = new[] { nameof(VSCombo.DM_Nevyfakturovane), nameof(VSCombo.DatumUhrady), nameof(VSCombo.D_BiznisEntita_Id_ZF), nameof(VSCombo.Popis) }, 
-                  AllowComboCustomValue = true)]
+        //[PfeCombo(typeof(VSCombo), IdColumn = nameof(Zaloha_Id), ComboIdColumn = nameof(VSCombo.Id), ComboDisplayColumn = nameof(VSCombo.Value),
+        //          AdditionalFields = new[] { nameof(VSCombo.DM_Nevyfakturovane), nameof(VSCombo.DatumUhrady), nameof(VSCombo.D_BiznisEntita_Id_ZF), nameof(VSCombo.Popis) }, 
+        //          AllowComboCustomValue = true)]
         [StringLength(40)]
         public new string VS { get; set; }
 

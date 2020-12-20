@@ -8,14 +8,12 @@ using WebEas.ServiceModel;
 namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
 {
     // Create
-    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsWriter)]
     [Route("/CreateK_SKL_2", "POST")]
     [Api("K_SKL_2")]
     [DataContract]
     public class CreateK_SKL_2 : K_SKL_2Dto { }
 
     // Update
-    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsWriter)]
     [Route("/UpdateK_SKL_2", "PUT")]
     [Api("K_SKL_2")]
     [DataContract]
@@ -27,7 +25,6 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     }
 
     // Delete
-    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsWriter)]
     [Route("/DeleteK_SKL_2", "DELETE")]
     [Api("K_SKL_2")]
     [DataContract]

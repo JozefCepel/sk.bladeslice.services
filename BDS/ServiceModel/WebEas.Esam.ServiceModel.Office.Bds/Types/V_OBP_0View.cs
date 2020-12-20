@@ -12,7 +12,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
     {
         [DataMember]
         [PfeColumn(Text = "Typ OBP")]
-        [PfeCombo(typeof(tblK_TOB_0), IdColumnCombo = "K_TOB_0", DisplayColumn = "TOB")]
+        [PfeCombo(typeof(tblK_TOB_0), ComboIdColumn = "K_TOB_0", ComboDisplayColumn = "TOB")]
         public string TOB { get; set; }
 
         [DataMember]

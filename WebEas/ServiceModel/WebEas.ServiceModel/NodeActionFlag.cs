@@ -34,6 +34,22 @@ namespace WebEas.ServiceModel
         [EnumMember(Value = "ZobrazOsobu")]
         ZobrazOsobu = (long)1 << 44,
 
+        [EnumMember(Value = "Import")]
+        Import = (long)1 << 45,
+
+        [EnumMember(Value = "Create")]
+        Create = (long)1 << 46,
+
+        #region BDS - zacina od 200
+
+        [EnumMember(Value = "VybavitDoklady")]
+        VybavitDoklady = (long)1 << 200,
+
+        [EnumMember(Value = "OdvybavitDoklady")]
+        OdvybavitDoklady = (long)1 << 201,
+
+        #endregion
+
         #region RZP - zacina od 200
 
         [EnumMember(Value = "PrevziatNavrhRozpoctu")]

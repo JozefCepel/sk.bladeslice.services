@@ -74,7 +74,7 @@ namespace WebEas.ServiceModel
         ///// </summary>
         ///// <value>The DCOM id.</value>
         //[DataMember]
-        //public string DcomId { get; set; }
+        //public string UserId { get; set; }
 
         /// <summary>
         /// Gets or sets the data.

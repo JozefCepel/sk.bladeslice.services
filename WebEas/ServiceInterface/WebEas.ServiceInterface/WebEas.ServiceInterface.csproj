@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E2A6581B-C2D4-42E4-A5D6-14EA0753EE7D}</ProjectGuid>
+    <ProjectGuid>{CEA4B7A0-01D0-4E0D-A6AF-D929BD5671FF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>WebEas.ServiceInterface</RootNamespace>
@@ -133,12 +133,12 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\eSam\ServiceModel\WebEas.Esam.ServiceModel.Office\WebEas.Esam.ServiceModel.Office.csproj">
+    <ProjectReference Include="..\..\..\BDS\ServiceModel\WebEas.Esam.ServiceModel.Office\WebEas.Esam.ServiceModel.Office.csproj">
       <Project>{b368a929-aa16-4823-87ec-69e90901d0ed}</Project>
       <Name>WebEas.Esam.ServiceModel.Office</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\ServiceModel\WebEas.ServiceModel\WebEas.ServiceModel.csproj">
-      <Project>{1b40e5ee-7311-46e7-8241-d9f0c443905d}</Project>
+      <Project>{dbeb833f-907c-4abc-8cb1-5fc579690d28}</Project>
       <Name>WebEas.ServiceModel</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\WebEas.Core.Common\WebEas.Core.Common.csproj">

@@ -16,7 +16,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 
         [DataMember]
         [PfeColumn(Text = "Organisation unit")]
-        [PfeCombo(typeof(tblK_ORJ_0), IdColumnCombo = "K_ORJ_0", DisplayColumn = "ORJ")]
+        [PfeCombo(typeof(tblK_ORJ_0), ComboIdColumn = "K_ORJ_0", ComboDisplayColumn = "ORJ")]
         public string ORJ { get; set; }
 
         //[DataMember]
@@ -25,7 +25,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 
         [DataMember]
         [PfeColumn(Text = "Warehouse")]
-        [PfeCombo(typeof(tblK_SKL_0), IdColumnCombo = "K_SKL_0", DisplayColumn = "SKL")]
+        [PfeCombo(typeof(tblK_SKL_0), ComboIdColumn = "K_SKL_0", ComboDisplayColumn = "SKL")]
         public string Sklad { get; set; }
 
         [DataMember]
@@ -42,10 +42,10 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 
         [DataMember]
         [PfeColumn(Text = "_PV")]
-        public short PV { get; set; }
+        public byte PV { get; set; }
 
         [DataMember]
-        [PfeCombo(typeof(PrijemVydajCombo), NameColumn = "PV")]
+        [PfeCombo(typeof(PrijemVydajCombo), IdColumn = "PV")]
         [PfeColumn(Text = "P/V", Tooltip = "Či ide o príjmovú alebo výdajovú položku")]
         [Ignore]
         public string PrijemVydajText
@@ -70,7 +70,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 
         [DataMember]
         [PfeColumn(Text = "Mat. group", RequiredFields = new[] { "K_SKL_0" })]
-        [PfeCombo(typeof(V_SKL_1View), IdColumnCombo = "K_TSK_0", DisplayColumn = "TSK")]
+        [PfeCombo(typeof(V_SKL_1View), ComboIdColumn = "K_TSK_0", ComboDisplayColumn = "TSK")]
         public string TSK { get; set; }
 
         //[DataMember]
@@ -374,7 +374,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         //public DateTime? VALID_TO_STS { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Warehouse group", WithoutData = true)]
+        [PfeColumn(Text = "Warehouse group", LoadWhenVisible = true)]
         public string SKL_GRP { get; set; }
     }
 }

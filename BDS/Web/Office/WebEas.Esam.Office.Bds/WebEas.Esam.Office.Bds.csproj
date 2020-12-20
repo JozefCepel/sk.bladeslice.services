@@ -1,4 +1,5 @@
-﻿<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -12,7 +13,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>WebEas.Esam.Office.Bds</RootNamespace>
     <AssemblyName>WebEas.Esam.Office.Bds</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <UseIISExpress>false</UseIISExpress>
     <Use64BitIISExpress />
     <IISExpressSSLPort />
@@ -20,6 +21,8 @@
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -30,6 +33,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -39,6 +43,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Develop|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -49,12 +54,10 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Ninject.Web.Common">
-      <HintPath>..\..\..\..\Core\Libraries\Ninject.Web.Common.dll</HintPath>
-    </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -71,12 +74,6 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
-    <Reference Include="WebEas.Core.Common">
-      <HintPath>..\..\..\..\Core\Libraries\WebEas.Core.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="WebEas.Core.Interface">
-      <HintPath>..\..\..\..\Core\Libraries\WebEas.Core.Interface.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
@@ -102,13 +99,21 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Core\WebEas\ServiceInterface\WebEas.ServiceInterface\WebEas.ServiceInterface.csproj">
-      <Project>{e2a6581b-c2d4-42e4-a5d6-14ea0753ee7d}</Project>
+    <ProjectReference Include="..\..\..\..\WebEas\ServiceInterface\WebEas.ServiceInterface\WebEas.ServiceInterface.csproj">
+      <Project>{cea4b7a0-01d0-4e0d-a6af-d929bd5671ff}</Project>
       <Name>WebEas.ServiceInterface</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Core\WebEas\ServiceModel\WebEas.ServiceModel\WebEas.ServiceModel.csproj">
-      <Project>{1b40e5ee-7311-46e7-8241-d9f0c443905d}</Project>
+    <ProjectReference Include="..\..\..\..\WebEas\ServiceModel\WebEas.ServiceModel\WebEas.ServiceModel.csproj">
+      <Project>{dbeb833f-907c-4abc-8cb1-5fc579690d28}</Project>
       <Name>WebEas.ServiceModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\WebEas\WebEas.Core.Common\WebEas.Core.Common.csproj">
+      <Project>{362E3C3F-9257-4CE5-8522-2C50A1B1D044}</Project>
+      <Name>WebEas.Core.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\WebEas\WebEas.Core.Interface\WebEas.Core.Interface.csproj">
+      <Project>{E5782D41-FAB9-4CD1-B035-C644DD77C8AF}</Project>
+      <Name>WebEas.Core.Interface</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\ServiceInterface\WebEas.Esam.ServiceInterface.Office.Bds\WebEas.Esam.ServiceInterface.Office.Bds.csproj">
       <Project>{e85ea2d5-bb2b-425e-be89-d2bc75df04f9}</Project>
@@ -126,6 +131,11 @@
       <Project>{b368a929-aa16-4823-87ec-69e90901d0ed}</Project>
       <Name>WebEas.Esam.ServiceModel.Office</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="ServiceStack">
+      <Version>5.10.2</Version>
+    </PackageReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -15,7 +15,6 @@ namespace WebEas.Esam.Office.Reg
         /// <param name="e">The <see cref="System.EventArgs" /> instance containing the event data.</param>
         protected void Application_Start(object sender, EventArgs e)
         {
-            WebEas.Context.Current.RegisterServiceStackLicence();
             new AppHost().Init();
         }
 

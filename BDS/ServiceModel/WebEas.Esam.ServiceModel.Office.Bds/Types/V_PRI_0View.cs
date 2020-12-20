@@ -12,17 +12,17 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
     {
         [DataMember]
         [PfeColumn(Text = "Organisation unit")]
-        [PfeCombo(typeof(tblK_ORJ_0), IdColumnCombo = "K_ORJ_0", DisplayColumn = "ORJ")]
+        [PfeCombo(typeof(tblK_ORJ_0), ComboIdColumn = "K_ORJ_0", ComboDisplayColumn = "ORJ")]
         public string ORJ { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Warehouse", RequiredFields = new[] { "K_ORJ_0" })]
-        [PfeCombo(typeof(V_ORJ_1View), IdColumnCombo = "K_SKL_0", DisplayColumn = "SKL")]
+        [PfeCombo(typeof(V_ORJ_1View), ComboIdColumn = "K_SKL_0", ComboDisplayColumn = "SKL")]
         public string SKL { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Contractor")]
-        [PfeCombo(typeof(tblK_OBP_0), IdColumnCombo = "K_OBP_0", DisplayColumn = "NAZOV1", AdditionalWhereSql = "K_TOB_0 IN  (1, 2)")] //Dodávateľ
+        [PfeCombo(typeof(tblK_OBP_0), ComboIdColumn = "K_OBP_0", ComboDisplayColumn = "NAZOV1", AdditionalWhereSql = "K_TOB_0 IN  (1, 2)")] //Dodávateľ
         public string NAZOV1 { get; set; }
 
         [DataMember]
@@ -31,7 +31,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 
         [DataMember]
         [PfeColumn(Text = "IČO", ReadOnly = true, Editable = false)]
-        //[PfeCombo(typeof(tblK_OBP_0), IdColumnCombo = "K_OBP_0", DisplayColumn = "ICO")]
+        //[PfeCombo(typeof(tblK_OBP_0), ComboIdColumn = "K_OBP_0", ComboDisplayColumn = "ICO")]
         public string ICO { get; set; }
 
         [DataMember]

@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.1300
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebEas.ServiceInterface", "WebEas.ServiceInterface.csproj", "{E2A6581B-C2D4-42E4-A5D6-14EA0753EE7D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Develop|Any CPU = Develop|Any CPU
+		Prod|Any CPU = Prod|Any CPU
+		Release|Any CPU = Release|Any CPU
+		Test|Any CPU = Test|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E2A6581B-C2D4-42E4-A5D6-14EA0753EE7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2A6581B-C2D4-42E4-A5D6-14EA0753EE7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2A6581B-C2D4-42E4-A5D6-14EA0753EE7D}.Develop|Any CPU.ActiveCfg = Develop|Any CPU
+		{E2A6581B-C2D4-42E4-A5D6-14EA0753EE7D}.Develop|Any CPU.Build.0 = Develop|Any CPU
+		{E2A6581B-C2D4-42E4-A5D6-14EA0753EE7D}.Prod|Any CPU.ActiveCfg = Prod|Any CPU
+		{E2A6581B-C2D4-42E4-A5D6-14EA0753EE7D}.Prod|Any CPU.Build.0 = Prod|Any CPU
+		{E2A6581B-C2D4-42E4-A5D6-14EA0753EE7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2A6581B-C2D4-42E4-A5D6-14EA0753EE7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2A6581B-C2D4-42E4-A5D6-14EA0753EE7D}.Test|Any CPU.ActiveCfg = Test|Any CPU
+		{E2A6581B-C2D4-42E4-A5D6-14EA0753EE7D}.Test|Any CPU.Build.0 = Test|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7D0D5EF3-478C-4113-A470-923C2C343A55}
+	EndGlobalSection
+EndGlobal

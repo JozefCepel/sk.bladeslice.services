@@ -25,7 +25,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 
         [DataMember]
         [PfeColumn(Text = "Warehouse")]
-        [PfeCombo(typeof(tblK_SKL_0), IdColumnCombo = "K_SKL_0", DisplayColumn = "SKL")]
+        [PfeCombo(typeof(tblK_SKL_0), ComboIdColumn = "K_SKL_0", ComboDisplayColumn = "SKL")]
         public string Sklad { get; set; }
 
         //[DataMember]
@@ -34,7 +34,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 
         [DataMember]
         [PfeColumn(Text = "Mat. group", RequiredFields = new[] { "K_SKL_0" })]
-        [PfeCombo(typeof(V_SKL_1View), IdColumnCombo = "K_TSK_0", DisplayColumn = "TSK")]
+        [PfeCombo(typeof(V_SKL_1View), ComboIdColumn = "K_TSK_0", ComboDisplayColumn = "TSK")]
         public string TSK { get; set; }
 
         //[DataMember]
@@ -42,7 +42,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         //public int K_TYP_0 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Warehouse group", WithoutData = true)]
+        [PfeColumn(Text = "Warehouse group",LoadWhenVisible = true)]
         public string SKL_GRP { get; set; }
 
         //[DataMember]

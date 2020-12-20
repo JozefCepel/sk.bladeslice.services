@@ -8,7 +8,6 @@ using WebEas.ServiceModel;
 
 namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
 {
-    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsWriter)]
     [Route("/GetVybavDoklady", "POST")]
     [Api("Doklady")]
     [DataContract]
@@ -21,7 +20,6 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
         public string IdField { get; set; }
     }
 
-    [WebEasRequiresAnyRole(RolesDefinition.Bds.Roles.BdsWriter)]
     [Route("/GetOdvybavDoklady", "POST")]
     [Api("Doklady")]
     [DataContract]

@@ -1,4 +1,5 @@
-﻿using ServiceStack.OrmLite;
+﻿using ServiceStack;
+using ServiceStack.OrmLite;
 using ServiceStack.OrmLite.Dapper;
 using System;
 using System.Collections.Generic;
@@ -76,11 +77,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                 transaction.Rollback();
                 throw new WebEasException("Nastala chyba pri vybavovaní dokladu", "Nastala chyba pri vybavovaní dokladu", ex);
             }
-            finally
-            {
-                this.EndTransaction(transaction);
-            }
-
+            
             return result;
 
             //return result;
@@ -93,15 +90,12 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
 
         #region Long Operations
 
-        protected override void LongOperationProcess(string processKey, string operationName, string operationParameters)
+        protected override void LongOperationProcess(WebEas.ServiceModel.Dto.LongOperationStartDtoBase request)
         {
-            switch (operationName)
+            switch (request.OperationName)
             {
-                case OperationsList.InternyPoplatok:
-                    this.InternyPoplatok(processKey, operationParameters);
-                    break;
                 default:
-                    throw new WebEasException(string.Format("Long operation with the name {0} is not implemented", operationName), "Operácia nie je implementovaná!");
+                    throw new WebEasException($"Long operation with the name {request.OperationName} is not implemented", "Operácia nie je implementovaná!");
             }
         }
 
@@ -120,8 +114,14 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
 
         public override object GetRowDefaultValues(string code, string masterCode, string masterRowId)
         {
-            var node = Modules.TryFindNode(code);
-            var masternode = Modules.TryFindNode(masterCode);
+            //Odkomentovať keď to chcem použiť
+            var root = RenderModuleRootNode(code);
+            var node = root.TryFindNode(code);
+            HierarchyNode masternode = null;
+            if (!masterCode.IsNullOrEmpty())
+            {
+                masternode = root.TryFindNode(masterCode);
+            }
 
             #region D_PRI_0, D_VYD_0
 
@@ -454,10 +454,6 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
             {
                 transaction.Rollback();
                 throw new WebEasException("Nastala chyba pri volaní SQL procedúry [reg].[PR_Nastavenie]", "Parameter sa nepodarilo upraviť kvôli internej chybe", ex);
-            }
-            finally
-            {
-                EndTransaction(transaction);
             }
 
             RemoveFromCacheByRegex(string.Concat("ten:", Session.TenantId, ":GetNastavenie:*"));

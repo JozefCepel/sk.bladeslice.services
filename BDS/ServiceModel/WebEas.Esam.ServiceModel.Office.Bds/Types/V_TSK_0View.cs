@@ -11,7 +11,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
     public class V_TSK_0View : tblK_TSK_0
     {
         [DataMember]
-        [PfeCombo(typeof(SimulationType), NameColumn = "SKL_SIMULATION")]
+        [PfeCombo(typeof(SimulationType), IdColumn = "SKL_SIMULATION")]
         [PfeColumn(Text = "3D simulation")]
         [Ignore]
         public string SKL_SIMULATIONText
