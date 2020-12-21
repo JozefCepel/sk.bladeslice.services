@@ -9,11 +9,11 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
 {
     public partial class BdsRepository
     {
-        public override string Code => "cfe";
+        public override string Code => "bds";
 
         public override HierarchyNode RenderModuleRootNode(string kodPolozky)
         {
-            var rootNode = new HierarchyNode(Code, "BladeSlice - warehouse")
+            var rootNode = new HierarchyNode(Code, "Blade Slice - warehouse")
             {
                 Children = new List<HierarchyNode>
             {

@@ -1678,10 +1678,12 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                 });
             }
 
+            /*
             //fin, uct, rzp, crm
             var finDisabled = GetTypBiznisEntityNastav().Where(x => !x.Value).Select(x => x.Key).ToList();
             if (finDisabled.Count > 0)
                 disabledNodes.AddRange(finDisabled);
+            */
 
             //Pre DMS musime vycistit adresarovy strom
             //Modules.Load<Office.Dms.IDmsRepository>().ClearDirCache();
