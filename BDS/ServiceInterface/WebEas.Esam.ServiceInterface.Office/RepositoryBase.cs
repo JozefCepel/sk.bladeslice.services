@@ -5693,11 +5693,11 @@ public void SpracujDoklad(SpracovatDokladDto dokl, string processKey, out string
         /// </summary>
         public HierarchyNode GenerateNodeSpravaModulu(string code, Type updateNastavenie)
         {
-            var sm = new HierarchyNode("sm", "Správa modulu")
+            var sm = new HierarchyNode("sm", "Module management")
             {
                 Children = new List<HierarchyNode>
                     {
-                        new HierarchyNode("mset", "Konfigurácia parametrov", typeof(NastavenieView), code == "reg" ? null : new Filter("Modul", code), null, HierarchyNodeIconCls.Settings, PfeSelection.Single, true)
+                        new HierarchyNode("mset", "Parameter configuration", typeof(NastavenieView), code == "reg" ? null : new Filter("Modul", code), null, HierarchyNodeIconCls.Settings, PfeSelection.Single, true)
                         {
                             Actions = new List<NodeAction>
                             {
@@ -5710,7 +5710,7 @@ public void SpracujDoklad(SpracovatDokladDto dokl, string processKey, out string
             if (code != "cfe" && code != "dms" && code != "dap")
             {
                 sm.AddChild(
-                    new HierarchyNode("hzs", "História zmien stavov", typeof(EntitaHistoriaStavovView), code == "reg" ? null : new Filter("Modul", code), null, HierarchyNodeIconCls.History, PfeSelection.Single, true));
+                    new HierarchyNode("hzs", "History of state changes", typeof(EntitaHistoriaStavovView), code == "reg" ? null : new Filter("Modul", code), null, HierarchyNodeIconCls.History, PfeSelection.Single, true));
             }
 
             return sm;

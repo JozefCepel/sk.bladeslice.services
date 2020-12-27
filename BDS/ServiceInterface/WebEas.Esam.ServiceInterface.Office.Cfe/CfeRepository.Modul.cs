@@ -16,16 +16,16 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
 
         public override HierarchyNode RenderModuleRootNode(string kodPolozky)
         {
-            var rootNode = new HierarchyNode(Code, "Administrácia")
+            var rootNode = new HierarchyNode(Code, "Administration")
             {
                 Children = new List<HierarchyNode>
             {
-                new HierarchyNode("admin", "Administrácia práv")
+                new HierarchyNode("admin", "Access administration")
                 {
                     #region Administrácia práv
                     Children = new List<HierarchyNode>
                     {
-                        new HierarchyNode<UserView>("users", "Používatelia", null, icon : HierarchyNodeIconCls.Users)
+                        new HierarchyNode<UserView>("users", "Users", null, icon : HierarchyNodeIconCls.Users)
                         {
                             #region Používatelia
                             SelectionMode = PfeSelection.Multi,
@@ -34,7 +34,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
                             {
                                 new NodeAction(NodeActionType.Change),
                                 new NodeAction(NodeActionType.CopyUserPermissions, typeof(CopyUserPermissions)),
-                                new NodeAction(NodeActionType.BlockUser, typeof(BlockUser), "Zablokovať") {SelectionMode = PfeSelection.Multi },
+                                new NodeAction(NodeActionType.BlockUser, typeof(BlockUser), "Block user") {SelectionMode = PfeSelection.Multi },
                                 new NodeAction(NodeActionType.ChangePassword, typeof(ChangePassword)),
                                 new NodeAction(NodeActionType.Update, typeof(UpdateUser)),
                                 new NodeAction(NodeActionType.Delete, typeof(DeleteUser)) {SelectionMode = PfeSelection.Multi }
@@ -46,7 +46,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
 
                             Children = new List<HierarchyNode>
                             {
-                                new HierarchyNode<UserRoleView>("roles", "Priradenie do rolí", null, icon : HierarchyNodeIconCls.UserTag)
+                                new HierarchyNode<UserRoleView>("roles", "Roles assignment", null, icon : HierarchyNodeIconCls.UserTag)
                                 {
                                     SelectionMode = PfeSelection.Multi,
                                     Actions = new List<NodeAction>
@@ -60,12 +60,12 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
                                           new NodeFieldDefaultValue(nameof(UserRoleView.PlatnostOd), DateTime.Now)
                                     }
                                 },
-                                new DatabaseHierarchyNode<ModulUserView>("modul", "Modul", (DatabaseHierarchyNode node) => { return RenderPouzivateliaModuly(node) ; }, null, icon : HierarchyNodeIconCls.PuzzlePiece)
+                                new DatabaseHierarchyNode<ModulUserView>("modul", "Module", (DatabaseHierarchyNode node) => { return RenderPouzivateliaModuly(node) ; }, null, icon : HierarchyNodeIconCls.PuzzlePiece)
                                 {
                                     #region Modul
                                     Children = new List<HierarchyNode>
                                     {
-                                        new HierarchyNode<RightUserView>("rights", "Pridelenie základných práv", null, icon : HierarchyNodeIconCls.HandRight)
+                                        new HierarchyNode<RightUserView>("rights", "Basic rights", null, icon : HierarchyNodeIconCls.HandRight)
                                         {
                                             SelectionMode = PfeSelection.Multi,
                                             Actions = new List<NodeAction>
@@ -77,7 +77,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
                                         //new HierarchyNode<DummyData>("sum", "Sumár základných práv *", null, icon : HierarchyNodeIconCls.StatickyCiselnik)
                                         //{
                                         //},
-                                        new HierarchyNode<TreeUserView>("hrch", "Práva na stromovú štruktúru", null, icon : HierarchyNodeIconCls.HandRight)
+                                        new HierarchyNode<TreeUserView>("hrch", "Tree structure rights", null, icon : HierarchyNodeIconCls.HandRight)
                                         {
                                             Actions = new List<NodeAction>
                                             {
@@ -89,7 +89,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
                                                 new NodeAction(NodeActionType.SetRightFull, typeof(TreeSetRightFull)){SelectionMode = PfeSelection.Multi, IdField = "V_TreeUser_Id" }
                                             },
                                         },
-                                        new HierarchyNode<OrsElementTypeUsersView>("tors", "Typy prvkov ORŠ", null, icon : HierarchyNodeIconCls.Sitemap)
+                                        new HierarchyNode<OrsElementTypeUsersView>("tors", "Element types", null, icon : HierarchyNodeIconCls.Sitemap)
                                         {
                                             SelectionMode = PfeSelection.Multi,
                                             Actions = new List<NodeAction>
@@ -101,7 +101,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
                                             },
                                             Children = new List<HierarchyNode>
                                             {
-                                                new HierarchyNode<OrsElementUserView>("ors", "Pridelenie práv na prvky ORŠ", null, icon : HierarchyNodeIconCls.HandRight)
+                                                new HierarchyNode<OrsElementUserView>("ors", "Element types rights", null, icon : HierarchyNodeIconCls.HandRight)
                                                 {
                                                     SelectionMode = PfeSelection.Multi,
                                                     Actions = new List<NodeAction>
@@ -125,7 +125,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
                             }, 
                             #endregion
                         },
-                        new HierarchyNode<RoleView>("role", "Role", null, icon : HierarchyNodeIconCls.Tags)
+                        new HierarchyNode<RoleView>("role", "Roles", null, icon : HierarchyNodeIconCls.Tags)
                         {
                             #region Role
                             SelectionMode = PfeSelection.Multi,
@@ -144,13 +144,13 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
                     } 
                     #endregion
                 },
-            new HierarchyNode("def", "Definície")
+            new HierarchyNode("def", "Definitions")
             {
                 #region Definície
                 Children = new List<HierarchyNode>
                 {
                     // D_Tenant/ (SysAdmin všetko, ostatní uvidia iba svojho tenanta)
-                    new HierarchyNode<TenantView>("ten", "Moja obec", null , icon : HierarchyNodeIconCls.Building)
+                    new HierarchyNode<TenantView>("ten", "My company", null , icon : HierarchyNodeIconCls.Building)
                     {
                         #region Zoznam tenantov
                         Actions = new List<NodeAction>
@@ -162,7 +162,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
                         Children = new List<HierarchyNode>
                         {
                             // read ikonka
-                            new HierarchyNode<UserTenantView>("users", "Priradenie používateľov", null, icon : HierarchyNodeIconCls.HandRight)
+                            new HierarchyNode<UserTenantView>("users", "Assigned users", null, icon : HierarchyNodeIconCls.HandRight)
                             {
                                 SelectionMode = PfeSelection.Multi,
                                 Actions = new List<NodeAction>
@@ -176,7 +176,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
                         #endregion
                     },
                     // (Read ikonka - importované skriptom) /C_Modul
-                    new HierarchyNode<ModulView>("mod", "Moduly", null, icon : HierarchyNodeIconCls.PuzzlePiece)
+                    new HierarchyNode<ModulView>("mod", "Modules", null, icon : HierarchyNodeIconCls.PuzzlePiece)
                     {
                         #region Moduly
                         SelectionMode = PfeSelection.Multi,
@@ -187,22 +187,22 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
                         },
                         Children = new List<HierarchyNode>
                         {
-                            new HierarchyNode<RightView>("prava", "Základné práva", null, icon : HierarchyNodeIconCls.Key)
+                            new HierarchyNode<RightView>("prava", "Basic rights", null, icon : HierarchyNodeIconCls.Key)
                             {
                             },
-                            new HierarchyNode<TreeView>("strom", "Stromová štruktúra", null, icon : HierarchyNodeIconCls.Sitemap)
+                            new HierarchyNode<TreeView>("strom", "Tree structure rights", null, icon : HierarchyNodeIconCls.Sitemap)
                             {
                             },
-                            new HierarchyNode<OrsElementTypeView>("tors", "Typy prvkov organizačnej štruktúry", null, icon : HierarchyNodeIconCls.Delicious)
+                            new HierarchyNode<OrsElementTypeView>("tors", "Organization structure element types", null, icon : HierarchyNodeIconCls.Delicious)
                             {
                                 SelectionMode = PfeSelection.Multi,
                                 Actions = new List<NodeAction>
                                 {
-                                    new NodeAction(NodeActionType.ObnovitZoznamORS, typeof(ObnovitZoznamORS),"Obnoviť zoznam elementov ORŠ") {SelectionMode = PfeSelection.Multi, IdField = "C_OrsElementType_Id"},
+                                    new NodeAction(NodeActionType.ObnovitZoznamORS, typeof(ObnovitZoznamORS),"Refresh the list of elements") {SelectionMode = PfeSelection.Multi, IdField = "C_OrsElementType_Id"},
                                 },
                                 Children = new List<HierarchyNode>
                                 {
-                                    new HierarchyNode<OrsElementView>("ors", "Prvky organizačnej štruktúry", null, icon : HierarchyNodeIconCls.ThLarge)
+                                    new HierarchyNode<OrsElementView>("ors", "Elements of organization structure", null, icon : HierarchyNodeIconCls.ThLarge)
                                     {
                                     }
                                 }
@@ -221,7 +221,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
         .SetLayoutDependencies(
             HierarchyNodeDependency.One2ManyBack2One("cfe-admin-users", "cfe-def-ten-users", "D_User_Id", "V obciach", "Používateľ"),
             HierarchyNodeDependency.One2ManyBack2One("cfe-admin-users", "cfe-admin-users-roles", "D_User_Id", "Role", "Používateľ"),
-            HierarchyNodeDependency.One2ManyBack2One("cfe-def-ten", "cfe-def-ten-users", "D_Tenant_Id", "Používateľ", "Obec"),
+            HierarchyNodeDependency.One2ManyBack2One("cfe-def-ten", "cfe-def-ten-users", "D_Tenant_Id", "Používateľ", "City"),
             HierarchyNodeDependency.One2ManyBack2One("cfe-def-mod", "cfe-def-mod-prava", "C_Modul_Id", "Základné práva", "Modul"),
             HierarchyNodeDependency.One2ManyBack2One("cfe-def-mod", "cfe-def-mod-strom", "C_Modul_Id", "Stromová štrukúra", "Modul"),
             HierarchyNodeDependency.One2ManyBack2One("cfe-def-mod", "cfe-def-mod-tors", "C_Modul_Id", "Typy prvkov ORŠ", "Modul"),
@@ -328,7 +328,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
             {
                 var node = staticData.Clone();
                 //node.Parameter = element.C_OrsElement_Id;
-                node.Nazov = "Organizačná štruktúra";
+                node.Nazov = "Organization structure";
                 result.Add(node);
             }
 

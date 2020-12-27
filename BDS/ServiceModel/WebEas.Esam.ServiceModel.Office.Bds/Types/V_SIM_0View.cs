@@ -23,22 +23,22 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         }
 
         [DataMember]
-        [PfeColumn(Text = "Príjemka")]
+        [PfeColumn(Text = "Receipt")]
         [PfeCombo(typeof(tblD_PRI_0), ComboIdColumn = "D_PRI_0", ComboDisplayColumn = "DKL_C")] //, AdditionalWhereSql = "V = 0"
         public string DKL_C_PRI { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Výdajka")]
+        [PfeColumn(Text = "Expense")]
         [PfeCombo(typeof(tblD_VYD_0), ComboIdColumn = "D_VYD_0", ComboDisplayColumn = "DKL_C")] //, AdditionalWhereSql = "V = 0"
         public string DKL_C_VYD { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Položka príjemky", RequiredFields = new[] { "D_PRI_0" })]
+        [PfeColumn(Text = "Receipt item", RequiredFields = new[] { "D_PRI_0" })]
         [PfeCombo(typeof(V_PRI_1View), ComboIdColumn = "D_PRI_1", ComboDisplayColumn = "PriPol")]
         public string PriPol { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Položka výdajky", RequiredFields = new[] { "D_VYD_0" })]
+        [PfeColumn(Text = "Expense item", RequiredFields = new[] { "D_VYD_0" })]
         [PfeCombo(typeof(V_VYD_1View), ComboIdColumn = "D_VYD_1", ComboDisplayColumn = "VydPol")]
         public string VydPol { get; set; }
 
@@ -48,11 +48,11 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         
         //audit stlpce
         [DataMember]
-        [PfeColumn(Text = "Vytvoril", Hidden = true, Editable = false, ReadOnly = true)]
+        [PfeColumn(Text = "Created by", Hidden = true, Editable = false, ReadOnly = true)]
         public string VytvorilMeno { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Zmenil", Hidden = true, Editable = false, ReadOnly = true)]
+        [PfeColumn(Text = "Edited by", Hidden = true, Editable = false, ReadOnly = true)]
         public string ZmenilMeno { get; set; }
     }
 }

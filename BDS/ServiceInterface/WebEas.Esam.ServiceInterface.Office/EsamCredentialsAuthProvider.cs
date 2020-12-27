@@ -333,7 +333,7 @@ namespace WebEas.Esam.ServiceInterface.Office
 
                 if (!tenants.Any())
                 {
-                    throw new WebEasValidationException(null, $"Používateľ {ses.DisplayName} nemá priradeného žiadneho tenanta !");
+                    throw new WebEasValidationException(null, $"User {ses.DisplayName} doesn't have access to any company  !");
                 }
 
                 if (string.IsNullOrEmpty(ses.TenantId))
@@ -352,7 +352,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                 {
                     if (!tenants.Contains(ses.TenantIdGuid.Value))
                     {
-                        throw new WebEasValidationException(null, $"Používateľ {ses.DisplayName} nemá na danú obec právo!");
+                        throw new WebEasValidationException(null, $"User {ses.DisplayName} doesn't have access to login!");
                     }
                 }
 

@@ -44,47 +44,47 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public decimal N_CENA { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Cena 1", DefaultValue = 0)]
+        [PfeColumn(Text = "Price 1", DefaultValue = 0)]
         public decimal PC1 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Cena 2", DefaultValue = 0)]
+        [PfeColumn(Text = "Price 2", DefaultValue = 0)]
         public decimal PC2 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Cena 3", DefaultValue = 0)]
+        [PfeColumn(Text = "Price 3", DefaultValue = 0)]
         public decimal PC3 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Cena 4", DefaultValue = 0)]
+        [PfeColumn(Text = "Price 4", DefaultValue = 0)]
         public decimal PC4 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Cena 5", DefaultValue = 0)]
+        [PfeColumn(Text = "Price 5", DefaultValue = 0)]
         public decimal PC5 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Cena 6", DefaultValue = 0)]
+        [PfeColumn(Text = "Price 6", DefaultValue = 0)]
         public decimal PC6 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Cena 7", DefaultValue = 0)]
+        [PfeColumn(Text = "Price 7", DefaultValue = 0)]
         public decimal PC7 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Cena 8", DefaultValue = 0)]
+        [PfeColumn(Text = "Price 8", DefaultValue = 0)]
         public decimal PC8 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Cena 9", DefaultValue = 0)]
+        [PfeColumn(Text = "Price 9", DefaultValue = 0)]
         public decimal PC9 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Min stav", DefaultValue = 0)]
+        [PfeColumn(Text = "Min. quantity", DefaultValue = 0)]
         public decimal MIN_MN { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Max stav", DefaultValue = 0)]
+        [PfeColumn(Text = "Max. quantity", DefaultValue = 0)]
         public decimal MAX_MN { get; set; }
 
         [DataMember]
@@ -92,7 +92,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string EAN { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Záruka", DefaultValue = 0)]
+        [PfeColumn(Text = "Warranty", DefaultValue = 0)]
         public int WARRANTY { get; set; }
 
         [DataMember]
@@ -108,7 +108,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string WT_MJ { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "IST kód")]
+        [PfeColumn(Text = "IST code")]
         public string IST { get; set; }
 
         [DataMember]

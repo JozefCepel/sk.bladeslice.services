@@ -16,15 +16,15 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public int K_OWN_0 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "IČO", Mandatory = true)]
+        [PfeColumn(Text = "Business ID No.", Mandatory = true)]
         public string ICO { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "DIČ")]
+        [PfeColumn(Text = "Tax ID")]
         public string DRC { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "IČ DPH")]
+        [PfeColumn(Text = "VAT Reg. No.")]
         public string IC_DPH { get; set; }
 
         [DataMember]
@@ -36,55 +36,55 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string NAZOV2 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Ulica")]
+        [PfeColumn(Text = "Street")]
         public string ULICA_S { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "PSČ")]
+        [PfeColumn(Text = "ZIP code")]
         public string PSC_S { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Obec", Mandatory = true)]
+        [PfeColumn(Text = "City", Mandatory = true)]
         public string OBEC_S { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Štát")]
+        [PfeColumn(Text = "State")]
         public string STAT { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Name 1 - Prevádzka")]
+        [PfeColumn(Text = "Name 1 - Operation")]
         public string NAZOV1_P { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Name 2 - Prevádzka")]
+        [PfeColumn(Text = "Name 2 - Operation")]
         public string NAZOV2_P { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Ulica - Prevádzka")]
+        [PfeColumn(Text = "Street - Operation")]
         public string ULICA_P { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "PSČ - Prevádzka")]
+        [PfeColumn(Text = "ZIP code - Operation")]
         public string PSC_P { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Obec - Prevádzka")]
+        [PfeColumn(Text = "City - Operation")]
         public string OBEC_P { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Štát - Prevádzka")]
+        [PfeColumn(Text = "State - Operation")]
         public string STAT_P { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Rok")]
+        [PfeColumn(Text = "Year")]
         public string ROK { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Telefón 1")]
+        [PfeColumn(Text = "Telephone 1")]
         public string TEL1 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Telefón 2")]
+        [PfeColumn(Text = "Telephone 2")]
         public string TEL2 { get; set; }
 
         [DataMember]
@@ -92,7 +92,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string FAX { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Mobil")]
+        [PfeColumn(Text = "Mobile")]
         public string MOBIL { get; set; }
 
         [DataMember]
@@ -104,23 +104,23 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string WWW { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Platca dane z pridanej hodnoty")]
+        [PfeColumn(Text = "_Platca dane z pridanej hodnoty")]
         public bool? PLATIC_DPH { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Mesačný platca dane")]
+        [PfeColumn(Text = "_Mesačný platca dane")]
         public bool? MES_DPH { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Metóda FIFO", Tooltip = "Skladová metóda FIFO alebo priemerné ceny")]
+        [PfeColumn(Text = "FIFO method", Tooltip = "Skladová metóda FIFO alebo priemerné ceny")]
         public bool? FIFO { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Zapísaná v")]
+        [PfeColumn(Text = "Register 1")]
         public string REGISTER1 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Pod číslom")]
+        [PfeColumn(Text = "Register 2")]
         public string REGISTER2 { get; set; }
 
         [DataMember]
@@ -144,7 +144,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public bool? VRB_ONLINE { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Vyskladňovať chronologicky")]
+        [PfeColumn(Text = "_Vyskladňovať chronologicky")]
         public bool? SKL_CHRONOL { get; set; }
 
         [DataMember]

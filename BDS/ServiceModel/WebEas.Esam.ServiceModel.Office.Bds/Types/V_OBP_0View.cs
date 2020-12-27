@@ -11,21 +11,21 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
     public class V_OBP_0View : tblK_OBP_0
     {
         [DataMember]
-        [PfeColumn(Text = "Typ OBP")]
+        [PfeColumn(Text = "Business partner type")]
         [PfeCombo(typeof(tblK_TOB_0), ComboIdColumn = "K_TOB_0", ComboDisplayColumn = "TOB")]
         public string TOB { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Platca DPH", ReadOnly = true)]
+        [PfeColumn(Text = "VAT payer", ReadOnly = true)]
         public bool IS_PLATCA { get; set; }
 
         //audit stlpce
         [DataMember]
-        [PfeColumn(Text = "Vytvoril", Hidden = true, Editable = false, ReadOnly = true)]
+        [PfeColumn(Text = "Created by", Hidden = true, Editable = false, ReadOnly = true)]
         public string VytvorilMeno { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Zmenil", Hidden = true, Editable = false, ReadOnly = true)]
+        [PfeColumn(Text = "Edited by", Hidden = true, Editable = false, ReadOnly = true)]
         public string ZmenilMeno { get; set; }
     }
 }

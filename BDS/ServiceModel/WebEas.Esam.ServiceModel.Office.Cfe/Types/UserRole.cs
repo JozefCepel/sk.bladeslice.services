@@ -16,19 +16,19 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
         public int D_UserRole_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_Užívateľ")]
+        [PfeColumn(Text = "_D_User_Id")]
         public Guid D_User_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_Rola")]
+        [PfeColumn(Text = "_C_Role_Id")]
         public int C_Role_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Dátum pridelenia", Type = PfeDataType.Date)]
+        [PfeColumn(Text = "Date of assignment", Type = PfeDataType.Date)]
         public DateTime PlatnostOd { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Dátum odobratia", Type = PfeDataType.Date)]
+        [PfeColumn(Text = "Date taken", Type = PfeDataType.Date)]
         public DateTime? PlatnostDo { get; set; }
 
     }

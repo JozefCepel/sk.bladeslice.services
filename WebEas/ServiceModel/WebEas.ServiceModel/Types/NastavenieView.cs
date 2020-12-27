@@ -9,7 +9,7 @@ namespace WebEas.ServiceModel.Types
     [DataContract]
     public class NastavenieView : Nastavenie, IPfeCustomize
     {
-        [PfeColumn(Text = "Modul")]
+        [PfeColumn(Text = "Module")]
         [DataMember]
         public string Modul { get; set; }
 

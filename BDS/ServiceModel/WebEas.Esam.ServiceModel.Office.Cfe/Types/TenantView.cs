@@ -14,47 +14,47 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
     public class TenantView : Tenant, IPfeCustomize, IBaseView
     {
         [DataMember]
-        [PfeColumn(Text = "Typ", Mandatory = true)]
+        [PfeColumn(Text = "Type", Mandatory = true)]
         [PfeCombo(typeof(TenantType), IdColumn = nameof(C_TenantType_Id), ComboDisplayColumn = nameof(TenantType.Typ))]
         public string TenantTypeName { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Typ organizácie", Mandatory = true)]
+        [PfeColumn(Text = "Organization type", Mandatory = true)]
         [PfeCombo(typeof(OrganizaciaTypView), IdColumn = nameof(C_OrganizaciaTyp_Id), ComboDisplayColumn = nameof(OrganizaciaTypView.Nazov))]
         public string OrganizaciaTypNazov { get; set; }
 
-        [DataMember]
-        [PfeColumn(Text = "IČO", Xtype = PfeXType.SearchFieldSS)]
-        [PfeCombo(typeof(OsobaView), IdColumn = nameof(D_PO_Osoba_Id), ComboDisplayColumn = nameof(OsobaView.IdentifikatorMeno))]
-        public string ICO { get; set; }
+        //[DataMember]
+        //[PfeColumn(Text = "Business ID No.", Xtype = PfeXType.SearchFieldSS)]
+        //[PfeCombo(typeof(OsobaView), IdColumn = nameof(D_PO_Osoba_Id), ComboDisplayColumn = nameof(OsobaView.IdentifikatorMeno))]
+        //public string ICO { get; set; }
 
-        [DataMember]
-        [PfeColumn(Text = "Moja obec/mesto", ReadOnly = true)]
-        public string MenoObchodne { get; set; }
+        //[DataMember]
+        //[PfeColumn(Text = "My company", ReadOnly = true)]
+        //public string MenoObchodne { get; set; }
 
-        [DataMember]
-        [PfeColumn(Text = "Adresa sídla", ReadOnly = true)]
-        public string AdresaDlhaByt { get; set; }
+        //[DataMember]
+        //[PfeColumn(Text = "Registered office address", ReadOnly = true)]
+        //public string AdresaDlhaByt { get; set; }
 
-        [DataMember]
-        [PfeColumn(Text = "Adresa obec", ReadOnly = true)]
-        public string AdresaObec { get; set; }
+        //[DataMember]
+        //[PfeColumn(Text = "Address city", ReadOnly = true)]
+        //public string AdresaObec { get; set; }
 
-        [DataMember]
-        [PfeColumn(Text = "Adresa ulica", ReadOnly = true)]
-        public string AdresaUlicaCislo { get; set; }
+        //[DataMember]
+        //[PfeColumn(Text = "Address street", ReadOnly = true)]
+        //public string AdresaUlicaCislo { get; set; }
 
-        [DataMember]
-        [PfeColumn(Text = "Adresa PSČ", ReadOnly = true)]
-        public string AdresaPSC { get; set; }
+        //[DataMember]
+        //[PfeColumn(Text = "Address ZIP", ReadOnly = true)]
+        //public string AdresaPSC { get; set; }
 
         //audit stlpce
         [DataMember]
-        [PfeColumn(Text = "Vytvoril", Hidden = true, Editable = false, ReadOnly = true, LoadWhenVisible = true)]
+        [PfeColumn(Text = "Created by", Hidden = true, Editable = false, ReadOnly = true, LoadWhenVisible = true)]
         public string VytvorilMeno { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Zmenil", Hidden = true, Editable = false, ReadOnly = true, LoadWhenVisible = true)]
+        [PfeColumn(Text = "Edited by", Hidden = true, Editable = false, ReadOnly = true, LoadWhenVisible = true)]
         public string ZmenilMeno { get; set; }
 
         public void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, object masterNodeParameter, string masterNodeKey)

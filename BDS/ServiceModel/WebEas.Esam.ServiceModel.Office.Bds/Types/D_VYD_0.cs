@@ -48,7 +48,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string DKL_C { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Dodací list")]
+        [PfeColumn(Text = "Delivery No.")]
         public string DL_C { get; set; }
 
         [DataMember]
@@ -60,7 +60,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public bool Z { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Dátum výdaja", Type = PfeDataType.Date, Mandatory = true)]
+        [PfeColumn(Text = "Date", Type = PfeDataType.Date, Mandatory = true)]
         public DateTime DAT_DKL { get; set; }
 
         [DataMember]

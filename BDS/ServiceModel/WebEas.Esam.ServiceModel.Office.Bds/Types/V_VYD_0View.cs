@@ -30,33 +30,33 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string NAZOV2 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "IČO", ReadOnly = true, Editable = false)]
+        [PfeColumn(Text = "Business ID No.", ReadOnly = true, Editable = false)]
         //[PfeCombo(typeof(tblK_OBP_0), ComboIdColumn = "K_OBP_0", ComboDisplayColumn = "ICO")]
         public string ICO { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Ulica", ReadOnly = true, Editable = false)]
+        [PfeColumn(Text = "Street", ReadOnly = true, Editable = false)]
         public string ULICA_S { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "PSČ", ReadOnly = true, Editable = false)]
+        [PfeColumn(Text = "ZIP code", ReadOnly = true, Editable = false)]
         public string PSC_S { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Obec", ReadOnly = true, Editable = false)]
+        [PfeColumn(Text = "City", ReadOnly = true, Editable = false)]
         public string OBEC_S { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "štát", ReadOnly = true, Editable = false)]
+        [PfeColumn(Text = "State", ReadOnly = true, Editable = false)]
         public string STAT { get; set; }
 
         //audit stlpce
         [DataMember]
-        [PfeColumn(Text = "Vytvoril", Hidden = true, Editable = false, ReadOnly = true)]
+        [PfeColumn(Text = "Created by", Hidden = true, Editable = false, ReadOnly = true)]
         public string VytvorilMeno { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Zmenil", Hidden = true, Editable = false, ReadOnly = true)]
+        [PfeColumn(Text = "Edited by", Hidden = true, Editable = false, ReadOnly = true)]
         public string ZmenilMeno { get; set; }
 
         //[DataMember]

@@ -6,12 +6,12 @@ namespace WebEas.ServiceModel
     public enum NodeActionType
     {
         [EnumMember(Value = "ReadList")]
-        [PfeCaption("Načítať")]
+        [PfeCaption("Read list")]
         [PfeRight(Pravo.Citat)]
         ReadList,
 
         [EnumMember(Value = "Create")]
-        [PfeCaption("Nový záznam")]
+        [PfeCaption("New item")]
         [NodeActionIcon(NodeActionIcons.Plus)]
         [PfeRight(Pravo.Upravovat)]
         Create,
@@ -35,23 +35,23 @@ namespace WebEas.ServiceModel
         DKL_VyberCislo,
 
         [EnumMember(Value = "Read")]
-        [PfeCaption("Načítať")]
+        [PfeCaption("Read")]
         [PfeRight(Pravo.Citat)]
         Read,
 
         [EnumMember(Value = "Update")]
-        [PfeCaption("Uložiť <br/> zmeny")]
+        [PfeCaption("Save changes")]
         [NodeActionIcon(NodeActionIcons.FloppyO)]
         [PfeRight(Pravo.Upravovat)]
         Update,
 
         [EnumMember(Value = "Delete")]
-        [PfeCaption("Zmazať")]
+        [PfeCaption("Delete")]
         [NodeActionIcon(NodeActionIcons.Trash)]
         [PfeRight(Pravo.Full)]
         Delete,
 
-        [PfeCaption("Upraviť")]
+        [PfeCaption("Edit")]
         [NodeActionIcon(NodeActionIcons.Edit)]
         [PfeRight(Pravo.Upravovat)]
         Change,
@@ -61,12 +61,12 @@ namespace WebEas.ServiceModel
         [PfeRight(Pravo.Upravovat)]
         ZmenaStavu,
 
-        [PfeCaption("Obnoviť predvolené nastavenie")]
+        [PfeCaption("Restore default setting")]
         [NodeActionIcon(NodeActionIcons.Undo)]
         [PfeRight(Pravo.Upravovat)]
         RefreshDefault,
 
-        [PfeCaption("Zobraziť")]
+        [PfeCaption("Show")]
         [PfeRight(Pravo.Citat)]
         MenuButtons,
 
@@ -74,7 +74,7 @@ namespace WebEas.ServiceModel
         [PfeRight(Pravo.Citat)]
         MenuButtonsAll,
 
-        [PfeCaption("Zobraziť <br/> v akciách")]
+        [PfeCaption("Show in actions")]
         [PfeRight(Pravo.Citat)]
         ShowInActions,
 
@@ -89,7 +89,7 @@ namespace WebEas.ServiceModel
         [NodeActionIcon(NodeActionIcons.History)]
         HistoriaZmien,
 
-        [PfeCaption("Kopírovať")]
+        [PfeCaption("Copy")]
         [NodeActionIcon(NodeActionIcons.FilesO)]
         [PfeRight(Pravo.Upravovat)]
         Copy,
@@ -323,7 +323,7 @@ namespace WebEas.ServiceModel
         [PfeRight(Pravo.Citat)]
         DetailBankVypisu,
 
-        [PfeCaption("Upraviť")]
+        [PfeCaption("Edit")]
         [NodeActionIcon(NodeActionIcons.Edit)]
         [PfeRight(Pravo.Upravovat)]
         UpdateNastavenie,
@@ -548,12 +548,12 @@ namespace WebEas.ServiceModel
 
         #region BDS
 
-        [PfeCaption("Vybaviť")]
+        [PfeCaption("Approve")]
         [NodeActionIcon(NodeActionIcons.CheckSquare)]
         [PfeRight(Pravo.Upravovat)]
         VybavitDoklady = 200,
 
-        [PfeCaption("Odvybaviť")]
+        [PfeCaption("Cancel approve")]
         [NodeActionIcon(NodeActionIcons.MinusSquare)]
         [PfeRight(Pravo.Upravovat)]
         OdvybavitDoklady = 201,
@@ -660,57 +660,57 @@ namespace WebEas.ServiceModel
         #endregion
 
         #region CFE
-        [PfeCaption("Obnoviť zoznam ORŠ")]
+        [PfeCaption("Refresh the list of elements")]
         [NodeActionIcon(NodeActionIcons.Refresh)]
         [PfeRight(Pravo.System)]
         ObnovitZoznamORS,
 
-        [PfeCaption("Načítať stromovú štruktúru modulu")]
+        [PfeCaption("Read tree structure")]
         [NodeActionIcon(NodeActionIcons.Refresh)]
         [PfeRight(Pravo.System)]
         RefreshModuleTree,
 
-        [PfeCaption("Zablokovať používateľa")]
+        [PfeCaption("Blok user")]
         [NodeActionIcon(NodeActionIcons.UserAltSlash)]
         [PfeRight(Pravo.Upravovat)]
         BlockUser,
 
-        [PfeCaption("Nastaviť heslo")]
+        [PfeCaption("Change password")]
         [NodeActionIcon(NodeActionIcons.Password)]
         [PfeRight(Pravo.Upravovat)]
         ChangePassword,
 
-        [PfeCaption("Skopírovať práva iného používateľa")]
+        [PfeCaption("Copy rights from another user")]
         [NodeActionIcon(NodeActionIcons.Friends)]
         [PfeRight(Pravo.Upravovat)]
         CopyUserPermissions,
 
-        [PfeCaption("Pridať právo")]
+        [PfeCaption("Add right")]
         [NodeActionIcon(NodeActionIcons.Handshake)]
         [PfeRight(Pravo.Upravovat)]
         AddRight,
 
-        [PfeCaption("Odobrať právo")]
+        [PfeCaption("Remove right")]
         [NodeActionIcon(NodeActionIcons.Ban)]
         [PfeRight(Pravo.Upravovat)]
         RemoveRight,
 
-        [PfeCaption("Žiadny")]
+        [PfeCaption("No access")]
         [NodeActionIcon(NodeActionIcons.Ban)]
         [PfeRight(Pravo.Upravovat)]
         SetRightNo,
 
-        [PfeCaption("Čítať")]
+        [PfeCaption("Read")]
         [NodeActionIcon(NodeActionIcons.Eye)]
         [PfeRight(Pravo.Upravovat)]
         SetRightRead,
 
-        [PfeCaption("Upravovať")]
+        [PfeCaption("Edit")]
         [NodeActionIcon(NodeActionIcons.Edit)]
         [PfeRight(Pravo.Upravovat)]
         SetRightUpdate,
 
-        [PfeCaption("Plný")]
+        [PfeCaption("Full")]
         [NodeActionIcon(NodeActionIcons.Bullhorn)]
         [PfeRight(Pravo.Upravovat)]
         SetRightFull,

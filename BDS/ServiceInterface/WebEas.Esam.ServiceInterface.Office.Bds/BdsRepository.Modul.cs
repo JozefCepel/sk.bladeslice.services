@@ -220,7 +220,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                                 new NodeAction(NodeActionType.Update, typeof(UpdateK_OWN_0))
                             }
                         },
-                        new HierarchyNode<Nastavenie>("mset", "Parameters configuration", null, icon : HierarchyNodeIconCls.Settings)
+                        new HierarchyNode<Nastavenie>("mset", "Parameter configuration", null, icon : HierarchyNodeIconCls.Settings)
                         {
                             #region Konfigurácia parametrov modulu
                             Actions = new List<NodeAction>

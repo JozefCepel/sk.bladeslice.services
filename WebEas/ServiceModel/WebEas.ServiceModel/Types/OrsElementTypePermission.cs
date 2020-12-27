@@ -15,19 +15,19 @@ namespace WebEas.ServiceModel.Types
         public int D_OrsElementTypePermission_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Oddelenie")]
+        [PfeColumn(Text = "_C_OrsElementType_Id")]
         public int C_OrsElementType_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Rola")]
+        [PfeColumn(Text = "Role")]
         public int? C_Role_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Používateľ")]
+        [PfeColumn(Text = "_D_User_Id")]
         public Guid? D_User_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Prístup")]
+        [PfeColumn(Text = "Access")]
         public byte Pravo { get; set; }
 
     }

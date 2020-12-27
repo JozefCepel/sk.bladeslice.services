@@ -23,7 +23,7 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
         public int C_OrganizaciaTyp_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Názov", Mandatory = true)]
+        [PfeColumn(Text = "Name", Mandatory = true)]
         public string Nazov { get; set; }
 
         [DataMember]
@@ -31,17 +31,17 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
         public string Server { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Databáza", Mandatory = true)]
+        [PfeColumn(Text = "Database", Mandatory = true)]
         public string Databaza { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Externý identif.")]
+        [PfeColumn(Text = "External identif.")]
         [StringLength(36)]
         public Guid? D_Tenant_Id_Externe { get; set; }
 
-        [DataMember]
-        [PfeColumn(Text = "Identifikátor ISO")]
-        public Guid? IsoId { get; set; }
+        //[DataMember]
+        //[PfeColumn(Text = "Identifikátor ISO")]
+        //public Guid? IsoId { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "_D_PO_Osoba_Id")]

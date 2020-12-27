@@ -4,7 +4,7 @@ using WebEas.ServiceModel;
 
 namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 {
-    [Schema("bds")]
+    [Schema("reg")]
     [Alias("V_Nastavenie")]
     [DataContract]
     public class Nastavenie
@@ -19,11 +19,11 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string Nazov { get; set; }
 
         [DataMember]
-        [PfeColumn(Xtype = PfeXType.TextareaWW)]
+        [PfeColumn(Text = "Description", Xtype = PfeXType.TextareaWW)]
         public string Popis { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Hodnota")]
+        [PfeColumn(Text = "Value")]
         public string Hodn { get; set; }
 
         [DataMember]

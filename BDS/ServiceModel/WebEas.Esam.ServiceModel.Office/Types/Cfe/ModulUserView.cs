@@ -29,19 +29,19 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Cfe
         public Guid D_User_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Prihlasovacie meno", Mandatory = true)]
+        [PfeColumn(Text = "Login name", Mandatory = true)]
         public string LoginName { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "E-mailová adresa", Mandatory = true)]
+        [PfeColumn(Text = "E-mail address", Mandatory = true)]
         public string Email { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Doménové meno")]
+        [PfeColumn(Text = "_Doménové meno")]
         public string DomainName { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Evidenčné číslo")]
+        [PfeColumn(Text = "Evidence No.")]
         public string EC { get; set; }
 
         [DataMember]
@@ -49,11 +49,11 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Cfe
         public Guid? D_User_Id_Parent { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Dátum začiatku", Type = PfeDataType.Date, Mandatory = true)]
+        [PfeColumn(Text = "Start date", Type = PfeDataType.Date, Mandatory = true)]
         public DateTime PlatnostOd { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Dátum ukončenia", Type = PfeDataType.Date)]
+        [PfeColumn(Text = "End date", Type = PfeDataType.Date)]
         public DateTime? PlatnostDo { get; set; }
 
         [DataMember]
@@ -61,7 +61,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Cfe
         public short? Country { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Meno", ReadOnly = true)]
+        [PfeColumn(Text = "Full name", ReadOnly = true)]
         public string FullName { get; set; }
     }
 }

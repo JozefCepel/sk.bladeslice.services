@@ -77,7 +77,7 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
             data.Databaza = Databaza;
             data.D_Tenant_Id_Externe = D_Tenant_Id_Externe;
             data.D_PO_Osoba_Id = D_PO_Osoba_Id;
-            data.IsoId = IsoId;
+            //data.IsoId = IsoId;
         }
     }
     #endregion

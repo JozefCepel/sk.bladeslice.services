@@ -13,16 +13,16 @@ namespace WebEas.ServiceModel.Types
         public string NazovId { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Názov")]
+        [PfeColumn(Text = "Name")]
         [PfeLayoutDependency]
         public string Nazov { get; set; }
 
         [DataMember]
-        [PfeColumn(Xtype = PfeXType.TextareaWW)]
+        [PfeColumn(Text = "Description", Xtype = PfeXType.TextareaWW)]
         public string Popis { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Hodnota")]
+        [PfeColumn(Text = "Value")]
         public string Hodn { get; set; }
 
         [DataMember]
@@ -30,7 +30,7 @@ namespace WebEas.ServiceModel.Types
         public string Typ { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Používateľské nastavenie", ReadOnly = true, Editable = false)]
+        [PfeColumn(Text = "User setting", ReadOnly = true, Editable = false)]
         public bool Pouzivatel { get; set; }
     }
 }

@@ -19,7 +19,7 @@ namespace WebEas.ServiceModel
         /// Summary name
         /// </summary>
         /// <value>The text.</value>
-        [DataMember(Name = "sn")]
+        [DataMember(Name = "Serial No.")]
         public string SummaryName { get; set; }
 
         /// <summary>

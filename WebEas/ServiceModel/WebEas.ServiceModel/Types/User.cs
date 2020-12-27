@@ -14,7 +14,7 @@ namespace WebEas.ServiceModel.Types
         public Guid D_User_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Prihlasovacie meno", Mandatory = true)]
+        [PfeColumn(Text = "Login name", Mandatory = true)]
         public string LoginName { get; set; }
 
         [IgnoreDataMember]
@@ -22,56 +22,56 @@ namespace WebEas.ServiceModel.Types
         public string LoginPswd { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Meno", Mandatory = true)]
+        [PfeColumn(Text = "First name", Mandatory = true)]
         public string FirstName { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Priezvisko", Mandatory = true)]
+        [PfeColumn(Text = "Surname", Mandatory = true)]
         public string LastName { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Celé meno", ReadOnly = true)]
+        [PfeColumn(Text = "Full name", ReadOnly = true)]
         [IgnoreInsertOrUpdate]
         public string FullName { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Titul pred")]
+        [PfeColumn(Text = "Title before")]
         public string TitulPred { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Titul za")]
+        [PfeColumn(Text = "Title after")]
         public string TitulZa { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "E-mailová adresa", Mandatory = true)]
+        [PfeColumn(Text = "E-mail address", Mandatory = true)]
         public string Email { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Doménové meno")]
+        [PfeColumn(Text = "_Doménové meno")]
         public string DomainName { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Doménový")]
+        [PfeColumn(Text = "_Doménový")]
         public bool AD { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Evidenčné číslo", Mandatory = true)]
+        [PfeColumn(Text = "Evidence No.", Mandatory = true)]
         public string EC { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_Nadriadený")]
+        [PfeColumn(Text = "_D_User_Id_Parent")]
         public Guid? D_User_Id_Parent { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Externý identif.")]
+        [PfeColumn(Text = "_Externý identif.")]
         public Guid? D_User_Id_Externe { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Dátum začiatku", Type = PfeDataType.Date, Mandatory = true)]
+        [PfeColumn(Text = "Start date", Type = PfeDataType.Date, Mandatory = true)]
         public DateTime PlatnostOd { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Dátum ukončenia", Type = PfeDataType.Date)]
+        [PfeColumn(Text = "End date", Type = PfeDataType.Date)]
         public DateTime? PlatnostDo { get; set; }
 
         [DataMember]
@@ -79,7 +79,7 @@ namespace WebEas.ServiceModel.Types
         public short? Country { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Posledné prihlásenie", Type = PfeDataType.DateTime, ReadOnly = true)]
+        [PfeColumn(Text = "Last login", Type = PfeDataType.DateTime, ReadOnly = true)]
         public DateTime? LastLogin { get; set; }
 
         [DataMember]
@@ -90,7 +90,7 @@ namespace WebEas.ServiceModel.Types
         {
             if (constraintName == "UQ_D_User_LoginName")
             {
-                return "Zadané prihlasovacie meno už existuje!";
+                return "Login name already exists!";
             }
 
             return null;

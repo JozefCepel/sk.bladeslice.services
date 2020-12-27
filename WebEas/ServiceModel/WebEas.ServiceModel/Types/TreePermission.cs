@@ -12,27 +12,27 @@ namespace WebEas.ServiceModel.Types
         [DataMember]
         [AutoIncrement]
         [PrimaryKey]
-        [PfeColumn(Text = "ID povolenia na strom")]
+        [PfeColumn(Text = "_D_TreePermission_Id")]
         public int D_TreePermission_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Modul")]
+        [PfeColumn(Text = "Module")]
         public int C_Modul_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Kód")]
+        [PfeColumn(Text = "Code")]
         public string Kod { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Prístup")]
+        [PfeColumn(Text = "Access")]
         public byte Pravo { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Rola")]
+        [PfeColumn(Text = "_C_Role_Id")]
         public int? C_Role_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Používateľ")]
+        [PfeColumn(Text = "_D_User_Id")]
         public Guid? D_User_Id { get; set; }
 
     }

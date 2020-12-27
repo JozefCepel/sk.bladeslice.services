@@ -413,7 +413,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
 
             try
             {
-                string typ = Db.Scalar<string>("Select Typ from [rzp].[V_Nastavenie] where Nazov = @nazov and Modul = 'rzp'", new { nazov = data.Nazov });
+                string typ = Db.Scalar<string>("Select Typ from [reg].[V_Nastavenie] where Nazov = @nazov and Modul = 'rzp'", new { nazov = data.Nazov });
                 var p = new DynamicParameters();
                 p.Add("@tenant", Session.TenantIdGuid, dbType: System.Data.DbType.Guid);
                 p.Add("@modul", "bds", dbType: System.Data.DbType.String);

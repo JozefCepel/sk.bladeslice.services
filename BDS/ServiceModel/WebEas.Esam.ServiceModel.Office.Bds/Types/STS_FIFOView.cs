@@ -242,7 +242,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         //public bool? VYP { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "SN")]
+        [PfeColumn(Text = "Serial No.")]
         public string SN { get; set; }
 
         [DataMember]

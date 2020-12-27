@@ -16,7 +16,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string KOD_ID { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Číslo príjemky")]
+        [PfeColumn(Text = "Receipt No.")]
         [PfeCombo(typeof(tblD_PRI_0), ComboIdColumn = "D_PRI_0", ComboDisplayColumn = "DKL_C")]
         public string DKL_C { get; set; }
 
@@ -25,7 +25,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public bool V { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Položka príjemky", ReadOnly = true)]
+        [PfeColumn(Text = "Receipt item", ReadOnly = true)]
         public string PriPol { get; set; }
 
         [DataMember]
@@ -39,11 +39,11 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 
         //audit stlpce
         [DataMember]
-        [PfeColumn(Text = "Vytvoril", Hidden = true, Editable = false, ReadOnly = true)]
+        [PfeColumn(Text = "Created by", Hidden = true, Editable = false, ReadOnly = true)]
         public string VytvorilMeno { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Zmenil", Hidden = true, Editable = false, ReadOnly = true)]
+        [PfeColumn(Text = "Edited by", Hidden = true, Editable = false, ReadOnly = true)]
         public string ZmenilMeno { get; set; }
     }
 }

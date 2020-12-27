@@ -32,15 +32,15 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public int? K_OPK_0 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "IČO", Mandatory = true)]
+        [PfeColumn(Text = "Business ID No.", Mandatory = true)]
         public string ICO { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "DIČ")]
+        [PfeColumn(Text = "Tax ID")]
         public string DRC { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "IČ DPH")]
+        [PfeColumn(Text = "VAT Reg. No.")]
         public string IC_DPH { get; set; }
 
         [DataMember]
@@ -52,47 +52,47 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string NAZOV2 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Ulica")]
+        [PfeColumn(Text = "Street")]
         public string ULICA_S { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "PSČ")]
+        [PfeColumn(Text = "ZIP code")]
         public string PSC_S { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Obec", Mandatory = true)]
+        [PfeColumn(Text = "City", Mandatory = true)]
         public string OBEC_S { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Name 1 - Prevádzka")]
+        [PfeColumn(Text = "Name 1 - Operation")]
         public string NAZOV1_P { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Name 2 - Prevádzka")]
+        [PfeColumn(Text = "Name 2 - Operation")]
         public string NAZOV2_P { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Ulica - Prevádzka")]
+        [PfeColumn(Text = "Street - Operation")]
         public string ULICA_P { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "PSČ - Prevádzka")]
+        [PfeColumn(Text = "ZIP code - Operation")]
         public string PSC_P { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Obec - Prevádzka")]
+        [PfeColumn(Text = "City - Operation")]
         public string OBEC_P { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Štát")]
+        [PfeColumn(Text = "State")]
         public string STAT { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Interný Name")]
+        [PfeColumn(Text = "Internal Name")]
         public string NICKNAME { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Číslo OBP", Mandatory = true)]
+        [PfeColumn(Text = "Business partner ID", Mandatory = true)]
         public string OBP_C { get; set; }
 
         [DataMember]
@@ -100,11 +100,11 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public int? DEALER { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Splatnosť", DefaultValue = 0)]
+        [PfeColumn(Text = "Payment due", DefaultValue = 0)]
         public short? SPLAT { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Zľava", DefaultValue = 0)]
+        [PfeColumn(Text = "Discount", DefaultValue = 0)]
         public decimal? ZLAVA { get; set; }
 
         [DataMember]
@@ -116,19 +116,19 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public int KREDIT { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Osoba")]
+        [PfeColumn(Text = "Person")]
         public string OSOBA { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Funkcia")]
+        [PfeColumn(Text = "Function")]
         public string FUNKCIA { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Telefón 1")]
+        [PfeColumn(Text = "Telephone 1")]
         public string TEL1 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Telefón 2")]
+        [PfeColumn(Text = "Telephone 2")]
         public string TEL2 { get; set; }
 
         [DataMember]
@@ -136,7 +136,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string FAX { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Mobil")]
+        [PfeColumn(Text = "Mobile")]
         public string MOBIL { get; set; }
 
         [DataMember]
@@ -152,11 +152,11 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string POZN { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Potenciál zákazníka", DefaultValue = 0)]
+        [PfeColumn(Text = "_OBP_POTENCIAL", DefaultValue = 0)]
         public int OBP_POTENCIAL { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Doplňujúci text")]
+        [PfeColumn(Text = "_Doplňujúci text")]
         public string DOPL_TEXT { get; set; }
     }
 }

@@ -41,19 +41,19 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string SKL_GRP { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Povoliť stav do mínusu", DefaultValue = false)]
+        [PfeColumn(Text = "Allow amount to minus", DefaultValue = false)]
         public bool SKL_MINUS { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Zobraz pri výdaji aj nulové položky", DefaultValue = false)]
+        [PfeColumn(Text = "_Zobraz pri výdaji aj nulové položky", DefaultValue = false)]
         public bool? SHOW_VYD_ZERO_SKL { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Zahrnúť do min/max", DefaultValue = true)]
+        [PfeColumn(Text = "_Zahrnúť do min/max", DefaultValue = true)]
         public bool CHECK_IN_SKL_MIN_MAX { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Zahrnúť do rezervácií", DefaultValue = true)]
+        [PfeColumn(Text = "_Zahrnúť do rezervácií", DefaultValue = true)]
         public bool CHECK_IN_REZ { get; set; }
 
         [DataMember]

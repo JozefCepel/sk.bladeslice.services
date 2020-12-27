@@ -40,7 +40,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public byte PV { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "SN")]
+        [PfeColumn(Text = "Serial No.")]
         public string SN { get; set; }
 
         [DataMember]
@@ -76,19 +76,19 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public int L2 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Počet kusov", DefaultValue = 0)]
+        [PfeColumn(Text = "Number of pieces", DefaultValue = 0)]
         public int POC_KS { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Výrez [dm3]", DefaultValue = 0)]
+        [PfeColumn(Text = "Cut out [dm3]", DefaultValue = 0)]
         public decimal? POC_KS_VYREZ { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Odrezok [dm3]", DefaultValue = 0)]
+        [PfeColumn(Text = "Selvedge [dm3]", DefaultValue = 0)]
         public decimal? POC_KS_ZVYSOK { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Polotovar [dm3]", DefaultValue = 0)]
+        [PfeColumn(Text = "Semi-finished [dm3]", DefaultValue = 0)]
         public decimal POC_KS_PLT { get; set; }
 
         [DataMember]
@@ -112,11 +112,11 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public decimal SKL_CENA { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Vstupné rozmery")]
+        [PfeColumn(Text = "Input dimensions")]
         public string OUTER_SIZE { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Výstupné rozmery")]
+        [PfeColumn(Text = "Output dimensions")]
         public string OUTER_SIZE_FINAL { get; set; }
     }
 }

@@ -15,15 +15,15 @@ namespace WebEas.ServiceModel.Types
         public int D_RightPermission_Id { get; set; }
         
         [DataMember]
-        [PfeColumn(Text = "Právo")]
+        [PfeColumn(Text = "_C_Right_Id")]
         public int C_Right_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Rola")]
+        [PfeColumn(Text = "Role")]
         public int? C_Role_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Používateľ")]
+        [PfeColumn(Text = "_D_User_Id")]
         public Guid? D_User_Id { get; set; }
     }
 }

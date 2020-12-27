@@ -29,7 +29,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string Sklad { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Poč. stav")]
+        [PfeColumn(Text = "Initial state")]
         public bool? PS { get; set; }
 
         [DataMember]
@@ -90,7 +90,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string LOCATION { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "SN")]
+        [PfeColumn(Text = "Serial No.")]
         public string SN { get; set; }
 
         [DataMember]
