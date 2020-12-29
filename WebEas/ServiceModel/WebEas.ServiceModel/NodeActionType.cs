@@ -45,6 +45,11 @@ namespace WebEas.ServiceModel
         [PfeRight(Pravo.Upravovat)]
         Update,
 
+        [PfeCaption("Simulate")]
+        [NodeActionIcon(NodeActionIcons.ObjectGroup)]
+        [PfeRight(Pravo.Upravovat)]
+        Simulate,
+
         [EnumMember(Value = "Delete")]
         [PfeCaption("Delete")]
         [NodeActionIcon(NodeActionIcons.Trash)]

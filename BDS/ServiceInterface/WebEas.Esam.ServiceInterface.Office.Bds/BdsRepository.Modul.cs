@@ -68,7 +68,8 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                                     {
                                         new NodeAction(NodeActionType.Change),
                                         new NodeAction(NodeActionType.Delete, typeof(DeleteD_VYD_1)) {SelectionMode = PfeSelection.Multi },
-                                        new NodeAction(NodeActionType.Update, typeof(UpdateD_VYD_1))
+                                        new NodeAction(NodeActionType.Update, typeof(UpdateD_VYD_1)),
+                                        new NodeAction(NodeActionType.Simulate, typeof(D3DData))
                                     }.AddMenuButtonsAll(NodeActionType.Create, typeof(CreateD_VYD_1)),
                                 }
                             }

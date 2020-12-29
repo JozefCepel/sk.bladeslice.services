@@ -265,6 +265,9 @@ namespace WebEas.ServiceModel
         [EnumMember(Value = "0xf146")]
         MinusSquare = 803,
 
+        [EnumMember(Value = "0xf247")]
+        ObjectGroup = 804,
+
         #endregion
 
 
