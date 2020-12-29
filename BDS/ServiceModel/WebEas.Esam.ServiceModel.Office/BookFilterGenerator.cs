@@ -93,32 +93,16 @@ namespace WebEas.Esam.ServiceModel.Office
             }
         }
 
-        public static void AddFilterForIDsDkl(Filter filter, Dictionary<string, object> parameters, bool addVyzadovatFilter)
+        public static void AddFilterForIDsDkl(Filter filter, Dictionary<string, object> parameters)
         {
             if (parameters.ContainsKey("C_STREDISKO_ID"))
             {
-                if (addVyzadovatFilter)
-                {
-                    filter.And(Filter.OrElements(FilterElement.Custom("VyzadovatStredisko = 0"), FilterElement.In("C_Stredisko_Id", parameters["C_STREDISKO_ID"].ToString().FromJson<List<int>>())));
-                }
-                else
-                {
-                    //Prehlad rozpoctu má vyžadovanie parametra implementované už vnútri funkcie
-                    filter.And(FilterElement.In("C_Stredisko_Id", parameters["C_STREDISKO_ID"].ToString().FromJson<List<int>>()));
-                }
+                filter.And(Filter.OrElements(FilterElement.Custom("VyzadovatStredisko = 0"), FilterElement.In("C_Stredisko_Id", parameters["C_STREDISKO_ID"].ToString().FromJson<List<int>>())));
             }
 
             if (parameters.ContainsKey("C_PROJEKT_ID"))
             {
-                if (addVyzadovatFilter)
-                {
-                    filter.And(Filter.OrElements(FilterElement.Custom("VyzadovatProjekt = 0"), FilterElement.In("C_Projekt_Id", parameters["C_PROJEKT_ID"].ToString().FromJson<List<int>>())));
-                }
-                else
-                {
-                    //Prehlad rozpoctu má vyžadovanie parametra implementované už vnútri funkcie
-                    filter.And(FilterElement.In("C_Projekt_Id", parameters["C_PROJEKT_ID"].ToString().FromJson<List<int>>()));
-                }
+                filter.And(Filter.OrElements(FilterElement.Custom("VyzadovatProjekt = 0"), FilterElement.In("C_Projekt_Id", parameters["C_PROJEKT_ID"].ToString().FromJson<List<int>>())));
             }
 
             if (parameters.ContainsKey("C_TYPBIZNISENTITY_KNIHA_ID"))
@@ -408,7 +392,12 @@ namespace WebEas.Esam.ServiceModel.Office
                     newFilter.AndEq(nameof(UctDennikRptHelper.U), zau ? 1 : 0);
                 }
 
-                AddFilterForIDsDkl(newFilter, parameters, true);
+                if (cinnost)
+                {
+                    newFilter.AndEq(nameof(UctDennikRptHelper.PodnCinn), (parameters["CINNOST"].ToString() == "2") ? 1 : 0);
+                }
+
+                AddFilterForIDsDkl(newFilter, parameters);
                 AddFilterForIDsUct(newFilter, parameters);
 
                 filter = AddNoDialogFilters(filter, newFilter);
@@ -432,7 +421,7 @@ namespace WebEas.Esam.ServiceModel.Office
             pomocnyFilter.Remove("HODNOTADO");
             pomocnyFilter.Remove("CISLOINTERNEOD");
             pomocnyFilter.Remove("CISLOINTERNEDO");
-            
+
             //Filtre dialógov účtovníctva - DEN, OBU, HLK:
             pomocnyFilter.Remove(nameof(UctDennikRptHelper.C_Stredisko_Id));
             pomocnyFilter.Remove(nameof(UctDennikRptHelper.C_Projekt_Id));

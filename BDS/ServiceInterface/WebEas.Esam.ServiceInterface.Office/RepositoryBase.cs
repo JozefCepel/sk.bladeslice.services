@@ -1156,6 +1156,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                     { "fin-bnk-ban", data.Where(x => x.C_TypBiznisEntity_Id == (short)TypBiznisEntityEnum.BAN).Select(x => (bool)x.EvidenciaSystem).FirstOrDefault() },
                     { "fin-bnk-ppp", data.Where(x => x.C_TypBiznisEntity_Id == (short)TypBiznisEntityEnum.PPP).Select(x => (bool)x.EvidenciaSystem).FirstOrDefault() },
                     //uct, rzp
+                    { "all-evi-intd", data.Where(x => x.C_TypBiznisEntity_Id == (short)TypBiznisEntityEnum.IND).Select(x => (bool)x.EvidenciaSystem).FirstOrDefault() },
                     { "all-evi-intd!uct", data.Where(x => x.C_TypBiznisEntity_Id == (short)TypBiznisEntityEnum.IND).Select(x => (bool)x.EvidenciaSystem).FirstOrDefault() },
                     { "all-evi-intd!rzp", data.Where(x => x.C_TypBiznisEntity_Id == (short)TypBiznisEntityEnum.IND).Select(x => (bool)x.EvidenciaSystem).FirstOrDefault() },
                     //crm
@@ -1915,6 +1916,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                                 DM_SumaKUhr = data1.Item3;
                                 break;
 
+                            /* //Tieto typy dokladov sa do ÚČT neúčtujú, takže je to zbytočné
                             case TypBiznisEntityEnum.DOB:
                             case TypBiznisEntityEnum.OOB:
                             case TypBiznisEntityEnum.DZM:
@@ -1928,6 +1930,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                                 SS = data2.Item1;
                                 KS = data2.Item2;
                                 break;
+                            */
 
                             case TypBiznisEntityEnum.BAN:
                                 var data3 = Db.Select<(decimal, decimal)>($@"SELECT DM_Kredit AS Item1, DM_Debet AS Item2 
@@ -2263,8 +2266,15 @@ namespace WebEas.Esam.ServiceInterface.Office
                         {
                             case TypBiznisEntityEnum.DFA:
                             case TypBiznisEntityEnum.OFA:
+                            case TypBiznisEntityEnum.OZF:
+                            case TypBiznisEntityEnum.DZF:
+                            case TypBiznisEntityEnum.DOB:
+                            case TypBiznisEntityEnum.OOB:
+                            case TypBiznisEntityEnum.DZM:
+                            case TypBiznisEntityEnum.OZM:
                                 string typBe1 = ((TypBiznisEntityEnum)be.C_TypBiznisEntity_Id).ToString();
-                                DM_SumaKUhr = Db.Scalar<decimal>($@"SELECT DM_SumaKUhr FROM crm.V_Doklad{typBe1} 
+                                string fldKUhr = (typBe1 == "DFA" || typBe1 == "OFA") ? "DM_SumaKUhr" : "DM_Suma";
+                                DM_SumaKUhr = Db.Scalar<decimal>($@"SELECT {fldKUhr} FROM crm.V_Doklad{typBe1} 
                                                                     WHERE D_Tenant_Id = '{Session.TenantId}' AND D_Doklad{typBe1}_Id = {be.D_BiznisEntita_Id} AND Rok = {be.Rok}");
                                 break;
 
@@ -2978,6 +2988,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                 LongOperationSetStateMessage(processKey, "Prebieha kontrola účtovania v účtovnom denníku");
                 var uctovneDenniky = GetList(Db.From<UctDennik>().Where(x => Sql.In(x.D_BiznisEntita_Id, doklady.Select(x => x.D_BiznisEntita_Id))).And(Filter.NotDeleted().ToString()));
                 var uctovneRozvrhy = GetList(Db.From<UctRozvrh>().Where(x => Sql.In(x.C_UctRozvrh_Id, uctovneDenniky.Select(x => x.C_UctRozvrh_Id).Distinct())).And(Filter.NotDeleted().ToString()));
+                var strediska = GetList(Db.From<StrediskoCis>().Where(x => Sql.In(x.C_Stredisko_Id, uctovneDenniky.Select(x => x.C_Stredisko_Id).Distinct())).And(Filter.NotDeleted().ToString()));
 
                 //CHECK-51
                 foreach (var bezStr in uctovneDenniky
@@ -3111,6 +3122,16 @@ namespace WebEas.Esam.ServiceInterface.Office
                     .GroupBy(x => x.D_BiznisEntita_Id))
                 {
                     chybneDoklady.Add((uctDenPlatnost.Key, $"Záznamy účtovného denníka (pč: { uctDenPlatnost.Select(x => x.Poradie).Join(", ")}) majú použité účty, ktoré nie su platné k dátumu dokladu."));
+                }
+
+                //CHECK-96
+                foreach (var pol in uctovneDenniky
+                    .Where(x => x.C_Stredisko_Id.HasValue &&
+                           uctovneRozvrhy.SingleOrDefault(u => x.C_UctRozvrh_Id == u.C_UctRozvrh_Id)?.PodnCinn == true &&
+                           strediska.SingleOrDefault(s => x.C_Stredisko_Id == s.C_Stredisko_Id)?.PodnCinn == false)
+                    .GroupBy(x => x.D_BiznisEntita_Id))
+                {
+                    chybneDoklady.Add((pol.Key, $"Záznamy účtovného denníka (pč: { pol.Select(x => x.Poradie).Join(", ")}) majú zvolené nepodnikateľské stredisko pri použitom podnikateľskom účte."));
                 }
 
                 foreach (var dokl in doklady)
@@ -5488,8 +5509,8 @@ namespace WebEas.Esam.ServiceInterface.Office
                             (int)SkupinaPredkontEnum.ExtDoklady_DaP => "Predkontácia predpisu",
                             _ => "Základná predkontácia",
                         };
-                        string sql = $@"INSERT INTO uct.C_Predkontacia (D_Tenant_Id, SkupinaPredkont_Id, Nazov)
-                                            VALUES ('{Session.TenantIdGuid}', {d.SkupinaPredkont_Id}, '{zaklNazov}')";
+                        string sql = $@"INSERT INTO uct.C_Predkontacia (D_Tenant_Id, SkupinaPredkont_Id, Nazov, Poradie)
+                                            VALUES ('{Session.TenantIdGuid}', {d.SkupinaPredkont_Id}, '{zaklNazov}', 1)";
                         Db.ExecuteSql(sql);
                     }
 

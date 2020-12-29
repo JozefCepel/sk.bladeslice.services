@@ -35,7 +35,7 @@ namespace WebEas.Esam.Office.Cfe
             this.SetConfig(new HostConfig
             {
                 WsdlServiceNamespace = "http://schemas.webeas.sk/office/esam/office/1.0",
-                SoapServiceName = "EsamOfficeObs",
+                SoapServiceName = "EsamOfficeCfe",
 #if DEBUG || DEVELOP || INT
                 DebugMode = true,
                 EnableFeatures = Feature.All.Remove(this.disableFeaturesDebug),

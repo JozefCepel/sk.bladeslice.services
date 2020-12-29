@@ -51,7 +51,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
 
         public void ComboCustomize(IWebEasRepositoryBase repository, string column, string kodPolozky, ref PfeComboAttribute comboAttribute)
         {
-            if (kodPolozky.StartsWith("crm") || kodPolozky.Equals("all-evi-intd!uct"))
+            if (kodPolozky.StartsWith("crm") || kodPolozky.StartsWith("all-evi-intd"))
                 comboAttribute.FilterByOrsPravo = true;
 
         }

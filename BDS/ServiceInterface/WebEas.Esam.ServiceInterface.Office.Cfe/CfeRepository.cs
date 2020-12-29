@@ -250,6 +250,19 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
 
             SqlProcedure("[reg].[TenantCreate]", p);
 
+            var tenantUser = new UserTenant()
+            {
+                D_User_Id = (System.Guid)Session.UserIdGuid,
+                D_Tenant_Id = rec.D_Tenant_Id,
+                DatumVytvorenia = DateTime.Now,
+                DatumZmeny = DateTime.Now,
+                Vytvoril = Session.UserIdGuid
+            };
+
+            Create(tenantUser);
+
+            //SetCislovanie();  --nefunguje, lebo potrebujem mať CONTEXT nastavený na novovytvoreného tenanta
+            //SetPredkontacia(); --nefunguje, lebo potrebujem mať CONTEXT nastavený na novovytvoreného tenanta
             return t;
 
         }

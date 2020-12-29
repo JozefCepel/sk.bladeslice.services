@@ -291,7 +291,7 @@ namespace WebEas.UnitTest
 
                                 if (prop.HasAttribute<StringLengthAttribute>())
                                 {
-                                    if (col.Length.HasValue) { 
+                                    if (col.Length.HasValue) {
                                         var iLen = OpravVelkost(obj.SchemaOwner + "." + obj.Name + "." + col.Name, col.Length.Value);
                                         if (iLen != prop.FirstAttribute<StringLengthAttribute>().MaximumLength)
                                         {
@@ -324,7 +324,7 @@ namespace WebEas.UnitTest
                 case "cfe.V_RightUser.DatumZmeny":
                 case "cfe.V_OrsElementUser.DatumVytvorenia":
                 case "cfe.V_OrsElementUser.DatumZmeny":
-                case "cfe.V_OrsElementTypeUser.DatumVytvorenia": 
+                case "cfe.V_OrsElementTypeUser.DatumVytvorenia":
                 case "cfe.V_OrsElementTypeUser.DatumZmeny":
                 case "cfe.V_TreeUser.DatumVytvorenia":
                 case "cfe.V_TreeUser.DatumZmeny":
@@ -337,8 +337,9 @@ namespace WebEas.UnitTest
                 case "rzp.V_Fin1Pol.RzpUpraveny":
                 case "rzp.V_Fin1Pol.RzpOcakavany":
                 case "rzp.V_Fin1Pol.RzpSkutocnost":
-                case "rzp.V_Program.Typ":              // Computed column
-                case "uct.V_UctRozvrh.C_UctRozvrh_Id": // nasobi sa -1 a to meni z NOT NULL -> NULL ale nemoze to to nastat
+                case "rzp.V_Program.Typ":                  // Computed column
+                case "uct.V_UctRozvrh.C_UctRozvrh_Id":     // nasobi sa -1 a to meni z NOT NULL -> NULL ale nemoze to to nastat
+                case "uct.V_UctRozvrh.PodnCinn":           // UNION 0
                 case "uct.V_UctRozvrh.VyzadovatStredisko": // UNION 0
                 case "uct.V_UctRozvrh.VyzadovatProjekt":   // UNION 0
                 case "uct.V_UctRozvrh.VyzadovatUctKluc1":  // UNION 0
@@ -347,7 +348,8 @@ namespace WebEas.UnitTest
                 case "uct.C_PredkontaciaRzp.D_Tenant_Id":  // Dedenie predkontacii
                 case "uct.C_PredkontaciaUct.D_Tenant_Id":  // Dedenie predkontacii
                 case "uct.C_UctRozvrh.D_Tenant_Id":        // Uctovna osnova ako sucast rozvrhu
-                case "uct.V_UctDennik.UOMesiac":        // Chcem mať NULLABLE kvôli zobrazovaniu súvzťažností
+                case "uct.V_UctDennik.UOMesiac":           // Chcem mať NULLABLE kvôli zobrazovaniu súvzťažností
+                case "uct.V_UctDennik.PodnCinn":           // vracia iba 0/1 nemoze nastat NULL
                     break;
                 default:
                     bIgnore = false;
@@ -381,9 +383,9 @@ namespace WebEas.UnitTest
             switch (sObject)
             {
                 case "reg.V_Projekt.Kod":     // pridava sa do nazvov text " (Zmazane)"
-                case "reg.V_Projekt.Nazov":  
-                case "uct.V_UctRozvrh.Druh": 
-                case "reg.V_Stredisko.Kod":  
+                case "reg.V_Projekt.Nazov":
+                case "uct.V_UctRozvrh.Druh":
+                case "reg.V_Stredisko.Kod":
                 case "reg.V_Stredisko.Nazov":
                 case "reg.V_BankaUcet.Nazov":
                 case "reg.V_BankaUcet.Kod":

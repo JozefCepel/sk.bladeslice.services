@@ -380,12 +380,12 @@ namespace WebEas.ServiceModel
 
         /// <summary>
         /// Formatovany string ako sa budu v combe zobrazovat hodnoty.
-        /// Napr: "{value} - {ColName}" zobrazi string "ComboDisplayColumn - XXXX", pricom AdditionalFields musi obsahovat ColName.
+        /// Napr: "{value};{ColName}" zobrazi data v dvoch columnoch, pricom AdditionalFields musi obsahovat ColName.
         /// Combo hlada text iba v ComboDisplayColumn hodnotach
         /// </summary>
         /// <value>Definícia</value>
         [DataMember(Name = "tpl")]
-        public string DisplayTpl { get; set; }
+        public string Tpl { get; set; }
 
         /// <summary>
         /// FE bude volať combo službu až po zadaní minimálne tohoto počtu znakov (pre > 0)
@@ -393,7 +393,7 @@ namespace WebEas.ServiceModel
         /// <value>Počet znakov</value>
         [DataMember(Name = "mcs")]
         public int MinCharSearch { get; set; }
-        
+
         /// <summary>
         /// Zoznam pozadovanych stlpcov pre combo
         /// </summary>
@@ -564,7 +564,7 @@ namespace WebEas.ServiceModel
                 return false;
             }
 
-            return !string.IsNullOrEmpty(DisplayTpl);
+            return !string.IsNullOrEmpty(Tpl);
         }
 
         public bool ShouldSerializeMinCharSearch()
@@ -754,7 +754,7 @@ namespace WebEas.ServiceModel
                 result = result * 23 + AllowComboCustomValue.GetHashCode();
                 result = result * 23 + LoadWhenVisible.GetHashCode();
                 result = result * 23 + Nullable.GetHashCode();
-                result = result * 23 + ((DisplayTpl != null) ? DisplayTpl.GetHashCode() : 0);
+                result = result * 23 + ((Tpl != null) ? Tpl.GetHashCode() : 0);
                 result = result * 23 + MinCharSearch.GetHashCode();
                 return result;
             }
@@ -804,7 +804,7 @@ namespace WebEas.ServiceModel
                    SingleComboFilter == other.SingleComboFilter &&
                    AllowComboCustomValue == other.AllowComboCustomValue &&
                    LoadWhenVisible == other.LoadWhenVisible &&
-                   DisplayTpl == other.DisplayTpl &&
+                   Tpl == other.Tpl &&
                    MinCharSearch == other.MinCharSearch;
         }
 
