@@ -1649,7 +1649,7 @@ namespace WebEas.Esam.ServiceInterface.Office
         public void DeleteDoklad<T>(long[] id) where T : class, IBaseEntity
         {
             using var tran = BeginTransaction();
-            var be = GetList(Db.From<BiznisEntita>().Where(x => Sql.In(x.D_BiznisEntita_Id, id) && x.D_Tenant_Id == Session.TenantIdGuid).SelectDistinct(x =>  x.PolozkaStromu));
+            var be = GetList(Db.From<BiznisEntita>().Where(x => Sql.In(x.D_BiznisEntita_Id, id) && x.D_Tenant_Id == Session.TenantIdGuid).SelectDistinct(x => x.PolozkaStromu));
             DeleteData<T>(id);
             DeleteData<BiznisEntita>(id);
             tran.Commit();
@@ -1973,21 +1973,6 @@ namespace WebEas.Esam.ServiceInterface.Office
                                 DM_SumaKUhr = data1.Item3;
                                 break;
 
-                            /* //Tieto typy dokladov sa do ÚČT neúčtujú, takže je to zbytočné
-                            case TypBiznisEntityEnum.DOB:
-                            case TypBiznisEntityEnum.OOB:
-                            case TypBiznisEntityEnum.DZM:
-                            case TypBiznisEntityEnum.OZM:
-                            case TypBiznisEntityEnum.DZF:
-                            case TypBiznisEntityEnum.OZF:
-                                string typBe2 = ((TypBiznisEntityEnum)be.C_TypBiznisEntity_Id).ToString();
-                                var data2 = Db.Select<(string, string)>($@"SELECT SS AS Item1, KS AS Item2 
-                                                                FROM crm.D_Doklad{typBe2} 
-                                                                WHERE D_Tenant_Id = '{Session.TenantId}' AND D_Doklad{typBe2}_Id = {be.D_BiznisEntita_Id} AND Rok = {be.Rok}").First();
-                                SS = data2.Item1;
-                                KS = data2.Item2;
-                                break;
-                            */
 
                             case TypBiznisEntityEnum.BAN:
                                 var data3 = Db.Select<(decimal, decimal)>($@"SELECT DM_Kredit AS Item1, DM_Debet AS Item2 
@@ -2157,7 +2142,6 @@ namespace WebEas.Esam.ServiceInterface.Office
             }
         }
 
-
         private static void CreateSumacneZau(ref List<(long D_BiznisEntita_Id, int Typ, int Poradie)> nevyhovujucePolozky,
                                      short tbe,
                                      List<UctDennik> uctDennikList,
@@ -2175,150 +2159,150 @@ namespace WebEas.Esam.ServiceInterface.Office
                                      DateTime? datSplat,
                                      List<PredkontaciaUctViewHelper> predkonGrp,
                                      List<BiznisEntita_ZalohaView> zalohyFaktury)
-{
-    foreach (PredkontaciaUctViewHelper def1 in predkonGrp)
-    {
-        decimal hodnota = def1.C_Typ_Id switch
         {
-            (int)TypEnum.SumaDokladu => be.DM_Suma,
-            (int)TypEnum.SumaKUhrade => DM_SumaKUhr,
-            (int)TypEnum.SumaDebet => DM_Debet,
-            (int)TypEnum.SumaKredit => DM_Kredit,
-            (int)TypEnum.ZakladDPH => def1.SadzbaDph_Id switch
+            foreach (PredkontaciaUctViewHelper def1 in predkonGrp)
             {
-                0 => be.DM_Zak0,
-                1 => be.DM_Zak1,
-                2 => be.DM_Zak2,
-                _ => be.DM_Zak0 + be.DM_Zak1 + be.DM_Zak2
-            },
-            (int)TypEnum.DPH => def1.SadzbaDph_Id switch
-            {
-                1 => be.DM_DPH1,
-                2 => be.DM_DPH2,
-                _ => be.DM_DPH1 + be.DM_DPH2
-            },
-            (int)TypEnum.CentVyrovnanieHLA => be.DM_CV,
-            _ => 0
-        };
-
-        if (def1.C_Typ_Id == (int)TypEnum.ZalohaVSDokladu && zalohyFaktury.Count > 0)
-        {
-            decimal suma = zalohyFaktury.Sum(x => x.DM_Cena);
-            if (suma != 0)
-            {
-                uctDennikList.Add(CreateUctDennikSingleRow(ucty, be, null, null, def1, tbe, kniha, strediskoId, projektId, osobaId, VS, datSplat, suma,
-                    def1.Poradie, false, false, false, null, false, ref nevyhovujucePolozky, null));
-            }
-        }
-        else if (def1.C_Typ_Id == (int)TypEnum.ZalohaVSZalohy && zalohyFaktury.Count > 0)
-        {
-            //VS + sumár z gridu záloh
-            foreach (var zf in zalohyFaktury)
-            {
-                uctDennikList.Add(CreateUctDennikSingleRow(ucty, be, null, null, def1, tbe, kniha, strediskoId, projektId, osobaId, zf.VS, datSplat, zf.DM_Cena,
-                    def1.Poradie, false, false, false, null, false, ref nevyhovujucePolozky, zf.Popis));
-            }
-
-        }
-        else if (hodnota != 0)
-        {
-            //Pri položkovitej predkontácii chcem mať sumárne typy na začiatku zoradené podľa predkontácie a potom až položkové
-            uctDennikList.Add(CreateUctDennikSingleRow(ucty, be, null, null, def1, tbe, kniha, strediskoId, projektId, osobaId, VS, datSplat, hodnota,
-                (uctovatPolozkovite ? -10000 : 0) + def1.Poradie, false, false, false, null, false, ref nevyhovujucePolozky, null));
-        }
-    }
-}
-
-public void PredkontujDokladRzp(PredkontovatDokladDto request, out List<(long D_BiznisEntita_Id, string Chyba)> chybneDoklady)
-{
-    // Key 1 - nevyhovujuce, 2- viacnasobne, 3 - cent vyr.
-    var nevyhovujucePolozky = new List<(long D_BiznisEntita_Id, int Typ, int Poradie)>();
-    chybneDoklady = new List<(long D_BiznisEntita_Id, string Chyba)>();
-
-    using (var transaction = BeginTransaction())
-    {
-        List<RzpDennik> rzpDennikList = new List<RzpDennik>();
-        List<RzpDennikViewHelper> rzpDennikPredbezne = null;
-        List<DokladBANPolViewHelper> dokladBanPol = null;
-        List<UhradaParovanieViewHelper> uhradaParovanie = null;
-
-        var biznisEntity = GetList(Db.From<BiznisEntitaView>().
-            Where(x => Sql.In(x.D_BiznisEntita_Id, request.D_BiznisEntita_Ids)));
-
-        short tbe = biznisEntity.First().C_TypBiznisEntity_Id;
-
-        // nacitanie nastavenia "UctovatPolozkovite"
-        bool uctovatPolozkovite = GetTypBiznisEntityNastavView().Where(x => x.C_TypBiznisEntity_Id == tbe).FirstOrDefault()?.UctovatPolozkovite ?? true;
-
-        SqlExpression<PredkontaciaRzpViewHelper> sqlExp = Db.From<PredkontaciaRzpViewHelper>().
-            Where(p => Sql.In(p.C_Predkontacia_Id, biznisEntity.Select(m => m.C_Predkontacia_Id).Distinct()));
-
-        var predkontacieRzpAll = uctovatPolozkovite ?
-            GetList(sqlExp).OrderBy(p => p.Polozka).ThenBy(p => p.Poradie) :
-            GetList(sqlExp).OrderBy(p => p.Poradie);
-
-        List<RzpPol> rzpPolozky = GetList(Db.From<RzpPol>().
-            Select(x => new
-            {
-                x.C_RzpPol_Id,
-                x.Stredisko,
-                x.Projekt,
-                x.OpacnaStrana,
-                x.PrijemVydaj
-            }).
-            Where(x => Sql.In(x.C_RzpPol_Id, predkontacieRzpAll.Select(u => u.C_RzpPol_Id).Distinct())));
-
-        if (request.VymazatZaznamy)
-        {
-            // zmazat zaznamy v uctDenniku. Púšťať predkontáciu cez roky asi nikto nebude, takže rok môžem zobrať z prvého
-            Db.Delete<RzpDennik>(e => Sql.In(e.D_BiznisEntita_Id, request.D_BiznisEntita_Ids) && e.Rok == biznisEntity.First().Rok);
-        }
-
-        if (tbe == (short)TypBiznisEntityEnum.BAN ||
-            tbe == (short)TypBiznisEntityEnum.PDK ||
-            tbe == (short)TypBiznisEntityEnum.IND)
-        {
-            if (tbe == (short)TypBiznisEntityEnum.BAN)
-            {
-                //Dávam VIEW aby som mal ošetrené zmazané záznamy
-                dokladBanPol = GetList(Db.From<DokladBANPolViewHelper>()
-                    .Where(e => Sql.In(e.D_BiznisEntita_Id, request.D_BiznisEntita_Ids) && e.Rok == biznisEntity.First().Rok &&
-                    (e.RzpDefinicia != -1 || e.C_Typ_Id == (int)TypEnum.UhradaPohZav)));//-1 = Nerozpočtovať  (RzpDefinicia != -1 OR C_Typ_Id = 130)
-            }
-
-            //Dávam VIEW aby som mal ošetrené zmazané záznamy
-            uhradaParovanie = GetList(Db.From<UhradaParovanieViewHelper>()
-                .Where(e => Sql.In(e.D_BiznisEntita_Id_Uhrada, request.D_BiznisEntita_Ids) && e.Rok == biznisEntity.First().Rok && e.RzpDefinicia != -1));//-1 = Nerozpočtovať
-
-            rzpDennikPredbezne = GetList(Db.From<RzpDennikViewHelper>()
-                .Where(e => e.R &&
-                            Sql.In(e.D_BiznisEntita_Id, uhradaParovanie.Where(x => x.D_BiznisEntita_Id_Predpis != null)
-                                                                       .Select(x => x.D_BiznisEntita_Id_Predpis)
-                                                                       .Distinct())));
-            rzpPolozky.AddRange(GetList(Db.From<RzpPol>().
-                Select(x => new
+                decimal hodnota = def1.C_Typ_Id switch
                 {
-                    x.C_RzpPol_Id,
-                    x.Stredisko,
-                    x.Projekt,
-                    x.OpacnaStrana,
-                    x.PrijemVydaj
-                }).
-                Where(x => Sql.In(x.C_RzpPol_Id, rzpDennikPredbezne.Select(u => u.C_RzpPol_Id).Distinct()))));
+                    (int)TypEnum.SumaDokladu => be.DM_Suma,
+                    (int)TypEnum.SumaKUhrade => DM_SumaKUhr,
+                    (int)TypEnum.SumaDebet => DM_Debet,
+                    (int)TypEnum.SumaKredit => DM_Kredit,
+                    (int)TypEnum.ZakladDPH => def1.SadzbaDph_Id switch
+                    {
+                        0 => be.DM_Zak0,
+                        1 => be.DM_Zak1,
+                        2 => be.DM_Zak2,
+                        _ => be.DM_Zak0 + be.DM_Zak1 + be.DM_Zak2
+                    },
+                    (int)TypEnum.DPH => def1.SadzbaDph_Id switch
+                    {
+                        1 => be.DM_DPH1,
+                        2 => be.DM_DPH2,
+                        _ => be.DM_DPH1 + be.DM_DPH2
+                    },
+                    (int)TypEnum.CentVyrovnanieHLA => be.DM_CV,
+                    _ => 0
+                };
+
+                if (def1.C_Typ_Id == (int)TypEnum.ZalohaVSDokladu && zalohyFaktury.Count > 0)
+                {
+                    decimal suma = zalohyFaktury.Sum(x => x.DM_Cena);
+                    if (suma != 0)
+                    {
+                        uctDennikList.Add(CreateUctDennikSingleRow(ucty, be, null, null, def1, tbe, kniha, strediskoId, projektId, osobaId, VS, datSplat, suma,
+                            def1.Poradie, false, false, false, null, false, ref nevyhovujucePolozky, null));
+                    }
+                }
+                else if (def1.C_Typ_Id == (int)TypEnum.ZalohaVSZalohy && zalohyFaktury.Count > 0)
+                {
+                    //VS + sumár z gridu záloh
+                    foreach (var zf in zalohyFaktury)
+                    {
+                        uctDennikList.Add(CreateUctDennikSingleRow(ucty, be, null, null, def1, tbe, kniha, strediskoId, projektId, osobaId, zf.VS, datSplat, zf.DM_Cena,
+                            def1.Poradie, false, false, false, null, false, ref nevyhovujucePolozky, zf.Popis));
+                    }
+
+                }
+                else if (hodnota != 0)
+                {
+                    //Pri položkovitej predkontácii chcem mať sumárne typy na začiatku zoradené podľa predkontácie a potom až položkové
+                    uctDennikList.Add(CreateUctDennikSingleRow(ucty, be, null, null, def1, tbe, kniha, strediskoId, projektId, osobaId, VS, datSplat, hodnota,
+                        (uctovatPolozkovite ? -10000 : 0) + def1.Poradie, false, false, false, null, false, ref nevyhovujucePolozky, null));
+                }
+            }
         }
 
-        try
+        public void PredkontujDokladRzp(PredkontovatDokladDto request, out List<(long D_BiznisEntita_Id, string Chyba)> chybneDoklady)
         {
-            foreach (var be in biznisEntity)
+            // Key 1 - nevyhovujuce, 2- viacnasobne, 3 - cent vyr.
+            var nevyhovujucePolozky = new List<(long D_BiznisEntita_Id, int Typ, int Poradie)>();
+            chybneDoklady = new List<(long D_BiznisEntita_Id, string Chyba)>();
+
+            using (var transaction = BeginTransaction())
             {
-                int? strediskoId = be.C_Stredisko_Id;
-                long? projektId = be.C_Projekt_Id;
-                long? osobaId = (tbe != (short)TypBiznisEntityEnum.BAN && tbe != (short)TypBiznisEntityEnum.IND) ? be.D_Osoba_Id : null;
-                int kniha = be.C_TypBiznisEntity_Kniha_Id;
+                List<RzpDennik> rzpDennikList = new List<RzpDennik>();
+                List<RzpDennikViewHelper> rzpDennikPredbezne = null;
+                List<DokladBANPolViewHelper> dokladBanPol = null;
+                List<UhradaParovanieViewHelper> uhradaParovanie = null;
 
-                decimal DM_SumaKUhr = 0;
+                var biznisEntity = GetList(Db.From<BiznisEntitaView>().
+                    Where(x => Sql.In(x.D_BiznisEntita_Id, request.D_BiznisEntita_Ids)));
 
-                var predkontacieRzp = predkontacieRzpAll.Where(k => k.C_TypBiznisEntity_Kniha_Id == null || k.C_TypBiznisEntity_Kniha_Id == kniha).ToList();
+                short tbe = biznisEntity.First().C_TypBiznisEntity_Id;
+
+                // nacitanie nastavenia "UctovatPolozkovite"
+                bool uctovatPolozkovite = GetTypBiznisEntityNastavView().Where(x => x.C_TypBiznisEntity_Id == tbe).FirstOrDefault()?.UctovatPolozkovite ?? true;
+
+                SqlExpression<PredkontaciaRzpViewHelper> sqlExp = Db.From<PredkontaciaRzpViewHelper>().
+                    Where(p => Sql.In(p.C_Predkontacia_Id, biznisEntity.Select(m => m.C_Predkontacia_Id).Distinct()));
+
+                var predkontacieRzpAll = uctovatPolozkovite ?
+                    GetList(sqlExp).OrderBy(p => p.Polozka).ThenBy(p => p.Poradie) :
+                    GetList(sqlExp).OrderBy(p => p.Poradie);
+
+                List<RzpPol> rzpPolozky = GetList(Db.From<RzpPol>().
+                    Select(x => new
+                    {
+                        x.C_RzpPol_Id,
+                        x.Stredisko,
+                        x.Projekt,
+                        x.OpacnaStrana,
+                        x.PrijemVydaj
+                    }).
+                    Where(x => Sql.In(x.C_RzpPol_Id, predkontacieRzpAll.Select(u => u.C_RzpPol_Id).Distinct())));
+
+                if (request.VymazatZaznamy)
+                {
+                    // zmazat zaznamy v uctDenniku. Púšťať predkontáciu cez roky asi nikto nebude, takže rok môžem zobrať z prvého
+                    Db.Delete<RzpDennik>(e => Sql.In(e.D_BiznisEntita_Id, request.D_BiznisEntita_Ids) && e.Rok == biznisEntity.First().Rok);
+                }
+
+                if (tbe == (short)TypBiznisEntityEnum.BAN ||
+                    tbe == (short)TypBiznisEntityEnum.PDK ||
+                    tbe == (short)TypBiznisEntityEnum.IND)
+                {
+                    if (tbe == (short)TypBiznisEntityEnum.BAN)
+                    {
+                        //Dávam VIEW aby som mal ošetrené zmazané záznamy
+                        dokladBanPol = GetList(Db.From<DokladBANPolViewHelper>()
+                            .Where(e => Sql.In(e.D_BiznisEntita_Id, request.D_BiznisEntita_Ids) && e.Rok == biznisEntity.First().Rok &&
+                            (e.RzpDefinicia != -1 || e.C_Typ_Id == (int)TypEnum.UhradaPohZav)));//-1 = Nerozpočtovať  (RzpDefinicia != -1 OR C_Typ_Id = 130)
+                    }
+
+                    //Dávam VIEW aby som mal ošetrené zmazané záznamy
+                    uhradaParovanie = GetList(Db.From<UhradaParovanieViewHelper>()
+                        .Where(e => Sql.In(e.D_BiznisEntita_Id_Uhrada, request.D_BiznisEntita_Ids) && e.Rok == biznisEntity.First().Rok && e.RzpDefinicia != -1));//-1 = Nerozpočtovať
+
+                    rzpDennikPredbezne = GetList(Db.From<RzpDennikViewHelper>()
+                        .Where(e => e.R &&
+                                    Sql.In(e.D_BiznisEntita_Id, uhradaParovanie.Where(x => x.D_BiznisEntita_Id_Predpis != null)
+                                                                               .Select(x => x.D_BiznisEntita_Id_Predpis)
+                                                                               .Distinct())));
+                    rzpPolozky.AddRange(GetList(Db.From<RzpPol>().
+                        Select(x => new
+                        {
+                            x.C_RzpPol_Id,
+                            x.Stredisko,
+                            x.Projekt,
+                            x.OpacnaStrana,
+                            x.PrijemVydaj
+                        }).
+                        Where(x => Sql.In(x.C_RzpPol_Id, rzpDennikPredbezne.Select(u => u.C_RzpPol_Id).Distinct()))));
+                }
+
+                try
+                {
+                    foreach (var be in biznisEntity)
+                    {
+                        int? strediskoId = be.C_Stredisko_Id;
+                        long? projektId = be.C_Projekt_Id;
+                        long? osobaId = (tbe != (short)TypBiznisEntityEnum.BAN && tbe != (short)TypBiznisEntityEnum.IND) ? be.D_Osoba_Id : null;
+                        int kniha = be.C_TypBiznisEntity_Kniha_Id;
+
+                        decimal DM_SumaKUhr = 0;
+
+                        var predkontacieRzp = predkontacieRzpAll.Where(k => k.C_TypBiznisEntity_Kniha_Id == null || k.C_TypBiznisEntity_Kniha_Id == kniha).ToList();
 
                         switch ((TypBiznisEntityEnum)be.C_TypBiznisEntity_Id)
                         {
@@ -2336,710 +2320,710 @@ public void PredkontujDokladRzp(PredkontovatDokladDto request, out List<(long D_
                                                                     WHERE D_Tenant_Id = '{Session.TenantId}' AND D_Doklad{typBe1}_Id = {be.D_BiznisEntita_Id} AND Rok = {be.Rok}");
                                 break;
 
-                    default:
-                        break;
-                }
-
-                //Zaúčtovanie sumárnych riadkov
-
-                foreach (var defGrp in predkontacieRzp.Where(p => p.C_Predkontacia_Id == be.C_Predkontacia_Id && !p.Polozka &&
-                      !((p.C_Stredisko_Id != null && strediskoId != p.C_Stredisko_Id) ||
-                        (p.C_Projekt_Id != null && projektId != p.C_Projekt_Id) ||
-                        (p.D_Osoba_Id != null && osobaId != p.D_Osoba_Id) ||
-                        (p.C_OsobaTyp_Id != null && be.C_OsobaTyp_Id != p.C_OsobaTyp_Id)))
-                    .GroupBy(x => x.C_Typ_Id))
-                {
-                    var predkonGrp = defGrp.ToList();
-
-                    var tmp = new List<(long D_BiznisEntita_Id, int Typ, int Poradie)>(); //Nebudeme informovať o duplicite pri sumačných typoch
-                    VyberPodlaPriorityRzp(ref tmp, predkonGrp, 2, 0, be.D_BiznisEntita_Id);
-
-                    foreach (PredkontaciaRzpViewHelper def1 in predkonGrp)
-                    {
-                        decimal hodnota = def1.C_Typ_Id switch
-                        {
-                            (int)TypEnum.SumaDokladu => be.DM_Suma,
-                            (int)TypEnum.SumaKUhrade => DM_SumaKUhr,
-                            //(int)TypEnum.SumaDebet => DM_Debet, --Nerozpočtovaný typ
-                            //(int)TypEnum.SumaKredit => DM_Kredit, --Nerozpočtovaný typ
-                            //(int)TypEnum.ZalohaVSDokladu => DM_SumaZal, --Nerozpočtovaný typ
-                            //(int)TypEnum.ZalohaVSZalohy => DM_SumaZal,--Nerozpočtovaný typ
-                            (int)TypEnum.CentVyrovnanieHLA => be.DM_CV,
-                            _ => 0
-                        };
-
-                        if (hodnota != 0)
-                        {
-                            //Pri položkovitej predkontácii chcem mať sumárne typy na začiatku zoradené podľa predkontácie a potom až položkové
-                            //Pri sumárnej predkontácii chcem mať poradie z predkontácie zachované
-                            rzpDennikList.Add(CreateRzpDennikSingleRow(rzpPolozky, be, strediskoId, projektId, null, null, def1, null, hodnota, (uctovatPolozkovite ? -10000 : 0) + def1.Poradie));
+                            default:
+                                break;
                         }
-                    }
-                }
 
-                //Zaúčtovanie položiek (aktuálne máme len položky BAN)
-                if (dokladBanPol != null)
-                {
-                    foreach (var banPol in dokladBanPol.Where(b => b.D_BiznisEntita_Id == be.D_BiznisEntita_Id).OrderBy(x => x.Poradie))
-                    {
-                        //Vyfiltruj riadky predkontácie, ktoré vyhovujú a všetky vygeneruj
-                        var predkontBanPolozky = predkontacieRzp.Where(x => (x.Polozka && x.C_Typ_Id == banPol.C_Typ_Id && x.C_Predkontacia_Id == be.C_Predkontacia_Id &&
-                                                                             (x.C_Projekt_Id == null || x.C_Projekt_Id == banPol.C_Projekt_Id)
-                                                                            )
-                                                                      );
-                        if (predkontBanPolozky.Count() > 0)
+                        //Zaúčtovanie sumárnych riadkov
+
+                        foreach (var defGrp in predkontacieRzp.Where(p => p.C_Predkontacia_Id == be.C_Predkontacia_Id && !p.Polozka &&
+                              !((p.C_Stredisko_Id != null && strediskoId != p.C_Stredisko_Id) ||
+                                (p.C_Projekt_Id != null && projektId != p.C_Projekt_Id) ||
+                                (p.D_Osoba_Id != null && osobaId != p.D_Osoba_Id) ||
+                                (p.C_OsobaTyp_Id != null && be.C_OsobaTyp_Id != p.C_OsobaTyp_Id)))
+                            .GroupBy(x => x.C_Typ_Id))
                         {
-                            foreach (var def2 in predkontBanPolozky)
+                            var predkonGrp = defGrp.ToList();
+
+                            var tmp = new List<(long D_BiznisEntita_Id, int Typ, int Poradie)>(); //Nebudeme informovať o duplicite pri sumačných typoch
+                            VyberPodlaPriorityRzp(ref tmp, predkonGrp, 2, 0, be.D_BiznisEntita_Id);
+
+                            foreach (PredkontaciaRzpViewHelper def1 in predkonGrp)
                             {
-                                rzpDennikList.Add(CreateRzpDennikSingleRow(rzpPolozky, be, strediskoId, projektId, banPol, null, def2, null, Math.Abs(banPol.Suma), banPol.Poradie));
-                            }
-                        }
-                        else
-                        {
-                            if (banPol.C_Typ_Id != (int)TypEnum.UhradaPohZav)
-                            {
-                                nevyhovujucePolozky.AddIfNotExists((be.D_BiznisEntita_Id, 1, banPol.Poradie));
-                                //Pridám riadok ale bez rzp. položky a programu
-                                rzpDennikList.Add(CreateRzpDennikSingleRow(rzpPolozky, be, strediskoId, projektId, banPol, null, null, null, Math.Abs(banPol.Suma), banPol.Poradie));
+                                decimal hodnota = def1.C_Typ_Id switch
+                                {
+                                    (int)TypEnum.SumaDokladu => be.DM_Suma,
+                                    (int)TypEnum.SumaKUhrade => DM_SumaKUhr,
+                                    //(int)TypEnum.SumaDebet => DM_Debet, --Nerozpočtovaný typ
+                                    //(int)TypEnum.SumaKredit => DM_Kredit, --Nerozpočtovaný typ
+                                    //(int)TypEnum.ZalohaVSDokladu => DM_SumaZal, --Nerozpočtovaný typ
+                                    //(int)TypEnum.ZalohaVSZalohy => DM_SumaZal,--Nerozpočtovaný typ
+                                    (int)TypEnum.CentVyrovnanieHLA => be.DM_CV,
+                                    _ => 0
+                                };
+
+                                if (hodnota != 0)
+                                {
+                                    //Pri položkovitej predkontácii chcem mať sumárne typy na začiatku zoradené podľa predkontácie a potom až položkové
+                                    //Pri sumárnej predkontácii chcem mať poradie z predkontácie zachované
+                                    rzpDennikList.Add(CreateRzpDennikSingleRow(rzpPolozky, be, strediskoId, projektId, null, null, def1, null, hodnota, (uctovatPolozkovite ? -10000 : 0) + def1.Poradie));
+                                }
                             }
                         }
 
-                        //Párovanie úhrad jednej položky:
-                        foreach (UhradaParovanieViewHelper uhrPar in uhradaParovanie.Where(b => b.D_DokladBANPol_Id == banPol.D_DokladBANPol_Id).OrderBy(x => x.Poradie))
+                        //Zaúčtovanie položiek (aktuálne máme len položky BAN)
+                        if (dokladBanPol != null)
                         {
-                            CreateRzpDennikFromParovanieUhrad(rzpDennikList, kniha, predkontacieRzp, rzpPolozky, rzpDennikPredbezne, be, strediskoId, projektId, osobaId, banPol, uhrPar, ref nevyhovujucePolozky);
+                            foreach (var banPol in dokladBanPol.Where(b => b.D_BiznisEntita_Id == be.D_BiznisEntita_Id).OrderBy(x => x.Poradie))
+                            {
+                                //Vyfiltruj riadky predkontácie, ktoré vyhovujú a všetky vygeneruj
+                                var predkontBanPolozky = predkontacieRzp.Where(x => (x.Polozka && x.C_Typ_Id == banPol.C_Typ_Id && x.C_Predkontacia_Id == be.C_Predkontacia_Id &&
+                                                                                     (x.C_Projekt_Id == null || x.C_Projekt_Id == banPol.C_Projekt_Id)
+                                                                                    )
+                                                                              );
+                                if (predkontBanPolozky.Count() > 0)
+                                {
+                                    foreach (var def2 in predkontBanPolozky)
+                                    {
+                                        rzpDennikList.Add(CreateRzpDennikSingleRow(rzpPolozky, be, strediskoId, projektId, banPol, null, def2, null, Math.Abs(banPol.Suma), banPol.Poradie));
+                                    }
+                                }
+                                else
+                                {
+                                    if (banPol.C_Typ_Id != (int)TypEnum.UhradaPohZav)
+                                    {
+                                        nevyhovujucePolozky.AddIfNotExists((be.D_BiznisEntita_Id, 1, banPol.Poradie));
+                                        //Pridám riadok ale bez rzp. položky a programu
+                                        rzpDennikList.Add(CreateRzpDennikSingleRow(rzpPolozky, be, strediskoId, projektId, banPol, null, null, null, Math.Abs(banPol.Suma), banPol.Poradie));
+                                    }
+                                }
+
+                                //Párovanie úhrad jednej položky:
+                                foreach (UhradaParovanieViewHelper uhrPar in uhradaParovanie.Where(b => b.D_DokladBANPol_Id == banPol.D_DokladBANPol_Id).OrderBy(x => x.Poradie))
+                                {
+                                    CreateRzpDennikFromParovanieUhrad(rzpDennikList, kniha, predkontacieRzp, rzpPolozky, rzpDennikPredbezne, be, strediskoId, projektId, osobaId, banPol, uhrPar, ref nevyhovujucePolozky);
+                                }
+
+                            }
+                        }
+                        else if (uhradaParovanie != null) //Pokladňa a Vzájomné zápočty IND
+                        {
+                            foreach (var uhrPar in uhradaParovanie.Where(b => b.D_BiznisEntita_Id_Uhrada == be.D_BiznisEntita_Id).OrderBy(x => x.Poradie))
+                            {
+                                CreateRzpDennikFromParovanieUhrad(rzpDennikList, kniha, predkontacieRzp, rzpPolozky, rzpDennikPredbezne, be, strediskoId, projektId, osobaId, null, uhrPar, ref nevyhovujucePolozky);
+                            }
                         }
 
-                    }
-                }
-                else if (uhradaParovanie != null) //Pokladňa a Vzájomné zápočty IND
-                {
-                    foreach (var uhrPar in uhradaParovanie.Where(b => b.D_BiznisEntita_Id_Uhrada == be.D_BiznisEntita_Id).OrderBy(x => x.Poradie))
-                    {
-                        CreateRzpDennikFromParovanieUhrad(rzpDennikList, kniha, predkontacieRzp, rzpPolozky, rzpDennikPredbezne, be, strediskoId, projektId, osobaId, null, uhrPar, ref nevyhovujucePolozky);
-                    }
-                }
+                        //finalne zoradenie
+                        rzpDennikList = rzpDennikList.OrderBy(d => d.Poradie).ToList();
+                        for (int i = 0; i < rzpDennikList.Count; i++)
+                        {
+                            rzpDennikList[i].Poradie = i + 1;
+                        }
 
-                //finalne zoradenie
-                rzpDennikList = rzpDennikList.OrderBy(d => d.Poradie).ToList();
-                for (int i = 0; i < rzpDennikList.Count; i++)
-                {
-                    rzpDennikList[i].Poradie = i + 1;
-                }
+                        // vlozenie do DB
+                        foreach (var dennik in rzpDennikList)
+                        {
+                            Create(dennik);
+                        }
+                        rzpDennikList.Clear();
+                    }
 
-                // vlozenie do DB
-                foreach (var dennik in rzpDennikList)
-                {
-                    Create(dennik);
+                    transaction.Commit();
                 }
-                rzpDennikList.Clear();
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw ex;
+                }
             }
 
-            transaction.Commit();
-        }
-        catch (Exception ex)
-        {
-            transaction.Rollback();
-            throw ex;
-        }
-    }
-
-    foreach (var dokladPol in nevyhovujucePolozky.GroupBy(x => x.D_BiznisEntita_Id))
-    {
-        int pocet = dokladPol.Count(x => x.Typ == 1);
-        if (pocet > 0)
-        {
-
-            if (pocet == 1) chybneDoklady.Add((dokladPol.Key, $"Riadok {dokladPol.Where(x => x.Typ == 1 && x.D_BiznisEntita_Id == dokladPol.First().D_BiznisEntita_Id).Select(x => x.Poradie).Join(", ")} bol predkontovaný do rozpočtového denníka bez zaevidovania rozpočtovej položky a prípadného programu. "));
-            if (pocet > 1) chybneDoklady.Add((dokladPol.Key, $"Riadky {dokladPol.Where(x => x.Typ == 1 && x.D_BiznisEntita_Id == dokladPol.First().D_BiznisEntita_Id).Select(x => x.Poradie).Join(", ")} boli predkontované do rozpočtového denníka bez zaevidovania rozpočtovej položky a prípadného programu. "));
-        }
-
-        pocet = dokladPol.Count(x => x.Typ == 2);
-        if (pocet > 0)
-        {
-            if (pocet == 1) chybneDoklady.Add((dokladPol.Key, $"Riadok {dokladPol.Where(x => x.Typ == 2 && x.D_BiznisEntita_Id == dokladPol.First().D_BiznisEntita_Id).Select(x => x.Poradie).Join(", ")} bol viacnásobne predkontovaný do rozpočtového denníka, keďže viacero definícií vyhovuje účtovanému záznamu. "));
-            if (pocet > 1) chybneDoklady.Add((dokladPol.Key, $"Riadky {dokladPol.Where(x => x.Typ == 2 && x.D_BiznisEntita_Id == dokladPol.First().D_BiznisEntita_Id).Select(x => x.Poradie).Join(", ")} boli viacnásobne predkontované do rozpočtového denníka, keďže viacero definícií vyhovuje účtovanému záznamu. "));
-        }
-
-        pocet = dokladPol.Count(x => x.Typ == 3);
-        if (pocet > 0)
-        {
-            if (pocet == 1) chybneDoklady.Add((dokladPol.Key, $"Na riadku {dokladPol.Where(x => x.Typ == 3 && x.D_BiznisEntita_Id == dokladPol.First().D_BiznisEntita_Id).Select(x => x.Poradie).Join(", ")} bolo viacnásobne predkontované do rozpočtového denníka centové vyrovnanie, keďže viacero definícií vyhovuje účtovanému záznamu. "));
-            if (pocet > 1) chybneDoklady.Add((dokladPol.Key, $"Na riadkoch {dokladPol.Where(x => x.Typ == 3 && x.D_BiznisEntita_Id == dokladPol.First().D_BiznisEntita_Id).Select(x => x.Poradie).Join(", ")} boli viacnásobne predkontované do rozpočtového denníka centové vyrovnania, keďže viacero definícií vyhovuje účtovanému záznamu. "));
-        }
-    }
-}
-
-private static void CreateUctDennikFromParovanieUhrad(List<UctDennik> uctDennikList, List<UctRozvrh> ucty,
-                                                      List<PredkontaciaUctViewHelper> predkontacieUct,
-                                                      List<UctDennikViewHelper> uctDennikSdkFA,
-                                                      //List<UctDennikViewHelper> uctDennikDap,
-                                                      ref List<(long D_BiznisEntita_Id, int Typ, int Poradie)> nevyhovujucePolozky,
-                                                      BiznisEntitaView be, DokladBANPolViewHelper banPol,
-                                                      UhradaParovanieViewHelper uhrPar, int kniha, short tbe,
-                                                      int? strediskoId, int? bankaUcetId, int? pokladnicaId,
-                                                      long? projektId,
-                                                      long? osobaId, bool rozdiel)
-{
-    List<PredkontaciaUctViewHelper> predkontacieUctRow;
-    short rokBE = be.Rok;
-    short rokPredpis = uhrPar.Rok_Predpis;
-    decimal val = rozdiel ? uhrPar.DM_Rozdiel : uhrPar.DM_Cena;
-    decimal roz = uhrPar.DM_Rozdiel;
-
-    bool otoceneZnamienko;
-    bool zisk = false;
-
-    if (val == 0) return;
-
-    if (kniha != (short)TypBiznisEntity_KnihaEnum.Vydajove_pokladnicne_doklady)
-    {
-        if (uhrPar.C_Typ_Id == (int)TypEnum.UhradaDFA || uhrPar.C_Typ_Id == (int)TypEnum.UhradaDZF ||
-            uhrPar.C_Typ_Id == (int)TypEnum.DobropisDFA || uhrPar.C_Typ_Id == (int)TypEnum.ZalohyPoskytnute)
-        {
-            val *= (-1);
-            roz *= (-1);
-        }
-    }
-
-    //Vyfiltruj riadky predkontácie, ktoré vyhovujú a všetky vygeneruj
-    if (!rozdiel)
-    {
-        otoceneZnamienko = val != uhrPar.DM_Cena;
-        predkontacieUctRow = predkontacieUct.Where(x => x.Polozka && x.C_Predkontacia_Id == be.C_Predkontacia_Id && x.C_Typ_Id == uhrPar.C_Typ_Id &&
-            (x.C_BankaUcet_Id == null || tbe != (short)TypBiznisEntityEnum.BAN || x.C_BankaUcet_Id == bankaUcetId) &&
-            (x.C_Pokladnica_Id == null || tbe != (short)TypBiznisEntityEnum.PDK || x.C_Pokladnica_Id == pokladnicaId) &&
-            (x.C_Stredisko_Id == null || x.C_Stredisko_Id == (uhrPar?.C_Stredisko_Id ?? banPol?.C_Stredisko_Id ?? strediskoId)) &&
-            (x.C_Projekt_Id == null || x.C_Projekt_Id == (uhrPar?.C_Projekt_Id ?? banPol?.C_Projekt_Id ?? projektId)) &&
-            (x.C_Lokalita_Id == null || x.C_Lokalita_Id == be.C_Lokalita_Id) && //Beriem z BE
-            (x.C_Projekt_Id == null || x.C_Projekt_Id == (uhrPar.C_Projekt_Id ?? banPol?.C_Projekt_Id)) &&
-            (x.D_Osoba_Id == null || x.D_Osoba_Id == (uhrPar.D_Osoba_Id ?? osobaId)) &&
-            (x.C_OsobaTyp_Id == null || x.C_OsobaTyp_Id == uhrPar.C_OsobaTyp_Id) &&
-            (x.C_Druh_Id == null || x.C_Druh_Id == uhrPar.C_Druh_Id) &&
-            (x.C_Kod_Id == null || x.C_Kod_Id == uhrPar.C_Kod_Id) &&
-            (x.C_Odsek_Id == null || x.C_Odsek_Id == uhrPar.C_Odsek_Id) &&
-            (x.KS == null || x.KS == banPol?.KS) && //beriem z bankovej položky
-            (x.SS == null || x.SS == banPol?.SS) && //beriem z bankovej položky
-            (x.VS == null || x.VS == uhrPar.VS) &&
-            (string.IsNullOrEmpty(x.DapRok) || x.DapRok == "N" ||
-            (x.DapRok == "A" && rokBE == rokPredpis) ||
-            (x.DapRok == "M" && rokBE > rokPredpis) ||
-            x.DapRok == rokPredpis.ToString())
-        ).ToList();
-    }
-    else
-    {
-        val = Math.Abs(uhrPar.DM_Rozdiel);
-        //Zisti či sa jedná o (9  - Cent.vyr.preplatok) alebo nedoplatok (10 - Cent.vyr.nedoplatok)
-        zisk = kniha == (int)TypBiznisEntity_KnihaEnum.Vydajove_pokladnicne_doklady ? uhrPar.DM_Rozdiel > 0 : uhrPar.DM_Rozdiel < 0;
-        otoceneZnamienko = val != uhrPar.DM_Rozdiel;
-
-        int typ = zisk ? (int)TypEnum.CentVyrovnaniePreplatok : (int)TypEnum.CentVyrovnanieNedoplatok;
-
-        predkontacieUctRow = predkontacieUct.Where(x => !x.Polozka && x.C_Predkontacia_Id == be.C_Predkontacia_Id && x.C_Typ_Id == typ &&
-            (x.C_BankaUcet_Id == null || tbe != (short)TypBiznisEntityEnum.BAN || x.C_BankaUcet_Id == bankaUcetId) &&
-            (x.C_Pokladnica_Id == null || tbe != (short)TypBiznisEntityEnum.PDK || x.C_Pokladnica_Id == pokladnicaId) &&
-            (x.C_Stredisko_Id == null || tbe == (short)TypBiznisEntityEnum.BAN || x.C_Stredisko_Id == (uhrPar?.C_Stredisko_Id ?? banPol?.C_Stredisko_Id ?? strediskoId)) &&
-            (x.C_Lokalita_Id == null || x.C_Lokalita_Id == be.C_Lokalita_Id) && //Beriem z BE
-            (x.C_Projekt_Id == null || x.C_Projekt_Id == (uhrPar.C_Projekt_Id ?? banPol?.C_Projekt_Id ?? projektId)) &&
-            (x.D_Osoba_Id == null || x.D_Osoba_Id == (uhrPar.D_Osoba_Id ?? osobaId)) &&
-            (x.C_OsobaTyp_Id == null || x.C_OsobaTyp_Id == uhrPar.C_OsobaTyp_Id) &&
-            (x.C_Druh_Id == null || x.C_Druh_Id == uhrPar.C_Druh_Id) &&
-            (x.C_Kod_Id == null || x.C_Kod_Id == uhrPar.C_Kod_Id) &&
-            (x.C_Odsek_Id == null || x.C_Odsek_Id == uhrPar.C_Odsek_Id) &&
-            (x.KS == null || x.KS == banPol?.KS) && //beriem z bankovej položky
-            (x.SS == null || x.SS == banPol?.SS) && //beriem z bankovej položky
-            (x.VS == null || x.VS == uhrPar.VS) &&
-            (string.IsNullOrEmpty(x.DapRok) || x.DapRok == "N" ||
-            (x.DapRok == "A" && rokBE == rokPredpis) ||
-            (x.DapRok == "M" && rokBE > rokPredpis) ||
-            x.DapRok == rokPredpis.ToString())
-        ).ToList();
-    }
-
-    if (predkontacieUctRow.Count() > 0)
-    {
-        VyberPodlaPriorityUct(ref nevyhovujucePolozky, predkontacieUctRow, rozdiel ? 3 : 2, uhrPar.Poradie, be.D_BiznisEntita_Id);
-
-        foreach (PredkontaciaUctViewHelper def3 in predkontacieUctRow)
-        {
-            uctDennikList.Add(CreateUctDennikSingleRow(ucty, be, banPol, uhrPar, def3, tbe, kniha, strediskoId, projektId, osobaId, null, banPol?.DatumPohybu ?? be.DatumDokladu, val, banPol?.Poradie ?? uhrPar.Poradie, otoceneZnamienko, rozdiel, zisk, uctDennikSdkFA, true, ref nevyhovujucePolozky, null));
-            if (!rozdiel && roz != 0)
+            foreach (var dokladPol in nevyhovujucePolozky.GroupBy(x => x.D_BiznisEntita_Id))
             {
-                uctDennikList.Add(CreateUctDennikSingleRow(ucty, be, banPol, uhrPar, def3, tbe, kniha, strediskoId, projektId, osobaId, null, banPol?.DatumPohybu ?? be.DatumDokladu, roz, banPol?.Poradie ?? uhrPar.Poradie, otoceneZnamienko, rozdiel, zisk, uctDennikSdkFA, false, ref nevyhovujucePolozky, null));
+                int pocet = dokladPol.Count(x => x.Typ == 1);
+                if (pocet > 0)
+                {
+
+                    if (pocet == 1) chybneDoklady.Add((dokladPol.Key, $"Riadok {dokladPol.Where(x => x.Typ == 1 && x.D_BiznisEntita_Id == dokladPol.First().D_BiznisEntita_Id).Select(x => x.Poradie).Join(", ")} bol predkontovaný do rozpočtového denníka bez zaevidovania rozpočtovej položky a prípadného programu. "));
+                    if (pocet > 1) chybneDoklady.Add((dokladPol.Key, $"Riadky {dokladPol.Where(x => x.Typ == 1 && x.D_BiznisEntita_Id == dokladPol.First().D_BiznisEntita_Id).Select(x => x.Poradie).Join(", ")} boli predkontované do rozpočtového denníka bez zaevidovania rozpočtovej položky a prípadného programu. "));
+                }
+
+                pocet = dokladPol.Count(x => x.Typ == 2);
+                if (pocet > 0)
+                {
+                    if (pocet == 1) chybneDoklady.Add((dokladPol.Key, $"Riadok {dokladPol.Where(x => x.Typ == 2 && x.D_BiznisEntita_Id == dokladPol.First().D_BiznisEntita_Id).Select(x => x.Poradie).Join(", ")} bol viacnásobne predkontovaný do rozpočtového denníka, keďže viacero definícií vyhovuje účtovanému záznamu. "));
+                    if (pocet > 1) chybneDoklady.Add((dokladPol.Key, $"Riadky {dokladPol.Where(x => x.Typ == 2 && x.D_BiznisEntita_Id == dokladPol.First().D_BiznisEntita_Id).Select(x => x.Poradie).Join(", ")} boli viacnásobne predkontované do rozpočtového denníka, keďže viacero definícií vyhovuje účtovanému záznamu. "));
+                }
+
+                pocet = dokladPol.Count(x => x.Typ == 3);
+                if (pocet > 0)
+                {
+                    if (pocet == 1) chybneDoklady.Add((dokladPol.Key, $"Na riadku {dokladPol.Where(x => x.Typ == 3 && x.D_BiznisEntita_Id == dokladPol.First().D_BiznisEntita_Id).Select(x => x.Poradie).Join(", ")} bolo viacnásobne predkontované do rozpočtového denníka centové vyrovnanie, keďže viacero definícií vyhovuje účtovanému záznamu. "));
+                    if (pocet > 1) chybneDoklady.Add((dokladPol.Key, $"Na riadkoch {dokladPol.Where(x => x.Typ == 3 && x.D_BiznisEntita_Id == dokladPol.First().D_BiznisEntita_Id).Select(x => x.Poradie).Join(", ")} boli viacnásobne predkontované do rozpočtového denníka centové vyrovnania, keďže viacero definícií vyhovuje účtovanému záznamu. "));
+                }
             }
         }
-    }
-    else
-    {
-        //Pridám riadok ale bez vyplneného účtu
-        uctDennikList.Add(CreateUctDennikSingleRow(ucty, be, banPol, uhrPar, null, tbe, kniha, strediskoId, projektId, osobaId, null, banPol?.DatumPohybu ?? be.DatumDokladu, val, banPol?.Poradie ?? uhrPar.Poradie, otoceneZnamienko, rozdiel, zisk, uctDennikSdkFA, true, ref nevyhovujucePolozky, null));
-        if (!rozdiel && roz != 0)
+
+        private static void CreateUctDennikFromParovanieUhrad(List<UctDennik> uctDennikList, List<UctRozvrh> ucty,
+                                                              List<PredkontaciaUctViewHelper> predkontacieUct,
+                                                              List<UctDennikViewHelper> uctDennikSdkFA,
+                                                              //List<UctDennikViewHelper> uctDennikDap,
+                                                              ref List<(long D_BiznisEntita_Id, int Typ, int Poradie)> nevyhovujucePolozky,
+                                                              BiznisEntitaView be, DokladBANPolViewHelper banPol,
+                                                              UhradaParovanieViewHelper uhrPar, int kniha, short tbe,
+                                                              int? strediskoId, int? bankaUcetId, int? pokladnicaId,
+                                                              long? projektId,
+                                                              long? osobaId, bool rozdiel)
         {
-            uctDennikList.Add(CreateUctDennikSingleRow(ucty, be, banPol, uhrPar, null, tbe, kniha, strediskoId, projektId, osobaId, null, banPol?.DatumPohybu ?? be.DatumDokladu, roz, banPol?.Poradie ?? uhrPar.Poradie, otoceneZnamienko, rozdiel, zisk, uctDennikSdkFA, false, ref nevyhovujucePolozky, null));
-        }
-    }
-}
+            List<PredkontaciaUctViewHelper> predkontacieUctRow;
+            short rokBE = be.Rok;
+            short rokPredpis = uhrPar.Rok_Predpis;
+            decimal val = rozdiel ? uhrPar.DM_Rozdiel : uhrPar.DM_Cena;
+            decimal roz = uhrPar.DM_Rozdiel;
 
-private static void VyberPodlaPriorityUct(ref List<(long D_BiznisEntita_Id, int Typ, int Poradie)> nevyhovujucePolozky, List<PredkontaciaUctViewHelper> predkontSource, int typ, int poradie, long D_BiznisEntita_Id)
-{
-    while (predkontSource.Count > 1)
-    {
-        if (predkontSource.Any(x => string.IsNullOrEmpty(x.DapRok) || x.DapRok == "N") && predkontSource.Any(x => !string.IsNullOrEmpty(x.DapRok) && x.DapRok != "N"))
-        {
-            predkontSource.RemoveAll(x => string.IsNullOrEmpty(x.DapRok) || x.DapRok == "N");
-            continue;
-        }
+            bool otoceneZnamienko;
+            bool zisk = false;
 
-        if (predkontSource.Any(x => x.C_Druh_Id == null) && predkontSource.Any(x => x.C_Druh_Id != null))
-        {
-            predkontSource.RemoveAll(x => x.C_Druh_Id == null);
-            continue;
-        }
+            if (val == 0) return;
 
-        if (predkontSource.Any(x => x.C_Kod_Id == null) && predkontSource.Any(x => x.C_Kod_Id != null))
-        {
-            predkontSource.RemoveAll(x => x.C_Kod_Id == null);
-            continue;
-        }
+            if (kniha != (short)TypBiznisEntity_KnihaEnum.Vydajove_pokladnicne_doklady)
+            {
+                if (uhrPar.C_Typ_Id == (int)TypEnum.UhradaDFA || uhrPar.C_Typ_Id == (int)TypEnum.UhradaDZF ||
+                    uhrPar.C_Typ_Id == (int)TypEnum.DobropisDFA || uhrPar.C_Typ_Id == (int)TypEnum.ZalohyPoskytnute)
+                {
+                    val *= (-1);
+                    roz *= (-1);
+                }
+            }
 
-        if (predkontSource.Any(x => x.C_Odsek_Id == null) && predkontSource.Any(x => x.C_Odsek_Id != null))
-        {
-            predkontSource.RemoveAll(x => x.C_Odsek_Id == null);
-            continue;
-        }
-
-        if (predkontSource.Any(x => x.D_Osoba_Id == null) && predkontSource.Any(x => x.D_Osoba_Id != null))
-        {
-            predkontSource.RemoveAll(x => x.D_Osoba_Id == null);
-            continue;
-        }
-
-        if (predkontSource.Any(x => x.C_OsobaTyp_Id == null) && predkontSource.Any(x => x.C_OsobaTyp_Id != null))
-        {
-            predkontSource.RemoveAll(x => x.C_OsobaTyp_Id == null);
-            continue;
-        }
-
-        if (predkontSource.Any(x => x.VS == null) && predkontSource.Any(x => x.VS != null))
-        {
-            predkontSource.RemoveAll(x => x.VS == null);
-            continue;
-        }
-
-        if (predkontSource.Any(x => x.SS == null) && predkontSource.Any(x => x.SS != null))
-        {
-            predkontSource.RemoveAll(x => x.SS == null);
-            continue;
-        }
-
-        if (predkontSource.Any(x => x.KS == null) && predkontSource.Any(x => x.KS != null))
-        {
-            predkontSource.RemoveAll(x => x.KS == null);
-            continue;
-        }
-
-        if (predkontSource.Any(x => x.C_TypBiznisEntity_Kniha_Id == null) && predkontSource.Any(x => x.C_TypBiznisEntity_Kniha_Id != null))
-        {
-            predkontSource.RemoveAll(x => x.C_TypBiznisEntity_Kniha_Id == null);
-            continue;
-        }
-
-        if (predkontSource.Count() > 1)
-        {
-            nevyhovujucePolozky.AddIfNotExists((D_BiznisEntita_Id, typ, poradie));
-        }
-        break;
-    }
-}
-
-private static void CreateRzpDennikFromParovanieUhrad(List<RzpDennik> rzpDennikList, int kniha,
-                                                      List<PredkontaciaRzpViewHelper> predkontacieRzp,
-                                                      List<RzpPol> rzpPolozky,
-                                                      List<RzpDennikViewHelper> rzpDennikPredbezne,
-                                                      BiznisEntitaView be, int? strediskoId, long? projektId, long? osobaId,
-                                                      DokladBANPolViewHelper banPol,
-                                                      UhradaParovanieViewHelper uhrPar,
-                                                      ref List<(long D_BiznisEntita_Id, int Typ, int Poradie)> nevyhovujucePolozky)
-{
-    short rokBE = be.Rok;
-    short rokPredpis = uhrPar.Rok_Predpis;
-
-    //Vyfiltruj riadky predkontácie, ktoré vyhovujú a všetky vygeneruj
-    var predkontPolPar = predkontacieRzp.Where(x => x.Polozka && x.C_Predkontacia_Id == be.C_Predkontacia_Id && x.C_Typ_Id == uhrPar.C_Typ_Id &&
-                (x.C_Stredisko_Id == null || x.C_Stredisko_Id == (uhrPar?.C_Stredisko_Id ?? banPol?.C_Stredisko_Id ?? strediskoId)) &&
-                (x.C_Projekt_Id == null || x.C_Projekt_Id == (uhrPar.C_Projekt_Id ?? banPol?.C_Projekt_Id ?? projektId)) &&
-                (x.D_Osoba_Id == null || x.D_Osoba_Id == (uhrPar.D_Osoba_Id ?? osobaId)) &&
-                (x.C_OsobaTyp_Id == null || x.C_OsobaTyp_Id == uhrPar.C_OsobaTyp_Id) &&
-                (x.C_Druh_Id == null || x.C_Druh_Id == uhrPar.C_Druh_Id) &&
-                (x.C_Kod_Id == null || x.C_Kod_Id == uhrPar.C_Kod_Id) &&
-                (x.C_Odsek_Id == null || x.C_Odsek_Id == uhrPar.C_Odsek_Id) &&
-                (string.IsNullOrEmpty(x.DapRok) || x.DapRok == "N" ||
-                 (x.DapRok == "A" && rokBE == rokPredpis) ||
-                 (x.DapRok == "M" && rokBE > rokPredpis) ||
-                 x.DapRok == rokPredpis.ToString())
+            //Vyfiltruj riadky predkontácie, ktoré vyhovujú a všetky vygeneruj
+            if (!rozdiel)
+            {
+                otoceneZnamienko = val != uhrPar.DM_Cena;
+                predkontacieUctRow = predkontacieUct.Where(x => x.Polozka && x.C_Predkontacia_Id == be.C_Predkontacia_Id && x.C_Typ_Id == uhrPar.C_Typ_Id &&
+                    (x.C_BankaUcet_Id == null || tbe != (short)TypBiznisEntityEnum.BAN || x.C_BankaUcet_Id == bankaUcetId) &&
+                    (x.C_Pokladnica_Id == null || tbe != (short)TypBiznisEntityEnum.PDK || x.C_Pokladnica_Id == pokladnicaId) &&
+                    (x.C_Stredisko_Id == null || x.C_Stredisko_Id == (uhrPar?.C_Stredisko_Id ?? banPol?.C_Stredisko_Id ?? strediskoId)) &&
+                    (x.C_Projekt_Id == null || x.C_Projekt_Id == (uhrPar?.C_Projekt_Id ?? banPol?.C_Projekt_Id ?? projektId)) &&
+                    (x.C_Lokalita_Id == null || x.C_Lokalita_Id == be.C_Lokalita_Id) && //Beriem z BE
+                    (x.C_Projekt_Id == null || x.C_Projekt_Id == (uhrPar.C_Projekt_Id ?? banPol?.C_Projekt_Id)) &&
+                    (x.D_Osoba_Id == null || x.D_Osoba_Id == (uhrPar.D_Osoba_Id ?? osobaId)) &&
+                    (x.C_OsobaTyp_Id == null || x.C_OsobaTyp_Id == uhrPar.C_OsobaTyp_Id) &&
+                    (x.C_Druh_Id == null || x.C_Druh_Id == uhrPar.C_Druh_Id) &&
+                    (x.C_Kod_Id == null || x.C_Kod_Id == uhrPar.C_Kod_Id) &&
+                    (x.C_Odsek_Id == null || x.C_Odsek_Id == uhrPar.C_Odsek_Id) &&
+                    (x.KS == null || x.KS == banPol?.KS) && //beriem z bankovej položky
+                    (x.SS == null || x.SS == banPol?.SS) && //beriem z bankovej položky
+                    (x.VS == null || x.VS == uhrPar.VS) &&
+                    (string.IsNullOrEmpty(x.DapRok) || x.DapRok == "N" ||
+                    (x.DapRok == "A" && rokBE == rokPredpis) ||
+                    (x.DapRok == "M" && rokBE > rokPredpis) ||
+                    x.DapRok == rokPredpis.ToString())
                 ).ToList();
-
-    decimal val = uhrPar.DM_Cena + uhrPar.DM_Rozdiel;
-
-    if (kniha != (short)TypBiznisEntity_KnihaEnum.Vydajove_pokladnicne_doklady)
-    {
-        if (uhrPar.C_Typ_Id == (int)TypEnum.UhradaDFA || uhrPar.C_Typ_Id == (int)TypEnum.UhradaDZF ||
-            uhrPar.C_Typ_Id == (int)TypEnum.DobropisDFA || uhrPar.C_Typ_Id == (int)TypEnum.ZalohyPoskytnute)
-        {
-            val *= -1;
-        }
-    }
-
-    //Vyfiltruj riadky predbežného čerpania/plnenia
-    var predbezneCP = rzpDennikPredbezne.Where(x => x.D_BiznisEntita_Id == uhrPar.D_BiznisEntita_Id_Predpis);
-
-    if (predbezneCP.Any())
-    {
-        decimal rzpTotal = predbezneCP.Sum(x => x.Suma); //* (x.PrijemVydaj == 2 ? (-1) : 1)
-        if (rzpTotal == val)
-        {
-            //postačí iba 1:1 natiahnuť údaje bez zložitého rozgenerovania ako je potrebné pre čiastkové úhrady
-            foreach (RzpDennikViewHelper predbCPRow in predbezneCP)
+            }
+            else
             {
-                rzpDennikList.Add(CreateRzpDennikSingleRow(rzpPolozky, be, predbCPRow.C_Stredisko_Id ?? strediskoId, predbCPRow.C_Projekt_Id ?? projektId, banPol, uhrPar, null, predbCPRow, predbCPRow.Suma, banPol?.Poradie ?? uhrPar.Poradie));
+                val = Math.Abs(uhrPar.DM_Rozdiel);
+                //Zisti či sa jedná o (9  - Cent.vyr.preplatok) alebo nedoplatok (10 - Cent.vyr.nedoplatok)
+                zisk = kniha == (int)TypBiznisEntity_KnihaEnum.Vydajove_pokladnicne_doklady ? uhrPar.DM_Rozdiel > 0 : uhrPar.DM_Rozdiel < 0;
+                otoceneZnamienko = val != uhrPar.DM_Rozdiel;
+
+                int typ = zisk ? (int)TypEnum.CentVyrovnaniePreplatok : (int)TypEnum.CentVyrovnanieNedoplatok;
+
+                predkontacieUctRow = predkontacieUct.Where(x => !x.Polozka && x.C_Predkontacia_Id == be.C_Predkontacia_Id && x.C_Typ_Id == typ &&
+                    (x.C_BankaUcet_Id == null || tbe != (short)TypBiznisEntityEnum.BAN || x.C_BankaUcet_Id == bankaUcetId) &&
+                    (x.C_Pokladnica_Id == null || tbe != (short)TypBiznisEntityEnum.PDK || x.C_Pokladnica_Id == pokladnicaId) &&
+                    (x.C_Stredisko_Id == null || tbe == (short)TypBiznisEntityEnum.BAN || x.C_Stredisko_Id == (uhrPar?.C_Stredisko_Id ?? banPol?.C_Stredisko_Id ?? strediskoId)) &&
+                    (x.C_Lokalita_Id == null || x.C_Lokalita_Id == be.C_Lokalita_Id) && //Beriem z BE
+                    (x.C_Projekt_Id == null || x.C_Projekt_Id == (uhrPar.C_Projekt_Id ?? banPol?.C_Projekt_Id ?? projektId)) &&
+                    (x.D_Osoba_Id == null || x.D_Osoba_Id == (uhrPar.D_Osoba_Id ?? osobaId)) &&
+                    (x.C_OsobaTyp_Id == null || x.C_OsobaTyp_Id == uhrPar.C_OsobaTyp_Id) &&
+                    (x.C_Druh_Id == null || x.C_Druh_Id == uhrPar.C_Druh_Id) &&
+                    (x.C_Kod_Id == null || x.C_Kod_Id == uhrPar.C_Kod_Id) &&
+                    (x.C_Odsek_Id == null || x.C_Odsek_Id == uhrPar.C_Odsek_Id) &&
+                    (x.KS == null || x.KS == banPol?.KS) && //beriem z bankovej položky
+                    (x.SS == null || x.SS == banPol?.SS) && //beriem z bankovej položky
+                    (x.VS == null || x.VS == uhrPar.VS) &&
+                    (string.IsNullOrEmpty(x.DapRok) || x.DapRok == "N" ||
+                    (x.DapRok == "A" && rokBE == rokPredpis) ||
+                    (x.DapRok == "M" && rokBE > rokPredpis) ||
+                    x.DapRok == rokPredpis.ToString())
+                ).ToList();
+            }
+
+            if (predkontacieUctRow.Count() > 0)
+            {
+                VyberPodlaPriorityUct(ref nevyhovujucePolozky, predkontacieUctRow, rozdiel ? 3 : 2, uhrPar.Poradie, be.D_BiznisEntita_Id);
+
+                foreach (PredkontaciaUctViewHelper def3 in predkontacieUctRow)
+                {
+                    uctDennikList.Add(CreateUctDennikSingleRow(ucty, be, banPol, uhrPar, def3, tbe, kniha, strediskoId, projektId, osobaId, null, banPol?.DatumPohybu ?? be.DatumDokladu, val, banPol?.Poradie ?? uhrPar.Poradie, otoceneZnamienko, rozdiel, zisk, uctDennikSdkFA, true, ref nevyhovujucePolozky, null));
+                    if (!rozdiel && roz != 0)
+                    {
+                        uctDennikList.Add(CreateUctDennikSingleRow(ucty, be, banPol, uhrPar, def3, tbe, kniha, strediskoId, projektId, osobaId, null, banPol?.DatumPohybu ?? be.DatumDokladu, roz, banPol?.Poradie ?? uhrPar.Poradie, otoceneZnamienko, rozdiel, zisk, uctDennikSdkFA, false, ref nevyhovujucePolozky, null));
+                    }
+                }
+            }
+            else
+            {
+                //Pridám riadok ale bez vyplneného účtu
+                uctDennikList.Add(CreateUctDennikSingleRow(ucty, be, banPol, uhrPar, null, tbe, kniha, strediskoId, projektId, osobaId, null, banPol?.DatumPohybu ?? be.DatumDokladu, val, banPol?.Poradie ?? uhrPar.Poradie, otoceneZnamienko, rozdiel, zisk, uctDennikSdkFA, true, ref nevyhovujucePolozky, null));
+                if (!rozdiel && roz != 0)
+                {
+                    uctDennikList.Add(CreateUctDennikSingleRow(ucty, be, banPol, uhrPar, null, tbe, kniha, strediskoId, projektId, osobaId, null, banPol?.DatumPohybu ?? be.DatumDokladu, roz, banPol?.Poradie ?? uhrPar.Poradie, otoceneZnamienko, rozdiel, zisk, uctDennikSdkFA, false, ref nevyhovujucePolozky, null));
+                }
             }
         }
-        else
+
+        private static void VyberPodlaPriorityUct(ref List<(long D_BiznisEntita_Id, int Typ, int Poradie)> nevyhovujucePolozky, List<PredkontaciaUctViewHelper> predkontSource, int typ, int poradie, long D_BiznisEntita_Id)
         {
-            var rzpZvysok = val;
-            int count = 1;
-            foreach (RzpDennikViewHelper predbCPRow in predbezneCP)
+            while (predkontSource.Count > 1)
             {
-                decimal alikvotnaHodnota;
-                if (predbezneCP.Count() == count)
+                if (predkontSource.Any(x => string.IsNullOrEmpty(x.DapRok) || x.DapRok == "N") && predkontSource.Any(x => !string.IsNullOrEmpty(x.DapRok) && x.DapRok != "N"))
                 {
-                    alikvotnaHodnota = rzpZvysok;
+                    predkontSource.RemoveAll(x => string.IsNullOrEmpty(x.DapRok) || x.DapRok == "N");
+                    continue;
+                }
+
+                if (predkontSource.Any(x => x.C_Druh_Id == null) && predkontSource.Any(x => x.C_Druh_Id != null))
+                {
+                    predkontSource.RemoveAll(x => x.C_Druh_Id == null);
+                    continue;
+                }
+
+                if (predkontSource.Any(x => x.C_Kod_Id == null) && predkontSource.Any(x => x.C_Kod_Id != null))
+                {
+                    predkontSource.RemoveAll(x => x.C_Kod_Id == null);
+                    continue;
+                }
+
+                if (predkontSource.Any(x => x.C_Odsek_Id == null) && predkontSource.Any(x => x.C_Odsek_Id != null))
+                {
+                    predkontSource.RemoveAll(x => x.C_Odsek_Id == null);
+                    continue;
+                }
+
+                if (predkontSource.Any(x => x.D_Osoba_Id == null) && predkontSource.Any(x => x.D_Osoba_Id != null))
+                {
+                    predkontSource.RemoveAll(x => x.D_Osoba_Id == null);
+                    continue;
+                }
+
+                if (predkontSource.Any(x => x.C_OsobaTyp_Id == null) && predkontSource.Any(x => x.C_OsobaTyp_Id != null))
+                {
+                    predkontSource.RemoveAll(x => x.C_OsobaTyp_Id == null);
+                    continue;
+                }
+
+                if (predkontSource.Any(x => x.VS == null) && predkontSource.Any(x => x.VS != null))
+                {
+                    predkontSource.RemoveAll(x => x.VS == null);
+                    continue;
+                }
+
+                if (predkontSource.Any(x => x.SS == null) && predkontSource.Any(x => x.SS != null))
+                {
+                    predkontSource.RemoveAll(x => x.SS == null);
+                    continue;
+                }
+
+                if (predkontSource.Any(x => x.KS == null) && predkontSource.Any(x => x.KS != null))
+                {
+                    predkontSource.RemoveAll(x => x.KS == null);
+                    continue;
+                }
+
+                if (predkontSource.Any(x => x.C_TypBiznisEntity_Kniha_Id == null) && predkontSource.Any(x => x.C_TypBiznisEntity_Kniha_Id != null))
+                {
+                    predkontSource.RemoveAll(x => x.C_TypBiznisEntity_Kniha_Id == null);
+                    continue;
+                }
+
+                if (predkontSource.Count() > 1)
+                {
+                    nevyhovujucePolozky.AddIfNotExists((D_BiznisEntita_Id, typ, poradie));
+                }
+                break;
+            }
+        }
+
+        private static void CreateRzpDennikFromParovanieUhrad(List<RzpDennik> rzpDennikList, int kniha,
+                                                              List<PredkontaciaRzpViewHelper> predkontacieRzp,
+                                                              List<RzpPol> rzpPolozky,
+                                                              List<RzpDennikViewHelper> rzpDennikPredbezne,
+                                                              BiznisEntitaView be, int? strediskoId, long? projektId, long? osobaId,
+                                                              DokladBANPolViewHelper banPol,
+                                                              UhradaParovanieViewHelper uhrPar,
+                                                              ref List<(long D_BiznisEntita_Id, int Typ, int Poradie)> nevyhovujucePolozky)
+        {
+            short rokBE = be.Rok;
+            short rokPredpis = uhrPar.Rok_Predpis;
+
+            //Vyfiltruj riadky predkontácie, ktoré vyhovujú a všetky vygeneruj
+            var predkontPolPar = predkontacieRzp.Where(x => x.Polozka && x.C_Predkontacia_Id == be.C_Predkontacia_Id && x.C_Typ_Id == uhrPar.C_Typ_Id &&
+                        (x.C_Stredisko_Id == null || x.C_Stredisko_Id == (uhrPar?.C_Stredisko_Id ?? banPol?.C_Stredisko_Id ?? strediskoId)) &&
+                        (x.C_Projekt_Id == null || x.C_Projekt_Id == (uhrPar.C_Projekt_Id ?? banPol?.C_Projekt_Id ?? projektId)) &&
+                        (x.D_Osoba_Id == null || x.D_Osoba_Id == (uhrPar.D_Osoba_Id ?? osobaId)) &&
+                        (x.C_OsobaTyp_Id == null || x.C_OsobaTyp_Id == uhrPar.C_OsobaTyp_Id) &&
+                        (x.C_Druh_Id == null || x.C_Druh_Id == uhrPar.C_Druh_Id) &&
+                        (x.C_Kod_Id == null || x.C_Kod_Id == uhrPar.C_Kod_Id) &&
+                        (x.C_Odsek_Id == null || x.C_Odsek_Id == uhrPar.C_Odsek_Id) &&
+                        (string.IsNullOrEmpty(x.DapRok) || x.DapRok == "N" ||
+                         (x.DapRok == "A" && rokBE == rokPredpis) ||
+                         (x.DapRok == "M" && rokBE > rokPredpis) ||
+                         x.DapRok == rokPredpis.ToString())
+                        ).ToList();
+
+            decimal val = uhrPar.DM_Cena + uhrPar.DM_Rozdiel;
+
+            if (kniha != (short)TypBiznisEntity_KnihaEnum.Vydajove_pokladnicne_doklady)
+            {
+                if (uhrPar.C_Typ_Id == (int)TypEnum.UhradaDFA || uhrPar.C_Typ_Id == (int)TypEnum.UhradaDZF ||
+                    uhrPar.C_Typ_Id == (int)TypEnum.DobropisDFA || uhrPar.C_Typ_Id == (int)TypEnum.ZalohyPoskytnute)
+                {
+                    val *= -1;
+                }
+            }
+
+            //Vyfiltruj riadky predbežného čerpania/plnenia
+            var predbezneCP = rzpDennikPredbezne.Where(x => x.D_BiznisEntita_Id == uhrPar.D_BiznisEntita_Id_Predpis);
+
+            if (predbezneCP.Any())
+            {
+                decimal rzpTotal = predbezneCP.Sum(x => x.Suma); //* (x.PrijemVydaj == 2 ? (-1) : 1)
+                if (rzpTotal == val)
+                {
+                    //postačí iba 1:1 natiahnuť údaje bez zložitého rozgenerovania ako je potrebné pre čiastkové úhrady
+                    foreach (RzpDennikViewHelper predbCPRow in predbezneCP)
+                    {
+                        rzpDennikList.Add(CreateRzpDennikSingleRow(rzpPolozky, be, predbCPRow.C_Stredisko_Id ?? strediskoId, predbCPRow.C_Projekt_Id ?? projektId, banPol, uhrPar, null, predbCPRow, predbCPRow.Suma, banPol?.Poradie ?? uhrPar.Poradie));
+                    }
                 }
                 else
                 {
-                    count += 1;
-                    alikvotnaHodnota = Math.Round(val * predbCPRow.Suma / rzpTotal, 2, MidpointRounding.AwayFromZero);
-                    rzpZvysok = Math.Round(rzpZvysok - alikvotnaHodnota, 2, MidpointRounding.AwayFromZero);
-                    alikvotnaHodnota *= (val >= 0 && alikvotnaHodnota < 0) || (val < 0 && alikvotnaHodnota >= 0) ? -1 : 1;
+                    var rzpZvysok = val;
+                    int count = 1;
+                    foreach (RzpDennikViewHelper predbCPRow in predbezneCP)
+                    {
+                        decimal alikvotnaHodnota;
+                        if (predbezneCP.Count() == count)
+                        {
+                            alikvotnaHodnota = rzpZvysok;
+                        }
+                        else
+                        {
+                            count += 1;
+                            alikvotnaHodnota = Math.Round(val * predbCPRow.Suma / rzpTotal, 2, MidpointRounding.AwayFromZero);
+                            rzpZvysok = Math.Round(rzpZvysok - alikvotnaHodnota, 2, MidpointRounding.AwayFromZero);
+                            alikvotnaHodnota *= (val >= 0 && alikvotnaHodnota < 0) || (val < 0 && alikvotnaHodnota >= 0) ? -1 : 1;
+                        }
+                        rzpDennikList.Add(CreateRzpDennikSingleRow(rzpPolozky, be, predbCPRow.C_Stredisko_Id ?? strediskoId, predbCPRow.C_Projekt_Id ?? projektId, banPol, uhrPar, null, predbCPRow, alikvotnaHodnota, banPol?.Poradie ?? uhrPar.Poradie));
+                    }
                 }
-                rzpDennikList.Add(CreateRzpDennikSingleRow(rzpPolozky, be, predbCPRow.C_Stredisko_Id ?? strediskoId, predbCPRow.C_Projekt_Id ?? projektId, banPol, uhrPar, null, predbCPRow, alikvotnaHodnota, banPol?.Poradie ?? uhrPar.Poradie));
             }
-        }
-    }
-    else
-    {
-        if (predkontPolPar.Count() > 0)
-        {
-            VyberPodlaPriorityRzp(ref nevyhovujucePolozky, predkontPolPar, 2, uhrPar.Poradie, be.D_BiznisEntita_Id);
-
-            foreach (PredkontaciaRzpViewHelper def3 in predkontPolPar)
+            else
             {
-                rzpDennikList.Add(CreateRzpDennikSingleRow(rzpPolozky, be, strediskoId, projektId, banPol, uhrPar, def3, null, val, banPol?.Poradie ?? uhrPar.Poradie));
+                if (predkontPolPar.Count() > 0)
+                {
+                    VyberPodlaPriorityRzp(ref nevyhovujucePolozky, predkontPolPar, 2, uhrPar.Poradie, be.D_BiznisEntita_Id);
+
+                    foreach (PredkontaciaRzpViewHelper def3 in predkontPolPar)
+                    {
+                        rzpDennikList.Add(CreateRzpDennikSingleRow(rzpPolozky, be, strediskoId, projektId, banPol, uhrPar, def3, null, val, banPol?.Poradie ?? uhrPar.Poradie));
+                    }
+                }
+                else
+                {
+                    nevyhovujucePolozky.AddIfNotExists((be.D_BiznisEntita_Id, 1, uhrPar.Poradie));
+                    //Pridám riadok ale bez predkontácie
+                    rzpDennikList.Add(CreateRzpDennikSingleRow(rzpPolozky, be, strediskoId, projektId, banPol, uhrPar, null, null, val, banPol?.Poradie ?? uhrPar.Poradie));
+                }
             }
         }
-        else
-        {
-            nevyhovujucePolozky.AddIfNotExists((be.D_BiznisEntita_Id, 1, uhrPar.Poradie));
-            //Pridám riadok ale bez predkontácie
-            rzpDennikList.Add(CreateRzpDennikSingleRow(rzpPolozky, be, strediskoId, projektId, banPol, uhrPar, null, null, val, banPol?.Poradie ?? uhrPar.Poradie));
-        }
-    }
-}
 
-private static void VyberPodlaPriorityRzp(ref List<(long D_BiznisEntita_Id, int Typ, int Poradie)> nevyhovujucePolozky, List<PredkontaciaRzpViewHelper> predkontSource, int typ, int poradie, long D_BiznisEntita_Id)
-{
-    while (predkontSource.Count > 1)
-    {
-        if (predkontSource.Any(x => string.IsNullOrEmpty(x.DapRok) || x.DapRok == "N") && predkontSource.Any(x => !string.IsNullOrEmpty(x.DapRok) && x.DapRok != "N"))
+        private static void VyberPodlaPriorityRzp(ref List<(long D_BiznisEntita_Id, int Typ, int Poradie)> nevyhovujucePolozky, List<PredkontaciaRzpViewHelper> predkontSource, int typ, int poradie, long D_BiznisEntita_Id)
         {
-            predkontSource.RemoveAll(x => string.IsNullOrEmpty(x.DapRok) || x.DapRok == "N");
-            continue;
-        }
-
-        if (predkontSource.Any(x => x.C_Druh_Id == null) && predkontSource.Any(x => x.C_Druh_Id != null))
-        {
-            predkontSource.RemoveAll(x => x.C_Druh_Id == null);
-            continue;
-        }
-
-        if (predkontSource.Any(x => x.C_Kod_Id == null) && predkontSource.Any(x => x.C_Kod_Id != null))
-        {
-            predkontSource.RemoveAll(x => x.C_Kod_Id == null);
-            continue;
-        }
-
-        if (predkontSource.Any(x => x.C_Odsek_Id == null) && predkontSource.Any(x => x.C_Odsek_Id != null))
-        {
-            predkontSource.RemoveAll(x => x.C_Odsek_Id == null);
-            continue;
-        }
-
-        if (predkontSource.Any(x => x.D_Osoba_Id == null) && predkontSource.Any(x => x.D_Osoba_Id != null))
-        {
-            predkontSource.RemoveAll(x => x.D_Osoba_Id == null);
-            continue;
-        }
-
-        if (predkontSource.Any(x => x.C_OsobaTyp_Id == null) && predkontSource.Any(x => x.C_OsobaTyp_Id != null))
-        {
-            predkontSource.RemoveAll(x => x.C_OsobaTyp_Id == null);
-            continue;
-        }
-
-        if (predkontSource.Any(x => x.C_TypBiznisEntity_Kniha_Id == null) && predkontSource.Any(x => x.C_TypBiznisEntity_Kniha_Id != null))
-        {
-            predkontSource.RemoveAll(x => x.C_TypBiznisEntity_Kniha_Id == null);
-            continue;
-        }
-
-        if (predkontSource.Count() > 1)
-        {
-            nevyhovujucePolozky.AddIfNotExists((D_BiznisEntita_Id, typ, poradie));
-        }
-
-        break;
-    }
-}
-
-private static UctDennik CreateUctDennikSingleRow(List<UctRozvrh> ucty,
-                                                  BiznisEntitaView be,
-                                                  DokladBANPolViewHelper banPol,
-                                                  UhradaParovanieViewHelper uhrPar,
-                                                  PredkontaciaUctViewHelper predkontRow,
-                                                  short tbe,
-                                                  int kniha,
-                                                  int? strediskoId,
-                                                  long? projektId,
-                                                  long? osobaId,
-                                                  string vs,
-                                                  DateTime? splat,
-                                                  decimal val,
-                                                  int poradie,
-                                                  bool otoceneZnamienko,
-                                                  bool rozdiel,
-                                                  bool rozdielIsZisk,
-                                                  List<UctDennikViewHelper> uctDennikSdkFA,
-                                                  //List<UctDennikViewHelper> uctDennikDap,
-                                                  bool pridajNevyhovujuce,
-                                                  ref List<(long D_BiznisEntita_Id, int Typ, int Poradie)> nevyhovujucePolozky, string explicitPopis)
-{
-    bool md = true;
-    bool hladajSdkUcet = (uhrPar?.C_Typ_Id == (int)TypEnum.UhradaOFA || uhrPar?.C_Typ_Id == (int)TypEnum.UhradaDFA ||
-                          uhrPar?.C_Typ_Id == (int)TypEnum.DobropisOFA || uhrPar?.C_Typ_Id == (int)TypEnum.DobropisDFA) && !rozdiel;
-    bool SdkUcetNajdeny = false;
-
-    if (predkontRow == null || (predkontRow.C_UctRozvrh_Id_MD == null && predkontRow.C_UctRozvrh_Id_Dal == null)) //navrhni stranu
-    {
-        if ((TypBiznisEntity_KnihaEnum)kniha == TypBiznisEntity_KnihaEnum.Prijmove_pokladnicne_doklady)
-        {
-            md = uhrPar.C_Typ_Id == (int)TypEnum.UhradaDFA || uhrPar.C_Typ_Id == (int)TypEnum.UhradaDZF ||
-                 uhrPar.C_Typ_Id == (int)TypEnum.DobropisDFA || uhrPar.C_Typ_Id == (int)TypEnum.ZalohyPoskytnute;
-        }
-        else if ((TypBiznisEntity_KnihaEnum)kniha == TypBiznisEntity_KnihaEnum.Vydajove_pokladnicne_doklady)
-        {
-            md = uhrPar.C_Typ_Id != (int)TypEnum.UhradaOFA && uhrPar.C_Typ_Id != (int)TypEnum.UhradaOZF &&
-                 uhrPar.C_Typ_Id != (int)TypEnum.DobropisOFA || uhrPar.C_Typ_Id == (int)TypEnum.ZalohyPrijate;
-        }
-        else if ((TypBiznisEntityEnum)tbe == TypBiznisEntityEnum.OFA)
-        {
-            md = predkontRow.C_Typ_Id == (int)TypEnum.SumaDokladu || predkontRow.C_Typ_Id == (int)TypEnum.ZalohaVSZalohy;
-        }
-        else if ((TypBiznisEntityEnum)tbe == TypBiznisEntityEnum.DFA)
-        {
-            md = predkontRow.C_Typ_Id != (int)TypEnum.SumaDokladu && predkontRow.C_Typ_Id != (int)TypEnum.ZalohaVSZalohy;
-        }
-        else if ((TypBiznisEntityEnum)tbe == TypBiznisEntityEnum.IND ||
-                 (TypBiznisEntityEnum)tbe == TypBiznisEntityEnum.BAN)
-        {
-            md = otoceneZnamienko;
-        }
-        else
-        {
-            md = true;
-        }
-
-        if (rozdiel)
-        {
-            md = !rozdielIsZisk;
-        }
-    }
-    else
-    {
-        md = (predkontRow.C_UctRozvrh_Id_MD != null);
-        //!rozdiel <alebo> predkontRow.C_Typ_Id != (int)TypEnum.CentVyrovnaniePreplatok && predkontRow.C_Typ_Id != (int)TypEnum.CentVyrovnanieNedoplatok
-        if (banPol != null && !rozdiel)
-        {
-            //Debetné položky BAN sa účtujú na MD kladnou hodnotou; na DAL zápornou hodnotou
-            //Kreditné položky BAN sa účtujú na MD zápornou hodnotou; na DAL kladnou hodnotou
-            if (md && !otoceneZnamienko || !md && otoceneZnamienko)
+            while (predkontSource.Count > 1)
             {
-                otoceneZnamienko = !otoceneZnamienko;
-                val *= (-1);
+                if (predkontSource.Any(x => string.IsNullOrEmpty(x.DapRok) || x.DapRok == "N") && predkontSource.Any(x => !string.IsNullOrEmpty(x.DapRok) && x.DapRok != "N"))
+                {
+                    predkontSource.RemoveAll(x => string.IsNullOrEmpty(x.DapRok) || x.DapRok == "N");
+                    continue;
+                }
+
+                if (predkontSource.Any(x => x.C_Druh_Id == null) && predkontSource.Any(x => x.C_Druh_Id != null))
+                {
+                    predkontSource.RemoveAll(x => x.C_Druh_Id == null);
+                    continue;
+                }
+
+                if (predkontSource.Any(x => x.C_Kod_Id == null) && predkontSource.Any(x => x.C_Kod_Id != null))
+                {
+                    predkontSource.RemoveAll(x => x.C_Kod_Id == null);
+                    continue;
+                }
+
+                if (predkontSource.Any(x => x.C_Odsek_Id == null) && predkontSource.Any(x => x.C_Odsek_Id != null))
+                {
+                    predkontSource.RemoveAll(x => x.C_Odsek_Id == null);
+                    continue;
+                }
+
+                if (predkontSource.Any(x => x.D_Osoba_Id == null) && predkontSource.Any(x => x.D_Osoba_Id != null))
+                {
+                    predkontSource.RemoveAll(x => x.D_Osoba_Id == null);
+                    continue;
+                }
+
+                if (predkontSource.Any(x => x.C_OsobaTyp_Id == null) && predkontSource.Any(x => x.C_OsobaTyp_Id != null))
+                {
+                    predkontSource.RemoveAll(x => x.C_OsobaTyp_Id == null);
+                    continue;
+                }
+
+                if (predkontSource.Any(x => x.C_TypBiznisEntity_Kniha_Id == null) && predkontSource.Any(x => x.C_TypBiznisEntity_Kniha_Id != null))
+                {
+                    predkontSource.RemoveAll(x => x.C_TypBiznisEntity_Kniha_Id == null);
+                    continue;
+                }
+
+                if (predkontSource.Count() > 1)
+                {
+                    nevyhovujucePolozky.AddIfNotExists((D_BiznisEntita_Id, typ, poradie));
+                }
+
+                break;
             }
         }
-    }
 
-    UctRozvrh ucet = null;
-
-    //Nepodporujeme zápis na obe strany
-    if (ucty != null && predkontRow != null && (predkontRow.C_UctRozvrh_Id_MD != null || predkontRow.C_UctRozvrh_Id_Dal != null))
-    {
-        ucet = ucty.Where(x => x.C_UctRozvrh_Id == ((md) ? predkontRow.C_UctRozvrh_Id_MD : predkontRow.C_UctRozvrh_Id_Dal)).First();
-    }
-
-    UctDennikViewHelper uctDennikSdkFARow = null;
-    if (hladajSdkUcet && uctDennikSdkFA != null && uctDennikSdkFA.Any())
-    {
-        //Hľadám SDK účet na opačnej strane a s rovnakým SÚ. Resp. ak účet v predkontácii nie je, tak akýkoľvek
-        uctDennikSdkFARow = uctDennikSdkFA.Where(x => x.D_BiznisEntita_Id == uhrPar.D_BiznisEntita_Id_Predpis &&
-                                                     (x.SU == ucet?.SU || ucet == null) &&
-                                                     (md ? x.SumaDal : x.SumaMD) != 0
-                                                ).FirstOrDefault();
-
-        if (uctDennikSdkFARow == null && ucet != null)
+        private static UctDennik CreateUctDennikSingleRow(List<UctRozvrh> ucty,
+                                                          BiznisEntitaView be,
+                                                          DokladBANPolViewHelper banPol,
+                                                          UhradaParovanieViewHelper uhrPar,
+                                                          PredkontaciaUctViewHelper predkontRow,
+                                                          short tbe,
+                                                          int kniha,
+                                                          int? strediskoId,
+                                                          long? projektId,
+                                                          long? osobaId,
+                                                          string vs,
+                                                          DateTime? splat,
+                                                          decimal val,
+                                                          int poradie,
+                                                          bool otoceneZnamienko,
+                                                          bool rozdiel,
+                                                          bool rozdielIsZisk,
+                                                          List<UctDennikViewHelper> uctDennikSdkFA,
+                                                          //List<UctDennikViewHelper> uctDennikDap,
+                                                          bool pridajNevyhovujuce,
+                                                          ref List<(long D_BiznisEntita_Id, int Typ, int Poradie)> nevyhovujucePolozky, string explicitPopis)
         {
-            //Nenašla sa presne tá istá SU, zoberiem hocijaku
-            uctDennikSdkFARow = uctDennikSdkFA.Where(x => x.D_BiznisEntita_Id == uhrPar.D_BiznisEntita_Id_Predpis &&
-                                                         (md ? x.SumaDal : x.SumaMD) != 0
-                                                    ).FirstOrDefault();
+            bool md = true;
+            bool hladajSdkUcet = (uhrPar?.C_Typ_Id == (int)TypEnum.UhradaOFA || uhrPar?.C_Typ_Id == (int)TypEnum.UhradaDFA ||
+                                  uhrPar?.C_Typ_Id == (int)TypEnum.DobropisOFA || uhrPar?.C_Typ_Id == (int)TypEnum.DobropisDFA) && !rozdiel;
+            bool SdkUcetNajdeny = false;
+
+            if (predkontRow == null || (predkontRow.C_UctRozvrh_Id_MD == null && predkontRow.C_UctRozvrh_Id_Dal == null)) //navrhni stranu
+            {
+                if ((TypBiznisEntity_KnihaEnum)kniha == TypBiznisEntity_KnihaEnum.Prijmove_pokladnicne_doklady)
+                {
+                    md = uhrPar.C_Typ_Id == (int)TypEnum.UhradaDFA || uhrPar.C_Typ_Id == (int)TypEnum.UhradaDZF ||
+                         uhrPar.C_Typ_Id == (int)TypEnum.DobropisDFA || uhrPar.C_Typ_Id == (int)TypEnum.ZalohyPoskytnute;
+                }
+                else if ((TypBiznisEntity_KnihaEnum)kniha == TypBiznisEntity_KnihaEnum.Vydajove_pokladnicne_doklady)
+                {
+                    md = uhrPar.C_Typ_Id != (int)TypEnum.UhradaOFA && uhrPar.C_Typ_Id != (int)TypEnum.UhradaOZF &&
+                         uhrPar.C_Typ_Id != (int)TypEnum.DobropisOFA || uhrPar.C_Typ_Id == (int)TypEnum.ZalohyPrijate;
+                }
+                else if ((TypBiznisEntityEnum)tbe == TypBiznisEntityEnum.OFA)
+                {
+                    md = predkontRow.C_Typ_Id == (int)TypEnum.SumaDokladu || predkontRow.C_Typ_Id == (int)TypEnum.ZalohaVSZalohy;
+                }
+                else if ((TypBiznisEntityEnum)tbe == TypBiznisEntityEnum.DFA)
+                {
+                    md = predkontRow.C_Typ_Id != (int)TypEnum.SumaDokladu && predkontRow.C_Typ_Id != (int)TypEnum.ZalohaVSZalohy;
+                }
+                else if ((TypBiznisEntityEnum)tbe == TypBiznisEntityEnum.IND ||
+                         (TypBiznisEntityEnum)tbe == TypBiznisEntityEnum.BAN)
+                {
+                    md = otoceneZnamienko;
+                }
+                else
+                {
+                    md = true;
+                }
+
+                if (rozdiel)
+                {
+                    md = !rozdielIsZisk;
+                }
+            }
+            else
+            {
+                md = (predkontRow.C_UctRozvrh_Id_MD != null);
+                //!rozdiel <alebo> predkontRow.C_Typ_Id != (int)TypEnum.CentVyrovnaniePreplatok && predkontRow.C_Typ_Id != (int)TypEnum.CentVyrovnanieNedoplatok
+                if (banPol != null && !rozdiel)
+                {
+                    //Debetné položky BAN sa účtujú na MD kladnou hodnotou; na DAL zápornou hodnotou
+                    //Kreditné položky BAN sa účtujú na MD zápornou hodnotou; na DAL kladnou hodnotou
+                    if (md && !otoceneZnamienko || !md && otoceneZnamienko)
+                    {
+                        otoceneZnamienko = !otoceneZnamienko;
+                        val *= (-1);
+                    }
+                }
+            }
+
+            UctRozvrh ucet = null;
+
+            //Nepodporujeme zápis na obe strany
+            if (ucty != null && predkontRow != null && (predkontRow.C_UctRozvrh_Id_MD != null || predkontRow.C_UctRozvrh_Id_Dal != null))
+            {
+                ucet = ucty.Where(x => x.C_UctRozvrh_Id == ((md) ? predkontRow.C_UctRozvrh_Id_MD : predkontRow.C_UctRozvrh_Id_Dal)).First();
+            }
+
+            UctDennikViewHelper uctDennikSdkFARow = null;
+            if (hladajSdkUcet && uctDennikSdkFA != null && uctDennikSdkFA.Any())
+            {
+                //Hľadám SDK účet na opačnej strane a s rovnakým SÚ. Resp. ak účet v predkontácii nie je, tak akýkoľvek
+                uctDennikSdkFARow = uctDennikSdkFA.Where(x => x.D_BiznisEntita_Id == uhrPar.D_BiznisEntita_Id_Predpis &&
+                                                             (x.SU == ucet?.SU || ucet == null) &&
+                                                             (md ? x.SumaDal : x.SumaMD) != 0
+                                                        ).FirstOrDefault();
+
+                if (uctDennikSdkFARow == null && ucet != null)
+                {
+                    //Nenašla sa presne tá istá SU, zoberiem hocijaku
+                    uctDennikSdkFARow = uctDennikSdkFA.Where(x => x.D_BiznisEntita_Id == uhrPar.D_BiznisEntita_Id_Predpis &&
+                                                                 (md ? x.SumaDal : x.SumaMD) != 0
+                                                            ).FirstOrDefault();
+                }
+
+                if (uctDennikSdkFARow == null)
+                {
+                    //Ak ide o PS doklad, tak idem hľadať cez VS, OBP, Suma a SDK účet
+                    uctDennikSdkFARow = uctDennikSdkFA.Where(x => x.VS == uhrPar.VS && x.D_Osoba_Id == uhrPar.D_Osoba_Id && Math.Abs(x.SumaDal + x.SumaMD) == Math.Abs(uhrPar.DM_Cena + uhrPar.DM_Rozdiel) &&
+                                                                 (x.SU == ucet?.SU || ucet == null) &&
+                                                                 (md ? x.SumaDal : x.SumaMD) != 0
+                                                            ).FirstOrDefault();
+                }
+
+                if (uctDennikSdkFARow == null && ucet != null)
+                {
+                    //Nenašla sa presne tá istá SU, zoberiem hocijaku
+                    uctDennikSdkFARow = uctDennikSdkFA.Where(x => x.VS == uhrPar.VS && x.D_Osoba_Id == uhrPar.D_Osoba_Id && Math.Abs(x.SumaDal + x.SumaMD) == Math.Abs(uhrPar.DM_Cena + uhrPar.DM_Rozdiel) &&
+                                                                 (md ? x.SumaDal : x.SumaMD) != 0
+                                                            ).FirstOrDefault();
+                }
+
+
+                if (uctDennikSdkFARow != null)
+                {
+                    //NAŠIEL SOM - zmením účet na ten z FA
+                    ucet = ucty.Where(x => x.C_UctRozvrh_Id == uctDennikSdkFARow.C_UctRozvrh_Id).First();
+                    SdkUcetNajdeny = true;
+                }
+            }
+
+            //UctDennikViewHelper uctDennikDapRow = null;
+            //if (uctDennikDap != null && uctDennikDap.Any())
+            //{
+            //    //Hľadám SDK účet na opačnej strane a s rovnakým SÚ. Resp. ak účet v predkontácii nie je, tak akýkoľvek
+            //    uctDennikDapRow = uctDennikDap.Where(x => x.D_VymerPol_Id == uhrPar.D_VymerPol_Id &&
+            //                                                 (x.SU == ucet?.SU || ucet == null) &&
+            //                                                 (md ? x.SumaDal : x.SumaMD) != 0
+            //                                            ).FirstOrDefault();
+
+            //    if (uctDennikDapRow == null && ucet != null)
+            //    {
+            //        //Nenašla sa presne tá istá SU, zoberiem hocijaku
+            //        uctDennikDapRow = uctDennikDap.Where(x => x.D_VymerPol_Id == uhrPar.D_VymerPol_Id &&
+            //                                                     (md ? x.SumaDal : x.SumaMD) != 0
+            //                                                ).FirstOrDefault();
+            //    }
+
+            //    if (uctDennikDapRow != null)
+            //    {
+            //        //NAŠIEL SOM - zmením účet na ten z ID-DaP
+            //        ucet = ucty.Where(x => x.C_UctRozvrh_Id == uctDennikDapRow.C_UctRozvrh_Id).First();
+            //    }
+            //}
+
+            if (predkontRow != null)
+            {
+                val = Math.Round((decimal)(val * predkontRow.Percento / 100), 2, MidpointRounding.AwayFromZero);
+            }
+
+            if (hladajSdkUcet && SdkUcetNajdeny)
+            {
+                //Je to v poriadku
+                //Nie je dôležité či som mal predkontačný riadok. Ak som aj nemal a účet sa potiahne z FA - nevypisuj chybu lebo je to OK
+            }
+            else if (hladajSdkUcet && !SdkUcetNajdeny)
+            {
+                //Ide o úhradový riadok a nenašiel som SDK účet - treba to oznámiť, aj keď možno v predkontácii úhrady nejaký je
+                nevyhovujucePolozky.AddIfNotExists((be.D_BiznisEntita_Id, 5, uhrPar.Poradie));
+            }
+            else if (pridajNevyhovujuce && ucet == null)
+            {
+                nevyhovujucePolozky.AddIfNotExists((be.D_BiznisEntita_Id, rozdiel ? 4 : 1, uhrPar?.Poradie ?? banPol?.Poradie ?? 0)); //Iba WARNING - záznam bude vygenerovaný ale bez uctu
+            }
+
+            return new UctDennik()
+            {
+                D_BiznisEntita_Id = be.D_BiznisEntita_Id,
+                Rok = be.Rok,
+                C_UctRozvrh_Id = ucet?.C_UctRozvrh_Id,
+                SumaMD = (md) ? val : 0,
+                SumaDal = (!md) ? val : 0,
+                C_Stredisko_Id = (ucet?.VyzadovatStredisko ?? true) ? (uctDennikSdkFARow?.C_Stredisko_Id ?? uhrPar?.C_Stredisko_Id ?? banPol?.C_Stredisko_Id ?? strediskoId) : null,
+                C_Projekt_Id = (ucet?.VyzadovatProjekt ?? true) ? (uctDennikSdkFARow?.C_Projekt_Id ?? uhrPar?.C_Projekt_Id ?? banPol?.C_Projekt_Id ?? projektId) : null,
+                D_Osoba_Id = (ucet?.SDK == "P" || ucet?.SDK == "Z") || ucet == null ? (uhrPar?.D_Osoba_Id ?? osobaId) : null,
+                VS = (ucet?.SDK == "P" || ucet?.SDK == "Z") || ucet == null ? (uhrPar?.VS ?? banPol?.VS ?? vs) : null, //VS úhrady, VS položky BAN, VS z hlavičky dokladu
+                DatumSplatnosti = (ucet?.SDK == "P" && md || ucet?.SDK == "Z" && !md) || ucet == null ? splat : null, //Ak sa to náhodou stane, tak dám "Dátum dokladu"
+                Poradie = poradie,
+                DatumUctovania = be.DatumDokladu,
+
+                C_UctKluc_Id1 = (ucet?.VyzadovatUctKluc1 ?? true) ? (uctDennikSdkFARow?.C_UctKluc_Id1 ?? uhrPar?.C_UctKluc_Id1 ?? banPol?.C_UctKluc_Id1) : null,
+                C_UctKluc_Id2 = (ucet?.VyzadovatUctKluc2 ?? true) ? (uctDennikSdkFARow?.C_UctKluc_Id2 ?? uhrPar?.C_UctKluc_Id2 ?? banPol?.C_UctKluc_Id2) : null,
+                C_UctKluc_Id3 = (ucet?.VyzadovatUctKluc3 ?? true) ? (uctDennikSdkFARow?.C_UctKluc_Id3 ?? uhrPar?.C_UctKluc_Id3 ?? banPol?.C_UctKluc_Id3) : null,
+                Popis = explicitPopis ?? uhrPar?.Popis ?? banPol?.Popis ?? predkontRow?.Nazov ?? be.Popis,
+                D_DokladBANPol_Id = uhrPar?.D_DokladBANPol_Id ?? banPol?.D_DokladBANPol_Id,
+                D_UhradaParovanie_Id = uhrPar?.D_UhradaParovanie_Id
+            };
         }
 
-        if (uctDennikSdkFARow == null)
+        private static RzpDennik CreateRzpDennikSingleRow(List<RzpPol> rzpPolozky, BiznisEntitaView be, int? strediskoId, long? projektId,
+            DokladBANPolViewHelper banPol, UhradaParovanieViewHelper uhrPar, PredkontaciaRzpViewHelper predkontRow, RzpDennikViewHelper predbezneCPRow, decimal val, int poradie)
         {
-            //Ak ide o PS doklad, tak idem hľadať cez VS, OBP, Suma a SDK účet
-            uctDennikSdkFARow = uctDennikSdkFA.Where(x => x.VS == uhrPar.VS && x.D_Osoba_Id == uhrPar.D_Osoba_Id && Math.Abs(x.SumaDal + x.SumaMD) == Math.Abs(uhrPar.DM_Cena + uhrPar.DM_Rozdiel) &&
-                                                         (x.SU == ucet?.SU || ucet == null) &&
-                                                         (md ? x.SumaDal : x.SumaMD) != 0
-                                                    ).FirstOrDefault();
+            var pol = rzpPolozky.Where(x => x.C_RzpPol_Id == (predkontRow?.C_RzpPol_Id ?? predbezneCPRow?.C_RzpPol_Id)).FirstOrDefault();
+
+            if (predkontRow != null && predbezneCPRow == null)
+            {
+                val = Math.Round((decimal)(val * predkontRow.Percento / 100), 2, MidpointRounding.AwayFromZero);
+            }
+
+            if (banPol != null && predkontRow != null && uhrPar == null)
+            {
+                if (banPol.Suma < 0 && predkontRow.PrijemVydaj == 1 ||   //Debetná položka výpisu na príjmovú rzp. položku
+                    banPol.Suma > 0 && predkontRow.PrijemVydaj == 2)     //Kreditná položka výpisu na výdajovú rzp. položku
+                {
+                    val *= (-1);
+                }
+            }
+
+            return new RzpDennik()
+            {
+                D_BiznisEntita_Id = be.D_BiznisEntita_Id,
+                D_DokladBANPol_Id = banPol?.D_DokladBANPol_Id,
+                D_UhradaParovanie_Id = uhrPar?.D_UhradaParovanie_Id,
+                Rok = be.Rok,
+                C_RzpPol_Id = predbezneCPRow?.C_RzpPol_Id ?? predkontRow?.C_RzpPol_Id,
+                D_Program_Id = predbezneCPRow?.D_Program_Id ?? predkontRow?.D_Program_Id,
+                Suma = val,
+                Pocet = 1, //Kým nemáme evidenciu položiek a v nich atribút "Počet", tak dávam 1.
+                C_Stredisko_Id = (pol?.Stredisko ?? true) ? (predbezneCPRow?.C_Stredisko_Id ?? uhrPar?.C_Stredisko_Id ?? banPol?.C_Stredisko_Id ?? strediskoId) : null,
+                C_Projekt_Id = (pol?.Projekt ?? true) ? (predbezneCPRow?.C_Projekt_Id ?? uhrPar?.C_Projekt_Id ?? banPol?.C_Projekt_Id ?? projektId) : null,
+                Poradie = poradie,
+                Popis = predbezneCPRow?.Popis ?? uhrPar?.Popis ?? banPol?.Popis ?? predkontRow?.Nazov ?? be.Popis
+            };
         }
 
-        if (uctDennikSdkFARow == null && ucet != null)
+        private List<(long D_BiznisEntita_Id, string Chyba)> SkontrolovatZauctovanieDokladu(short idTBE, List<BiznisEntita> doklady, int idNewState, bool rzpZauctovanie, bool rzpOductovanie, bool uctZauctovanie, bool uctOductovanie, string processKey, out string reportId)
         {
-            //Nenašla sa presne tá istá SU, zoberiem hocijaku
-            uctDennikSdkFARow = uctDennikSdkFA.Where(x => x.VS == uhrPar.VS && x.D_Osoba_Id == uhrPar.D_Osoba_Id && Math.Abs(x.SumaDal + x.SumaMD) == Math.Abs(uhrPar.DM_Cena + uhrPar.DM_Rozdiel) &&
-                                                         (md ? x.SumaDal : x.SumaMD) != 0
-                                                    ).FirstOrDefault();
-        }
-
-
-        if (uctDennikSdkFARow != null)
-        {
-            //NAŠIEL SOM - zmením účet na ten z FA
-            ucet = ucty.Where(x => x.C_UctRozvrh_Id == uctDennikSdkFARow.C_UctRozvrh_Id).First();
-            SdkUcetNajdeny = true;
-        }
-    }
-
-    //UctDennikViewHelper uctDennikDapRow = null;
-    //if (uctDennikDap != null && uctDennikDap.Any())
-    //{
-    //    //Hľadám SDK účet na opačnej strane a s rovnakým SÚ. Resp. ak účet v predkontácii nie je, tak akýkoľvek
-    //    uctDennikDapRow = uctDennikDap.Where(x => x.D_VymerPol_Id == uhrPar.D_VymerPol_Id &&
-    //                                                 (x.SU == ucet?.SU || ucet == null) &&
-    //                                                 (md ? x.SumaDal : x.SumaMD) != 0
-    //                                            ).FirstOrDefault();
-
-    //    if (uctDennikDapRow == null && ucet != null)
-    //    {
-    //        //Nenašla sa presne tá istá SU, zoberiem hocijaku
-    //        uctDennikDapRow = uctDennikDap.Where(x => x.D_VymerPol_Id == uhrPar.D_VymerPol_Id &&
-    //                                                     (md ? x.SumaDal : x.SumaMD) != 0
-    //                                                ).FirstOrDefault();
-    //    }
-
-    //    if (uctDennikDapRow != null)
-    //    {
-    //        //NAŠIEL SOM - zmením účet na ten z ID-DaP
-    //        ucet = ucty.Where(x => x.C_UctRozvrh_Id == uctDennikDapRow.C_UctRozvrh_Id).First();
-    //    }
-    //}
-
-    if (predkontRow != null)
-    {
-        val = Math.Round((decimal)(val * predkontRow.Percento / 100), 2, MidpointRounding.AwayFromZero);
-    }
-
-    if (hladajSdkUcet && SdkUcetNajdeny)
-    {
-        //Je to v poriadku
-        //Nie je dôležité či som mal predkontačný riadok. Ak som aj nemal a účet sa potiahne z FA - nevypisuj chybu lebo je to OK
-    }
-    else if (hladajSdkUcet && !SdkUcetNajdeny)
-    {
-        //Ide o úhradový riadok a nenašiel som SDK účet - treba to oznámiť, aj keď možno v predkontácii úhrady nejaký je
-        nevyhovujucePolozky.AddIfNotExists((be.D_BiznisEntita_Id, 5, uhrPar.Poradie));
-    }
-    else if (pridajNevyhovujuce && ucet == null)
-    {
-        nevyhovujucePolozky.AddIfNotExists((be.D_BiznisEntita_Id, rozdiel ? 4 : 1, uhrPar?.Poradie ?? banPol?.Poradie ?? 0)); //Iba WARNING - záznam bude vygenerovaný ale bez uctu
-    }
-
-    return new UctDennik()
-    {
-        D_BiznisEntita_Id = be.D_BiznisEntita_Id,
-        Rok = be.Rok,
-        C_UctRozvrh_Id = ucet?.C_UctRozvrh_Id,
-        SumaMD = (md) ? val : 0,
-        SumaDal = (!md) ? val : 0,
-        C_Stredisko_Id = (ucet?.VyzadovatStredisko ?? true) ? (uctDennikSdkFARow?.C_Stredisko_Id ?? uhrPar?.C_Stredisko_Id ?? banPol?.C_Stredisko_Id ?? strediskoId) : null,
-        C_Projekt_Id = (ucet?.VyzadovatProjekt ?? true) ? (uctDennikSdkFARow?.C_Projekt_Id ?? uhrPar?.C_Projekt_Id ?? banPol?.C_Projekt_Id ?? projektId) : null,
-        D_Osoba_Id = (ucet?.SDK == "P" || ucet?.SDK == "Z") || ucet == null ? (uhrPar?.D_Osoba_Id ?? osobaId) : null,
-        VS = (ucet?.SDK == "P" || ucet?.SDK == "Z") || ucet == null ? (uhrPar?.VS ?? banPol?.VS ?? vs) : null, //VS úhrady, VS položky BAN, VS z hlavičky dokladu
-        DatumSplatnosti = (ucet?.SDK == "P" && md || ucet?.SDK == "Z" && !md) || ucet == null ? splat : null, //Ak sa to náhodou stane, tak dám "Dátum dokladu"
-        Poradie = poradie,
-        DatumUctovania = be.DatumDokladu,
-
-        C_UctKluc_Id1 = (ucet?.VyzadovatUctKluc1 ?? true) ? (uctDennikSdkFARow?.C_UctKluc_Id1 ?? uhrPar?.C_UctKluc_Id1 ?? banPol?.C_UctKluc_Id1) : null,
-        C_UctKluc_Id2 = (ucet?.VyzadovatUctKluc2 ?? true) ? (uctDennikSdkFARow?.C_UctKluc_Id2 ?? uhrPar?.C_UctKluc_Id2 ?? banPol?.C_UctKluc_Id2) : null,
-        C_UctKluc_Id3 = (ucet?.VyzadovatUctKluc3 ?? true) ? (uctDennikSdkFARow?.C_UctKluc_Id3 ?? uhrPar?.C_UctKluc_Id3 ?? banPol?.C_UctKluc_Id3) : null,
-        Popis = explicitPopis ?? uhrPar?.Popis ?? banPol?.Popis ?? predkontRow?.Nazov ?? be.Popis,
-        D_DokladBANPol_Id = uhrPar?.D_DokladBANPol_Id ?? banPol?.D_DokladBANPol_Id,
-        D_UhradaParovanie_Id = uhrPar?.D_UhradaParovanie_Id
-    };
-}
-
-private static RzpDennik CreateRzpDennikSingleRow(List<RzpPol> rzpPolozky, BiznisEntitaView be, int? strediskoId, long? projektId,
-    DokladBANPolViewHelper banPol, UhradaParovanieViewHelper uhrPar, PredkontaciaRzpViewHelper predkontRow, RzpDennikViewHelper predbezneCPRow, decimal val, int poradie)
-{
-    var pol = rzpPolozky.Where(x => x.C_RzpPol_Id == (predkontRow?.C_RzpPol_Id ?? predbezneCPRow?.C_RzpPol_Id)).FirstOrDefault();
-
-    if (predkontRow != null && predbezneCPRow == null)
-    {
-        val = Math.Round((decimal)(val * predkontRow.Percento / 100), 2, MidpointRounding.AwayFromZero);
-    }
-
-    if (banPol != null && predkontRow != null && uhrPar == null)
-    {
-        if (banPol.Suma < 0 && predkontRow.PrijemVydaj == 1 ||   //Debetná položka výpisu na príjmovú rzp. položku
-            banPol.Suma > 0 && predkontRow.PrijemVydaj == 2)     //Kreditná položka výpisu na výdajovú rzp. položku
-        {
-            val *= (-1);
-        }
-    }
-
-    return new RzpDennik()
-    {
-        D_BiznisEntita_Id = be.D_BiznisEntita_Id,
-        D_DokladBANPol_Id = banPol?.D_DokladBANPol_Id,
-        D_UhradaParovanie_Id = uhrPar?.D_UhradaParovanie_Id,
-        Rok = be.Rok,
-        C_RzpPol_Id = predbezneCPRow?.C_RzpPol_Id ?? predkontRow?.C_RzpPol_Id,
-        D_Program_Id = predbezneCPRow?.D_Program_Id ?? predkontRow?.D_Program_Id,
-        Suma = val,
-        Pocet = 1, //Kým nemáme evidenciu položiek a v nich atribút "Počet", tak dávam 1.
-        C_Stredisko_Id = (pol?.Stredisko ?? true) ? (predbezneCPRow?.C_Stredisko_Id ?? uhrPar?.C_Stredisko_Id ?? banPol?.C_Stredisko_Id ?? strediskoId) : null,
-        C_Projekt_Id = (pol?.Projekt ?? true) ? (predbezneCPRow?.C_Projekt_Id ?? uhrPar?.C_Projekt_Id ?? banPol?.C_Projekt_Id ?? projektId) : null,
-        Poradie = poradie,
-        Popis = predbezneCPRow?.Popis ?? uhrPar?.Popis ?? banPol?.Popis ?? predkontRow?.Nazov ?? be.Popis
-    };
-}
-
-private List<(long D_BiznisEntita_Id, string Chyba)> SkontrolovatZauctovanieDokladu(short idTBE, List<BiznisEntita> doklady, int idNewState, bool rzpZauctovanie, bool rzpOductovanie, bool uctZauctovanie, bool uctOductovanie, string processKey, out string reportId)
-{
-    var chybneDoklady = new List<(long D_BiznisEntita_Id, string Chyba)>();
-    var eSAMStart = GetNastavenieD("reg", "eSAMStart");
-    reportId = null;
+            var chybneDoklady = new List<(long D_BiznisEntita_Id, string Chyba)>();
+            var eSAMStart = GetNastavenieD("reg", "eSAMStart");
+            reportId = null;
 
             if (uctZauctovanie)
             {
@@ -3048,139 +3032,139 @@ private List<(long D_BiznisEntita_Id, string Chyba)> SkontrolovatZauctovanieDokl
                 var uctovneRozvrhy = GetList(Db.From<UctRozvrh>().Where(x => Sql.In(x.C_UctRozvrh_Id, uctovneDenniky.Select(x => x.C_UctRozvrh_Id).Distinct())).And(Filter.NotDeleted().ToString()));
                 var strediska = GetList(Db.From<StrediskoCis>().Where(x => Sql.In(x.C_Stredisko_Id, uctovneDenniky.Select(x => x.C_Stredisko_Id).Distinct())).And(Filter.NotDeleted().ToString()));
 
-        //CHECK-51
-        foreach (var bezStr in uctovneDenniky
-            .Where(x => !x.C_Stredisko_Id.HasValue && uctovneRozvrhy.SingleOrDefault(z => x.C_UctRozvrh_Id == z.C_UctRozvrh_Id)?.VyzadovatStredisko == true)
-            .GroupBy(x => x.D_BiznisEntita_Id))
-        {
-            chybneDoklady.Add((bezStr.Key, $"Záznamy účtovného denníka (pč: { bezStr.Select(x => x.Poradie).Join(", ")}) nemajú vyplnené stredisko pri použitom strediskovom účte"));
-        }
-
-        //CHECK-52
-        foreach (var bezPrj in uctovneDenniky
-            .Where(x => !x.C_Projekt_Id.HasValue && uctovneRozvrhy.SingleOrDefault(z => x.C_UctRozvrh_Id == z.C_UctRozvrh_Id)?.VyzadovatProjekt == true)
-            .GroupBy(x => x.D_BiznisEntita_Id))
-        {
-            chybneDoklady.Add((bezPrj.Key, $"Záznamy účtovného denníka (pč: { bezPrj.Select(x => x.Poradie).Join(", ")}) nemajú vyplnený projekt pri použitom projektovom účte"));
-        }
-
-        foreach (var bezUctKluc1 in uctovneDenniky
-            .Where(x => !x.C_UctKluc_Id1.HasValue && uctovneRozvrhy.SingleOrDefault(z => x.C_UctRozvrh_Id == z.C_UctRozvrh_Id)?.VyzadovatUctKluc1 == true)
-            .GroupBy(x => x.D_BiznisEntita_Id))
-        {
-            var klucS = GetNastavenieS("uct", "UctKluc1Nazov");
-            chybneDoklady.Add((bezUctKluc1.Key, $"Záznamy účtovného denníka (pč: { bezUctKluc1.Select(x => x.Poradie).Join(", ")}) nemajú vyplnené '{klucS}' pri použitom účte"));
-        }
-
-        foreach (var bezUctKluc2 in uctovneDenniky
-            .Where(x => !x.C_UctKluc_Id2.HasValue && uctovneRozvrhy.SingleOrDefault(z => x.C_UctRozvrh_Id == z.C_UctRozvrh_Id)?.VyzadovatUctKluc2 == true)
-            .GroupBy(x => x.D_BiznisEntita_Id))
-        {
-            var klucS = GetNastavenieS("uct", "UctKluc2Nazov");
-            chybneDoklady.Add((bezUctKluc2.Key, $"Záznamy účtovného denníka (pč: { bezUctKluc2.Select(x => x.Poradie).Join(", ")}) nemajú vyplnené '{klucS}' pri použitom účte"));
-        }
-
-        foreach (var bezUctKluc3 in uctovneDenniky
-            .Where(x => !x.C_UctKluc_Id3.HasValue && uctovneRozvrhy.SingleOrDefault(z => x.C_UctRozvrh_Id == z.C_UctRozvrh_Id)?.VyzadovatUctKluc3 == true)
-            .GroupBy(x => x.D_BiznisEntita_Id))
-        {
-            var klucS = GetNastavenieS("uct", "UctKluc3Nazov");
-            chybneDoklady.Add((bezUctKluc3.Key, $"Záznamy účtovného denníka (pč: { bezUctKluc3.Select(x => x.Poradie).Join(", ")}) nemajú vyplnené '{klucS}' pri použitom účte"));
-        }
-
-        //CHECK-82
-        foreach (var uctDenNulove in uctovneDenniky
-            .Where(x => x.SumaMD == 0 && x.SumaDal == 0)
-            .GroupBy(x => x.D_BiznisEntita_Id))
-        {
-            chybneDoklady.Add((uctDenNulove.Key, $"Záznamy účtovného denníka (pč: { uctDenNulove.Select(x => x.Poradie).Join(", ")}) majú nulovú stranu Má dať aj Dal"));
-        }
-
-        //CHECK-83
-        foreach (var syntUcet in uctovneDenniky
-            .Where(x => uctovneRozvrhy.SingleOrDefault(z => x.C_UctRozvrh_Id == z.C_UctRozvrh_Id)?.Ucet?.Length == 3)
-            .GroupBy(x => x.D_BiznisEntita_Id))
-        {
-            chybneDoklady.Add((syntUcet.Key, $"Na syntetický účet nie je možné účtovať - je potrebné navoliť analytický účet (pč: { syntUcet.Select(x => x.Poradie).Join(", ")})"));
-        }
-
-        //CHECK-84
-        foreach (var bezUctu in uctovneDenniky
-            .Where(x => !x.C_UctRozvrh_Id.HasValue)
-            .GroupBy(x => x.D_BiznisEntita_Id))
-        {
-            chybneDoklady.Add((bezUctu.Key, $"Nie je zadaný účet (pč: { bezUctu.Select(x => x.Poradie).Join(", ")})"));
-        }
-
-        //CHECK-88
-        foreach (var MdDalRozdiel in uctovneDenniky
-            .GroupBy(x => x.D_BiznisEntita_Id)
-            .Select(
-            g => new
-            {
-                g.Key,
-                Rozdiel = g.Sum(x => x.SumaMD) - g.Sum(x => x.SumaDal)
-            })
-            .Where(x => x.Rozdiel != 0)
-            )
-        {
-            chybneDoklady.Add((MdDalRozdiel.Key, $"Strana 'Má dať' sa nerovná strane 'Dal' (Rozdiel: { MdDalRozdiel.Rozdiel })"));
-        }
-
-        //CHECK-89, CHECK-90
-        foreach (var sdkRiadok in uctovneDenniky
-            .Where(x => uctovneRozvrhy.SingleOrDefault(z => x.C_UctRozvrh_Id == z.C_UctRozvrh_Id)?.SDK != null)
-            .GroupBy(x => new { x.D_BiznisEntita_Id, uctovneRozvrhy.Single(z => x.C_UctRozvrh_Id == z.C_UctRozvrh_Id).SDK }))
-        {
-            var dokl = doklady.FirstOrDefault(x => x.D_BiznisEntita_Id == sdkRiadok.Key.D_BiznisEntita_Id);
-            bool checkSdk = !dokl.PS && ( eSAMStart == null || eSAMStart <= dokl.DatumDokladu);
-
-            if (checkSdk)
-            {
-                var stranaVznikuBezVS = sdkRiadok.Where(x => (sdkRiadok.Key.SDK == "P" && x.SumaMD != 0 && string.IsNullOrEmpty(x.VS)) || (sdkRiadok.Key.SDK == "Z" && x.SumaDal != 0 && string.IsNullOrEmpty(x.VS)));
-                var stranaVznikuBezOsoba = sdkRiadok.Where(x => (sdkRiadok.Key.SDK == "P" && x.SumaMD != 0 && !x.D_Osoba_Id.HasValue) || (sdkRiadok.Key.SDK == "Z" && x.SumaDal != 0 && !x.D_Osoba_Id.HasValue));
-                var stranaVznikuBezDatSpl = sdkRiadok.Where(x => (sdkRiadok.Key.SDK == "P" && x.SumaMD != 0 && !x.DatumSplatnosti.HasValue) || (sdkRiadok.Key.SDK == "Z" && x.SumaDal != 0 && !x.DatumSplatnosti.HasValue));
-
-                if (stranaVznikuBezVS.Any())
+                //CHECK-51
+                foreach (var bezStr in uctovneDenniky
+                    .Where(x => !x.C_Stredisko_Id.HasValue && uctovneRozvrhy.SingleOrDefault(z => x.C_UctRozvrh_Id == z.C_UctRozvrh_Id)?.VyzadovatStredisko == true)
+                    .GroupBy(x => x.D_BiznisEntita_Id))
                 {
-                    chybneDoklady.Add((sdkRiadok.Key.D_BiznisEntita_Id, $"Doklad obsahuje saldokontné zápisy bez vyplneného variabilného symbolu (pč: { stranaVznikuBezVS.Select(x => x.Poradie).Join(", ")})"));
+                    chybneDoklady.Add((bezStr.Key, $"Záznamy účtovného denníka (pč: { bezStr.Select(x => x.Poradie).Join(", ")}) nemajú vyplnené stredisko pri použitom strediskovom účte"));
                 }
 
-                if (stranaVznikuBezOsoba.Any())
+                //CHECK-52
+                foreach (var bezPrj in uctovneDenniky
+                    .Where(x => !x.C_Projekt_Id.HasValue && uctovneRozvrhy.SingleOrDefault(z => x.C_UctRozvrh_Id == z.C_UctRozvrh_Id)?.VyzadovatProjekt == true)
+                    .GroupBy(x => x.D_BiznisEntita_Id))
                 {
-                    chybneDoklady.Add((sdkRiadok.Key.D_BiznisEntita_Id, $"Doklad obsahuje saldokontné zápisy bez vyplnenej osoby (pč: { stranaVznikuBezOsoba.Select(x => x.Poradie).Join(", ")})"));
+                    chybneDoklady.Add((bezPrj.Key, $"Záznamy účtovného denníka (pč: { bezPrj.Select(x => x.Poradie).Join(", ")}) nemajú vyplnený projekt pri použitom projektovom účte"));
                 }
 
-                if (stranaVznikuBezDatSpl.Any())
+                foreach (var bezUctKluc1 in uctovneDenniky
+                    .Where(x => !x.C_UctKluc_Id1.HasValue && uctovneRozvrhy.SingleOrDefault(z => x.C_UctRozvrh_Id == z.C_UctRozvrh_Id)?.VyzadovatUctKluc1 == true)
+                    .GroupBy(x => x.D_BiznisEntita_Id))
                 {
-                    chybneDoklady.Add((sdkRiadok.Key.D_BiznisEntita_Id, $"Doklad obsahuje saldokontné zápisy bez vyplneného dátumu splatnosti (pč: { stranaVznikuBezDatSpl.Select(x => x.Poradie).Join(", ")})"));
+                    var klucS = GetNastavenieS("uct", "UctKluc1Nazov");
+                    chybneDoklady.Add((bezUctKluc1.Key, $"Záznamy účtovného denníka (pč: { bezUctKluc1.Select(x => x.Poradie).Join(", ")}) nemajú vyplnené '{klucS}' pri použitom účte"));
                 }
 
-                var stranaUhradyBezVS = sdkRiadok.Where(x => (sdkRiadok.Key.SDK == "P" && x.SumaDal != 0 && string.IsNullOrEmpty(x.VS)) || (sdkRiadok.Key.SDK == "Z" && x.SumaMD != 0 && string.IsNullOrEmpty(x.VS)));
-                var stranaUhradyBezOsoba = sdkRiadok.Where(x => (sdkRiadok.Key.SDK == "P" && x.SumaDal != 0 && !x.D_Osoba_Id.HasValue) || (sdkRiadok.Key.SDK == "Z" && x.SumaMD != 0 && !x.D_Osoba_Id.HasValue));
-
-                if (stranaUhradyBezVS.Any())
+                foreach (var bezUctKluc2 in uctovneDenniky
+                    .Where(x => !x.C_UctKluc_Id2.HasValue && uctovneRozvrhy.SingleOrDefault(z => x.C_UctRozvrh_Id == z.C_UctRozvrh_Id)?.VyzadovatUctKluc2 == true)
+                    .GroupBy(x => x.D_BiznisEntita_Id))
                 {
-                    chybneDoklady.Add((sdkRiadok.Key.D_BiznisEntita_Id, $"Doklad obsahuje saldokontné zápisy bez vyplneného variabilného symbolu (pč: { stranaUhradyBezVS.Select(x => x.Poradie).Join(", ")})"));
+                    var klucS = GetNastavenieS("uct", "UctKluc2Nazov");
+                    chybneDoklady.Add((bezUctKluc2.Key, $"Záznamy účtovného denníka (pč: { bezUctKluc2.Select(x => x.Poradie).Join(", ")}) nemajú vyplnené '{klucS}' pri použitom účte"));
                 }
 
-                if (stranaUhradyBezOsoba.Any())
+                foreach (var bezUctKluc3 in uctovneDenniky
+                    .Where(x => !x.C_UctKluc_Id3.HasValue && uctovneRozvrhy.SingleOrDefault(z => x.C_UctRozvrh_Id == z.C_UctRozvrh_Id)?.VyzadovatUctKluc3 == true)
+                    .GroupBy(x => x.D_BiznisEntita_Id))
                 {
-                    chybneDoklady.Add((sdkRiadok.Key.D_BiznisEntita_Id, $"Doklad obsahuje saldokontné zápisy bez vyplnenej osoby (pč: { stranaUhradyBezOsoba.Select(x => x.Poradie).Join(", ")})"));
+                    var klucS = GetNastavenieS("uct", "UctKluc3Nazov");
+                    chybneDoklady.Add((bezUctKluc3.Key, $"Záznamy účtovného denníka (pč: { bezUctKluc3.Select(x => x.Poradie).Join(", ")}) nemajú vyplnené '{klucS}' pri použitom účte"));
                 }
-            }
-        }
 
-        //CHECK-94
-        foreach (var uctDenPlatnost in uctovneDenniky
-            .Where(x =>
-            uctovneRozvrhy.SingleOrDefault(z => x.C_UctRozvrh_Id == z.C_UctRozvrh_Id) != null &&
-            (uctovneRozvrhy.Single(z => x.C_UctRozvrh_Id == z.C_UctRozvrh_Id).PlatnostOd > doklady.Single(d => d.D_BiznisEntita_Id == x.D_BiznisEntita_Id).DatumDokladu ||
-            uctovneRozvrhy.Single(z => x.C_UctRozvrh_Id == z.C_UctRozvrh_Id).PlatnostDo < doklady.Single(d => d.D_BiznisEntita_Id == x.D_BiznisEntita_Id).DatumDokladu))
-            .GroupBy(x => x.D_BiznisEntita_Id))
-        {
-            chybneDoklady.Add((uctDenPlatnost.Key, $"Záznamy účtovného denníka (pč: { uctDenPlatnost.Select(x => x.Poradie).Join(", ")}) majú použité účty, ktoré nie su platné k dátumu dokladu."));
-        }
+                //CHECK-82
+                foreach (var uctDenNulove in uctovneDenniky
+                    .Where(x => x.SumaMD == 0 && x.SumaDal == 0)
+                    .GroupBy(x => x.D_BiznisEntita_Id))
+                {
+                    chybneDoklady.Add((uctDenNulove.Key, $"Záznamy účtovného denníka (pč: { uctDenNulove.Select(x => x.Poradie).Join(", ")}) majú nulovú stranu Má dať aj Dal"));
+                }
+
+                //CHECK-83
+                foreach (var syntUcet in uctovneDenniky
+                    .Where(x => uctovneRozvrhy.SingleOrDefault(z => x.C_UctRozvrh_Id == z.C_UctRozvrh_Id)?.Ucet?.Length == 3)
+                    .GroupBy(x => x.D_BiznisEntita_Id))
+                {
+                    chybneDoklady.Add((syntUcet.Key, $"Na syntetický účet nie je možné účtovať - je potrebné navoliť analytický účet (pč: { syntUcet.Select(x => x.Poradie).Join(", ")})"));
+                }
+
+                //CHECK-84
+                foreach (var bezUctu in uctovneDenniky
+                    .Where(x => !x.C_UctRozvrh_Id.HasValue)
+                    .GroupBy(x => x.D_BiznisEntita_Id))
+                {
+                    chybneDoklady.Add((bezUctu.Key, $"Nie je zadaný účet (pč: { bezUctu.Select(x => x.Poradie).Join(", ")})"));
+                }
+
+                //CHECK-88
+                foreach (var MdDalRozdiel in uctovneDenniky
+                    .GroupBy(x => x.D_BiznisEntita_Id)
+                    .Select(
+                    g => new
+                    {
+                        g.Key,
+                        Rozdiel = g.Sum(x => x.SumaMD) - g.Sum(x => x.SumaDal)
+                    })
+                    .Where(x => x.Rozdiel != 0)
+                    )
+                {
+                    chybneDoklady.Add((MdDalRozdiel.Key, $"Strana 'Má dať' sa nerovná strane 'Dal' (Rozdiel: { MdDalRozdiel.Rozdiel })"));
+                }
+
+                //CHECK-89, CHECK-90
+                foreach (var sdkRiadok in uctovneDenniky
+                    .Where(x => uctovneRozvrhy.SingleOrDefault(z => x.C_UctRozvrh_Id == z.C_UctRozvrh_Id)?.SDK != null)
+                    .GroupBy(x => new { x.D_BiznisEntita_Id, uctovneRozvrhy.Single(z => x.C_UctRozvrh_Id == z.C_UctRozvrh_Id).SDK }))
+                {
+                    var dokl = doklady.FirstOrDefault(x => x.D_BiznisEntita_Id == sdkRiadok.Key.D_BiznisEntita_Id);
+                    bool checkSdk = !dokl.PS && (eSAMStart == null || eSAMStart <= dokl.DatumDokladu);
+
+                    if (checkSdk)
+                    {
+                        var stranaVznikuBezVS = sdkRiadok.Where(x => (sdkRiadok.Key.SDK == "P" && x.SumaMD != 0 && string.IsNullOrEmpty(x.VS)) || (sdkRiadok.Key.SDK == "Z" && x.SumaDal != 0 && string.IsNullOrEmpty(x.VS)));
+                        var stranaVznikuBezOsoba = sdkRiadok.Where(x => (sdkRiadok.Key.SDK == "P" && x.SumaMD != 0 && !x.D_Osoba_Id.HasValue) || (sdkRiadok.Key.SDK == "Z" && x.SumaDal != 0 && !x.D_Osoba_Id.HasValue));
+                        var stranaVznikuBezDatSpl = sdkRiadok.Where(x => (sdkRiadok.Key.SDK == "P" && x.SumaMD != 0 && !x.DatumSplatnosti.HasValue) || (sdkRiadok.Key.SDK == "Z" && x.SumaDal != 0 && !x.DatumSplatnosti.HasValue));
+
+                        if (stranaVznikuBezVS.Any())
+                        {
+                            chybneDoklady.Add((sdkRiadok.Key.D_BiznisEntita_Id, $"Doklad obsahuje saldokontné zápisy bez vyplneného variabilného symbolu (pč: { stranaVznikuBezVS.Select(x => x.Poradie).Join(", ")})"));
+                        }
+
+                        if (stranaVznikuBezOsoba.Any())
+                        {
+                            chybneDoklady.Add((sdkRiadok.Key.D_BiznisEntita_Id, $"Doklad obsahuje saldokontné zápisy bez vyplnenej osoby (pč: { stranaVznikuBezOsoba.Select(x => x.Poradie).Join(", ")})"));
+                        }
+
+                        if (stranaVznikuBezDatSpl.Any())
+                        {
+                            chybneDoklady.Add((sdkRiadok.Key.D_BiznisEntita_Id, $"Doklad obsahuje saldokontné zápisy bez vyplneného dátumu splatnosti (pč: { stranaVznikuBezDatSpl.Select(x => x.Poradie).Join(", ")})"));
+                        }
+
+                        var stranaUhradyBezVS = sdkRiadok.Where(x => (sdkRiadok.Key.SDK == "P" && x.SumaDal != 0 && string.IsNullOrEmpty(x.VS)) || (sdkRiadok.Key.SDK == "Z" && x.SumaMD != 0 && string.IsNullOrEmpty(x.VS)));
+                        var stranaUhradyBezOsoba = sdkRiadok.Where(x => (sdkRiadok.Key.SDK == "P" && x.SumaDal != 0 && !x.D_Osoba_Id.HasValue) || (sdkRiadok.Key.SDK == "Z" && x.SumaMD != 0 && !x.D_Osoba_Id.HasValue));
+
+                        if (stranaUhradyBezVS.Any())
+                        {
+                            chybneDoklady.Add((sdkRiadok.Key.D_BiznisEntita_Id, $"Doklad obsahuje saldokontné zápisy bez vyplneného variabilného symbolu (pč: { stranaUhradyBezVS.Select(x => x.Poradie).Join(", ")})"));
+                        }
+
+                        if (stranaUhradyBezOsoba.Any())
+                        {
+                            chybneDoklady.Add((sdkRiadok.Key.D_BiznisEntita_Id, $"Doklad obsahuje saldokontné zápisy bez vyplnenej osoby (pč: { stranaUhradyBezOsoba.Select(x => x.Poradie).Join(", ")})"));
+                        }
+                    }
+                }
+
+                //CHECK-94
+                foreach (var uctDenPlatnost in uctovneDenniky
+                    .Where(x =>
+                    uctovneRozvrhy.SingleOrDefault(z => x.C_UctRozvrh_Id == z.C_UctRozvrh_Id) != null &&
+                    (uctovneRozvrhy.Single(z => x.C_UctRozvrh_Id == z.C_UctRozvrh_Id).PlatnostOd > doklady.Single(d => d.D_BiznisEntita_Id == x.D_BiznisEntita_Id).DatumDokladu ||
+                    uctovneRozvrhy.Single(z => x.C_UctRozvrh_Id == z.C_UctRozvrh_Id).PlatnostDo < doklady.Single(d => d.D_BiznisEntita_Id == x.D_BiznisEntita_Id).DatumDokladu))
+                    .GroupBy(x => x.D_BiznisEntita_Id))
+                {
+                    chybneDoklady.Add((uctDenPlatnost.Key, $"Záznamy účtovného denníka (pč: { uctDenPlatnost.Select(x => x.Poradie).Join(", ")}) majú použité účty, ktoré nie su platné k dátumu dokladu."));
+                }
 
                 //CHECK-96
                 foreach (var pol in uctovneDenniky
@@ -3201,807 +3185,807 @@ private List<(long D_BiznisEntita_Id, string Chyba)> SkontrolovatZauctovanieDokl
                         chybneDoklady.Add((dokl.D_BiznisEntita_Id, $"Doklad nie je možné zaúčtovať, pretože denník neobsahuje žiadne záznamy"));
                     }
 
-            if (dokl.C_TypBiznisEntity_Id != (int)TypBiznisEntityEnum.IND && uctovneDenniky.Any(x => x.D_BiznisEntita_Id == dokl.D_BiznisEntita_Id) && dokl.PS)
-            {
-                chybneDoklady.Add((dokl.D_BiznisEntita_Id, $"Doklad „počiatočného stavu“ nie je možné zaúčtovať, pretože denník obsahuje záznamy"));
-            }
-
-            //CHECK-85
-            var uctDenVymerPol = uctovneDenniky.Where(x => x.D_BiznisEntita_Id == dokl.D_BiznisEntita_Id && x.D_VymerPol_Id.HasValue);
-            if (dokl.C_TypBiznisEntity_Kniha_Id == (int)TypBiznisEntity_KnihaEnum.Externe_doklady_DaP && uctDenVymerPol.Any())
-            {
-                var vymerPolozky = GetList(Db
-                    .From<ServiceModel.Office.Types.Dap.VymerPolViewHelper>()
-                    .Where(x => Sql.In(x.D_VymerPol_Id, uctDenVymerPol.Select(x => x.D_VymerPol_Id)))
-                    .Select(x => new { x.D_VymerPol_Id, x.ZauctovanieSuma, x.Suma }));
-
-                var chybnePolSuma = vymerPolozky.Where(x => uctDenVymerPol.Single(z => x.D_VymerPol_Id == z.D_VymerPol_Id).SumaMD != x.Suma - x.ZauctovanieSuma.GetValueOrDefault());
-                if (chybnePolSuma.Any())
-                {
-                    chybneDoklady.Add((dokl.D_BiznisEntita_Id, $"Suma 'Má dať' v účtovnom denníku (pč: { uctDenVymerPol.Where(x => chybnePolSuma.Any(z => z.D_VymerPol_Id == x.D_VymerPol_Id)).Select(x => x.Poradie).Join(", ")}) nezodpovedá sume položky rozhodnutia (skontrolujte hodnotu položky rozhodnutia a tiež prípadné duplicitné zaúčtovanie v inom ID-DaP)."));
-                }
-            }
-
-
-            if (dokl.C_TypBiznisEntity_Kniha_Id == (int)TypBiznisEntity_KnihaEnum.Externe_doklady_DaP)
-            {
-                //CHECK-86
-                var uctDenDanVynos = uctovneDenniky.Where(x => x.D_BiznisEntita_Id == dokl.D_BiznisEntita_Id && x.SumaMD != 0 &&
-                                                              (x.C_Typ_Id == (int)TypEnum.DanovyVynosDAN ||
-                                                               x.C_Typ_Id == (int)TypEnum.DanovyVynosPEN ||
-                                                               x.C_Typ_Id == (int)TypEnum.DanovyVynosPOK ||
-                                                               x.C_Typ_Id == (int)TypEnum.DanovyVynosURO
-                                                               ) //x.C_Typ_Id == (int)TypEnum.DanovyVynosODP - dvojaké účtovanie, preto nekontrolujem
-                                                         );
-                if (uctDenDanVynos.Any())
-                {
-                    var typy = GetList(Db.From<TypView>().Where(x => Sql.In(x.C_Typ_Id, uctDenDanVynos.Select(z => z.C_Typ_Id).Distinct())));
-                    foreach (var typGrp in uctDenDanVynos.GroupBy(x => x.C_Typ_Id))
+                    if (dokl.C_TypBiznisEntity_Id != (int)TypBiznisEntityEnum.IND && uctovneDenniky.Any(x => x.D_BiznisEntita_Id == dokl.D_BiznisEntita_Id) && dokl.PS)
                     {
-                        chybneDoklady.Add((dokl.D_BiznisEntita_Id, $"Pre typ '{typy.Single(x => x.C_Typ_Id == typGrp.Key).Nazov}' musí byť suma 'Má dať' rovná nule (pč: { typGrp.Select(x => x.Poradie).Join(", ")})"));
+                        chybneDoklady.Add((dokl.D_BiznisEntita_Id, $"Doklad „počiatočného stavu“ nie je možné zaúčtovať, pretože denník obsahuje záznamy"));
                     }
-                }
 
-                //CHECK-87
-                var uctDenDalCheck = uctovneDenniky.Where(x => x.D_BiznisEntita_Id == dokl.D_BiznisEntita_Id && x.SumaDal != 0 &&
-                                                              (x.C_Typ_Id == (int)TypEnum.DAN_Dan ||
-                                                               x.C_Typ_Id == (int)TypEnum.PEN_UrokZOmeskania ||
-                                                               x.C_Typ_Id == (int)TypEnum.POK_Pokuta ||
-                                                               x.C_Typ_Id == (int)TypEnum.URO_UrokZOdlozeniaSplatok
-                                                               ) //x.C_Typ_Id == (int)TypEnum.ODP_OdpisPohladavky - dvojaké účtovanie, preto nekontrolujem
-                                                          );
-                if (uctDenDalCheck.Any())
-                {
-                    var typy = GetList(Db.From<TypView>().Where(x => Sql.In(x.C_Typ_Id, uctDenDalCheck.Select(z => z.C_Typ_Id).Distinct())));
-                    foreach (var typGrp in uctDenDalCheck.GroupBy(x => x.C_Typ_Id))
+                    //CHECK-85
+                    var uctDenVymerPol = uctovneDenniky.Where(x => x.D_BiznisEntita_Id == dokl.D_BiznisEntita_Id && x.D_VymerPol_Id.HasValue);
+                    if (dokl.C_TypBiznisEntity_Kniha_Id == (int)TypBiznisEntity_KnihaEnum.Externe_doklady_DaP && uctDenVymerPol.Any())
                     {
-                        chybneDoklady.Add((dokl.D_BiznisEntita_Id, $"Pre typ '{typy.Single(x => x.C_Typ_Id == typGrp.Key).Nazov}' musí byť suma 'Dal' rovná nule (pč: { typGrp.Select(x => x.Poradie).Join(", ")})"));
-                    }
-                }
-            }
-        }
-    }
+                        var vymerPolozky = GetList(Db
+                            .From<ServiceModel.Office.Types.Dap.VymerPolViewHelper>()
+                            .Where(x => Sql.In(x.D_VymerPol_Id, uctDenVymerPol.Select(x => x.D_VymerPol_Id)))
+                            .Select(x => new { x.D_VymerPol_Id, x.ZauctovanieSuma, x.Suma }));
 
-    if (rzpZauctovanie)
-    {
-        LongOperationSetStateMessage(processKey, "Prebieha kontrola účtovania v rozpočtovom denníku");
-        var rozpoctovyDennik = GetList(Db.From<RzpDennik>().Where(x => Sql.In(x.D_BiznisEntita_Id, doklady.Select(x => x.D_BiznisEntita_Id))).And(Filter.NotDeleted().ToString()));
-        var rozpoctovePolozky = GetList(Db.From<RzpPol>().Where(x => Sql.In(x.C_RzpPol_Id, rozpoctovyDennik.Select(x => x.C_RzpPol_Id).Distinct())).And(Filter.NotDeleted().ToString()));
-        var rzpComb = Db.Select<(long C_RzpPol_Id, long? D_Program_Id, int Rok)>("SELECT DISTINCT C_RzpPol_Id, D_Program_Id, Rok FROM rzp.V_RzpCombinations cmb WHERE cmb.C_RzpPol_Id IN (@zrpPolId) AND cmb.Rok IN (@rok)",
-                              new { zrpPolId = rozpoctovePolozky.Select(z => z.C_RzpPol_Id).Distinct(), rok = doklady.Select(x => x.Rok) });
-
-        //CHECK-71
-        foreach (var bezRzpPol in rozpoctovyDennik.Where(x => !x.C_RzpPol_Id.HasValue).GroupBy(x => x.D_BiznisEntita_Id))
-        {
-            chybneDoklady.Add((bezRzpPol.Key, $"Na záznamoch (pč: {bezRzpPol.Select(x => x.Poradie).Join(", ")}) nie je vyplnená rozpočtová položka"));
-        }
-
-        //CHECK-72
-        if (GetNastavenieB("rzp", "VydProgrRzp"))
-        {
-            foreach (var bezPrg in rozpoctovyDennik
-            .Where(x => !x.D_Program_Id.HasValue && rozpoctovePolozky.SingleOrDefault(z => x.C_RzpPol_Id == z.C_RzpPol_Id)?.PrijemVydaj == 2)
-            .GroupBy(x => x.D_BiznisEntita_Id))
-            {
-                chybneDoklady.Add((bezPrg.Key, $"Rozpočtový denník obsahuje záznamy výdaja rozpočtu (pč: { bezPrg.Select(x => x.Poradie).Join(", ")}), ktoré nemajú vyplnený program"));
-            }
-        }
-
-        //CHECK-51
-        foreach (var bezStr in rozpoctovyDennik
-            .Where(x => !x.C_Stredisko_Id.HasValue && rozpoctovePolozky.SingleOrDefault(z => x.C_RzpPol_Id == z.C_RzpPol_Id)?.Stredisko == true)
-            .GroupBy(x => x.D_BiznisEntita_Id))
-        {
-            chybneDoklady.Add((bezStr.Key, $"Záznamy rozpočtového denníka (pč: { bezStr.Select(x => x.Poradie).Join(", ")}) nemajú vyplnené stredisko, pri použitej strediskovej rozpočtovej položke"));
-        }
-
-        //CHECK-52
-        foreach (var bezPrj in rozpoctovyDennik
-            .Where(x => !x.C_Projekt_Id.HasValue && rozpoctovePolozky.SingleOrDefault(z => x.C_RzpPol_Id == z.C_RzpPol_Id)?.Projekt == true)
-            .GroupBy(x => x.D_BiznisEntita_Id))
-        {
-            chybneDoklady.Add((bezPrj.Key, $"Záznamy rozpočtového denníka (pč: { bezPrj.Select(x => x.Poradie).Join(", ")}) nemajú vyplnený projekt, pri použitej projektovej rozpočtovej položke"));
-        }
-
-        //CHECK-73A
-        foreach (var rzpDenGrp in rozpoctovyDennik.Where(x => x.C_RzpPol_Id != null).GroupBy(x => x.D_BiznisEntita_Id))
-        {
-            var doklad = doklady.Single(z => z.D_BiznisEntita_Id == rzpDenGrp.Key);
-            var chybPrijPol = new List<int>();
-            var chybVydPol = new List<int>();
-
-            foreach (var rzpDen in rzpDenGrp)
-            {
-                var rzpPol = rozpoctovePolozky.Single(z => rzpDen.C_RzpPol_Id == z.C_RzpPol_Id);
-                if (rzpPol.PrijemVydaj == 1)
-                {
-                    if (!rzpComb.Any(x => x.Rok == doklad.Rok && x.C_RzpPol_Id == rzpDen.C_RzpPol_Id))
-                    {
-                        chybPrijPol.Add(rzpDen.Poradie);
-                    }
-                }
-                else if (rzpDen.D_Program_Id != null) //Nevyplnený program na výdajovom riadku sa rieši vyššie a tu už riešim iba s vyplneným
-                {
-                    if (!rzpComb.Any(x => x.Rok == doklad.Rok && x.D_Program_Id == rzpDen.D_Program_Id && x.C_RzpPol_Id == rzpDen.C_RzpPol_Id))
-                    {
-                        var be = doklady.Single(d => d.D_BiznisEntita_Id == rzpDen.D_BiznisEntita_Id);
-                        //PS doklady za minulé roky nemusia byť v zozname kombinácií
-                        if (!be.PS || eSAMStart == null || be.Rok >= eSAMStart.Value.Year)
+                        var chybnePolSuma = vymerPolozky.Where(x => uctDenVymerPol.Single(z => x.D_VymerPol_Id == z.D_VymerPol_Id).SumaMD != x.Suma - x.ZauctovanieSuma.GetValueOrDefault());
+                        if (chybnePolSuma.Any())
                         {
-                            chybVydPol.Add(rzpDen.Poradie);
+                            chybneDoklady.Add((dokl.D_BiznisEntita_Id, $"Suma 'Má dať' v účtovnom denníku (pč: { uctDenVymerPol.Where(x => chybnePolSuma.Any(z => z.D_VymerPol_Id == x.D_VymerPol_Id)).Select(x => x.Poradie).Join(", ")}) nezodpovedá sume položky rozhodnutia (skontrolujte hodnotu položky rozhodnutia a tiež prípadné duplicitné zaúčtovanie v inom ID-DaP)."));
                         }
                     }
-                }
-            }
 
-            if (chybPrijPol.Any())
-            {
-                chybneDoklady.Add((rzpDenGrp.Key, $"Príjmové rzp. položky (pč: { chybPrijPol.Join(", ")}) sa nenachádzajú v aktuálnom rozpočte"));
-            }
 
-            if (chybVydPol.Any())
-            {
-                chybneDoklady.Add((rzpDenGrp.Key, $"Kombinácia výdajovej rzp. položky a programu (pč: { chybVydPol.Join(", ")}) sa nenachádza v aktuálnom rozpočte"));
-            }
-
-        }
-
-        //CHECK-76
-        if (idTBE == (short)TypBiznisEntityEnum.BAN || idTBE == (short)TypBiznisEntityEnum.PDK)
-        {
-            foreach (var be in doklady)
-            {
-                var chybPol = new List<string>();
-
-                void SkontrolujZauctovaniePolozky(TypBiznisEntity_KnihaEnum tbek, IEnumerable<RzpDennik> rzpDen, decimal hodnotaPol, string popis)
-                {
-                    if (rzpDen.Any())
+                    if (dokl.C_TypBiznisEntity_Kniha_Id == (int)TypBiznisEntity_KnihaEnum.Externe_doklady_DaP)
                     {
-                        decimal rzpSuma = 0;
-                        foreach (var rzpDenRow in rzpDen)
+                        //CHECK-86
+                        var uctDenDanVynos = uctovneDenniky.Where(x => x.D_BiznisEntita_Id == dokl.D_BiznisEntita_Id && x.SumaMD != 0 &&
+                                                                      (x.C_Typ_Id == (int)TypEnum.DanovyVynosDAN ||
+                                                                       x.C_Typ_Id == (int)TypEnum.DanovyVynosPEN ||
+                                                                       x.C_Typ_Id == (int)TypEnum.DanovyVynosPOK ||
+                                                                       x.C_Typ_Id == (int)TypEnum.DanovyVynosURO
+                                                                       ) //x.C_Typ_Id == (int)TypEnum.DanovyVynosODP - dvojaké účtovanie, preto nekontrolujem
+                                                                 );
+                        if (uctDenDanVynos.Any())
                         {
-                            if (rzpDenRow.C_RzpPol_Id != null)
+                            var typy = GetList(Db.From<TypView>().Where(x => Sql.In(x.C_Typ_Id, uctDenDanVynos.Select(z => z.C_Typ_Id).Distinct())));
+                            foreach (var typGrp in uctDenDanVynos.GroupBy(x => x.C_Typ_Id))
                             {
-                                var rzpPol = rozpoctovePolozky.SingleOrDefault(z => rzpDenRow.C_RzpPol_Id == z.C_RzpPol_Id);
-                                rzpSuma += (rzpPol.PrijemVydaj == 1 ? 1 : -1) * rzpDenRow.Suma;
+                                chybneDoklady.Add((dokl.D_BiznisEntita_Id, $"Pre typ '{typy.Single(x => x.C_Typ_Id == typGrp.Key).Nazov}' musí byť suma 'Má dať' rovná nule (pč: { typGrp.Select(x => x.Poradie).Join(", ")})"));
                             }
                         }
 
-                        if (tbek == TypBiznisEntity_KnihaEnum.Vydajove_pokladnicne_doklady)
+                        //CHECK-87
+                        var uctDenDalCheck = uctovneDenniky.Where(x => x.D_BiznisEntita_Id == dokl.D_BiznisEntita_Id && x.SumaDal != 0 &&
+                                                                      (x.C_Typ_Id == (int)TypEnum.DAN_Dan ||
+                                                                       x.C_Typ_Id == (int)TypEnum.PEN_UrokZOmeskania ||
+                                                                       x.C_Typ_Id == (int)TypEnum.POK_Pokuta ||
+                                                                       x.C_Typ_Id == (int)TypEnum.URO_UrokZOdlozeniaSplatok
+                                                                       ) //x.C_Typ_Id == (int)TypEnum.ODP_OdpisPohladavky - dvojaké účtovanie, preto nekontrolujem
+                                                                  );
+                        if (uctDenDalCheck.Any())
                         {
-                            rzpSuma *= (-1);
-                        }
-
-                        if (hodnotaPol != rzpSuma && rzpSuma != 0)
-                        {
-                            chybPol.Add($" - {popis}\r\n\t- hodnota na zaúčtovanie: { hodnotaPol }\r\n\t- zaúčtovaná hodnota: {rzpSuma}\r\n\t- rozdiel: {hodnotaPol - rzpSuma}");
-                        }
-                    }
-                    else
-                    {
-                        if (!be.PS)
-                        {
-                            chybPol.Add($" - {popis} nie je zaúčtovaný");
+                            var typy = GetList(Db.From<TypView>().Where(x => Sql.In(x.C_Typ_Id, uctDenDalCheck.Select(z => z.C_Typ_Id).Distinct())));
+                            foreach (var typGrp in uctDenDalCheck.GroupBy(x => x.C_Typ_Id))
+                            {
+                                chybneDoklady.Add((dokl.D_BiznisEntita_Id, $"Pre typ '{typy.Single(x => x.C_Typ_Id == typGrp.Key).Nazov}' musí byť suma 'Dal' rovná nule (pč: { typGrp.Select(x => x.Poradie).Join(", ")})"));
+                            }
                         }
                     }
                 }
+            }
 
-                var uhradaParovanie = Db.Select(Db.From<UhradaParovanieViewHelper>().Where(x => x.D_BiznisEntita_Id_Uhrada == be.D_BiznisEntita_Id)
-                                                                                    .Select(x => new { x.D_UhradaParovanie_Id, x.C_TypBiznisEntity_Kniha_Id, x.RzpDefinicia, x.DM_Cena, x.DM_Rozdiel, x.Poradie }));
-                if (uhradaParovanie.Any())
+            if (rzpZauctovanie)
+            {
+                LongOperationSetStateMessage(processKey, "Prebieha kontrola účtovania v rozpočtovom denníku");
+                var rozpoctovyDennik = GetList(Db.From<RzpDennik>().Where(x => Sql.In(x.D_BiznisEntita_Id, doklady.Select(x => x.D_BiznisEntita_Id))).And(Filter.NotDeleted().ToString()));
+                var rozpoctovePolozky = GetList(Db.From<RzpPol>().Where(x => Sql.In(x.C_RzpPol_Id, rozpoctovyDennik.Select(x => x.C_RzpPol_Id).Distinct())).And(Filter.NotDeleted().ToString()));
+                var rzpComb = Db.Select<(long C_RzpPol_Id, long? D_Program_Id, int Rok)>("SELECT DISTINCT C_RzpPol_Id, D_Program_Id, Rok FROM rzp.V_RzpCombinations cmb WHERE cmb.C_RzpPol_Id IN (@zrpPolId) AND cmb.Rok IN (@rok)",
+                                      new { zrpPolId = rozpoctovePolozky.Select(z => z.C_RzpPol_Id).Distinct(), rok = doklady.Select(x => x.Rok) });
+
+                //CHECK-71
+                foreach (var bezRzpPol in rozpoctovyDennik.Where(x => !x.C_RzpPol_Id.HasValue).GroupBy(x => x.D_BiznisEntita_Id))
                 {
-                    foreach (var uhr in uhradaParovanie.Where(x => x.RzpDefinicia != -1).OrderBy(x => x.Poradie))
+                    chybneDoklady.Add((bezRzpPol.Key, $"Na záznamoch (pč: {bezRzpPol.Select(x => x.Poradie).Join(", ")}) nie je vyplnená rozpočtová položka"));
+                }
+
+                //CHECK-72
+                if (GetNastavenieB("rzp", "VydProgrRzp"))
+                {
+                    foreach (var bezPrg in rozpoctovyDennik
+                    .Where(x => !x.D_Program_Id.HasValue && rozpoctovePolozky.SingleOrDefault(z => x.C_RzpPol_Id == z.C_RzpPol_Id)?.PrijemVydaj == 2)
+                    .GroupBy(x => x.D_BiznisEntita_Id))
                     {
-                        IEnumerable<RzpDennik> rzpDenForUhr = rozpoctovyDennik.Where(x => x.D_UhradaParovanie_Id == uhr.D_UhradaParovanie_Id);
-                        SkontrolujZauctovaniePolozky((TypBiznisEntity_KnihaEnum)uhr.C_TypBiznisEntity_Kniha_Id, rzpDenForUhr, uhr.DM_Cena + uhr.DM_Rozdiel, $"Riadok párovania úhrad {uhr.Poradie}");
+                        chybneDoklady.Add((bezPrg.Key, $"Rozpočtový denník obsahuje záznamy výdaja rozpočtu (pč: { bezPrg.Select(x => x.Poradie).Join(", ")}), ktoré nemajú vyplnený program"));
                     }
                 }
+
+                //CHECK-51
+                foreach (var bezStr in rozpoctovyDennik
+                    .Where(x => !x.C_Stredisko_Id.HasValue && rozpoctovePolozky.SingleOrDefault(z => x.C_RzpPol_Id == z.C_RzpPol_Id)?.Stredisko == true)
+                    .GroupBy(x => x.D_BiznisEntita_Id))
+                {
+                    chybneDoklady.Add((bezStr.Key, $"Záznamy rozpočtového denníka (pč: { bezStr.Select(x => x.Poradie).Join(", ")}) nemajú vyplnené stredisko, pri použitej strediskovej rozpočtovej položke"));
+                }
+
+                //CHECK-52
+                foreach (var bezPrj in rozpoctovyDennik
+                    .Where(x => !x.C_Projekt_Id.HasValue && rozpoctovePolozky.SingleOrDefault(z => x.C_RzpPol_Id == z.C_RzpPol_Id)?.Projekt == true)
+                    .GroupBy(x => x.D_BiznisEntita_Id))
+                {
+                    chybneDoklady.Add((bezPrj.Key, $"Záznamy rozpočtového denníka (pč: { bezPrj.Select(x => x.Poradie).Join(", ")}) nemajú vyplnený projekt, pri použitej projektovej rozpočtovej položke"));
+                }
+
+                //CHECK-73A
+                foreach (var rzpDenGrp in rozpoctovyDennik.Where(x => x.C_RzpPol_Id != null).GroupBy(x => x.D_BiznisEntita_Id))
+                {
+                    var doklad = doklady.Single(z => z.D_BiznisEntita_Id == rzpDenGrp.Key);
+                    var chybPrijPol = new List<int>();
+                    var chybVydPol = new List<int>();
+
+                    foreach (var rzpDen in rzpDenGrp)
+                    {
+                        var rzpPol = rozpoctovePolozky.Single(z => rzpDen.C_RzpPol_Id == z.C_RzpPol_Id);
+                        if (rzpPol.PrijemVydaj == 1)
+                        {
+                            if (!rzpComb.Any(x => x.Rok == doklad.Rok && x.C_RzpPol_Id == rzpDen.C_RzpPol_Id))
+                            {
+                                chybPrijPol.Add(rzpDen.Poradie);
+                            }
+                        }
+                        else if (rzpDen.D_Program_Id != null) //Nevyplnený program na výdajovom riadku sa rieši vyššie a tu už riešim iba s vyplneným
+                        {
+                            if (!rzpComb.Any(x => x.Rok == doklad.Rok && x.D_Program_Id == rzpDen.D_Program_Id && x.C_RzpPol_Id == rzpDen.C_RzpPol_Id))
+                            {
+                                var be = doklady.Single(d => d.D_BiznisEntita_Id == rzpDen.D_BiznisEntita_Id);
+                                //PS doklady za minulé roky nemusia byť v zozname kombinácií
+                                if (!be.PS || eSAMStart == null || be.Rok >= eSAMStart.Value.Year)
+                                {
+                                    chybVydPol.Add(rzpDen.Poradie);
+                                }
+                            }
+                        }
+                    }
+
+                    if (chybPrijPol.Any())
+                    {
+                        chybneDoklady.Add((rzpDenGrp.Key, $"Príjmové rzp. položky (pč: { chybPrijPol.Join(", ")}) sa nenachádzajú v aktuálnom rozpočte"));
+                    }
+
+                    if (chybVydPol.Any())
+                    {
+                        chybneDoklady.Add((rzpDenGrp.Key, $"Kombinácia výdajovej rzp. položky a programu (pč: { chybVydPol.Join(", ")}) sa nenachádza v aktuálnom rozpočte"));
+                    }
+
+                }
+
+                //CHECK-76
+                if (idTBE == (short)TypBiznisEntityEnum.BAN || idTBE == (short)TypBiznisEntityEnum.PDK)
+                {
+                    foreach (var be in doklady)
+                    {
+                        var chybPol = new List<string>();
+
+                        void SkontrolujZauctovaniePolozky(TypBiznisEntity_KnihaEnum tbek, IEnumerable<RzpDennik> rzpDen, decimal hodnotaPol, string popis)
+                        {
+                            if (rzpDen.Any())
+                            {
+                                decimal rzpSuma = 0;
+                                foreach (var rzpDenRow in rzpDen)
+                                {
+                                    if (rzpDenRow.C_RzpPol_Id != null)
+                                    {
+                                        var rzpPol = rozpoctovePolozky.SingleOrDefault(z => rzpDenRow.C_RzpPol_Id == z.C_RzpPol_Id);
+                                        rzpSuma += (rzpPol.PrijemVydaj == 1 ? 1 : -1) * rzpDenRow.Suma;
+                                    }
+                                }
+
+                                if (tbek == TypBiznisEntity_KnihaEnum.Vydajove_pokladnicne_doklady)
+                                {
+                                    rzpSuma *= (-1);
+                                }
+
+                                if (hodnotaPol != rzpSuma && rzpSuma != 0)
+                                {
+                                    chybPol.Add($" - {popis}\r\n\t- hodnota na zaúčtovanie: { hodnotaPol }\r\n\t- zaúčtovaná hodnota: {rzpSuma}\r\n\t- rozdiel: {hodnotaPol - rzpSuma}");
+                                }
+                            }
+                            else
+                            {
+                                if (!be.PS)
+                                {
+                                    chybPol.Add($" - {popis} nie je zaúčtovaný");
+                                }
+                            }
+                        }
+
+                        var uhradaParovanie = Db.Select(Db.From<UhradaParovanieViewHelper>().Where(x => x.D_BiznisEntita_Id_Uhrada == be.D_BiznisEntita_Id)
+                                                                                            .Select(x => new { x.D_UhradaParovanie_Id, x.C_TypBiznisEntity_Kniha_Id, x.RzpDefinicia, x.DM_Cena, x.DM_Rozdiel, x.Poradie }));
+                        if (uhradaParovanie.Any())
+                        {
+                            foreach (var uhr in uhradaParovanie.Where(x => x.RzpDefinicia != -1).OrderBy(x => x.Poradie))
+                            {
+                                IEnumerable<RzpDennik> rzpDenForUhr = rozpoctovyDennik.Where(x => x.D_UhradaParovanie_Id == uhr.D_UhradaParovanie_Id);
+                                SkontrolujZauctovaniePolozky((TypBiznisEntity_KnihaEnum)uhr.C_TypBiznisEntity_Kniha_Id, rzpDenForUhr, uhr.DM_Cena + uhr.DM_Rozdiel, $"Riadok párovania úhrad {uhr.Poradie}");
+                            }
+                        }
+
+                        if (idTBE == (short)TypBiznisEntityEnum.BAN)
+                        {
+                            var banPolozka = Db.Select(Db.From<DokladBANPolViewHelper>().Where(x => x.D_BiznisEntita_Id == be.D_BiznisEntita_Id)
+                                                                                        .Select(x => new { x.D_DokladBANPol_Id, x.C_TypBiznisEntity_Kniha_Id, x.RzpDefinicia, x.Suma, x.Poradie }));
+                            if (banPolozka.Any())
+                            {
+                                foreach (var banPol in banPolozka.Where(x => x.RzpDefinicia != -1).OrderBy(x => x.Poradie))
+                                {
+                                    IEnumerable<RzpDennik> rzpDenForBanPol = rozpoctovyDennik.Where(x => x.D_DokladBANPol_Id == banPol.D_DokladBANPol_Id);
+                                    SkontrolujZauctovaniePolozky((TypBiznisEntity_KnihaEnum)banPol.C_TypBiznisEntity_Kniha_Id, rzpDenForBanPol, banPol.Suma, $"Položka bankového výpisu {banPol.Poradie}");
+                                }
+                            }
+                        }
+
+                        if (chybPol.Any())
+                        {
+                            chybneDoklady.Add((be.D_BiznisEntita_Id, $"Na uvedených riadkoch nie je predkontovaná správna hodnota:\r\n{chybPol.Join(Environment.NewLine)}"));
+                        }
+                    }
+                }
+
+                //CHECK-77
+                foreach (var rzpDenGrp in rozpoctovyDennik
+                    .Where(x => rozpoctovePolozky.SingleOrDefault(z => x.C_RzpPol_Id == z.C_RzpPol_Id) != null)
+                    .GroupBy(x => x.D_BiznisEntita_Id))
+                {
+                    var prijmove = rzpDenGrp.Where(x => rozpoctovePolozky.Any(z => x.C_RzpPol_Id == z.C_RzpPol_Id && z.PrijemVydaj == 1)).Sum(x => x.Suma);
+                    var vydajove = rzpDenGrp.Where(x => rozpoctovePolozky.Any(z => x.C_RzpPol_Id == z.C_RzpPol_Id && z.PrijemVydaj == 2)).Sum(x => x.Suma);
+                    decimal suma = 0;
+                    var dokl = doklady.Single(x => x.D_BiznisEntita_Id == rzpDenGrp.Key);
+                    var kontrolovanaSuma = dokl.DM_Suma;
+
+                    switch (dokl.C_TypBiznisEntity_Id)
+                    {
+                        case (int)TypBiznisEntityEnum.OZF:
+                        case (int)TypBiznisEntityEnum.OZM:
+                        case (int)TypBiznisEntityEnum.OOB:
+                        case (int)TypBiznisEntityEnum.OCP:
+                        case (int)TypBiznisEntityEnum.OFA:
+                            suma = prijmove - vydajove;
+                            break;
+
+                        case (int)TypBiznisEntityEnum.DZF:
+                        case (int)TypBiznisEntityEnum.DZM:
+                        case (int)TypBiznisEntityEnum.DOB:
+                        case (int)TypBiznisEntityEnum.DCP:
+                        case (int)TypBiznisEntityEnum.DFA:
+                            suma = vydajove - prijmove;
+                            break;
+                        default: //BAN, PDK
+                            kontrolovanaSuma = 0; //Priradenie iba z dovodu aby kontrola nezahucala
+                            break;
+                    }
+
+                    if (suma != 0 || kontrolovanaSuma != 0)
+                    {
+                        if (dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.DFA || dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.OFA)
+                        {
+                            var sumaZal = Db.Single<decimal>($"SELECT TOP 1 DM_SumaZal FROM crm.V_Doklad{(dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.DFA ? "D" : "O")}FA WHERE D_BiznisEntita_Id = {dokl.D_BiznisEntita_Id}");
+                            kontrolovanaSuma -= sumaZal;
+                        }
+
+                        if (suma != kontrolovanaSuma)
+                        {
+                            chybneDoklady.Add((rzpDenGrp.Key, $"Suma zaúčtovania do rozpočtu sa nerovná sume dokladu. Rozdiel {suma - kontrolovanaSuma} €"));
+                        }
+                    }
+                }
+
+                foreach (var dokl in doklady)
+                {
+                    //CHECK-78
+                    if (!rozpoctovyDennik.Any(x => x.D_BiznisEntita_Id == dokl.D_BiznisEntita_Id) && dokl.DM_Suma != 0 && dokl.C_TypBiznisEntity_Kniha_Id != (int)TypBiznisEntity_KnihaEnum.Externe_doklady_DaP)
+                    {
+                        if (dokl.PS && (dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.PDK ||
+                                        dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.BAN))
+                        {
+                            //OK - PS doklady BAN a PDK nesmú mať záznamy
+                        }
+                        else if (dokl.PS && (dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.DFA ||
+                                        dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.DZF ||
+                                        dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.OFA ||
+                                        dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.OZF) &&
+                                        eSAMStart != null && dokl.Rok < eSAMStart.Value.Year)
+                        {
+                            //OK - Povolenie potvrdenia rozpočtu dokladov minulých rokov aj bez záznamov
+                        }
+                        else
+                        {
+                            if (dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.DFA || dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.OFA)
+                            {
+                                var sumaZal = Db.Single<decimal>($"SELECT TOP 1 DM_SumaZal FROM crm.V_Doklad{(dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.DFA ? "D" : "O")}FA WHERE D_BiznisEntita_Id = {dokl.D_BiznisEntita_Id}");
+                                if (dokl.DM_Suma == sumaZal)
+                                {
+                                    continue; //Prípad, kedy tiež nepotrebujem žiadne záznamy v rzpDenniku
+                                }
+                            }
+
+                            chybneDoklady.Add((dokl.D_BiznisEntita_Id, $"Na doklade nie je možné potvrdiť rozpočet, pretože rozpočtový denník neobsahuje žiadne záznamy"));
+                        }
+                    }
+                }
+
+            }
+
+            if (rzpOductovanie)
+            {
+                LongOperationSetStateMessage(processKey, "Prebieha kontrola pred zrušením potvrdenia rozpočtom");
+
+                //CHECK-93
+                CheckUhradyPriZmeneStavu(doklady, ref chybneDoklady, "potvrdenie rozpočtom");
+            }
+
+            if (chybneDoklady.Any())
+            {
+                reportId = Guid.NewGuid().ToString();
+                using var ms = new MemoryStream();
+                TextWriter tw = new StreamWriter(ms);
+
+                foreach (var dkl in chybneDoklady.GroupBy(x => x.D_BiznisEntita_Id))
+                {
+                    tw.WriteLine($"Doklad '{doklady.FirstOrDefault(x => x.D_BiznisEntita_Id == dkl.Key)?.CisloInterne}':");
+                    tw.WriteLine(string.Join(Environment.NewLine, dkl.Select(x => x.Chyba)));
+                    tw.WriteLine();
+                }
+
+                tw.Flush();
+                ms.Position = 0;
+
+                var ret = new RendererResult
+                {
+                    DocumentBytes = ms.ToArray(),
+                    DocumentName = "ChybyZauctovania-" + ((TypBiznisEntityEnum)doklady.First().C_TypBiznisEntity_Id).ToString() + DateTime.Now.ToString("_yyyyMMdd_HHmm"),
+                    Extension = "txt"
+                };
+
+                SetToCache(string.Concat("Report:", reportId), ret, new TimeSpan(8, 0, 0), useGzipCompression: true);
+            }
+
+            return chybneDoklady;
+        }
+
+        private void CheckUhradyPriZmeneStavu(List<BiznisEntita> doklady, ref List<(long D_BiznisEntita_Id, string Chyba)> chybneDoklady, string akcia)
+        {
+            foreach (var dokl in doklady.GroupBy(x => x.C_TypBiznisEntity_Id))
+            {
+                var fakturySql = "SELECT D_BiznisEntita_Id FROM crm.{0} WHERE D_BiznisEntita_Id IN ({1}) AND DatumUhrady IS NOT NULL";
+                var fakturyUhrada = new List<long>();
+                switch ((TypBiznisEntityEnum)dokl.Key)
+                {
+                    case TypBiznisEntityEnum.DFA:
+                        fakturyUhrada.AddRange(Db.Select<long>(string.Format(fakturySql, "V_DokladDFA", dokl.Select(x => x.D_BiznisEntita_Id).Join(","))));
+                        break;
+                    case TypBiznisEntityEnum.OFA:
+                        fakturyUhrada.AddRange(Db.Select<long>(string.Format(fakturySql, "V_DokladOFA", dokl.Select(x => x.D_BiznisEntita_Id).Join(","))));
+                        break;
+                    case TypBiznisEntityEnum.DZF:
+                        fakturyUhrada.AddRange(Db.Select<long>(string.Format(fakturySql, "V_DokladDZF", dokl.Select(x => x.D_BiznisEntita_Id).Join(","))));
+                        break;
+                    case TypBiznisEntityEnum.OZF:
+                        fakturyUhrada.AddRange(Db.Select<long>(string.Format(fakturySql, "V_DokladOZF", dokl.Select(x => x.D_BiznisEntita_Id).Join(","))));
+                        break;
+                }
+
+                if (fakturyUhrada.Any())
+                {
+                    var uhrady = GetList(Db
+                        .From<UhradaParovanieViewHelper>()
+                        .Where(x => Sql.In(x.D_BiznisEntita_Id_Predpis, fakturyUhrada))
+                        .Select(x => new { x.D_BiznisEntita_Id_Predpis, x.CisloInterne }));
+
+                    foreach (var uhr in uhrady.GroupBy(x => x.D_BiznisEntita_Id_Predpis))
+                    {
+                        chybneDoklady.Add((uhr.Key.Value, $"Na doklad je už zaevidovaná úhrada ({ uhr.Select(x => string.Concat("'", x.CisloInterne, "'")).Join(", ")}). Nie je preto možné zrušiť {akcia}. Skontrolujte záložku úhrady."));
+                    }
+                }
+            }
+        }
+
+        public void SkontrolujZauctovanie(SkontrolovatZauctovanieDto dokl, string processKey)
+        {
+            var biznisEntita = GetList(Db.From<BiznisEntita>().Where(x => Sql.In(x.D_BiznisEntita_Id, dokl.D_BiznisEntita_Ids)));
+            var chybneDoklady = SkontrolovatZauctovanieDokladu(biznisEntita.First().C_TypBiznisEntity_Id, biznisEntita, 1, dokl.RzpDennik, false, dokl.UctDennik, false, processKey, out string reportId);
+
+            LongOperationSetStateFinished(processKey, string.Empty, $"Operácia 'Skontrolovať zaúčtovanie' sa skončila {(!chybneDoklady.Any() ? "úspešne" : "neúspešne")}.", state: LongOperationState.Done, reportId: reportId);
+        }
+
+        public void DoposlanieUhrad(string kodPolozky, string processKey)
+        {
+            if (!kodPolozky.StartsWith("fin-bnk-ban") && !kodPolozky.StartsWith("fin-pok-pdk") && !kodPolozky.StartsWith("all-evi-intd"))
+            {
+                throw new WebEasValidationException(null, "Nepovolený typ položky!");
+            }
+
+            List<BiznisEntita> biznisEntita;
+
+            if (kodPolozky.StartsWith("fin-pok-pdk"))
+            {
+                biznisEntita = GetList(Db.From<BiznisEntita>().Join<BiznisEntita, DokladPDK>((be, pdk) => be.D_BiznisEntita_Id == pdk.D_DokladPDK_Id && pdk.DCOM == false && be.C_StavEntity_Id > (int)StavEntityEnum.NOVY));
+            }
+            else if (kodPolozky.StartsWith("fin-bnk-ban"))
+            {
+                biznisEntita = GetList(Db.From<BiznisEntita>().Join<BiznisEntita, DokladBAN>((be, ban) => be.D_BiznisEntita_Id == ban.D_DokladBAN_Id && ban.DCOM == false && be.C_StavEntity_Id > (int)StavEntityEnum.NOVY));
+            }
+            else
+            {
+                biznisEntita = GetList(Db.From<BiznisEntita>().Join<BiznisEntita, DokladIND>((be, ind) => be.D_BiznisEntita_Id == ind.D_DokladIND_Id && ind.DCOM == false && be.C_StavEntity_Id > (int)StavEntityEnum.NOVY));
+            }
+
+            if (!biznisEntita.Any())
+            {
+                LongOperationSetStateFinished(processKey, string.Empty, "Neboli nájdené žiadne doklady na odoslanie.", state: LongOperationState.Done);
+                return;
+            }
+
+            //tu sa posiela idNewState 0, lebo taky stav v StavEntityEnum nemame a vtedy sa berie stav z dokladu
+            SpracovatZauctovatDoklad(biznisEntita, default, false, false, processKey, out string msgNeodoslanePolozky, doposlanieUhrad: true);
+
+            var msg = biznisEntita.Count > 1 ? "Doklady boli úspešne odoslané." : "Doklad bol úspešne odoslaný.";
+            LongOperationSetStateFinished(processKey, string.Empty, msg, state: LongOperationState.Done);
+        }
+
+        public void SpracujDoklad(SpracovatDokladDto dokl, string processKey, out string reportId, bool finishOperation = true)
+        {
+            #region Úvodná kontrola stavov
+
+            var biznisEntita = GetList(Db.From<BiznisEntita>().Where(x => Sql.In(x.D_BiznisEntita_Id, dokl.Ids)));
+            if (!biznisEntita.Any())
+            {
+                throw new WebEasValidationException(null, "Neboli nájdené žiadne doklady na spracovanie.");
+            }
+
+            if (biznisEntita.Any(x => x.C_StavEntity_Id != (int)StavEntityEnum.NOVY && x.C_StavEntity_Id != (int)StavEntityEnum.SPRACOVANY))
+            {
+                throw new WebEasValidationException(null, "Výber obsahuje doklady, ktoré nemajú stav 'Nový' alebo 'Spracovaný'. Operáciu 'Spracovať' nie je možné vykonať!");
+            }
+
+            var stavEntity = biznisEntita.First().C_StavEntity_Id;
+            if (biznisEntita.Any(x => x.C_StavEntity_Id != stavEntity))
+            {
+                throw new WebEasValidationException(null, "Výber obsahuje doklady, ktoré majú rôzne stavy. Operáciu 'Spracovať' nie je možné vykonať!");
+            }
+
+            #endregion
+
+            int idNewState = (biznisEntita.First().C_StavEntity_Id == (int)StavEntityEnum.NOVY) ?
+                (int)StavEntityEnum.SPRACOVANY :
+                (int)StavEntityEnum.NOVY;
+            var idTBE = biznisEntita.First().C_TypBiznisEntity_Id;
+            var valTBE = (TypBiznisEntityEnum)biznisEntita.First().C_TypBiznisEntity_Id;
+            var chybneDoklady = new List<(long D_BiznisEntita_Id, string Chyba)>();
+            reportId = null;
+            string msgNeodoslanePolozky = null;
+
+            // Kontroly pri spracovaní
+            if (idNewState == (int)StavEntityEnum.SPRACOVANY)
+            {
+                #region CHECK-13
+
+                var osobyDoklad = Db.Select(Db
+                       .From<OsobaView>()
+                       .Where(x => Sql.In(x.D_Osoba_Id, biznisEntita.Where(x => x.D_Osoba_Id.HasValue).Select(z => z.D_Osoba_Id)))
+                       .Select(x => x.D_Osoba_Id));
+
+                var uhrady = Db.Select(Db
+                       .From<UhradaParovanieViewHelper>()
+                       .Where(x => Sql.In(x.D_BiznisEntita_Id_Uhrada, biznisEntita.Select(z => z.D_BiznisEntita_Id))));
+
+                var osobyUhrady = Db.Select(Db
+                       .From<OsobaView>()
+                       .Where(x => Sql.In(x.D_Osoba_Id, uhrady.Where(x => x.D_Osoba_Id.HasValue).Select(z => z.D_Osoba_Id)))
+                       .Select(x => x.D_Osoba_Id));
+
+                var polozkyBanHrady = new List<DokladBANPolViewHelper>();
+                if (uhrady.Any(x => x.D_DokladBANPol_Id.HasValue))
+                {
+                    polozkyBanHrady = GetList(Db
+                        .From<DokladBANPolViewHelper>()
+                        .Where(x => Sql.In(x.D_DokladBANPol_Id, uhrady.Where(x => x.D_DokladBANPol_Id.HasValue).Select(x => x.D_DokladBANPol_Id)))
+                        .Select(x => new { x.Poradie, x.D_DokladBANPol_Id }));
+                }
+
+
+                foreach (var be in biznisEntita)
+                {
+                    if (be.D_Osoba_Id.HasValue && !osobyDoklad.Any(x => x.D_Osoba_Id == be.D_Osoba_Id.Value))
+                    {
+                        chybneDoklady.Add((be.D_BiznisEntita_Id, "Hlavička má vyplnenú neplatnú osobu"));
+                    }
+                }
+
+                //kontrola na osoby
+                foreach (var uhrOsoba in uhrady
+                    .Where(y => y.D_Osoba_Id.HasValue && !osobyUhrady.Any(x => x.D_Osoba_Id == y.D_Osoba_Id.Value))
+                    .GroupBy(x => x.D_BiznisEntita_Id_Uhrada))
+                {
+                    var typBiznisEntityId = biznisEntita.Single(x => x.D_BiznisEntita_Id == uhrOsoba.Key).C_TypBiznisEntity_Id;
+
+                    if (typBiznisEntityId == (short)TypBiznisEntityEnum.IND)
+                    {
+                        chybneDoklady.Add((uhrOsoba.Key, $"V položke preúčtovania úhrad (pč. { uhrOsoba.Select(x => x.Poradie).Join(",")}) je neplatná osoba"));
+                    }
+
+                    if (typBiznisEntityId == (short)TypBiznisEntityEnum.PDK)
+                    {
+                        chybneDoklady.Add((uhrOsoba.Key, $"V položke dokladu (pč. { uhrOsoba.Select(x => x.Poradie).Join(",")}) je neplatná osoba"));
+                    }
+
+                    if (typBiznisEntityId == (short)TypBiznisEntityEnum.BAN)
+                    {
+                        foreach (var polBan in polozkyBanHrady.Where(x => uhrOsoba.Select(x => x.D_DokladBANPol_Id).Contains(x.D_DokladBANPol_Id)))
+                        {
+                            chybneDoklady.Add((uhrOsoba.Key, $"V položke výpisu (pč. { polBan.Poradie }) a položke párovania úhrad (pč. { uhrOsoba.Where(x => x.D_DokladBANPol_Id == polBan.D_DokladBANPol_Id).Select(x => x.Poradie).Join(",")}) je neplatná osoba"));
+                        }
+                    }
+                }
+
+                foreach (var uhrDap in uhrady
+                    .Where(x => (x.C_Typ_Id >= 1001 && x.C_Typ_Id <= 1007 && (!x.D_VymerPol_Id.HasValue || string.IsNullOrEmpty(x.VS))) ||
+                    ((x.C_Typ_Id == (int)TypEnum.UhradaOFA ||
+                    x.C_Typ_Id == (int)TypEnum.UhradaOZF ||
+                    x.C_Typ_Id == (int)TypEnum.UhradaDFA ||
+                    x.C_Typ_Id == (int)TypEnum.UhradaDZF ||
+                    x.C_Typ_Id == (int)TypEnum.DobropisDFA ||
+                    x.C_Typ_Id == (int)TypEnum.DobropisOFA
+                    ) && (!x.D_BiznisEntita_Id_Predpis.HasValue || string.IsNullOrEmpty(x.VS))))
+                    .GroupBy(x => x.D_BiznisEntita_Id_Uhrada))
+                {
+                    var typBiznisEntityId = biznisEntita.Single(x => x.D_BiznisEntita_Id == uhrDap.Key).C_TypBiznisEntity_Id;
+                    var bezPredpisu = uhrDap.Where(x => (x.C_Typ_Id == (int)TypEnum.UhradaOFA ||
+                    x.C_Typ_Id == (int)TypEnum.UhradaOZF ||
+                    x.C_Typ_Id == (int)TypEnum.UhradaDFA ||
+                    x.C_Typ_Id == (int)TypEnum.UhradaDZF ||
+                    x.C_Typ_Id == (int)TypEnum.DobropisDFA ||
+                    x.C_Typ_Id == (int)TypEnum.DobropisOFA
+                    ) && !x.D_BiznisEntita_Id_Predpis.HasValue);
+
+                    var bezVymeru = uhrDap.Where(x => x.C_Typ_Id >= 1001 && x.C_Typ_Id <= 1007 && !x.D_VymerPol_Id.HasValue);
+                    var bezVs = uhrDap.Where(x => string.IsNullOrEmpty(x.VS));
+
+                    if (typBiznisEntityId == (short)TypBiznisEntityEnum.IND)
+                    {
+                        if (bezVymeru.Any())
+                        {
+                            chybneDoklady.Add((uhrDap.Key, $"V položke preúčtovania úhrad (pč. { bezVymeru.Select(x => x.Poradie).Join(",")}) chýba položka rozhodnutia"));
+                        }
+
+                        if (bezPredpisu.Any())
+                        {
+                            chybneDoklady.Add((uhrDap.Key, $"V položke preúčtovania úhrad (pč. { bezPredpisu.Select(x => x.Poradie).Join(",")}) chýba položka úhrady"));
+                        }
+
+                        if (bezVs.Any())
+                        {
+                            chybneDoklady.Add((uhrDap.Key, $"V položke preúčtovania úhrad (pč. { bezVs.Select(x => x.Poradie).Join(",")}) chýba VS"));
+                        }
+                    }
+
+                    if (typBiznisEntityId == (short)TypBiznisEntityEnum.PDK)
+                    {
+                        if (bezVymeru.Any())
+                        {
+                            chybneDoklady.Add((uhrDap.Key, $"V položke dokladu (pč. { bezVymeru.Select(x => x.Poradie).Join(",")}) chýba položka rozhodnutia"));
+                        }
+
+                        if (bezPredpisu.Any())
+                        {
+                            chybneDoklady.Add((uhrDap.Key, $"V položke dokladu (pč. { bezPredpisu.Select(x => x.Poradie).Join(",")}) chýba položka úhrady"));
+                        }
+
+                        if (bezVs.Any())
+                        {
+                            chybneDoklady.Add((uhrDap.Key, $"V položke dokladu (pč. { bezVymeru.Select(x => x.Poradie).Join(",")}) chýba VS"));
+                        }
+                    }
+
+                    if (typBiznisEntityId == (short)TypBiznisEntityEnum.BAN)
+                    {
+                        foreach (var polBan in polozkyBanHrady.Where(x => uhrDap.Select(x => x.D_DokladBANPol_Id).Contains(x.D_DokladBANPol_Id)))
+                        {
+                            if (bezVymeru.Any())
+                            {
+                                chybneDoklady.Add((uhrDap.Key, $"V položke výpisu (pč. { polBan.Poradie }) a položke párovania úhrad (pč. { bezVymeru.Where(x => x.D_DokladBANPol_Id == polBan.D_DokladBANPol_Id).Select(x => x.Poradie).Join(",")}) chýba položka rozhodnutia"));
+                            }
+
+                            if (bezPredpisu.Any())
+                            {
+                                chybneDoklady.Add((uhrDap.Key, $"V položke výpisu (pč. { polBan.Poradie }) a položke párovania úhrad (pč. { bezPredpisu.Where(x => x.D_DokladBANPol_Id == polBan.D_DokladBANPol_Id).Select(x => x.Poradie).Join(",")}) chýba položka úhrady"));
+                            }
+
+                            if (bezVs.Any())
+                            {
+                                chybneDoklady.Add((uhrDap.Key, $"V položke výpisu (pč. { polBan.Poradie }) a položke párovania úhrad (pč. { bezVs.Where(x => x.D_DokladBANPol_Id == polBan.D_DokladBANPol_Id).Select(x => x.Poradie).Join(",")}) chýba VS"));
+                            }
+                        }
+                    }
+                }
+
+                #endregion
 
                 if (idTBE == (short)TypBiznisEntityEnum.BAN)
                 {
-                    var banPolozka = Db.Select(Db.From<DokladBANPolViewHelper>().Where(x => x.D_BiznisEntita_Id == be.D_BiznisEntita_Id)
-                                                                                .Select(x => new { x.D_DokladBANPol_Id, x.C_TypBiznisEntity_Kniha_Id, x.RzpDefinicia, x.Suma, x.Poradie }));
-                    if (banPolozka.Any())
+                    #region Načítanie hlavičiek a položiek BAN so všetkými stĺpcami potrebnými na nasledovné kontroly
+
+                    var sqlExp = Db.From<DokladBANView>();
+                    foreach (var rok in biznisEntita.GroupBy(x => x.Rok))
                     {
-                        foreach (var banPol in banPolozka.Where(x => x.RzpDefinicia != -1).OrderBy(x => x.Poradie))
-                        {
-                            IEnumerable<RzpDennik> rzpDenForBanPol = rozpoctovyDennik.Where(x => x.D_DokladBANPol_Id == banPol.D_DokladBANPol_Id);
-                            SkontrolujZauctovaniePolozky((TypBiznisEntity_KnihaEnum)banPol.C_TypBiznisEntity_Kniha_Id, rzpDenForBanPol, banPol.Suma, $"Položka bankového výpisu {banPol.Poradie}");
-                        }
+                        sqlExp.Or(x => x.Rok == rok.Key && Sql.In(x.D_BiznisEntita_Id, rok.Select(z => z.D_BiznisEntita_Id)));
                     }
-                }
 
-                if (chybPol.Any())
-                {
-                    chybneDoklady.Add((be.D_BiznisEntita_Id, $"Na uvedených riadkoch nie je predkontovaná správna hodnota:\r\n{chybPol.Join(Environment.NewLine)}"));
-                }
-            }
-        }
+                    var doklBan = GetList(sqlExp.Select(x => new { x.D_BiznisEntita_Id, x.DM_Debet, x.DM_Kredit, x.PocetPol, x.DatumDokladu }));
 
-        //CHECK-77
-        foreach (var rzpDenGrp in rozpoctovyDennik
-            .Where(x => rozpoctovePolozky.SingleOrDefault(z => x.C_RzpPol_Id == z.C_RzpPol_Id) != null)
-            .GroupBy(x => x.D_BiznisEntita_Id))
-        {
-            var prijmove = rzpDenGrp.Where(x => rozpoctovePolozky.Any(z => x.C_RzpPol_Id == z.C_RzpPol_Id && z.PrijemVydaj == 1)).Sum(x => x.Suma);
-            var vydajove = rzpDenGrp.Where(x => rozpoctovePolozky.Any(z => x.C_RzpPol_Id == z.C_RzpPol_Id && z.PrijemVydaj == 2)).Sum(x => x.Suma);
-            decimal suma = 0;
-            var dokl = doklady.Single(x => x.D_BiznisEntita_Id == rzpDenGrp.Key);
-            var kontrolovanaSuma = dokl.DM_Suma;
+                    var polozkyBan = GetList(Db.From<DokladBANPolViewHelper>()
+                        .Where(x => Sql.In(x.D_BiznisEntita_Id, biznisEntita.Select(z => z.D_BiznisEntita_Id)))
+                        .Select(x => new { x.D_BiznisEntita_Id, x.D_DokladBANPol_Id, x.Poradie, x.DatumPohybu, x.C_Typ_Id, x.Suma }));
 
-            switch (dokl.C_TypBiznisEntity_Id)
-            {
-                case (int)TypBiznisEntityEnum.OZF:
-                case (int)TypBiznisEntityEnum.OZM:
-                case (int)TypBiznisEntityEnum.OOB:
-                case (int)TypBiznisEntityEnum.OCP:
-                case (int)TypBiznisEntityEnum.OFA:
-                    suma = prijmove - vydajove;
-                    break;
+                    #endregion
 
-                case (int)TypBiznisEntityEnum.DZF:
-                case (int)TypBiznisEntityEnum.DZM:
-                case (int)TypBiznisEntityEnum.DOB:
-                case (int)TypBiznisEntityEnum.DCP:
-                case (int)TypBiznisEntityEnum.DFA:
-                    suma = vydajove - prijmove;
-                    break;
-                default: //BAN, PDK
-                    kontrolovanaSuma = 0; //Priradenie iba z dovodu aby kontrola nezahucala
-                    break;
-            }
+                    #region CHECK-10  Kontrola na pocet poloziek
 
-            if (suma != 0 || kontrolovanaSuma != 0)
-            {
-                if (dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.DFA || dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.OFA)
-                {
-                    var sumaZal = Db.Single<decimal>($"SELECT TOP 1 DM_SumaZal FROM crm.V_Doklad{(dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.DFA ? "D" : "O")}FA WHERE D_BiznisEntita_Id = {dokl.D_BiznisEntita_Id}");
-                    kontrolovanaSuma -= sumaZal;
-                }
-
-                if (suma != kontrolovanaSuma)
-                {
-                    chybneDoklady.Add((rzpDenGrp.Key, $"Suma zaúčtovania do rozpočtu sa nerovná sume dokladu. Rozdiel {suma - kontrolovanaSuma} €"));
-                }
-            }
-        }
-
-        foreach (var dokl in doklady)
-        {
-            //CHECK-78
-            if (!rozpoctovyDennik.Any(x => x.D_BiznisEntita_Id == dokl.D_BiznisEntita_Id) && dokl.DM_Suma != 0 && dokl.C_TypBiznisEntity_Kniha_Id != (int)TypBiznisEntity_KnihaEnum.Externe_doklady_DaP)
-            {
-                if (dokl.PS && (dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.PDK ||
-                                dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.BAN))
-                {
-                    //OK - PS doklady BAN a PDK nesmú mať záznamy
-                }
-                else if (dokl.PS && (dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.DFA ||
-                                dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.DZF ||
-                                dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.OFA ||
-                                dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.OZF) &&
-                                eSAMStart != null && dokl.Rok < eSAMStart.Value.Year)
-                {
-                    //OK - Povolenie potvrdenia rozpočtu dokladov minulých rokov aj bez záznamov
-                }
-                else
-                {
-                    if (dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.DFA || dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.OFA)
+                    foreach (var ban in doklBan)
                     {
-                        var sumaZal = Db.Single<decimal>($"SELECT TOP 1 DM_SumaZal FROM crm.V_Doklad{(dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.DFA ? "D" : "O")}FA WHERE D_BiznisEntita_Id = {dokl.D_BiznisEntita_Id}");
-                        if (dokl.DM_Suma == sumaZal)
+                        if (ban.PocetPol != default)
                         {
-                            continue; //Prípad, kedy tiež nepotrebujem žiadne záznamy v rzpDenniku
+                            var pocetPoloziek = polozkyBan.Where(p => p.D_BiznisEntita_Id == ban.D_BiznisEntita_Id).Count();
+
+                            if (pocetPoloziek != ban.PocetPol)
+                            {
+                                chybneDoklady.Add((ban.D_BiznisEntita_Id, "Počet položiek uvedený v hlavičke výpisu sa nezhoduje s počtom zaevidovaných položiek."));
+                            }
                         }
                     }
 
-                    chybneDoklady.Add((dokl.D_BiznisEntita_Id, $"Na doklade nie je možné potvrdiť rozpočet, pretože rozpočtový denník neobsahuje žiadne záznamy"));
-                }
-            }
-        }
+                    #endregion
 
-    }
+                    #region CHECK-5, CHECK-6  Kontrola Datumu Uhrady
 
-    if (rzpOductovanie)
-    {
-        LongOperationSetStateMessage(processKey, "Prebieha kontrola pred zrušením potvrdenia rozpočtom");
-
-        //CHECK-93
-        CheckUhradyPriZmeneStavu(doklady, ref chybneDoklady, "potvrdenie rozpočtom");
-    }
-
-    if (chybneDoklady.Any())
-    {
-        reportId = Guid.NewGuid().ToString();
-        using var ms = new MemoryStream();
-        TextWriter tw = new StreamWriter(ms);
-
-        foreach (var dkl in chybneDoklady.GroupBy(x => x.D_BiznisEntita_Id))
-        {
-            tw.WriteLine($"Doklad '{doklady.FirstOrDefault(x => x.D_BiznisEntita_Id == dkl.Key)?.CisloInterne}':");
-            tw.WriteLine(string.Join(Environment.NewLine, dkl.Select(x => x.Chyba)));
-            tw.WriteLine();
-        }
-
-        tw.Flush();
-        ms.Position = 0;
-
-        var ret = new RendererResult
-        {
-            DocumentBytes = ms.ToArray(),
-            DocumentName = "ChybyZauctovania-" + ((TypBiznisEntityEnum)doklady.First().C_TypBiznisEntity_Id).ToString() + DateTime.Now.ToString("_yyyyMMdd_HHmm"),
-            Extension = "txt"
-        };
-
-        SetToCache(string.Concat("Report:", reportId), ret, new TimeSpan(8, 0, 0), useGzipCompression: true);
-    }
-
-    return chybneDoklady;
-}
-
-private void CheckUhradyPriZmeneStavu(List<BiznisEntita> doklady, ref List<(long D_BiznisEntita_Id, string Chyba)> chybneDoklady, string akcia)
-{
-    foreach (var dokl in doklady.GroupBy(x => x.C_TypBiznisEntity_Id))
-    {
-        var fakturySql = "SELECT D_BiznisEntita_Id FROM crm.{0} WHERE D_BiznisEntita_Id IN ({1}) AND DatumUhrady IS NOT NULL";
-        var fakturyUhrada = new List<long>();
-        switch ((TypBiznisEntityEnum)dokl.Key)
-        {
-            case TypBiznisEntityEnum.DFA:
-                fakturyUhrada.AddRange(Db.Select<long>(string.Format(fakturySql, "V_DokladDFA", dokl.Select(x => x.D_BiznisEntita_Id).Join(","))));
-                break;
-            case TypBiznisEntityEnum.OFA:
-                fakturyUhrada.AddRange(Db.Select<long>(string.Format(fakturySql, "V_DokladOFA", dokl.Select(x => x.D_BiznisEntita_Id).Join(","))));
-                break;
-            case TypBiznisEntityEnum.DZF:
-                fakturyUhrada.AddRange(Db.Select<long>(string.Format(fakturySql, "V_DokladDZF", dokl.Select(x => x.D_BiznisEntita_Id).Join(","))));
-                break;
-            case TypBiznisEntityEnum.OZF:
-                fakturyUhrada.AddRange(Db.Select<long>(string.Format(fakturySql, "V_DokladOZF", dokl.Select(x => x.D_BiznisEntita_Id).Join(","))));
-                break;
-        }
-
-        if (fakturyUhrada.Any())
-        {
-            var uhrady = GetList(Db
-                .From<UhradaParovanieViewHelper>()
-                .Where(x => Sql.In(x.D_BiznisEntita_Id_Predpis, fakturyUhrada))
-                .Select(x => new { x.D_BiznisEntita_Id_Predpis, x.CisloInterne }));
-
-            foreach (var uhr in uhrady.GroupBy(x => x.D_BiznisEntita_Id_Predpis))
-            {
-                chybneDoklady.Add((uhr.Key.Value, $"Na doklad je už zaevidovaná úhrada ({ uhr.Select(x => string.Concat("'", x.CisloInterne, "'")).Join(", ")}). Nie je preto možné zrušiť {akcia}. Skontrolujte záložku úhrady."));
-            }
-        }
-    }
-}
-
-public void SkontrolujZauctovanie(SkontrolovatZauctovanieDto dokl, string processKey)
-{
-    var biznisEntita = GetList(Db.From<BiznisEntita>().Where(x => Sql.In(x.D_BiznisEntita_Id, dokl.D_BiznisEntita_Ids)));
-    var chybneDoklady = SkontrolovatZauctovanieDokladu(biznisEntita.First().C_TypBiznisEntity_Id, biznisEntita, 1, dokl.RzpDennik, false, dokl.UctDennik, false, processKey, out string reportId);
-
-    LongOperationSetStateFinished(processKey, string.Empty, $"Operácia 'Skontrolovať zaúčtovanie' sa skončila {(!chybneDoklady.Any() ? "úspešne" : "neúspešne")}.", state: LongOperationState.Done, reportId: reportId);
-}
-
-public void DoposlanieUhrad(string kodPolozky, string processKey)
-{
-    if (!kodPolozky.StartsWith("fin-bnk-ban") && !kodPolozky.StartsWith("fin-pok-pdk") && !kodPolozky.StartsWith("all-evi-intd"))
-    {
-        throw new WebEasValidationException(null, "Nepovolený typ položky!");
-    }
-
-    List<BiznisEntita> biznisEntita;
-
-    if (kodPolozky.StartsWith("fin-pok-pdk"))
-    {
-        biznisEntita = GetList(Db.From<BiznisEntita>().Join<BiznisEntita, DokladPDK>((be, pdk) => be.D_BiznisEntita_Id == pdk.D_DokladPDK_Id && pdk.DCOM == false && be.C_StavEntity_Id > (int)StavEntityEnum.NOVY));
-    }
-    else if (kodPolozky.StartsWith("fin-bnk-ban"))
-    {
-        biznisEntita = GetList(Db.From<BiznisEntita>().Join<BiznisEntita, DokladBAN>((be, ban) => be.D_BiznisEntita_Id == ban.D_DokladBAN_Id && ban.DCOM == false && be.C_StavEntity_Id > (int)StavEntityEnum.NOVY));
-    }
-    else
-    {
-        biznisEntita = GetList(Db.From<BiznisEntita>().Join<BiznisEntita, DokladIND>((be, ind) => be.D_BiznisEntita_Id == ind.D_DokladIND_Id && ind.DCOM == false && be.C_StavEntity_Id > (int)StavEntityEnum.NOVY));
-    }
-
-    if (!biznisEntita.Any())
-    {
-        LongOperationSetStateFinished(processKey, string.Empty, "Neboli nájdené žiadne doklady na odoslanie.", state: LongOperationState.Done);
-        return;
-    }
-
-    //tu sa posiela idNewState 0, lebo taky stav v StavEntityEnum nemame a vtedy sa berie stav z dokladu
-    SpracovatZauctovatDoklad(biznisEntita, default, false, false, processKey, out string msgNeodoslanePolozky, doposlanieUhrad: true);
-
-    var msg = biznisEntita.Count > 1 ? "Doklady boli úspešne odoslané." : "Doklad bol úspešne odoslaný.";
-    LongOperationSetStateFinished(processKey, string.Empty, msg, state: LongOperationState.Done);
-}
-
-public void SpracujDoklad(SpracovatDokladDto dokl, string processKey, out string reportId, bool finishOperation = true)
-{
-    #region Úvodná kontrola stavov
-
-    var biznisEntita = GetList(Db.From<BiznisEntita>().Where(x => Sql.In(x.D_BiznisEntita_Id, dokl.Ids)));
-    if (!biznisEntita.Any())
-    {
-        throw new WebEasValidationException(null, "Neboli nájdené žiadne doklady na spracovanie.");
-    }
-
-    if (biznisEntita.Any(x => x.C_StavEntity_Id != (int)StavEntityEnum.NOVY && x.C_StavEntity_Id != (int)StavEntityEnum.SPRACOVANY))
-    {
-        throw new WebEasValidationException(null, "Výber obsahuje doklady, ktoré nemajú stav 'Nový' alebo 'Spracovaný'. Operáciu 'Spracovať' nie je možné vykonať!");
-    }
-
-    var stavEntity = biznisEntita.First().C_StavEntity_Id;
-    if (biznisEntita.Any(x => x.C_StavEntity_Id != stavEntity))
-    {
-        throw new WebEasValidationException(null, "Výber obsahuje doklady, ktoré majú rôzne stavy. Operáciu 'Spracovať' nie je možné vykonať!");
-    }
-
-    #endregion
-
-    int idNewState = (biznisEntita.First().C_StavEntity_Id == (int)StavEntityEnum.NOVY) ?
-        (int)StavEntityEnum.SPRACOVANY :
-        (int)StavEntityEnum.NOVY;
-    var idTBE = biznisEntita.First().C_TypBiznisEntity_Id;
-    var valTBE = (TypBiznisEntityEnum)biznisEntita.First().C_TypBiznisEntity_Id;
-    var chybneDoklady = new List<(long D_BiznisEntita_Id, string Chyba)>();
-    reportId = null;
-    string msgNeodoslanePolozky = null;
-
-    // Kontroly pri spracovaní
-    if (idNewState == (int)StavEntityEnum.SPRACOVANY)
-    {
-        #region CHECK-13
-
-        var osobyDoklad = Db.Select(Db
-               .From<OsobaView>()
-               .Where(x => Sql.In(x.D_Osoba_Id, biznisEntita.Where(x => x.D_Osoba_Id.HasValue).Select(z => z.D_Osoba_Id)))
-               .Select(x => x.D_Osoba_Id));
-
-        var uhrady = Db.Select(Db
-               .From<UhradaParovanieViewHelper>()
-               .Where(x => Sql.In(x.D_BiznisEntita_Id_Uhrada, biznisEntita.Select(z => z.D_BiznisEntita_Id))));
-
-        var osobyUhrady = Db.Select(Db
-               .From<OsobaView>()
-               .Where(x => Sql.In(x.D_Osoba_Id, uhrady.Where(x => x.D_Osoba_Id.HasValue).Select(z => z.D_Osoba_Id)))
-               .Select(x => x.D_Osoba_Id));
-
-        var polozkyBanHrady = new List<DokladBANPolViewHelper>();
-        if (uhrady.Any(x => x.D_DokladBANPol_Id.HasValue))
-        {
-            polozkyBanHrady = GetList(Db
-                .From<DokladBANPolViewHelper>()
-                .Where(x => Sql.In(x.D_DokladBANPol_Id, uhrady.Where(x => x.D_DokladBANPol_Id.HasValue).Select(x => x.D_DokladBANPol_Id)))
-                .Select(x => new { x.Poradie, x.D_DokladBANPol_Id }));
-        }
-
-
-        foreach (var be in biznisEntita)
-        {
-            if (be.D_Osoba_Id.HasValue && !osobyDoklad.Any(x => x.D_Osoba_Id == be.D_Osoba_Id.Value))
-            {
-                chybneDoklady.Add((be.D_BiznisEntita_Id, "Hlavička má vyplnenú neplatnú osobu"));
-            }
-        }
-
-        //kontrola na osoby
-        foreach (var uhrOsoba in uhrady
-            .Where(y => y.D_Osoba_Id.HasValue && !osobyUhrady.Any(x => x.D_Osoba_Id == y.D_Osoba_Id.Value))
-            .GroupBy(x => x.D_BiznisEntita_Id_Uhrada))
-        {
-            var typBiznisEntityId = biznisEntita.Single(x => x.D_BiznisEntita_Id == uhrOsoba.Key).C_TypBiznisEntity_Id;
-
-            if (typBiznisEntityId == (short)TypBiznisEntityEnum.IND)
-            {
-                chybneDoklady.Add((uhrOsoba.Key, $"V položke preúčtovania úhrad (pč. { uhrOsoba.Select(x => x.Poradie).Join(",")}) je neplatná osoba"));
-            }
-
-            if (typBiznisEntityId == (short)TypBiznisEntityEnum.PDK)
-            {
-                chybneDoklady.Add((uhrOsoba.Key, $"V položke dokladu (pč. { uhrOsoba.Select(x => x.Poradie).Join(",")}) je neplatná osoba"));
-            }
-
-            if (typBiznisEntityId == (short)TypBiznisEntityEnum.BAN)
-            {
-                foreach (var polBan in polozkyBanHrady.Where(x => uhrOsoba.Select(x => x.D_DokladBANPol_Id).Contains(x.D_DokladBANPol_Id)))
-                {
-                    chybneDoklady.Add((uhrOsoba.Key, $"V položke výpisu (pč. { polBan.Poradie }) a položke párovania úhrad (pč. { uhrOsoba.Where(x => x.D_DokladBANPol_Id == polBan.D_DokladBANPol_Id).Select(x => x.Poradie).Join(",")}) je neplatná osoba"));
-                }
-            }
-        }
-
-        foreach (var uhrDap in uhrady
-            .Where(x => (x.C_Typ_Id >= 1001 && x.C_Typ_Id <= 1007 && (!x.D_VymerPol_Id.HasValue || string.IsNullOrEmpty(x.VS))) ||
-            ((x.C_Typ_Id == (int)TypEnum.UhradaOFA ||
-            x.C_Typ_Id == (int)TypEnum.UhradaOZF ||
-            x.C_Typ_Id == (int)TypEnum.UhradaDFA ||
-            x.C_Typ_Id == (int)TypEnum.UhradaDZF ||
-            x.C_Typ_Id == (int)TypEnum.DobropisDFA ||
-            x.C_Typ_Id == (int)TypEnum.DobropisOFA
-            ) && (!x.D_BiznisEntita_Id_Predpis.HasValue || string.IsNullOrEmpty(x.VS))))
-            .GroupBy(x => x.D_BiznisEntita_Id_Uhrada))
-        {
-            var typBiznisEntityId = biznisEntita.Single(x => x.D_BiznisEntita_Id == uhrDap.Key).C_TypBiznisEntity_Id;
-            var bezPredpisu = uhrDap.Where(x => (x.C_Typ_Id == (int)TypEnum.UhradaOFA ||
-            x.C_Typ_Id == (int)TypEnum.UhradaOZF ||
-            x.C_Typ_Id == (int)TypEnum.UhradaDFA ||
-            x.C_Typ_Id == (int)TypEnum.UhradaDZF ||
-            x.C_Typ_Id == (int)TypEnum.DobropisDFA ||
-            x.C_Typ_Id == (int)TypEnum.DobropisOFA
-            ) && !x.D_BiznisEntita_Id_Predpis.HasValue);
-
-            var bezVymeru = uhrDap.Where(x => x.C_Typ_Id >= 1001 && x.C_Typ_Id <= 1007 && !x.D_VymerPol_Id.HasValue);
-            var bezVs = uhrDap.Where(x => string.IsNullOrEmpty(x.VS));
-
-            if (typBiznisEntityId == (short)TypBiznisEntityEnum.IND)
-            {
-                if (bezVymeru.Any())
-                {
-                    chybneDoklady.Add((uhrDap.Key, $"V položke preúčtovania úhrad (pč. { bezVymeru.Select(x => x.Poradie).Join(",")}) chýba položka rozhodnutia"));
-                }
-
-                if (bezPredpisu.Any())
-                {
-                    chybneDoklady.Add((uhrDap.Key, $"V položke preúčtovania úhrad (pč. { bezPredpisu.Select(x => x.Poradie).Join(",")}) chýba položka úhrady"));
-                }
-
-                if (bezVs.Any())
-                {
-                    chybneDoklady.Add((uhrDap.Key, $"V položke preúčtovania úhrad (pč. { bezVs.Select(x => x.Poradie).Join(",")}) chýba VS"));
-                }
-            }
-
-            if (typBiznisEntityId == (short)TypBiznisEntityEnum.PDK)
-            {
-                if (bezVymeru.Any())
-                {
-                    chybneDoklady.Add((uhrDap.Key, $"V položke dokladu (pč. { bezVymeru.Select(x => x.Poradie).Join(",")}) chýba položka rozhodnutia"));
-                }
-
-                if (bezPredpisu.Any())
-                {
-                    chybneDoklady.Add((uhrDap.Key, $"V položke dokladu (pč. { bezPredpisu.Select(x => x.Poradie).Join(",")}) chýba položka úhrady"));
-                }
-
-                if (bezVs.Any())
-                {
-                    chybneDoklady.Add((uhrDap.Key, $"V položke dokladu (pč. { bezVymeru.Select(x => x.Poradie).Join(",")}) chýba VS"));
-                }
-            }
-
-            if (typBiznisEntityId == (short)TypBiznisEntityEnum.BAN)
-            {
-                foreach (var polBan in polozkyBanHrady.Where(x => uhrDap.Select(x => x.D_DokladBANPol_Id).Contains(x.D_DokladBANPol_Id)))
-                {
-                    if (bezVymeru.Any())
+                    foreach (var ban in doklBan)
                     {
-                        chybneDoklady.Add((uhrDap.Key, $"V položke výpisu (pč. { polBan.Poradie }) a položke párovania úhrad (pč. { bezVymeru.Where(x => x.D_DokladBANPol_Id == polBan.D_DokladBANPol_Id).Select(x => x.Poradie).Join(",")}) chýba položka rozhodnutia"));
+                        foreach (var uhrada in polozkyBan.Where(p => p.D_BiznisEntita_Id == ban.D_BiznisEntita_Id))
+                        {
+                            if (uhrada.DatumPohybu > ban.DatumDokladu) // neviem, ktory datum z uhrady
+                            {
+                                chybneDoklady.Add((ban.D_BiznisEntita_Id, $"Dátum úhrady {uhrada.DatumPohybu.ToShortDateString()} na {uhrada.Poradie}. riadku je väčší ako dátum dokladu ({ban.DatumDokladu.ToShortDateString()})"));
+                            }
+
+                            if (uhrada.DatumPohybu.Month != ban.DatumDokladu.Month) // neviem, ktory datum z uhrady
+                            {
+                                chybneDoklady.Add((ban.D_BiznisEntita_Id, $"Dátum úhrady {uhrada.DatumPohybu.ToShortDateString()} na {uhrada.Poradie}. riadku má rozdielny mesiac ako dátum dokladu ({ban.DatumDokladu.ToShortDateString()})"));
+                            }
+                        }
                     }
 
-                    if (bezPredpisu.Any())
+                    #endregion
+
+                    #region CHECK-08 Kontrola na konzistenciu medzi tabuľkami fin.V_DokladBANPol a D_UhradaParovanie
+
+                    var chybnePolozky = new List<(long, int)>();
+                    var chybnePolozkySuma = new List<(long, int)>();
+
+                    var naparovaneUhrady = Db.Select<(long D_DokladBANPol_Id, decimal DmCenaSum)>(Db
+                       .From<UhradaParovanieViewHelperDCOM>()
+                       .Where(x => Sql.In(x.D_BiznisEntita_Id_Uhrada, biznisEntita.Select(z => z.D_BiznisEntita_Id)))
+                       .Select(x => new { x.D_DokladBANPol_Id, DmCenaSum = Sql.Sum(x.DM_Cena) }) //Sem nedávam Cena+Rozdiel !!
+                       .GroupBy(x => x.D_DokladBANPol_Id));
+
+                    foreach (var pol in polozkyBan)
                     {
-                        chybneDoklady.Add((uhrDap.Key, $"V položke výpisu (pč. { polBan.Poradie }) a položke párovania úhrad (pč. { bezPredpisu.Where(x => x.D_DokladBANPol_Id == polBan.D_DokladBANPol_Id).Select(x => x.Poradie).Join(",")}) chýba položka úhrady"));
+                        if (pol.C_Typ_Id == (int)TypEnum.UhradaPohZav)
+                        {
+                            if (!naparovaneUhrady.Any(x => x.D_DokladBANPol_Id == pol.D_DokladBANPol_Id) ||
+                              naparovaneUhrady.Single(x => x.D_DokladBANPol_Id == pol.D_DokladBANPol_Id).DmCenaSum != pol.Suma)
+                            {
+                                chybnePolozkySuma.Add((pol.D_BiznisEntita_Id, pol.Poradie));
+                            }
+                        }
+                        else
+                        {
+                            if (naparovaneUhrady.Any(x => x.D_DokladBANPol_Id == pol.D_DokladBANPol_Id))
+                            {
+                                chybnePolozky.Add((pol.D_BiznisEntita_Id, pol.Poradie));
+                            }
+                        }
                     }
 
-                    if (bezVs.Any())
+                    if (chybnePolozkySuma.Any() || chybnePolozky.Any())
                     {
-                        chybneDoklady.Add((uhrDap.Key, $"V položke výpisu (pč. { polBan.Poradie }) a položke párovania úhrad (pč. { bezVs.Where(x => x.D_DokladBANPol_Id == polBan.D_DokladBANPol_Id).Select(x => x.Poradie).Join(",")}) chýba VS"));
+                        var msg = string.Empty;
+
+                        if (chybnePolozkySuma.Any())
+                        {
+                            foreach (var pol in chybnePolozkySuma.GroupBy(x => x.Item1))
+                            {
+                                chybneDoklady.Add((pol.Key, $"Suma úhrady na ({pol.Select(x => x.Item2).Join(",")}) položke bankového výpisu sa nezhoduje so sumou na záznamoch párovania. "));
+                            }
+                        }
+
+                        if (chybnePolozky.Any())
+                        {
+                            foreach (var pol in chybnePolozkySuma.GroupBy(x => x.Item1))
+                            {
+                                chybneDoklady.Add((pol.Key, $"({pol.Select(x => x.Item2).Join(",")}) položka bankového výpisu nesmie mať zaevidované žiadne záznamy v párovaní úhrad"));
+                            }
+                        }
                     }
+
+                    #endregion
+
+                    #region CHECK-9  Kontrola DM_Suma a rozdiel
+
+                    foreach (var ban in doklBan)
+                    {
+                        if ((ban.DM_Kredit - ban.DM_Debet) != biznisEntita.Single(x => x.D_BiznisEntita_Id == ban.D_BiznisEntita_Id).DM_Suma)
+                        {
+                            chybneDoklady.Add((ban.D_BiznisEntita_Id, "Hodnota 'kredit - debet' na doklade sa nezhoduje so sumou napočítanou z položiek bankového výpisu."));
+                        }
+                    }
+
+                    #endregion
+
                 }
             }
-        }
 
-        #endregion
-
-        if (idTBE == (short)TypBiznisEntityEnum.BAN)
-        {
-            #region Načítanie hlavičiek a položiek BAN so všetkými stĺpcami potrebnými na nasledovné kontroly
-
-            var sqlExp = Db.From<DokladBANView>();
-            foreach (var rok in biznisEntita.GroupBy(x => x.Rok))
+            // CHECK-11  Kontrola pri odspracovani odkladu
+            if (idNewState == (int)StavEntityEnum.NOVY)
             {
-                sqlExp.Or(x => x.Rok == rok.Key && Sql.In(x.D_BiznisEntita_Id, rok.Select(z => z.D_BiznisEntita_Id)));
+                CheckUhradyPriZmeneStavu(biznisEntita, ref chybneDoklady, "spracovanie dokladu"); //Využijem tiež túto metódu, ale nepoužijem naplnené chyby, lebo nie je podpora pre výpis do súboru
             }
 
-            var doklBan = GetList(sqlExp.Select(x => new { x.D_BiznisEntita_Id, x.DM_Debet, x.DM_Kredit, x.PocetPol, x.DatumDokladu }));
-
-            var polozkyBan = GetList(Db.From<DokladBANPolViewHelper>()
-                .Where(x => Sql.In(x.D_BiznisEntita_Id, biznisEntita.Select(z => z.D_BiznisEntita_Id)))
-                .Select(x => new { x.D_BiznisEntita_Id, x.D_DokladBANPol_Id, x.Poradie, x.DatumPohybu, x.C_Typ_Id, x.Suma }));
-
-            #endregion
-
-            #region CHECK-10  Kontrola na pocet poloziek
-
-            foreach (var ban in doklBan)
+            if (chybneDoklady.Any())
             {
-                if (ban.PocetPol != default)
-                {
-                    var pocetPoloziek = polozkyBan.Where(p => p.D_BiznisEntita_Id == ban.D_BiznisEntita_Id).Count();
+                reportId = Guid.NewGuid().ToString();
+                using var ms = new MemoryStream();
+                TextWriter tw = new StreamWriter(ms);
 
-                    if (pocetPoloziek != ban.PocetPol)
-                    {
-                        chybneDoklady.Add((ban.D_BiznisEntita_Id, "Počet položiek uvedený v hlavičke výpisu sa nezhoduje s počtom zaevidovaných položiek."));
-                    }
+                foreach (var dkl in chybneDoklady.GroupBy(x => x.D_BiznisEntita_Id))
+                {
+                    tw.WriteLine($"Doklad '{biznisEntita.FirstOrDefault(x => x.D_BiznisEntita_Id == dkl.Key)?.CisloInterne}':");
+                    tw.WriteLine(string.Join(Environment.NewLine, dkl.Select(x => x.Chyba)));
+                    tw.WriteLine();
                 }
+
+                tw.Flush();
+                ms.Position = 0;
+
+                var ret = new RendererResult
+                {
+                    DocumentBytes = ms.ToArray(),
+                    DocumentName = "ChybySpracovania-" + ((TypBiznisEntityEnum)biznisEntita.First().C_TypBiznisEntity_Id).ToString() + DateTime.Now.ToString("_yyyyMMdd_HHmm"),
+                    Extension = "txt"
+                };
+
+                SetToCache(string.Concat("Report:", reportId), ret, new TimeSpan(8, 0, 0), useGzipCompression: true);
+            }
+            else
+            {
+                SpracovatZauctovatDoklad(biznisEntita, idNewState, false, false, processKey, out msgNeodoslanePolozky);
             }
 
-            #endregion
 
-            #region CHECK-5, CHECK-6  Kontrola Datumu Uhrady
-
-            foreach (var ban in doklBan)
+            if (!string.IsNullOrEmpty(reportId))
             {
-                foreach (var uhrada in polozkyBan.Where(p => p.D_BiznisEntita_Id == ban.D_BiznisEntita_Id))
-                {
-                    if (uhrada.DatumPohybu > ban.DatumDokladu) // neviem, ktory datum z uhrady
-                    {
-                        chybneDoklady.Add((ban.D_BiznisEntita_Id, $"Dátum úhrady {uhrada.DatumPohybu.ToShortDateString()} na {uhrada.Poradie}. riadku je väčší ako dátum dokladu ({ban.DatumDokladu.ToShortDateString()})"));
-                    }
-
-                    if (uhrada.DatumPohybu.Month != ban.DatumDokladu.Month) // neviem, ktory datum z uhrady
-                    {
-                        chybneDoklady.Add((ban.D_BiznisEntita_Id, $"Dátum úhrady {uhrada.DatumPohybu.ToShortDateString()} na {uhrada.Poradie}. riadku má rozdielny mesiac ako dátum dokladu ({ban.DatumDokladu.ToShortDateString()})"));
-                    }
-                }
+                LongOperationSetStateFinished(processKey, string.Empty, $"Operácia 'Spracovať' sa skončila neúspešne.", state: LongOperationState.Done, reportId: reportId);
             }
-
-            #endregion
-
-            #region CHECK-08 Kontrola na konzistenciu medzi tabuľkami fin.V_DokladBANPol a D_UhradaParovanie
-
-            var chybnePolozky = new List<(long, int)>();
-            var chybnePolozkySuma = new List<(long, int)>();
-
-            var naparovaneUhrady = Db.Select<(long D_DokladBANPol_Id, decimal DmCenaSum)>(Db
-               .From<UhradaParovanieViewHelperDCOM>()
-               .Where(x => Sql.In(x.D_BiznisEntita_Id_Uhrada, biznisEntita.Select(z => z.D_BiznisEntita_Id)))
-               .Select(x => new { x.D_DokladBANPol_Id, DmCenaSum = Sql.Sum(x.DM_Cena) }) //Sem nedávam Cena+Rozdiel !!
-               .GroupBy(x => x.D_DokladBANPol_Id));
-
-            foreach (var pol in polozkyBan)
+            else
             {
-                if (pol.C_Typ_Id == (int)TypEnum.UhradaPohZav)
+                // A koniec long time
+                if (idNewState == (int)StavEntityEnum.SPRACOVANY)
                 {
-                    if (!naparovaneUhrady.Any(x => x.D_DokladBANPol_Id == pol.D_DokladBANPol_Id) ||
-                      naparovaneUhrady.Single(x => x.D_DokladBANPol_Id == pol.D_DokladBANPol_Id).DmCenaSum != pol.Suma)
+                    var msg = biznisEntita.Count > 1 ? "Doklady boli úspešne spracované. " : "Doklad bol úspešne spracovaný. ";
+                    if (!string.IsNullOrEmpty(msgNeodoslanePolozky))
                     {
-                        chybnePolozkySuma.Add((pol.D_BiznisEntita_Id, pol.Poradie));
+                        msg = string.Concat(msg, "Avšak ", msgNeodoslanePolozky);
+                    }
+
+                    if (finishOperation)
+                    {
+                        LongOperationSetStateFinished(processKey, string.Empty, msg, state: LongOperationState.Done);
+                    }
+                    else
+                    {
+                        LongOperationSetStateMessage(processKey, msg);
                     }
                 }
                 else
                 {
-                    if (naparovaneUhrady.Any(x => x.D_DokladBANPol_Id == pol.D_DokladBANPol_Id))
+                    var msg = biznisEntita.Count > 1 ? "Na dokladoch bolo úspešne zrušené spracovanie. " : "Na doklade bolo úspešne zrušené spracovanie. ";
+                    if (!string.IsNullOrEmpty(msgNeodoslanePolozky))
                     {
-                        chybnePolozky.Add((pol.D_BiznisEntita_Id, pol.Poradie));
+                        msg = string.Concat(msg, "Avšak ", msgNeodoslanePolozky);
+                    }
+
+                    if (finishOperation)
+                    {
+                        LongOperationSetStateFinished(processKey, string.Empty, msg, state: LongOperationState.Done);
+                    }
+                    else
+                    {
+                        LongOperationSetStateMessage(processKey, msg);
                     }
                 }
             }
-
-            if (chybnePolozkySuma.Any() || chybnePolozky.Any())
-            {
-                var msg = string.Empty;
-
-                if (chybnePolozkySuma.Any())
-                {
-                    foreach (var pol in chybnePolozkySuma.GroupBy(x => x.Item1))
-                    {
-                        chybneDoklady.Add((pol.Key, $"Suma úhrady na ({pol.Select(x => x.Item2).Join(",")}) položke bankového výpisu sa nezhoduje so sumou na záznamoch párovania. "));
-                    }
-                }
-
-                if (chybnePolozky.Any())
-                {
-                    foreach (var pol in chybnePolozkySuma.GroupBy(x => x.Item1))
-                    {
-                        chybneDoklady.Add((pol.Key, $"({pol.Select(x => x.Item2).Join(",")}) položka bankového výpisu nesmie mať zaevidované žiadne záznamy v párovaní úhrad"));
-                    }
-                }
-            }
-
-            #endregion
-
-            #region CHECK-9  Kontrola DM_Suma a rozdiel
-
-            foreach (var ban in doklBan)
-            {
-                if ((ban.DM_Kredit - ban.DM_Debet) != biznisEntita.Single(x => x.D_BiznisEntita_Id == ban.D_BiznisEntita_Id).DM_Suma)
-                {
-                    chybneDoklady.Add((ban.D_BiznisEntita_Id, "Hodnota 'kredit - debet' na doklade sa nezhoduje so sumou napočítanou z položiek bankového výpisu."));
-                }
-            }
-
-            #endregion
-
-        }
-    }
-
-    // CHECK-11  Kontrola pri odspracovani odkladu
-    if (idNewState == (int)StavEntityEnum.NOVY)
-    {
-        CheckUhradyPriZmeneStavu(biznisEntita, ref chybneDoklady, "spracovanie dokladu"); //Využijem tiež túto metódu, ale nepoužijem naplnené chyby, lebo nie je podpora pre výpis do súboru
-    }
-
-    if (chybneDoklady.Any())
-    {
-        reportId = Guid.NewGuid().ToString();
-        using var ms = new MemoryStream();
-        TextWriter tw = new StreamWriter(ms);
-
-        foreach (var dkl in chybneDoklady.GroupBy(x => x.D_BiznisEntita_Id))
-        {
-            tw.WriteLine($"Doklad '{biznisEntita.FirstOrDefault(x => x.D_BiznisEntita_Id == dkl.Key)?.CisloInterne}':");
-            tw.WriteLine(string.Join(Environment.NewLine, dkl.Select(x => x.Chyba)));
-            tw.WriteLine();
         }
 
-        tw.Flush();
-        ms.Position = 0;
-
-        var ret = new RendererResult
-        {
-            DocumentBytes = ms.ToArray(),
-            DocumentName = "ChybySpracovania-" + ((TypBiznisEntityEnum)biznisEntita.First().C_TypBiznisEntity_Id).ToString() + DateTime.Now.ToString("_yyyyMMdd_HHmm"),
-            Extension = "txt"
-        };
-
-        SetToCache(string.Concat("Report:", reportId), ret, new TimeSpan(8, 0, 0), useGzipCompression: true);
-    }
-    else
-    {
-        SpracovatZauctovatDoklad(biznisEntita, idNewState, false, false, processKey, out msgNeodoslanePolozky);
-    }
-
-
-    if (!string.IsNullOrEmpty(reportId))
-    {
-        LongOperationSetStateFinished(processKey, string.Empty, $"Operácia 'Spracovať' sa skončila neúspešne.", state: LongOperationState.Done, reportId: reportId);
-    }
-    else
-    {
-        // A koniec long time
-        if (idNewState == (int)StavEntityEnum.SPRACOVANY)
-        {
-            var msg = biznisEntita.Count > 1 ? "Doklady boli úspešne spracované. " : "Doklad bol úspešne spracovaný. ";
-            if (!string.IsNullOrEmpty(msgNeodoslanePolozky))
-            {
-                msg = string.Concat(msg, "Avšak ", msgNeodoslanePolozky);
-            }
-
-            if (finishOperation)
-            {
-                LongOperationSetStateFinished(processKey, string.Empty, msg, state: LongOperationState.Done);
-            }
-            else
-            {
-                LongOperationSetStateMessage(processKey, msg);
-            }
-        }
-        else
-        {
-            var msg = biznisEntita.Count > 1 ? "Na dokladoch bolo úspešne zrušené spracovanie. " : "Na doklade bolo úspešne zrušené spracovanie. ";
-            if (!string.IsNullOrEmpty(msgNeodoslanePolozky))
-            {
-                msg = string.Concat(msg, "Avšak ", msgNeodoslanePolozky);
-            }
-
-            if (finishOperation)
-            {
-                LongOperationSetStateFinished(processKey, string.Empty, msg, state: LongOperationState.Done);
-            }
-            else
-            {
-                LongOperationSetStateMessage(processKey, msg);
-            }
-        }
-    }
-}
-
-*/
+        */
 
         [DataContract]
         [Schema("fin")]
@@ -4019,9 +4003,7 @@ public void SpracujDoklad(SpracovatDokladDto dokl, string processKey, out string
             public DateTime? DatumValuta { get; set; }
             public long? D_DokladBANPol_Id { get; set; }
         }
-
         /*
-
         private void SpracovatZauctovatDoklad(List<BiznisEntita> biznisEntita, int idNewState, bool uctZauctovanie, bool uctOductovanie, string processKey, out string msgNeodoslanePolozky, bool doposlanieUhrad = false)
         {
             var prepojenePolozky = new List<UhradaParovanieViewHelperDCOM>();
@@ -4777,7 +4759,7 @@ public void SpracujDoklad(SpracovatDokladDto dokl, string processKey, out string
                 int? firstPredkont = null;
                 int kniha;
 
-                     if (code == "uct-evi-exd-dap") kniha = (int)TypBiznisEntity_KnihaEnum.Externe_doklady_DaP;
+                if (code == "uct-evi-exd-dap") kniha = (int)TypBiznisEntity_KnihaEnum.Externe_doklady_DaP;
                 else if (code == "uct-evi-exd-mjt") kniha = (int)TypBiznisEntity_KnihaEnum.Externe_doklady_majetok;
                 else if (code == "uct-evi-exd-mzd") kniha = (int)TypBiznisEntity_KnihaEnum.Externe_doklady_mzdy;
                 else if (code == "uct-evi-exd-skl") kniha = (int)TypBiznisEntity_KnihaEnum.Externe_doklady_sklad;
@@ -5536,9 +5518,9 @@ public void SpracujDoklad(SpracovatDokladDto dokl, string processKey, out string
             zostava.Vytlacil = Session.DisplayName;
         }
 
-#endregion
+        #endregion
 
-#region SetPredkontacia
+        #region SetPredkontacia
         public void SetPredkontacia()
         {
             List<PredkontaciaCis> data = new List<PredkontaciaCis>();
@@ -5586,9 +5568,9 @@ public void SpracujDoklad(SpracovatDokladDto dokl, string processKey, out string
                 }
             }
         }
-#endregion
+        #endregion
 
-#region SetCislovanie
+        #region SetCislovanie
         public void SetCislovanie()
         {
             const string interneCislo = "[RR].{MM}/<C,4>"; // Vuyžívané pre VBÚ (Kód VBÚ odporúčame zadávať manuálne), IND
@@ -5674,9 +5656,9 @@ public void SpracujDoklad(SpracovatDokladDto dokl, string processKey, out string
                 }
             }
         }
-#endregion
+        #endregion
 
-#region Parovanie
+        #region Parovanie
 
         public void SetParovanieIdentifikatorRok(BiznisEntita_Parovanie data)
         {
@@ -5697,7 +5679,8 @@ public void SpracujDoklad(SpracovatDokladDto dokl, string processKey, out string
                 default:  // 1_1
                     break;
             }
-            if (id == 0) {  // Najdi maximalne pouzite REF_ID
+            if (id == 0)
+            {  // Najdi maximalne pouzite REF_ID
                 id = Db.Scalar<long>(Db.From<BiznisEntita_Parovanie>().Select(x => new { Identifikator = Sql.Max(x.Identifikator) }));
                 id += 1;
             }
@@ -5705,9 +5688,9 @@ public void SpracujDoklad(SpracovatDokladDto dokl, string processKey, out string
             data.Rok = Db.Scalar<short>(Db.From<BiznisEntita>().Select(x => new { x.Rok }).Where(x => x.D_BiznisEntita_Id == data.D_BiznisEntita_Id_2));
         }
 
-#endregion
+        #endregion
 
-#region Modul
+        #region Modul
 
         /// <summary>
         /// Generate tree node Správa modulu / Konfigurácia parametrov, História zmien stavov
@@ -5736,29 +5719,11 @@ public void SpracujDoklad(SpracovatDokladDto dokl, string processKey, out string
 
             return sm;
 
-            /*
-            new HierarchyNode("log", "Logovanie zmien", typeof(WebEas.ServiceModel.Types.LoggingView), new Filter("Schema", code), HierarchyNodeType.History, PfeSelection.Single, true)
-            {
-                Roles = roles_admin.ToList()
-            },
-            //Polozka preklady je zadefinovana ako cross-modulova, okrem REG, kory ma mat aj ine stlpce
-            new HierarchyNode("pre", "Preklady", typeof(TranslationColumnEntity), null, HierarchyNodeType.StatickyCiselnik, PfeSelection.Single, true)
-            {
-                Actions = new List<NodeAction>
-                {
-                    new NodeAction(NodeActionType.ReadList, typeof(ListTranslationColumns), roles_ciswriter) { IdField = "UniqueIdentifier" }
-                },
-                LayoutDependencies = new List<LayoutDependency>()
-                {
-                    LayoutDependency.OneToMany("reg-sm-pre-td", "UniqueIdentifier", "Slovník")
-                },
-                Roles = roles_ciswriter.ToList()
-            }*/
         }
 
-#endregion
+        #endregion
 
-#region GetCisloDokladu
+        #region GetCisloDokladu
 
         public string OneMatch(string mask, bool raiseValidityError, string pattern, string kod, string stredisko, string pokladnica, string bankUcet, string replaceStr, ref string likeSql, string msg)
         {
@@ -6040,9 +6005,9 @@ public void SpracujDoklad(SpracovatDokladDto dokl, string processKey, out string
             }
             return true;
         }
-#endregion
+        #endregion
 
-#region Kontroly
+        #region Kontroly
         public void KontrolaPokladnica(string kodPokladnice, bool dcomRezim)
         {
             if (dcomRezim)
@@ -6064,12 +6029,12 @@ public void SpracujDoklad(SpracovatDokladDto dokl, string processKey, out string
                 }
             }
         }
-#endregion
+        #endregion
 
 
 
 
-#region Formátovanie stringov
+        #region Formátovanie stringov
 
         public string FormatujUcet(string ucet, string fmt)
         {
@@ -6114,7 +6079,7 @@ public void SpracujDoklad(SpracovatDokladDto dokl, string processKey, out string
             }
         }
 
-#endregion
+        #endregion
 
     }
 }
