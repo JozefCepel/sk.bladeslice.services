@@ -152,7 +152,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
             model.Fields.First(p => p.Name == nameof(UOMesiac)).DefaultValue = DateTime.Today.Month;
             model.Fields.First(p => p.Name == nameof(C_Mena_Id)).DefaultValue = (short)MenaEnum.EUR;
             model.Fields.First(p => p.Name == nameof(C_OsobaTyp_Id)).DefaultValue = (short)OsobaTypEnum.Podnikatel;
-            model.Fields.First(p => p.Name == nameof(DatumVDP)).Text = "_DatumVDP";
+            //model.Fields.First(p => p.Name == nameof(DatumVDP)).Text = "_DatumVDP";
             #endregion
 
             #region Skryvanie, zmena textu, povinnost, default hodnoty stlpcov jednotlivo
@@ -916,44 +916,47 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                 typBiznisEntity != TypBiznisEntityEnum.PDK
                 )
             {
-                var tbeNastavenie = ((IRepositoryBase)repository).GetTypBiznisEntityNastavView().Where(x => x.C_TypBiznisEntity_Id == (int)typBiznisEntity).FirstOrDefault();
-                var tbeNastavenieList = new List<(LokalitaEnum lokalita, string datum)>()
-                {
-                    (LokalitaEnum.TU, tbeNastavenie.DatumDokladuTU),
-                    (LokalitaEnum.EU, tbeNastavenie.DatumDokladuEU),
-                    (LokalitaEnum.DV, tbeNastavenie.DatumDokladuDV),
-                };
+                var beDatum = model.Fields.FirstOrDefault(p => p.Name == nameof(DatumDokladu));
 
-                foreach (var tbeNastavDatum in tbeNastavenieList.Where(x => x.datum != nameof(DatumDokladu)).GroupBy(x => x.datum))
+                if (beDatum != null)
                 {
-                    var tbeDatum = model.Fields.FirstOrDefault(p => p.Name == nameof(DatumDokladu));
-
-                    
-                    if (tbeDatum != null)
+                    var tbeNastavenie = ((IRepositoryBase)repository).GetTypBiznisEntityNastavView().Where(x => x.C_TypBiznisEntity_Id == (int)typBiznisEntity).FirstOrDefault();
+                    var tbeNastavenieList = new List<(LokalitaEnum lokalita, string datum)>()
                     {
-                        tbeDatum.Validator ??= new PfeValidator();
-                        tbeDatum.Validator.Rules ??= new List<PfeRule>();
+                        (LokalitaEnum.TU, tbeNastavenie.DatumDokladuTU),
+                        (LokalitaEnum.TUS, tbeNastavenie.DatumDokladuTU),
+                        (LokalitaEnum.EU, tbeNastavenie.DatumDokladuEU),
+                        (LokalitaEnum.DV, tbeNastavenie.DatumDokladuDV),
+                    };
+
+                    foreach (var tbeNastavDatum in tbeNastavenieList.Where(x => x.datum != nameof(DatumDokladu)).GroupBy(x => x.datum))
+                    {
+                        beDatum.Validator ??= new PfeValidator();
+                        beDatum.Validator.Rules ??= new List<PfeRule>();
 
                         var rule = new PfeRule
                         {
                             ValidatorType = PfeValidatorType.SetValue,
-                            Value = "<" + tbeNastavDatum.Key + ">",
-                            Condition = new List<PfeFilterAttribute> ()
+                            Value = "<" + tbeNastavDatum.Key + ">"
                         };
-                        
-                        foreach (var (lokalita, datum) in tbeNastavDatum)
+
+                        if (tbeNastavDatum.Count() < 4)
                         {
-                            rule.Condition.Add(
-                            new PfeFilterAttribute
+                            rule.Condition = new List<PfeFilterAttribute>();
+                            foreach (var (lokalita, datum) in tbeNastavDatum)
                             {
-                                Field = nameof(C_Lokalita_Id),
-                                ComparisonOperator = "eq",
-                                Value = (int)lokalita,
-                                LogicOperator = "OR",
-                            });
+                                rule.Condition.Add(
+                                new PfeFilterAttribute
+                                {
+                                    Field = nameof(C_Lokalita_Id),
+                                    ComparisonOperator = "eq",
+                                    Value = (int)lokalita,
+                                    LogicOperator = "OR",
+                                });
+                            }
                         }
 
-                        tbeDatum.Validator.Rules.Add(rule);
+                        beDatum.Validator.Rules.Add(rule);
                     }
                 }
             }
@@ -1035,21 +1038,14 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
 
             if (dphRezim.In(0, 1))
             {
-                bool hideColumns;
-
-                switch (typBiznisEntity)
+                var hideColumns = typBiznisEntity switch
                 {
-                    case TypBiznisEntityEnum.DFA:
-                    case TypBiznisEntityEnum.DZF:
-                    case TypBiznisEntityEnum.ODP:
-                    case TypBiznisEntityEnum.OOB:
-                    case TypBiznisEntityEnum.DCP:
-                        hideColumns = dphRezim != 1;
-                        break;
-                    default:
-                        hideColumns = true;
-                        break;
-                }
+                    TypBiznisEntityEnum.DFA or TypBiznisEntityEnum.DZF or 
+                    TypBiznisEntityEnum.ODP or TypBiznisEntityEnum.OOB or TypBiznisEntityEnum.OZM or
+                    TypBiznisEntityEnum.DCP or 
+                    TypBiznisEntityEnum.PDK => dphRezim != 1,
+                    _ => true,
+                };
 
                 if (hideColumns)
                 {

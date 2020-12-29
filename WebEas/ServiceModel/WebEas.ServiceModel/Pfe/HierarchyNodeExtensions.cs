@@ -1177,7 +1177,7 @@ namespace WebEas.ServiceModel
                     }
                     defCol.SingleComboFilter = atr.SingleComboFilter;
                     defCol.AllowComboCustomValue = atr.AllowComboCustomValue;
-                    defCol.DisplayTpl = atr.DisplayTpl;
+                    defCol.Tpl = atr.Tpl;
                     defCol.MinCharSearch = atr.MinCharSearch;
                 }
 

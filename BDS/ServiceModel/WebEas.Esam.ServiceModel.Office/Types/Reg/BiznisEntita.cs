@@ -85,7 +85,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         public DateTime? DatumDodania { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Dátum VDP", Type = PfeDataType.Date)]
+        [PfeColumn(Text = "_Dátum VDP", Type = PfeDataType.Date)]
         public DateTime? DatumVDP { get; set; }
 
         [DataMember]

@@ -28,8 +28,8 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Uct
         public long C_UctRozvrh_Id { get; set; }
 
         [DataMember]
-        [PfeCombo(typeof(UctOsnovaView), ComboDisplayColumn = nameof(UctOsnovaView.SU), ComboIdColumn = nameof(UctOsnovaView.SU), 
-            AdditionalWhereSql = "LEN(SU) = 3", 
+        [PfeCombo(typeof(UctOsnovaView), ComboDisplayColumn = nameof(UctOsnovaView.SU), ComboIdColumn = nameof(UctOsnovaView.SU),
+            AdditionalWhereSql = "LEN(SU) = 3",
             AdditionalFields = new string[] { nameof(UctOsnovaView.Nazov), nameof(UctOsnovaView.Typ), nameof(UctOsnovaView.Druh), nameof(UctOsnovaView.SDK) })]
         [PfeColumn(Text = "SÚ", Xtype = PfeXType.SearchFieldSS, Mandatory = true)]
         [StringLength(3)]
@@ -73,6 +73,10 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Uct
         [PfeColumn(Text = "Anal. účet (import z pôv. účt.)")]
         [StringLength(50)]
         public string Old_AU { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Podnikateľská činnosť", DefaultValue = false)]
+        public bool PodnCinn { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Stredisko")]

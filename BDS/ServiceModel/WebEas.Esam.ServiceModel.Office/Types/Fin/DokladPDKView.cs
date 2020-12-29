@@ -17,7 +17,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Fin
     public class DokladPDKView : BiznisEntitaDokladView, IPfeCustomize, IBaseView
     {
         [DataMember]
-        [PfeColumn(Text = "Úhrady", ReadOnly = true)]
+        [PfeColumn(Text = "Úhrady P/Z", ReadOnly = true)]
         public decimal DM_Uhrady { get; set; }
 
         [DataMember]

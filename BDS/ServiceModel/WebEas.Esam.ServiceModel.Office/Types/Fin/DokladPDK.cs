@@ -18,7 +18,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Fin
         public short Rok { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Úhrady", Mandatory = true, DefaultValue = 0)]
+        [PfeColumn(Text = "Úhrady P/Z", Mandatory = true, DefaultValue = 0)]
         public decimal DM_Uhrady { get; set; }
 
         [DataMember]

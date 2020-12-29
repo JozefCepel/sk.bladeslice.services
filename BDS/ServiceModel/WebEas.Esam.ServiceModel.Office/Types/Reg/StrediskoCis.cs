@@ -42,6 +42,10 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         public string Popis { get; set; }
 
         [DataMember]
+        [PfeColumn(Text = "Podnikateľská činnosť", DefaultValue = false)]
+        public bool PodnCinn { get; set; }
+
+        [DataMember]
         [PfeColumn(Text = "DCOM", DefaultValue = 0, ReadOnly = true)]
         public bool? DCOM { get; set; }
 

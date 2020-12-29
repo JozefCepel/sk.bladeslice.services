@@ -119,6 +119,9 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Uct
         public string StrediskoNazov { get; set; }
 
         [DataMember]
+        public bool PodnCinn { get; set; }
+
+        [DataMember]
         public string ProjektKod { get; set; }
 
         [DataMember]

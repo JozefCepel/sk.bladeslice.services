@@ -81,6 +81,28 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Osa
         public bool Priznak1 { get; set; }
 
         [DataMember]
+        [PfeColumn(Text = "Daňovník", Editable = false, ReadOnly = true, LoadWhenVisible = true)]
+        public bool? DaP { get; set; } // chceme NULL, "kriziky" schovavame a zobrazujeme iba "fajky"
+
+        [DataMember]
+        [PfeColumn(Text = "Dodávateľ", Editable = false, ReadOnly = true, LoadWhenVisible = true)]
+        public bool? DOD { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Odberateľ", Editable = false, ReadOnly = true, LoadWhenVisible = true)]
+        public bool? ODB { get; set; }
+
+        [DataMember]
+        [Ignore]
+        [PfeColumn(Text = "_Customer", Hidden = true,  Editable = false, ReadOnly = true)]
+        public bool Customer {
+            get
+            {
+                return (this.DaP ?? false) || (this.DOD ?? false) || (this.ODB ?? false);
+            }
+        }
+
+        [DataMember]
         [PfeColumn(Text = "_C_FO_StavExistencny_Id", ReadOnly = true)]
         public short? C_FO_StavExistencny_Id { get; set; }
 
