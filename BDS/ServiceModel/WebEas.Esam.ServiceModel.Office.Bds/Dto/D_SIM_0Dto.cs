@@ -34,6 +34,17 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
         public int D_SIM_0 { get; set; }
     }
 
+    [Route("/GetSimData", "GET")]
+    [Api("D_SIM_0")]
+    [DataContract]
+    public class GetSimData : D3dGraphic2.D3DSource
+    {
+        [PrimaryKey]
+        [DataMember(IsRequired = true)]
+        public int D_VYD_1 { get; set; }
+    }
+
+
     #region DTO
     [DataContract]
     public class D_SIM_0Dto : BaseDto<tblD_SIM_0>

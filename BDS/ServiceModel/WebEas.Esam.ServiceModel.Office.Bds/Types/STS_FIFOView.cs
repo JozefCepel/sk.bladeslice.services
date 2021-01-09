@@ -78,15 +78,15 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string POZN { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Number of pieces")]
+        [PfeColumn(Text = "Amount")]
         public decimal? POC_KS { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Number of pieces - IN")]
+        [PfeColumn(Text = "Amount - IN")]
         public decimal? POC_KS_P { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Number of pieces - OUT")]
+        [PfeColumn(Text = "Amount - OUT")]
         public decimal? POC_KS_V { get; set; }
 
         [DataMember]

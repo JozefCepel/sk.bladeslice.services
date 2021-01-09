@@ -45,7 +45,19 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         [DataMember]
         [PfeColumn(Text = "V", Editable = false, ReadOnly = true)]
         public bool V { get; set; }
-        
+
+        [DataMember]
+        [PfeColumn(Text = "_K_TSK_0", Editable = false, ReadOnly = true)]
+        public int K_TSK_0 { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "_K_TYP_0", Editable = false, ReadOnly = true)]
+        public int K_TYP_0 { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Code", Editable = false, ReadOnly = true)]
+        public string KOD { get; set; }
+
         //audit stlpce
         [DataMember]
         [PfeColumn(Text = "Created by", Hidden = true, Editable = false, ReadOnly = true)]

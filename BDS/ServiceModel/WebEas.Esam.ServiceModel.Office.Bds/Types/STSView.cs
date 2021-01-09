@@ -110,7 +110,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string MJ { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Number of pieces")]
+        [PfeColumn(Text = "Amount")]
         public decimal? KS { get; set; }
 
         [DataMember]

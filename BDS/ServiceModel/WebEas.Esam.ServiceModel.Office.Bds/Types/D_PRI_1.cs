@@ -36,7 +36,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string NAZOV { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Number of pieces", DefaultValue = 0, Mandatory = true)]
+        [PfeColumn(Text = "Amount", DefaultValue = 0, Mandatory = true)]
         public decimal? POC_KS { get; set; }
 
         [DataMember]

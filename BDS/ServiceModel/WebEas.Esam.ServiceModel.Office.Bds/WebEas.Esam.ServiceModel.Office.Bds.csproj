@@ -61,7 +61,6 @@
     <Compile Include="Dto\ChangeStateDto.cs" />
     <Compile Include="Dto\DataChangesRequest.cs" />
     <Compile Include="Dto\K_OWN_0Dto.cs" />
-    <Compile Include="Dto\Simulate3D.cs" />
     <Compile Include="Dto\VybavenieDokladuDto.cs" />
     <Compile Include="Dto\K_MAT_0Dto.cs" />
     <Compile Include="Dto\D_SIM_0Dto.cs" />
@@ -128,6 +127,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\D3dGraphic\D3dGraphic2.vbproj">
+      <Project>{78dfa972-f7ff-4246-ae55-7ff909060f5b}</Project>
+      <Name>D3dGraphic2</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\WebEas\ServiceInterface\WebEas.ServiceInterface\WebEas.ServiceInterface.csproj">
       <Project>{cea4b7a0-01d0-4e0d-a6af-d929bd5671ff}</Project>
       <Name>WebEas.ServiceInterface</Name>

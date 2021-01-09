@@ -1,0 +1,58 @@
+
+------------------ Nove do "Release_vseobecne - 3D_SIM.txt" ------------------
+
+
+------------------  Nove Odložená funkènos "Release_vseobecne - 3D_SIM.txt"   -----------------
+
+  
+
+Done:
+ 
+		
+Marek:
+
+        - Spravit funkcnost CheckBox-u "L" - PRE valec okrem I - to uz je vlastne dobre
+              - "L" - nechcem už necháva nejaký blbý koniec, tak to proste zaškrtnem a on mi do koordinátov vyrobí valec až do konca 
+                          - pricom pokracuje podla posledneho rozmeru d-D
+
+
+Jozo:
+
+	- Zobraz pri tlaci VYD a MNF nove hodnoty z poloziek v tretom riadku.
+	
+	- Nedovol vyskladnit ak nie su zapisy na zalozke 3D - pokial nejde o vyskladnenie zvysku, kedy ma uz rozmerove data nezaujimaju
+
+	- Pred vybavenim skontroluj ci je v SIM to iste ako v POL SN, LOC, SARZA (pokial to nie je uplne prazdne - to by znamenalo ze to robil manuallne a je to OK)
+
+	- spravit pre MS tiez zakladny objekt
+
+        - moznost manuálne upravit pred ulozenim a ukoncenim simulacie MJG - Release
+
+	- Nastavit Tab Indexy
+
+
+	- Vytvorit funkciu, ktorej by som poslal data, ktore su uz doteraz pre objekt zadefinovane
+	    - A jeden novy, ktory uzivatel prave edituje
+
+		Program vo funkcii preveri, ze>
+		-	Ak sa jedna o „minus“ zapis tak zisti ci je to kompletne vnutri
+		-	Ak sa jedna o „plus“ zapis tak zisti ci je to kompletne vonku
+
+
+	- Pada to obcas na constraine medzi D_VYD_1 a D_SIM_0
+
+Release:
+		
+
+Odlozene:
+	- Prezri prazdny blok aj Valec a skontroluj ci je vsetko korektne povypinane - natoc
+
+	- Pridaj do explorera polozku stromu so simulacnymi datami
+	   - dovol upravy 3D aj od boku
+
+	- TabControl do MS s MemJG - datami z DTB - doteraz nagenerovane rozmerove informacie 
+
+ 	- po naplneni MJG zobraz napravo hmotnost vyskladneneho objemu (ak mame hustotu)
+
+	- Mozno koeficient ktory chcu by mal byt automaticky pocitany z pomeru cista a hruba spotreba - na zalozke SIM (objem vyzeru a objem zvysku)
+
