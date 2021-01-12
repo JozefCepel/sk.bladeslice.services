@@ -98,8 +98,8 @@ namespace WebEas.Esam.ServiceModel.Office
             {
                 case 0: return "-";
                 case 1: return "Cube";
-                case 2: return "Cube - oriented";
-                case 3: return "Cylinder";
+                case 2: return "Cylinder";
+                case 3: return "Cube - oriented";
                 default: return id + " (?)";
             }
         }

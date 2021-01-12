@@ -33,7 +33,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
         [DataMember(IsRequired = true)]
         public int D_SIM_0 { get; set; }
     }
-
+    
     [Route("/GetSimData", "GET")]
     [Api("D_SIM_0")]
     [DataContract]
@@ -42,8 +42,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
         [PrimaryKey]
         [DataMember(IsRequired = true)]
         public int D_VYD_1 { get; set; }
-    }
-
+    }    
 
     #region DTO
     [DataContract]

@@ -1,4 +1,4 @@
-Option Explicit On
+ï»¿Option Explicit On
 
 Imports System.Data.OleDb
 Imports System.Data.SqlClient
@@ -250,79 +250,18 @@ Public Class FormD3dGraphic
                           Optional ByVal Input3DData As String = "", Optional ByRef Output3DData As String = "",
                           Optional ByVal bOnlyReturnObjem As Boolean = False, Optional ByVal bOrientedL As Boolean = False) As Decimal
 
-        sMjObjem = strMjObjem
-        sMjRozmery = strMjRozmery
-        iPocetMiestObjem = intPocetMiestObjem
-        iKoefMjObjemRozmery = intKoefMjObjemRozmery
 
-        Dim CS As ValecSourceObj = Nothing
-        Dim bSim As Boolean = (D1 <> 0 And L <> 0)
+        InicializeVariables(sCaption, bOnlyShow, strMjObjem, strMjRozmery, intPocetMiestObjem, intKoefMjObjemRozmery, PocetKusov, 0, 0, D1, d2, L)
 
-        _D3dOp = IIf(bOnlyShow, D3dOperation.D3dOperation_ShowValec, D3dOperation.D3dOperation_SimValec)
-        If bSim Then
-            If D1 <= d2 Then
-                MsgBox("Vnútorný priemer (" & D1 & ") musí by väèší ako vonkajší (" & d2 & ")!", vbExclamation, "Kontrola")
-                Exit Function
-            End If
-        End If
-        setRbnLabels(sCaption, bSim, D1, d2, L, PocetKusov)
-
-        colSNKeys = New Collection
-        colSNObjectShapes = New Collection
         '*********************************
         If String.IsNullOrEmpty(Input3DData) Then
             Exit Function
         Else
 
-            Dim fetch As D3DSource()
-            Dim f As D3DSource
-            Dim va As Valec
-
+            Dim fetch = New List(Of D3DSource)()
             fetch = JsonConvert.DeserializeObject(Of D3DSource())(Input3DData)
-            Dim sorted = fetch.OrderBy(Function(x) x.SN)
 
-            For Each f In sorted
-                If f.Type.ToLower() = "valec" Then
-
-                    Dim sortedvalec = f.Valec.
-                        OrderBy(Function(x) x.D1).ThenBy(Function(x) x.d2).
-                        ThenBy(Function(x) x.L1).ThenBy(Function(x) x.L2)
-
-                    CS = New ValecSourceObj(f.SN, f.Sarza, f.Location, f.SklCena, f.SN, sortedvalec)
-
-                    'Ak už také rozmey existujú, tak ich nepridám, iba rozšírim SN
-                    Dim sRef = CS.CoordToString()
-                    Dim s As String
-                    Dim bEx As Boolean = False
-
-                    For Each s In colSNKeys
-                        Dim v As ValecSourceObj = colSNObjectShapes(s)
-                        If sRef = v.CoordToString() Then
-                            bEx = True
-                            v.SNs = v.SNs & "; " & f.SN
-                            v.ColSNs.Add(f.SN, f.SN)
-                        End If
-                    Next
-
-                    If Not bEx Then
-
-                        For Each va In sortedvalec
-                            If va.Add Then
-                                CS.CoordToAdd(New CoordinatesValec(va.D1, va.d2, va.L1, va.L2))
-                            Else
-                                CS.CoordToRemove(New CoordinatesValec(va.D1, va.d2, va.L1, va.L2))
-                            End If
-                        Next
-
-                        CS.Process() 'Vytvori kolekciu Inv a vypocita delenie zakladneho objektu
-                        If Not IsExistKey(colSNKeys, f.SN) Then
-                            colSNKeys.Add(f.SN, f.SN)
-                            colSNObjectShapes.Add(CS, f.SN)
-                        End If
-
-                    End If
-                End If
-            Next
+            PrepareValecData(fetch)
         End If
 
         If bOnlyReturnObjem Then
@@ -346,6 +285,58 @@ Public Class FormD3dGraphic
         End If
 
     End Function
+
+    Public Sub PrepareValecData(fetch As D3DSource())
+        Dim CS As ValecSourceObj = Nothing
+        Dim f As D3DSource
+        Dim va As Valec
+
+        Dim sorted = fetch.OrderBy(Function(x) x.SN)
+
+        For Each f In sorted
+            If f.Type.ToLower() = "valec" Then
+
+                Dim sortedvalec = f.Valec.
+                    OrderBy(Function(x) x.D1).ThenBy(Function(x) x.d2).
+                    ThenBy(Function(x) x.L1).ThenBy(Function(x) x.L2)
+
+                CS = New ValecSourceObj(f.SN, f.Sarza, f.Location, f.SklCena, f.SN, sortedvalec)
+
+                'Ak už také rozmey existujú, tak ich nepridám, iba rozšírim SN
+                Dim sRef = CS.CoordToString()
+                Dim s As String
+                Dim bEx As Boolean = False
+
+                For Each s In colSNKeys
+                    Dim v As ValecSourceObj = colSNObjectShapes(s)
+                    If sRef = v.CoordToString() Then
+                        bEx = True
+                        v.SNs = v.SNs & "; " & f.SN
+                        v.ColSNs.Add(f.SN, f.SN)
+                    End If
+                Next
+
+                If Not bEx Then
+
+                    For Each va In sortedvalec
+                        If va.Add Then
+                            CS.CoordToAdd(New CoordinatesValec(va.D1, va.d2, va.L1, va.L2))
+                        Else
+                            CS.CoordToRemove(New CoordinatesValec(va.D1, va.d2, va.L1, va.L2))
+                        End If
+                    Next
+
+                    CS.Process() 'Vytvori kolekciu Inv a vypocita delenie zakladneho objektu
+                    If Not IsExistKey(colSNKeys, f.SN) Then
+                        colSNKeys.Add(f.SN, f.SN)
+                        colSNObjectShapes.Add(CS, f.SN)
+                    End If
+
+                End If
+            End If
+        Next
+
+    End Sub
 
     Public Function RunValecOLD(ByVal sCaption As String, ByVal bOnlyShow As Boolean,
                             ByVal strMjObjem As String, ByVal strMjRozmery As String,
@@ -500,74 +491,17 @@ Public Class FormD3dGraphic
                           Optional ByVal Input3DData As String = "", Optional ByRef Output3DData As String = "",
                           Optional ByVal bOnlyReturnObjem As Boolean = False, Optional ByVal bOrientedL As Boolean = False) As Decimal
 
-        sMjObjem = strMjObjem
-        sMjRozmery = strMjRozmery
-        iPocetMiestObjem = intPocetMiestObjem
-        iKoefMjObjemRozmery = intKoefMjObjemRozmery
+        InicializeVariables(sCaption, bOnlyShow, strMjObjem, strMjRozmery, intPocetMiestObjem, intKoefMjObjemRozmery, PocetKusov, a, b, 0, 0, L)
 
-        Dim CS As BlokSourceObj = Nothing
-        Dim bSim As Boolean = (a <> 0 And b <> 0 And L <> 0)
-
-        _D3dOp = IIf(bOnlyShow, D3dOperation.D3dOperation_ShowBlok, D3dOperation.D3dOperation_SimBlok)
-        setRbnLabels(sCaption, bSim, a, b, L, PocetKusov)
-
-        colSNKeys = New Collection
-        colSNObjectShapes = New Collection
         '*********************************
         If String.IsNullOrEmpty(Input3DData) Then
             Exit Function
         Else
 
-            Dim fetch As D3DSource()
-            Dim f As D3DSource
-            Dim bl As Blok
-
+            Dim fetch = New List(Of D3DSource)()
             fetch = JsonConvert.DeserializeObject(Of D3DSource())(Input3DData)
-            Dim sorted = fetch.OrderBy(Function(x) x.SN)
 
-            For Each f In sorted
-                If f.Type.ToLower() = "blok" Then
-
-                    Dim sortedblok = f.Blok.
-                        OrderBy(Function(x) x.a1).ThenBy(Function(x) x.a2).
-                        ThenBy(Function(x) x.L1).ThenBy(Function(x) x.L2).
-                        ThenBy(Function(x) x.b1).ThenBy(Function(x) x.b2)
-
-                    CS = New BlokSourceObj(f.SN, f.Sarza, f.Location, f.SklCena, bOrientedL, f.SN, sortedblok)
-
-                    'Ak už také rozmey existujú, tak ich nepridám, iba rozšírim SN
-                    Dim sRef = CS.CoordToString()
-                    Dim s As String
-                    Dim bEx As Boolean = False
-
-                    For Each s In colSNKeys
-                        Dim v As BlokSourceObj = colSNObjectShapes(s)
-                        If sRef = v.CoordToString() Then
-                            bEx = True
-                            v.SNs = v.SNs & "; " & f.SN
-                            v.ColSNs.Add(f.SN, f.SN)
-                        End If
-                    Next
-
-                    If Not bEx Then
-                        For Each bl In sortedblok
-                            If bl.Add Then
-                                CS.CoordToAdd(New CoordinatesBlok(bl.a1, bl.a2, bl.L1, bl.L2, bl.b1, bl.b2))
-                            Else
-                                CS.CoordToRemove(New CoordinatesBlok(bl.a1, bl.a2, bl.L1, bl.L2, bl.b1, bl.b2))
-                            End If
-                        Next
-                        CS.Process() 'Vytvori kolekciu Inv a vypocita delenie zakladneho objektu
-
-                        If Not IsExistKey(colSNKeys, f.SN) Then
-                            colSNKeys.Add(f.SN, f.SN)
-                            colSNObjectShapes.Add(CS, f.SN)
-                        End If
-
-                    End If
-
-                End If
-            Next
+            PrepareBlokData(bOrientedL, fetch)
         End If
 
         If bOnlyReturnObjem Then
@@ -591,6 +525,78 @@ Public Class FormD3dGraphic
         End If
 
     End Function
+
+    Public Sub InicializeVariables(sCaption As String, bOnlyShow As Boolean, strMjObjem As String, strMjRozmery As String, intPocetMiestObjem As Integer, intKoefMjObjemRozmery As Integer, PocetKusov As Integer,
+                                   a As Integer, b As Integer, D1 As Integer, d2 As Integer, L As Integer)
+        sMjObjem = strMjObjem
+        sMjRozmery = strMjRozmery
+        iPocetMiestObjem = intPocetMiestObjem
+        iKoefMjObjemRozmery = intKoefMjObjemRozmery
+
+        Dim bSim As Boolean = (a <> 0 And b <> 0 And L <> 0) Or (D1 <> 0 And L <> 0)
+
+        If bSim Then
+            _D3dOp = IIf(bOnlyShow, If(a <> 0 And b <> 0 And L <> 0, D3dOperation.D3dOperation_ShowBlok, D3dOperation.D3dOperation_ShowValec),
+                                    If(a <> 0 And b <> 0 And L <> 0, D3dOperation.D3dOperation_SimBlok, D3dOperation.D3dOperation_SimValec))
+        End If
+
+        setRbnLabels(sCaption, bSim, a + D1, b + d2, L, PocetKusov)
+
+        colSNKeys = New Collection
+        colSNObjectShapes = New Collection
+    End Sub
+
+    Public Sub PrepareBlokData(bOrientedL As Boolean, fetch As D3DSource())
+        Dim CS As BlokSourceObj = Nothing
+        Dim f As D3DSource
+        Dim bl As Blok
+
+        Dim sorted = fetch.OrderBy(Function(x) x.SN)
+
+        For Each f In sorted
+            If f.Type.ToLower() = "blok" Then
+
+                Dim sortedblok = f.Blok.
+                    OrderBy(Function(x) x.a1).ThenBy(Function(x) x.a2).
+                    ThenBy(Function(x) x.L1).ThenBy(Function(x) x.L2).
+                    ThenBy(Function(x) x.b1).ThenBy(Function(x) x.b2)
+
+                CS = New BlokSourceObj(f.SN, f.Sarza, f.Location, f.SklCena, bOrientedL, f.SN, sortedblok)
+
+                'Ak už také rozmey existujú, tak ich nepridám, iba rozšírim SN
+                Dim sRef = CS.CoordToString()
+                Dim s As String
+                Dim bEx As Boolean = False
+
+                For Each s In colSNKeys
+                    Dim v As BlokSourceObj = colSNObjectShapes(s)
+                    If sRef = v.CoordToString() Then
+                        bEx = True
+                        v.SNs = v.SNs & "; " & f.SN
+                        v.ColSNs.Add(f.SN, f.SN)
+                    End If
+                Next
+
+                If Not bEx Then
+                    For Each bl In sortedblok
+                        If bl.Add Then
+                            CS.CoordToAdd(New CoordinatesBlok(bl.a1, bl.a2, bl.L1, bl.L2, bl.b1, bl.b2))
+                        Else
+                            CS.CoordToRemove(New CoordinatesBlok(bl.a1, bl.a2, bl.L1, bl.L2, bl.b1, bl.b2))
+                        End If
+                    Next
+                    CS.Process() 'Vytvori kolekciu Inv a vypocita delenie zakladneho objektu
+
+                    If Not IsExistKey(colSNKeys, f.SN) Then
+                        colSNKeys.Add(f.SN, f.SN)
+                        colSNObjectShapes.Add(CS, f.SN)
+                    End If
+
+                End If
+
+            End If
+        Next
+    End Sub
 
     Private Function RunBlokOLD(ByVal sCaption As String, ByVal bOnlyShow As Boolean,
                           ByVal strMjObjem As String, ByVal strMjRozmery As String,
