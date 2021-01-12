@@ -101,6 +101,7 @@ Partial Class FormD3dGraphic
         CType(Me.uiGrid, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.uiGrid.SuspendLayout()
         Me.uiGridContainer.SuspendLayout()
+        CType(Me.splSim, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.splSim.Panel1.SuspendLayout()
         Me.splSim.Panel2.SuspendLayout()
         Me.splSim.SuspendLayout()
@@ -129,7 +130,7 @@ Partial Class FormD3dGraphic
         Me.rbnMAIN.Location = New System.Drawing.Point(0, 0)
         Me.rbnMAIN.Name = "rbnMAIN"
         Me.rbnMAIN.ShowCustomizeButton = False
-        Me.rbnMAIN.Size = New System.Drawing.Size(1019, 146)
+        Me.rbnMAIN.Size = New System.Drawing.Size(1035, 146)
         '
         '
         '
@@ -613,9 +614,9 @@ Partial Class FormD3dGraphic
         'Design Time Panel Info:
         '
         Me.panelManager.BeginPanelInfo()
-        Me.panelManager.AddDockPanelInfo(New System.Guid("68b6b267-34d8-46f6-993f-5631aa0f7530"), Janus.Windows.UI.Dock.PanelDockStyle.Left, New System.Drawing.Size(200, 314), True)
-        Me.panelManager.AddDockPanelInfo(New System.Guid("51b96c11-d862-45fd-b4de-80b64bbc50b5"), Janus.Windows.UI.Dock.PanelDockStyle.Fill, New System.Drawing.Size(813, 160), True)
-        Me.panelManager.AddDockPanelInfo(New System.Guid("64ee3ff7-b94b-4ac6-b5b0-79663952775d"), Janus.Windows.UI.Dock.PanelDockStyle.Bottom, New System.Drawing.Size(813, 154), True)
+        Me.panelManager.AddDockPanelInfo(New System.Guid("68b6b267-34d8-46f6-993f-5631aa0f7530"), Janus.Windows.UI.Dock.PanelDockStyle.Left, New System.Drawing.Size(200, 326), True)
+        Me.panelManager.AddDockPanelInfo(New System.Guid("51b96c11-d862-45fd-b4de-80b64bbc50b5"), Janus.Windows.UI.Dock.PanelDockStyle.Fill, New System.Drawing.Size(829, 172), True)
+        Me.panelManager.AddDockPanelInfo(New System.Guid("64ee3ff7-b94b-4ac6-b5b0-79663952775d"), Janus.Windows.UI.Dock.PanelDockStyle.Bottom, New System.Drawing.Size(829, 154), True)
         Me.panelManager.AddFloatingPanelInfo(New System.Guid("68b6b267-34d8-46f6-993f-5631aa0f7530"), New System.Drawing.Point(-1, -1), New System.Drawing.Size(-1, -1), False)
         Me.panelManager.AddFloatingPanelInfo(New System.Guid("51b96c11-d862-45fd-b4de-80b64bbc50b5"), New System.Drawing.Point(-1, -1), New System.Drawing.Size(-1, -1), False)
         Me.panelManager.AddFloatingPanelInfo(New System.Guid("64ee3ff7-b94b-4ac6-b5b0-79663952775d"), New System.Drawing.Point(-1, -1), New System.Drawing.Size(-1, -1), False)
@@ -629,7 +630,7 @@ Partial Class FormD3dGraphic
         Me.uiSN.InnerContainer = Me.uiSNContainer
         Me.uiSN.Location = New System.Drawing.Point(3, 149)
         Me.uiSN.Name = "uiSN"
-        Me.uiSN.Size = New System.Drawing.Size(200, 314)
+        Me.uiSN.Size = New System.Drawing.Size(200, 326)
         Me.uiSN.TabIndex = 1
         Me.uiSN.Text = "Výrobné èísla"
         '
@@ -638,7 +639,7 @@ Partial Class FormD3dGraphic
         Me.uiSNContainer.Controls.Add(Me.lboxSN)
         Me.uiSNContainer.Location = New System.Drawing.Point(1, 23)
         Me.uiSNContainer.Name = "uiSNContainer"
-        Me.uiSNContainer.Size = New System.Drawing.Size(194, 290)
+        Me.uiSNContainer.Size = New System.Drawing.Size(194, 302)
         Me.uiSNContainer.TabIndex = 0
         '
         'lboxSN
@@ -647,7 +648,7 @@ Partial Class FormD3dGraphic
         Me.lboxSN.FormattingEnabled = True
         Me.lboxSN.Location = New System.Drawing.Point(0, 0)
         Me.lboxSN.Name = "lboxSN"
-        Me.lboxSN.Size = New System.Drawing.Size(194, 290)
+        Me.lboxSN.Size = New System.Drawing.Size(194, 302)
         Me.lboxSN.TabIndex = 0
         Me.lboxSN.Tag = "CISEL"
         '
@@ -660,9 +661,9 @@ Partial Class FormD3dGraphic
         Me.uiGrid.CaptionVisible = Janus.Windows.UI.InheritableBoolean.[False]
         Me.uiGrid.CloseButtonVisible = Janus.Windows.UI.InheritableBoolean.[False]
         Me.uiGrid.InnerContainer = Me.uiGridContainer
-        Me.uiGrid.Location = New System.Drawing.Point(203, 309)
+        Me.uiGrid.Location = New System.Drawing.Point(203, 321)
         Me.uiGrid.Name = "uiGrid"
-        Me.uiGrid.Size = New System.Drawing.Size(813, 154)
+        Me.uiGrid.Size = New System.Drawing.Size(829, 154)
         Me.uiGrid.TabIndex = 3
         Me.uiGrid.Text = "Údaje o vybranej simulácii"
         '
@@ -671,7 +672,7 @@ Partial Class FormD3dGraphic
         Me.uiGridContainer.Controls.Add(Me.splSim)
         Me.uiGridContainer.Location = New System.Drawing.Point(1, 5)
         Me.uiGridContainer.Name = "uiGridContainer"
-        Me.uiGridContainer.Size = New System.Drawing.Size(811, 148)
+        Me.uiGridContainer.Size = New System.Drawing.Size(827, 148)
         Me.uiGridContainer.TabIndex = 0
         '
         'splSim
@@ -687,8 +688,8 @@ Partial Class FormD3dGraphic
         'splSim.Panel2
         '
         Me.splSim.Panel2.Controls.Add(Me.grpSelSim)
-        Me.splSim.Size = New System.Drawing.Size(811, 148)
-        Me.splSim.SplitterDistance = 578
+        Me.splSim.Size = New System.Drawing.Size(827, 148)
+        Me.splSim.SplitterDistance = 589
         Me.splSim.TabIndex = 2
         '
         'MJG
@@ -742,7 +743,7 @@ Partial Class FormD3dGraphic
         Me.MJG.RibbonPopupHeaderGrid = Nothing
         Me.MJG.RowHeaders = False
         Me.MJG.SingleCardView = False
-        Me.MJG.Size = New System.Drawing.Size(578, 148)
+        Me.MJG.Size = New System.Drawing.Size(589, 148)
         Me.MJG.TabIndex = 0
         '
         'grpSelSim
@@ -758,7 +759,7 @@ Partial Class FormD3dGraphic
         Me.grpSelSim.Dock = System.Windows.Forms.DockStyle.Fill
         Me.grpSelSim.Location = New System.Drawing.Point(0, 0)
         Me.grpSelSim.Name = "grpSelSim"
-        Me.grpSelSim.Size = New System.Drawing.Size(229, 148)
+        Me.grpSelSim.Size = New System.Drawing.Size(234, 148)
         Me.grpSelSim.TabIndex = 1
         Me.grpSelSim.TabStop = False
         Me.grpSelSim.Text = "Zvolená simulácia"
@@ -778,7 +779,7 @@ Partial Class FormD3dGraphic
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.txtVyrez.Location = New System.Drawing.Point(85, 80)
         Me.txtVyrez.Name = "txtVyrez"
-        Me.txtVyrez.Size = New System.Drawing.Size(138, 13)
+        Me.txtVyrez.Size = New System.Drawing.Size(143, 13)
         Me.txtVyrez.TabIndex = 7
         Me.txtVyrez.Text = "0"
         Me.txtVyrez.TextAlign = System.Drawing.ContentAlignment.MiddleRight
@@ -798,7 +799,7 @@ Partial Class FormD3dGraphic
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.txtOdrezok.Location = New System.Drawing.Point(85, 67)
         Me.txtOdrezok.Name = "txtOdrezok"
-        Me.txtOdrezok.Size = New System.Drawing.Size(138, 13)
+        Me.txtOdrezok.Size = New System.Drawing.Size(143, 13)
         Me.txtOdrezok.TabIndex = 5
         Me.txtOdrezok.Text = "0"
         Me.txtOdrezok.TextAlign = System.Drawing.ContentAlignment.MiddleRight
@@ -827,7 +828,7 @@ Partial Class FormD3dGraphic
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.txtPolotovar.Location = New System.Drawing.Point(85, 54)
         Me.txtPolotovar.Name = "txtPolotovar"
-        Me.txtPolotovar.Size = New System.Drawing.Size(138, 13)
+        Me.txtPolotovar.Size = New System.Drawing.Size(143, 13)
         Me.txtPolotovar.TabIndex = 3
         Me.txtPolotovar.Text = "0"
         Me.txtPolotovar.TextAlign = System.Drawing.ContentAlignment.MiddleRight
@@ -838,7 +839,7 @@ Partial Class FormD3dGraphic
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.labPocKs.Location = New System.Drawing.Point(85, 30)
         Me.labPocKs.Name = "labPocKs"
-        Me.labPocKs.Size = New System.Drawing.Size(138, 13)
+        Me.labPocKs.Size = New System.Drawing.Size(143, 13)
         Me.labPocKs.TabIndex = 1
         Me.labPocKs.Text = "0"
         Me.labPocKs.TextAlign = System.Drawing.ContentAlignment.MiddleRight
@@ -852,7 +853,7 @@ Partial Class FormD3dGraphic
         Me.uiDetail.InnerContainer = Me.uiDetailContainer
         Me.uiDetail.Location = New System.Drawing.Point(203, 149)
         Me.uiDetail.Name = "uiDetail"
-        Me.uiDetail.Size = New System.Drawing.Size(813, 160)
+        Me.uiDetail.Size = New System.Drawing.Size(829, 172)
         Me.uiDetail.TabIndex = 2
         Me.uiDetail.Text = "## Skupina, Kód, Názov, MJ"
         '
@@ -861,7 +862,7 @@ Partial Class FormD3dGraphic
         Me.uiDetailContainer.Controls.Add(Me.uiGrpBox)
         Me.uiDetailContainer.Location = New System.Drawing.Point(1, 23)
         Me.uiDetailContainer.Name = "uiDetailContainer"
-        Me.uiDetailContainer.Size = New System.Drawing.Size(811, 136)
+        Me.uiDetailContainer.Size = New System.Drawing.Size(827, 148)
         Me.uiDetailContainer.TabIndex = 0
         '
         'uiGrpBox
@@ -872,7 +873,7 @@ Partial Class FormD3dGraphic
         Me.uiGrpBox.FrameStyle = Janus.Windows.EditControls.FrameStyle.None
         Me.uiGrpBox.Location = New System.Drawing.Point(0, 0)
         Me.uiGrpBox.Name = "uiGrpBox"
-        Me.uiGrpBox.Size = New System.Drawing.Size(811, 136)
+        Me.uiGrpBox.Size = New System.Drawing.Size(827, 148)
         Me.uiGrpBox.TabIndex = 33
         Me.uiGrpBox.VisualStyle = Janus.Windows.UI.Dock.PanelVisualStyle.Office2007
         '
@@ -884,18 +885,18 @@ Partial Class FormD3dGraphic
         Me.FLP.Dock = System.Windows.Forms.DockStyle.Fill
         Me.FLP.Location = New System.Drawing.Point(0, 0)
         Me.FLP.Name = "FLP"
-        Me.FLP.Size = New System.Drawing.Size(811, 136)
+        Me.FLP.Size = New System.Drawing.Size(827, 148)
         Me.FLP.TabIndex = 0
         '
         'RSB
         '
         Me.RSB.Controls.Add(Me.PGB)
         Me.RSB.ImageSize = New System.Drawing.Size(16, 16)
-        Me.RSB.Location = New System.Drawing.Point(0, 466)
+        Me.RSB.Location = New System.Drawing.Point(0, 478)
         Me.RSB.Name = "RSB"
         Me.RSB.Office2007CustomColor = System.Drawing.Color.Empty
         Me.RSB.RightPanelCommands.AddRange(New Janus.Windows.Ribbon.CommandBase() {Me.sbrOperacia})
-        Me.RSB.Size = New System.Drawing.Size(1019, 23)
+        Me.RSB.Size = New System.Drawing.Size(1035, 23)
         '
         '
         '
@@ -907,7 +908,7 @@ Partial Class FormD3dGraphic
         '
         'PGB
         '
-        Me.PGB.Location = New System.Drawing.Point(801, 1)
+        Me.PGB.Location = New System.Drawing.Point(817, 1)
         Me.PGB.Name = "PGB"
         Me.PGB.ShowPercentage = True
         Me.PGB.Size = New System.Drawing.Size(200, 25)
@@ -948,7 +949,7 @@ Partial Class FormD3dGraphic
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.Color.FromArgb(CType(CType(227, Byte), Integer), CType(CType(239, Byte), Integer), CType(CType(255, Byte), Integer))
-        Me.ClientSize = New System.Drawing.Size(1019, 489)
+        Me.ClientSize = New System.Drawing.Size(1035, 501)
         Me.Controls.Add(Me.uiDetail)
         Me.Controls.Add(Me.uiGrid)
         Me.Controls.Add(Me.uiSN)
@@ -970,6 +971,7 @@ Partial Class FormD3dGraphic
         Me.uiGridContainer.ResumeLayout(False)
         Me.splSim.Panel1.ResumeLayout(False)
         Me.splSim.Panel2.ResumeLayout(False)
+        CType(Me.splSim, System.ComponentModel.ISupportInitialize).EndInit()
         Me.splSim.ResumeLayout(False)
         Me.grpSelSim.ResumeLayout(False)
         Me.grpSelSim.PerformLayout()

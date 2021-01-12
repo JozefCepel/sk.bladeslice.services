@@ -97,7 +97,7 @@ Public Class FormD3dGraphic
             End If
         Catch ex As Exception
             ' Nieco zblblo, zmaz nastavenia 
-            MsgBox("Nastala chyba pri naËÌtanÌ konfigur·cie," & vbCrLf & "bud˙ obnovenÈ z·kladnÈ nastavenia!" & vbCrLf & vbCrLf & "(" & ex.Message & ")", MsgBoxStyle.Exclamation, "Kontrola")
+            MsgBox("Nastala chyba pri naƒç√≠tan√≠ konfigur√°cie," & vbCrLf & "bud√∫ obnoven√© z√°kladn√© nastavenia!" & vbCrLf & vbCrLf & "(" & ex.Message & ")", MsgBoxStyle.Exclamation, "Kontrola")
             DeleteSetting(HKEY_MEMPHIS_NAME, HKEY_SECTION_NAME)
         End Try
 
@@ -137,7 +137,7 @@ Public Class FormD3dGraphic
             Case "zz"
 
             Case Else
-                MsgBox("Nezn·ma akcia: " & e.Command.Key & vbCrLf & "Kontaktujte dod·vateæa aplik·cie", MsgBoxStyle.Exclamation)
+                MsgBox("Nezn√°ma akcia: " & e.Command.Key & vbCrLf & "Kontaktujte dod√°vate¬æa aplik√°cie", MsgBoxStyle.Exclamation)
         End Select
     End Sub
 
@@ -148,9 +148,9 @@ Public Class FormD3dGraphic
             Case "VS_Black", "VS_Blue", "VS_Silver"
                 DoColors(sCommand)
             Case "Reset"
-                If MsgBox("Naozaj chcete zmazaù nastavenia aplik·cie?" & vbCrLf &
-                          "Aplik·cia bude ukonËen· a bude ju treba nanovo spustiù.",
-                          MsgBoxStyle.YesNo Or MsgBoxStyle.Exclamation, "Vymazaù") = MsgBoxResult.Yes Then
+                If MsgBox("Naozaj chcete zmaza¬ù nastavenia aplik√°cie?" & vbCrLf &
+                          "Aplik√°cia bude ukonƒçen√° a bude ju treba nanovo spusti≈•¬ù.",
+                          MsgBoxStyle.YesNo Or MsgBoxStyle.Exclamation, "Vymaza¬ù") = MsgBoxResult.Yes Then
                     Dim rk As Microsoft.Win32.RegistryKey
                     DeleteSetting(HKEY_MEMPHIS_NAME, HKEY_SECTION_NAME)
                     On Error Resume Next
@@ -302,7 +302,7 @@ Public Class FormD3dGraphic
 
                 CS = New ValecSourceObj(f.SN, f.Sarza, f.Location, f.SklCena, f.SN, sortedvalec)
 
-                'Ak uû takÈ rozmey existuj˙, tak ich neprid·m, iba rozöÌrim SN
+                'Ak u≈æ tak√© rozmery existuj√∫, tak ich neprid√°m, iba roz≈°√≠rim SN
                 Dim sRef = CS.CoordToString()
                 Dim s As String
                 Dim bEx As Boolean = False
@@ -365,7 +365,7 @@ Public Class FormD3dGraphic
         _D3dOp = IIf(bOnlyShow, D3dOperation.D3dOperation_ShowValec, D3dOperation.D3dOperation_SimValec)
         If bSim Then
             If D1 <= d2 Then
-                MsgBox("Vn˙torn˝ priemer (" & D1 & ") musÌ byù v‰ËöÌ ako vonkajöÌ (" & d2 & ")!", vbExclamation, "Kontrola")
+                MsgBox("Vn√∫torn√Ω priemer (" & D1 & ") mus√≠ by¬ù v√§ƒç≈°√≠ ako vonkaj≈°√≠ (" & d2 & ")!", vbExclamation, "Kontrola")
                 Exit Function
             End If
         End If
@@ -563,7 +563,7 @@ Public Class FormD3dGraphic
 
                 CS = New BlokSourceObj(f.SN, f.Sarza, f.Location, f.SklCena, bOrientedL, f.SN, sortedblok)
 
-                'Ak uû takÈ rozmey existuj˙, tak ich neprid·m, iba rozöÌrim SN
+                'Ak u≈æ tak√© rozmery existuj√∫, tak ich neprid√°m, iba roz≈°√≠rim SN
                 Dim sRef = CS.CoordToString()
                 Dim s As String
                 Dim bEx As Boolean = False
@@ -752,17 +752,17 @@ Public Class FormD3dGraphic
         Dim bRes As Boolean
 
         If DesiredBlok.aD <= 0 Then
-            MsgBox("Rozmer 'a' musÌ byù nenulovÈ ËÌslo!", vbExclamation, "Kontrola")
+            MsgBox("Rozmer 'a' mus√≠ by¬ù nenulov√© ƒç√≠slo!", vbExclamation, "Kontrola")
             Exit Sub
         End If
 
         If DesiredBlok.bd <= 0 Then
-            MsgBox("Rozmer 'b' musÌ byù nenulovÈ ËÌslo!", vbExclamation, "Kontrola")
+            MsgBox("Rozmer 'b' mus√≠ by¬ù nenulov√© ƒç√≠slo!", vbExclamation, "Kontrola")
             Exit Sub
         End If
 
         If DesiredBlok.L <= 0 Then
-            MsgBox("Rozmer 'L' musÌ byù nenulovÈ ËÌslo!", vbExclamation, "Kontrola")
+            MsgBox("Rozmer 'L' mus√≠ by¬ù nenulov√© ƒç√≠slo!", vbExclamation, "Kontrola")
             Exit Sub
         End If
 
@@ -771,7 +771,7 @@ Public Class FormD3dGraphic
         Dim iMax As Integer  'NEW
 
         iMax = colSNKeys.Count
-        PGBInitialize(iMax, "1/5 - v˝poËet")
+        PGBInitialize(iMax, "1/5 - v√Ωpoƒçet")
 
         For i = 1 To iMax
             PGB.Value += 1
@@ -819,7 +819,7 @@ Public Class FormD3dGraphic
             'MsgBox("Nenacita sa " & colAllCmps.Count - (rbn_MaxSim.Value + 20) & "  ss. Vsetkych je " & colAllCmps.Count)
 
             iMax = colMs.Count
-            PGBInitialize(iMax, "3/5 - zluËovanie")
+            PGBInitialize(iMax, "3/5 - zluƒçovanie")
 
             h = GetSetting(HKEY_MEMPHIS_NAME, HKEY_SECTION_NAME_TYP, "MS_Height", "-1")
             For i = 1 To iMax
@@ -853,7 +853,7 @@ Public Class FormD3dGraphic
             Next
 
         Else
-            MsgBox("Nenaöli sa ûiadne moûnosti", MsgBoxStyle.Information)
+            MsgBox("Nena≈°li sa ≈æiadne mo≈ænosti", MsgBoxStyle.Information)
         End If
         PGBFinish()
 
@@ -873,17 +873,17 @@ Public Class FormD3dGraphic
         Dim colEx As New Collection
 
         If DesiredValec.aD - DesiredValec.bd <= 0 Then
-            MsgBox("Rozdiel D-d musÌ byù kladnÈ ËÌslo!", vbExclamation, "Kontrola")
+            MsgBox("Rozdiel D-d mus√≠ by¬ù kladn√© ƒç√≠slo!", vbExclamation, "Kontrola")
             Exit Sub
         End If
 
         If DesiredValec.L <= 0 Then
-            MsgBox("DÂûka musÌ byù nenulov· ËÌslo!", vbExclamation, "Kontrola")
+            MsgBox("Dƒ∫≈æka mus√≠ by¬ù nenulov√° ƒç√≠slo!", vbExclamation, "Kontrola")
             Exit Sub
         End If
 
         Clean()
-        PGBInitialize(colSNKeys.Count * 3 + 3, "1/4 - v˝poËet")
+        PGBInitialize(colSNKeys.Count * 3 + 3, "1/4 - v√Ωpoƒçet")
 
         For i = 1 To colSNKeys.Count
             PGB.Value += 1
@@ -934,7 +934,7 @@ Public Class FormD3dGraphic
         lboxSN.Items.Clear()
         If iCount > 0 Then
 
-            PGBInitialize(colMs.Count * 3 + 3, "2/4 - zluËovanie")
+            PGBInitialize(colMs.Count * 3 + 3, "2/4 - zluƒçovanie")
             For i = 1 To colMs.Count
                 PGB.Value += 1
                 vms = colMs(i)
@@ -970,7 +970,7 @@ Public Class FormD3dGraphic
                 If Not bRes Then Exit For
             Next
         Else
-            MsgBox("Nenaöli sa ûiadne moûnosti", MsgBoxStyle.Information)
+            MsgBox("Nena≈°li sa ≈æiadne mo≈ænosti", MsgBoxStyle.Information)
         End If
         PGBFinish()
 
