@@ -1,12 +1,8 @@
 ﻿Option Explicit On
-
-Imports System.Data.OleDb
-Imports System.Data.SqlClient
-Imports System.Windows.Forms
 Imports System.IO
+Imports System.Linq
 Imports Janus.Windows
 Imports Newtonsoft.Json
-Imports System.Linq
 
 Public Class FormD3dGraphic
 
@@ -14,7 +10,7 @@ Public Class FormD3dGraphic
     Private colSNObjectShapes As Collection
     Private grd As New clsGrid
 
-    Friend Enum D3dOperation
+    Public Enum D3dOperation
         D3dOperation_SimBlok = 1
         D3dOperation_SimValec = 2
         D3dOperation_ShowBlok = 3
@@ -137,7 +133,7 @@ Public Class FormD3dGraphic
             Case "zz"
 
             Case Else
-                MsgBox("Neznáma akcia: " & e.Command.Key & vbCrLf & "Kontaktujte dodávate¾a aplikácie", MsgBoxStyle.Exclamation)
+                MsgBox("Neznáma akcia: " & e.Command.Key & vbCrLf & "Kontaktujte dodávateľa aplikácie", MsgBoxStyle.Exclamation)
         End Select
     End Sub
 
@@ -148,9 +144,9 @@ Public Class FormD3dGraphic
             Case "VS_Black", "VS_Blue", "VS_Silver"
                 DoColors(sCommand)
             Case "Reset"
-                If MsgBox("Naozaj chcete zmaza nastavenia aplikácie?" & vbCrLf &
-                          "Aplikácia bude ukončená a bude ju treba nanovo spustiť.",
-                          MsgBoxStyle.YesNo Or MsgBoxStyle.Exclamation, "Vymaza") = MsgBoxResult.Yes Then
+                If MsgBox("Naozaj chcete zmazať nastavenia aplikácie?" & vbCrLf &
+                          "Aplikácia bude ukončená a bude ju treba nanovo spustiť.",
+                          MsgBoxStyle.YesNo Or MsgBoxStyle.Exclamation, "Vymazať") = MsgBoxResult.Yes Then
                     Dim rk As Microsoft.Win32.RegistryKey
                     DeleteSetting(HKEY_MEMPHIS_NAME, HKEY_SECTION_NAME)
                     On Error Resume Next
@@ -201,7 +197,7 @@ Public Class FormD3dGraphic
         MenuCommandClick(e.Command.Key)
     End Sub
 
-    Private Sub setRbnLabels(ByVal sCaption As String, ByVal bSim As Boolean, ByVal aD As Integer, ByVal bd As Integer, ByVal L As Integer, ByVal PocetKusov As Integer)
+    Private Sub setRbnLabels(ByVal sCaption As String, ByVal bSim As Boolean, ByVal aD As Decimal, ByVal bd As Decimal, ByVal L As Decimal, ByVal PocetKusov As Integer)
 
         uiDetail.Text = sCaption
         rbnGrpInput.Visible = bSim
@@ -246,7 +242,7 @@ Public Class FormD3dGraphic
                           ByVal strMjObjem As String, ByVal strMjRozmery As String,
                           ByVal intPocetMiestObjem As Integer, ByVal intKoefMjObjemRozmery As Integer,
                           Optional ByVal PocetKusov As Integer = 0,
-                          Optional ByRef D1 As Integer = 0, Optional ByRef d2 As Integer = 0, Optional ByRef L As Integer = 0,
+                          Optional ByRef D1 As Decimal = 0, Optional ByRef d2 As Decimal = 0, Optional ByRef L As Decimal = 0,
                           Optional ByVal Input3DData As String = "", Optional ByRef Output3DData As String = "",
                           Optional ByVal bOnlyReturnObjem As Boolean = False, Optional ByVal bOrientedL As Boolean = False) As Decimal
 
@@ -341,7 +337,7 @@ Public Class FormD3dGraphic
     Public Function RunValecOLD(ByVal sCaption As String, ByVal bOnlyShow As Boolean,
                             ByVal strMjObjem As String, ByVal strMjRozmery As String,
                             ByVal intPocetMiestObjem As Integer, ByVal intKoefMjObjemRozmery As Integer,
-                            Optional ByVal PocetKusov As Integer = 0, Optional ByRef D1 As Integer = 0, Optional ByRef d2 As Integer = 0, Optional ByRef L As Integer = 0,
+                            Optional ByVal PocetKusov As Integer = 0, Optional ByRef D1 As Decimal = 0, Optional ByRef d2 As Decimal = 0, Optional ByRef L As Decimal = 0,
                             Optional ByVal rsIN As ADODB.Recordset = Nothing, Optional ByRef rsOUT As ADODB.Recordset = Nothing,
                             Optional ByVal bOnlyReturnObjem As Boolean = False) As Decimal
 
@@ -365,7 +361,7 @@ Public Class FormD3dGraphic
         _D3dOp = IIf(bOnlyShow, D3dOperation.D3dOperation_ShowValec, D3dOperation.D3dOperation_SimValec)
         If bSim Then
             If D1 <= d2 Then
-                MsgBox("Vnútorný priemer (" & D1 & ") musí by väčší ako vonkajší (" & d2 & ")!", vbExclamation, "Kontrola")
+                MsgBox("Vonkajší priemer (" & D1 & ") musí byť väčší ako vnútorný (" & d2 & ")!", vbExclamation, "Kontrola")
                 Exit Function
             End If
         End If
@@ -487,7 +483,7 @@ Public Class FormD3dGraphic
                           ByVal strMjObjem As String, ByVal strMjRozmery As String,
                           ByVal intPocetMiestObjem As Integer, ByVal intKoefMjObjemRozmery As Integer,
                           Optional ByVal PocetKusov As Integer = 0,
-                          Optional ByRef a As Integer = 0, Optional ByRef b As Integer = 0, Optional ByRef L As Integer = 0,
+                          Optional ByRef a As Decimal = 0, Optional ByRef b As Decimal = 0, Optional ByRef L As Decimal = 0,
                           Optional ByVal Input3DData As String = "", Optional ByRef Output3DData As String = "",
                           Optional ByVal bOnlyReturnObjem As Boolean = False, Optional ByVal bOrientedL As Boolean = False) As Decimal
 
@@ -602,7 +598,7 @@ Public Class FormD3dGraphic
                           ByVal strMjObjem As String, ByVal strMjRozmery As String,
                           ByVal intPocetMiestObjem As Integer, ByVal intKoefMjObjemRozmery As Integer,
                           Optional ByVal PocetKusov As Integer = 0,
-                          Optional ByRef a As Integer = 0, Optional ByRef b As Integer = 0, Optional ByRef L As Integer = 0,
+                          Optional ByRef a As Decimal = 0, Optional ByRef b As Decimal = 0, Optional ByRef L As Decimal = 0,
                           Optional ByVal rsIN As ADODB.Recordset = Nothing, Optional ByRef rsOUT As ADODB.Recordset = Nothing,
                           Optional ByVal bOnlyReturnObjem As Boolean = False, Optional ByVal bOrientedL As Boolean = False) As Decimal
 
@@ -743,7 +739,106 @@ Public Class FormD3dGraphic
 
     End Function
 
-    Private Sub simulateBlok()
+    Public Function SimulateBlok(ByVal DesiredBlok As Coord_bod, ByRef sims As List(Of D3DReturn), ByVal pocKs As Integer, maxRez As Integer, threshold As Integer, maxSim As Integer) As Boolean
+        Dim bms As MultiSimulationBlok
+        Dim iCount As Integer
+        Dim colMs As New Collection
+        Dim i As Integer, h As Integer
+        Dim bRes As Boolean
+
+        Clean()
+
+        For i = 1 To colSNKeys.Count
+            bms = New MultiSimulationBlok
+            If bms.GraphicsCompute(Me.SS_Size, colSNObjectShapes(i), pocKs, DesiredBlok, False, maxRez, threshold) Then
+                If bms.CountMoznosti > 0 Then
+                    'AddHandler bms.SelectedSimulation, AddressOf ms_SelectedSimulation
+                    'AddHandler bms.StartNewTocenie, AddressOf ms_StartNewTocenie
+                    'AddHandler bms.Resized, AddressOf ms_Resized
+                    iCount += bms.CountMoznosti
+                    bms.Key = CStr(i)
+                    colMs.Add(bms, bms.Key)
+                End If
+            End If
+        Next
+
+        lboxSN.Items.Clear()
+        If iCount > 0 Then
+
+            '****************************** 
+            '22.1.2012  Optimalizacia vykreslenia
+            'Zotriedit Computations aby sa vobec negeneroval SS pre tie co sa nebudu zobrazovat
+
+            Dim colAllCmps As New Collection
+            Dim j As Integer
+            For i = 1 To colMs.Count
+                bms = colMs(i)
+                For j = 1 To bms.colComputations.Count
+                    colAllCmps.Add(bms.colComputations(j))
+                Next
+            Next
+
+            If colAllCmps.Count > CInt(maxSim * 1.3) Then  'Pridam este 1,3 koeficient - aby bolo dost simulacii na dobeh
+                SortComputations(colAllCmps) ' Zotried Computations v MSs
+                For j = CInt(maxSim * 1.3) + 1 To colAllCmps.Count
+                    DirectCast(colAllCmps(j), ComputationBlok).bDoNotDraw = True
+                Next
+            End If
+            '*********************************
+
+            h = GetSetting(HKEY_MEMPHIS_NAME, HKEY_SECTION_NAME_TYP, "MS_Height", "-1")
+            For i = 1 To colMs.Count
+                bms = colMs(i)
+                bms.GraphicsCombine(False)
+                SortSingleSimulations(bms.colSSimulations) ' Zotried SS v MS
+            Next
+
+            SortToMaxSim(colMs, maxSim) ' Zotried vsetky SS zo vsetkych MS na prvych MaxSim a potom aj samotne MS
+
+            ' Zobraz
+            For i = 1 To colMs.Count
+                bms = colMs(i)
+                bms.AA = rbn_AA.Checked
+                bms.SVP = rbn_SVP.Checked
+                bms.rotationSpeed = 9000 - TBCitlivost.Value * 600
+
+                Dim s As BlokSourceObj = bms.SourceObj
+
+                Dim simulacia As D3DReturn = New D3DReturn(s.SN, s.Sarza, s.Location, s.SklCena, D3dOperation.D3dOperation_SimBlok)
+                sims.Add(simulacia)
+
+                Dim cv As ComputationBlok = bms.colComputations(1)
+
+                For j = 0 To cv.FoundRezList.Count - 1
+                    Dim coord As CoordinatesBlok = cv.FoundRezList.Item(j)
+                    simulacia.Blok.Add(New ReturnBlok(New CoordinatesBlok(coord.a1, coord.a2, coord.L1, coord.L2, coord.b1, coord.b2), ReturnObject.D3dType.D3dType_FoundRezList))
+                Next
+
+                For j = 0 To cv.CelyRez.Count - 1
+                    Dim coord As CoordinatesBlok = cv.CelyRez.Item(j)
+                    simulacia.Blok.Add(New ReturnBlok(New CoordinatesBlok(coord.a1, coord.a2, coord.L1, coord.L2, coord.b1, coord.b2), ReturnObject.D3dType.D3dType_CelyRez))
+                Next
+
+                'For j = 0 To cv.NedotknutaCast.Count - 1
+                '    Dim coord As CoordinatesBlok = cv.NedotknutaCast.Item(j)
+                '    simulacia.Blok.Add(New ReturnBlok(New CoordinatesBlok(coord.a1, coord.a2, coord.L1, coord.L2, coord.b1, coord.b2), ReturnObject.D3dType.D3dType_NedotknutaCast))
+                'Next
+
+                If h <> -1 Then bms.Height = h
+                bms.Width = FLP.Width - 25
+                bRes = True 'bms.GraphicsDraw()
+                FLP.Controls.Add(bms)
+                lboxSN.Items.Add(New ValueDescriptionPair(bms.SourceObj.SizeDescription & " - " & bms.SourceObj.SNs, bms))
+                bms.iListItemID = lboxSN.Items.Count - 1
+                If Not bRes Then Exit For
+            Next
+        End If
+
+        Return iCount > 0
+
+    End Function
+
+    Private Sub SimulateBlok_Old()
         Dim bms As MultiSimulationBlok
         Dim iCount As Integer
         Dim colMs As New Collection
@@ -752,17 +847,17 @@ Public Class FormD3dGraphic
         Dim bRes As Boolean
 
         If DesiredBlok.aD <= 0 Then
-            MsgBox("Rozmer 'a' musí by nenulové číslo!", vbExclamation, "Kontrola")
+            MsgBox("Rozmer 'a' musí byť nenulové číslo!", vbExclamation, "Kontrola")
             Exit Sub
         End If
 
         If DesiredBlok.bd <= 0 Then
-            MsgBox("Rozmer 'b' musí by nenulové číslo!", vbExclamation, "Kontrola")
+            MsgBox("Rozmer 'b' musí byť nenulové číslo!", vbExclamation, "Kontrola")
             Exit Sub
         End If
 
         If DesiredBlok.L <= 0 Then
-            MsgBox("Rozmer 'L' musí by nenulové číslo!", vbExclamation, "Kontrola")
+            MsgBox("Rozmer 'L' musí byť nenulové číslo!", vbExclamation, "Kontrola")
             Exit Sub
         End If
 
@@ -831,7 +926,7 @@ Public Class FormD3dGraphic
 
             PGBInitialize(2, "4/5 - zoradenie")
             PGB.Value = 2
-            SortToMaxSim(colMs) ' Zotried vsetky SS zo vsetkych MS na prvych MaxSim a potom aj samotne MS
+            SortToMaxSim(colMs, rbn_MaxSim.Value) ' Zotried vsetky SS zo vsetkych MS na prvych MaxSim a potom aj samotne MS
 
             iMax = colMs.Count
             PGBInitialize(iMax, "5/5 - zobrazenie")
@@ -863,7 +958,123 @@ Public Class FormD3dGraphic
         FLP_Resize(Nothing, Nothing)
     End Sub
 
-    Private Sub simulateValec()
+    Public Function SimulateValec(ByVal DesiredValec As Coord_bod, ByRef sims As List(Of D3DReturn), ByVal pocKs As Integer, maxSim As Integer) As Boolean
+        Dim vms As MultiSimulationValec
+        Dim iCount As Integer
+        Dim colMs As New Collection
+        Dim i As Integer
+        Dim bRes As Boolean
+        Dim colEx As New Collection
+
+        Clean()
+
+        For i = 1 To colSNKeys.Count
+            'Sprava
+            vms = New MultiSimulationValec
+            Dim s As ValecSourceObj = colSNObjectShapes(i)
+
+            If vms.GraphicsCompute(Me.SS_Size, s, pocKs, DesiredValec, ValecType.ValecType_Right) Then
+                If vms.CountMoznosti > 0 Then
+                    'AddHandler vms.SelectedSimulation, AddressOf ms_SelectedSimulation
+                    'AddHandler vms.StartNewTocenie, AddressOf ms_StartNewTocenie
+                    iCount += vms.CountMoznosti
+                    vms.Key = CStr(i) + "_RIGHT"
+                    colMs.Add(vms, vms.Key)
+                End If
+            End If
+
+            If vms.SourceObj.coordList.Count > 1 Then
+
+                'Zlava
+                vms = New MultiSimulationValec
+                If vms.GraphicsCompute(Me.SS_Size, colSNObjectShapes(i), pocKs, DesiredValec, ValecType.ValecType_Left) Then
+                    If vms.CountMoznosti > 0 Then
+                        'AddHandler vms.SelectedSimulation, AddressOf ms_SelectedSimulation
+                        'AddHandler vms.StartNewTocenie, AddressOf ms_StartNewTocenie
+                        iCount += vms.CountMoznosti
+                        vms.Key = CStr(i) + "_LEFT"
+                        colMs.Add(vms, vms.Key)
+                    End If
+                End If
+
+            End If
+
+            'Zvnutra
+            vms = New MultiSimulationValec
+            If vms.GraphicsCompute(Me.SS_Size, colSNObjectShapes(i), pocKs, DesiredValec, ValecType.ValecType_Inner) Then
+                If vms.CountMoznosti > 0 Then
+                    'AddHandler vms.SelectedSimulation, AddressOf ms_SelectedSimulation
+                    'AddHandler vms.StartNewTocenie, AddressOf ms_StartNewTocenie
+                    iCount += vms.CountMoznosti
+                    vms.Key = CStr(i) + "_INNER"
+                    colMs.Add(vms, vms.Key)
+                End If
+            End If
+
+        Next
+
+        lboxSN.Items.Clear()
+        If iCount > 0 Then
+
+            For i = 1 To colMs.Count
+                vms = colMs(i)
+                vms.GraphicsCombine()
+            Next
+
+            SortToMaxSim(colMs, maxSim) ' Zotried vsetky SS zo vsetkych MS na prvych MaxSim a potom aj samotne MS
+
+            ' Zobraz
+            For i = 1 To colMs.Count
+                vms = colMs(i)
+                vms.AA = rbn_AA.Checked
+                vms.SVP = rbn_SVP.Checked
+                vms.rotationSpeed = 9000 - TBCitlivost.Value * 600
+
+                Dim s As ValecSourceObj = vms.SourceObj
+
+                Dim simulacia As D3DReturn = New D3DReturn(s.SN, s.Sarza, s.Location, s.SklCena, D3dOperation.D3dOperation_SimValec)
+                sims.Add(simulacia)
+
+                Dim cv As ComputationValec = vms.colComputations(1)
+
+                For j As Integer = 0 To cv.FoundRezList.Count - 1
+                    Dim coord As CoordinatesValec = cv.FoundRezList.Item(j)
+                    simulacia.Valec.Add(New ReturnValec(New CoordinatesValec(coord.D1, coord.d2, coord.L1, coord.L2), ReturnValec.D3dType.D3dType_FoundRezList))
+                Next
+
+                For j As Integer = 0 To cv.CelyRez.Count - 1
+                    Dim coord As CoordinatesValec = cv.CelyRez.Item(j)
+                    simulacia.Valec.Add(New ReturnValec(New CoordinatesValec(coord.D1, coord.d2, coord.L1, coord.L2), ReturnValec.D3dType.D3dType_CelyRez))
+                Next
+
+                For j As Integer = 0 To cv.NedotknutaCast.Count - 1
+                    Dim coord As CoordinatesValec = cv.NedotknutaCast.Item(j)
+                    simulacia.Valec.Add(New ReturnValec(New CoordinatesValec(coord.D1, coord.d2, coord.L1, coord.L2), ReturnValec.D3dType.D3dType_NedotknutaCast))
+                Next
+
+                bRes = True 'vms.GraphicsDraw()
+                FLP.Controls.Add(vms)
+                If Not colEx.Contains(vms.SourceObj.SN) Then  'Robim to cez kolekciu, kedze mozu byt dve simulacie s rovnakym SN
+
+                    If vms.SSV.cmpCurrent.iValecType = ValecType.ValecType_Left Then
+                        lboxSN.Items.Add(New ValueDescriptionPair(vms.SourceObj.SizeDescription & " (L) " & vms.SourceObj.SNs, vms))
+                    ElseIf vms.SSV.cmpCurrent.iValecType = ValecType.ValecType_Right Then
+                        lboxSN.Items.Add(New ValueDescriptionPair(vms.SourceObj.SizeDescription & " (R) " & vms.SourceObj.SNs, vms))
+                    ElseIf vms.SSV.cmpCurrent.iValecType = ValecType.ValecType_Inner Then
+                        lboxSN.Items.Add(New ValueDescriptionPair(vms.SourceObj.SizeDescription & " (I) " & vms.SourceObj.SNs, vms))
+                    End If
+
+                    vms.iListItemID = lboxSN.Items.Count - 1
+                End If
+                If Not bRes Then Exit For
+            Next
+        End If
+
+        Return iCount > 0
+
+    End Function
+
+    Private Sub SimulateValec_Old()
         Dim vms As MultiSimulationValec
         Dim iCount As Integer
         Dim colMs As New Collection
@@ -873,12 +1084,12 @@ Public Class FormD3dGraphic
         Dim colEx As New Collection
 
         If DesiredValec.aD - DesiredValec.bd <= 0 Then
-            MsgBox("Rozdiel D-d musí by kladné číslo!", vbExclamation, "Kontrola")
+            MsgBox("Rozdiel D-d musí byť kladné číslo!", vbExclamation, "Kontrola")
             Exit Sub
         End If
 
         If DesiredValec.L <= 0 Then
-            MsgBox("Dĺžka musí by nenulová číslo!", vbExclamation, "Kontrola")
+            MsgBox("Dĺžka musí byť nenulová číslo!", vbExclamation, "Kontrola")
             Exit Sub
         End If
 
@@ -943,7 +1154,7 @@ Public Class FormD3dGraphic
 
             PGBInitialize(2, "3/4 - zoradenie")
             PGB.Value = 1
-            SortToMaxSim(colMs) ' Zotried vsetky SS zo vsetkych MS na prvych MaxSim a potom aj samotne MS
+            SortToMaxSim(colMs, rbn_MaxSim.Value) ' Zotried vsetky SS zo vsetkych MS na prvych MaxSim a potom aj samotne MS
 
             PGBInitialize(colMs.Count, "3/4 - vykreslenie")
             ' Zobraz
@@ -978,7 +1189,7 @@ Public Class FormD3dGraphic
 
     End Sub
 
-    Private Sub SortToMaxSim(ByRef colMs As Collection) ' Sortne vsetky SS z MS a oznaci ich kt sa maju zobrazit
+    Private Sub SortToMaxSim(ByRef colMs As Collection, MaxSim As Integer) ' Sortne vsetky SS z MS a oznaci ich kt sa maju zobrazit
         Dim colAllSS As New Collection
         Dim msb As MultiSimulationBlok
         Dim msv As MultiSimulationValec
@@ -999,7 +1210,6 @@ Public Class FormD3dGraphic
             ' Zoradime vsetky SS
             SortSingleSimulations(colAllSS)
             ' Zmazeme vsetko za MaxSim (nehavame len posledne alternativy od MaxSim)
-            Dim MaxSim As Integer = rbn_MaxSim.Value
             Dim Zvysok1 As Decimal, Zvysok2 As Decimal
             Dim Qty1 As Integer, Qty2 As Integer
             Dim OuterSizeValue1 As Integer, OuterSizeValue2 As Integer
@@ -1037,7 +1247,7 @@ Public Class FormD3dGraphic
         End If
     End Sub
 
-    Private Sub showBlok()
+    Private Sub showBlok(maxRez As Integer, threshold As Integer)
         Dim bms As MultiSimulationBlok
         Dim colMs As New Collection
         Dim i As Integer
@@ -1047,7 +1257,7 @@ Public Class FormD3dGraphic
 
         For i = 1 To colSNKeys.Count
             bms = New MultiSimulationBlok
-            If bms.GraphicsCompute(Me.SS_Size, colSNObjectShapes(i), 0, DesiredBlok, False, rbn_max_rez.Value, rbn_threshold.Value) Then
+            If bms.GraphicsCompute(Me.SS_Size, colSNObjectShapes(i), 0, DesiredBlok, False, maxRez, threshold) Then
                 colMs.Add(bms, CStr(i))
                 bms.AA = rbn_AA.Checked
                 bms.SVP = rbn_SVP.Checked
@@ -1136,13 +1346,13 @@ Public Class FormD3dGraphic
     Private Sub Run()
         Select Case _D3dOp
             Case D3dOperation.D3dOperation_ShowBlok
-                showBlok()
+                showBlok(1000, 10)
             Case D3dOperation.D3dOperation_ShowValec
                 showValec()
             Case D3dOperation.D3dOperation_SimBlok
-                simulateBlok()
+                'SimulateBlok()
             Case D3dOperation.D3dOperation_SimValec
-                simulateValec()
+                'SimulateValec()
         End Select
 
     End Sub

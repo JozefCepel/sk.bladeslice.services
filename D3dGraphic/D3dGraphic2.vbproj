@@ -123,6 +123,7 @@
     <Compile Include="ComputationBlok.vb" />
     <Compile Include="Coord_bod.vb" />
     <Compile Include="ComputationValec.vb" />
+    <Compile Include="D3DReturn.vb" />
     <Compile Include="D3DSource.vb" />
     <Compile Include="Simulations\SingleSimulationBlok.Designer.vb">
       <DependentUpon>SingleSimulationBlok.vb</DependentUpon>

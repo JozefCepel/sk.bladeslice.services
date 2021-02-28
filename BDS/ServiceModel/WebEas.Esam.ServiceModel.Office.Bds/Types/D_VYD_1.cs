@@ -108,7 +108,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public int D3D_L { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_D", DefaultValue = 0)]
+        [PfeColumn(Text = "D", DefaultValue = 0)]
         public int D3D_D1 { get; set; }
 
         [DataMember]

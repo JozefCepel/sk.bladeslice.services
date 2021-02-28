@@ -162,15 +162,21 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
 
         #region D_SIM_0
 
-        
+
         public object Get(GetSimData request)
         {
-            V_VYD_1View vyd1 = Repository.GetList(Db.From<V_VYD_1View>().Where(e => e.D_VYD_1 == request.D_VYD_1)).First();
+            V_VYD_1View vyd1 = Repository.GetList(Db.From<V_VYD_1View>().
+                Select(x => new { x.K_TSK_0, x.K_TYP_0, x.KOD, x.NAZOV, x.MJ, x.SKL_SIMULATION, 
+                                  x.D3D_POC_KS, x.D3D_L, x.D3D_A, x.D3D_B, x.D3D_D1, x.D3D_D2
+                                }).Where(e => e.D_VYD_1 == request.D_VYD_1)).First();
             var tsk = vyd1.K_TSK_0;
             var lTyp = vyd1.K_TYP_0;
             var sKod = vyd1.KOD;
             var lPocKs = vyd1.D3D_POC_KS;
             var simType = vyd1.SKL_SIMULATION;
+            int maxRez = 1000;
+            int threshold = 10;
+            int maxSim = 20;
             string sCapt;
 
             if (lPocKs == 0)
@@ -192,7 +198,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
             //rsSim.Open "SELECT SN, SARZA, LOCATION, D_CENA, PV, A1, A2, B1, B2, D1, D2, L1, L2" & vbCrLf & _
             //"FROM V_SIM_0              WHERE K_TSK_0 = " & lTSK & " AND KOD = '" & sKod & "' AND " & vbCrLf & _
             //"SN IN (SELECT SN FROM STS WHERE K_TSK_0 = " & lTSK & " AND KOD = '" & sKod & "' AND K_SKL_0 = " & lSkl & " GROUP BY SN HAVING SUM(KS) > 0)",
-            var sim = Repository.GetList(Db.From<V_SIM_0View>().Where(e => e.V && e.K_TSK_0 == tsk && e.KOD == sKod));
+            var sim = Repository.GetList(Db.From<V_SIM_0View>().Where(e => e.V && e.K_TSK_0 == tsk && e.KOD == sKod && e.SN != "")); // && e.SN == "5062"
 
             //var sourceData = new List<D3DSource>();
             D3DSource[] sourceData = new D3DSource[sim.GroupBy(x => x.SN).Count()];
@@ -202,10 +208,10 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
             {
                 var sd = new D3DSource
                 {
-                    SN = vyd1.SN,
-                    Sarza = vyd1.SARZA,
-                    Location = vyd1.LOCATION,
-                    SklCena = vyd1.D_CENA ?? 0,
+                    SN = sn.Key,
+                    //Sarza = vyd1.SARZA,
+                    //Location = vyd1.LOCATION,
+                    //SklCena = vyd1.D_CENA ?? 0,
                     //PocKs = vyd1.POC_KS,
                     //' Vybranych (aj menej moze byt)
                     //ObjemVyrez = vyd1.OBJEM_VYREZ,
@@ -254,11 +260,16 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
 
             int lL = vyd1.D3D_L;
             var f = new FormD3dGraphic();
+            List<D3DReturn> sims = new List<D3DReturn>();
 
             if (simType == 1 || simType == 3)
             {
                 int la = vyd1.D3D_A;
                 int lb = vyd1.D3D_B;
+
+                la = 1;
+                lb = 1;
+                lL = 1;
 
                 if (la == 0 || lb == 0 || lL == 0 || lPocKs == 0)
                 {
@@ -266,26 +277,37 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                 }
                 f.InicializeVariables(sCapt, false, "dm3", "mm", 4, 1000000, lPocKs, la, lb, 0, 0, lL);
                 f.PrepareBlokData(simType == 3, sourceData);
-                return 1;
+
+                if (!f.SimulateBlok(new Coord_bod(la, lL, lb), ref sims, lPocKs, maxRez, threshold, maxSim))
+                {
+                    //"Nenašli sa žiadne možnosti"
+                    throw new WebEasException(null, "No valid simulations found!");
+                }
             }
             else
             {
                 int lD1 = vyd1.D3D_D1;
                 int ld2 = vyd1.D3D_D2;
-                if (lD1 == 0 || lL == 0 || lPocKs == 0)
+                if (lD1 == 0 || lL <= 0 || lPocKs == 0)
                 {
                     throw new WebEasException(null, "Missing necessary simulation data. Check 'D', 'L', 'Number of pieces'!");
                 }
                 else if (lD1 <= ld2)
                 {
-                    throw new WebEasException(null, "Outer diameter (" + lD1 + ") must be  byť greather than the inner one (" + ld2 + ")!");
+                    //"Rozdiel D-d musí byť kladné číslo!"
+                    throw new WebEasException(null, "Wrong simulation data. Outer diameter (" + lD1 + ") must be greather than the inner one (" + ld2 + ")!");
                 }
 
                 f.InicializeVariables(sCapt, false, "dm3", "mm", 4, 1000000, lPocKs, 0, 0, lD1, ld2, lL);
                 f.PrepareValecData(sourceData);
-                return 2;
-            }
 
+                if (!f.SimulateValec(new Coord_bod(lD1, lL, ld2), ref sims, lPocKs, maxSim))
+                {
+                    //"Nenašli sa žiadne možnosti"
+                    throw new WebEasException(null, "No valid simulations found!");
+                }
+            }
+            return sims;
 
             /*
                 If Not rsOUT Is Nothing Then

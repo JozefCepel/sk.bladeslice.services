@@ -1,34 +1,34 @@
 ﻿Imports System.Data.SqlClient
 
-Module BasLibrary
-    Friend Const HKEY_MEMPHIS_NAME As String = "MemphisWin32_3"  ' HKCU\Software\VB and VBA Program Settings
-    Friend Const HKEY_SECTION_NAME As String = "D3dGraphic"      ' Spolocne nastavenia
-    Friend HKEY_SECTION_NAME_TYP As String                       ' Spolocne nastavenia pre dany typ
-    Friend Const CS_DBL_FMT2 As String = "### ### ##0.00"
+Public Module BasLibrary
+    Public Const HKEY_MEMPHIS_NAME As String = "MemphisWin32_3"  ' HKCU\Software\VB and VBA Program Settings
+    Public Const HKEY_SECTION_NAME As String = "D3dGraphic"      ' Spolocne nastavenia
+    Public HKEY_SECTION_NAME_TYP As String                       ' Spolocne nastavenia pre dany typ
+    Public Const CS_DBL_FMT2 As String = "### ### ##0.00"
 
     Public sMjObjem As String = "dm3"
     Public sMjRozmery As String = "mm"
     Public iPocetMiestObjem As Integer = 4
     Public iKoefMjObjemRozmery As Integer = 1000
 
-    Friend Enum Os_bod
+    Public Enum Os_bod
         Os_aD = 1
         Os_bd = 2
         Os_L = 3
     End Enum
 
-    Friend Enum CoordRank
+    Public Enum CoordRank
         CoordRank1 = 1
         CoordRank2 = 2
     End Enum
 
-    Friend Enum ValecType
+    Public Enum ValecType
         ValecType_Left = 1
         ValecType_Right = 2
         ValecType_Inner = 3
     End Enum
 
-    Friend Function GetMaterialName(ByVal sSN As String, ByVal sSarza As String, ByVal dblSklCena As Decimal,
+    Public Function GetMaterialName(ByVal sSN As String, ByVal sSarza As String, ByVal dblSklCena As Decimal,
                                       ByVal sLocation As String, ByVal bDetailed As Boolean, ByVal sSizeDescription As String) As String
         Dim sTmp As String = ""
 
@@ -63,16 +63,16 @@ Module BasLibrary
         Return sTmp
     End Function
 
-    Friend Function testuj(ByVal b1 As CoordinatesBlok, ByVal b2 As CoordinatesBlok) As Boolean
+    Public Function testuj(ByVal b1 As CoordinatesBlok, ByVal b2 As CoordinatesBlok) As Boolean
         Return (((b1.a1 <= b2.a1 AndAlso b1.a2 <= b2.a1) OrElse (b1.a1 >= b2.a2 AndAlso b1.a2 >= b2.a2)) OrElse ((b1.L1 <= b2.L1 AndAlso b1.L2 <= b2.L1) _
                 OrElse (b1.L1 >= b2.L2 AndAlso b1.L2 >= b2.L2)) OrElse ((b1.b1 <= b2.b1 AndAlso b1.b2 <= b2.b1) OrElse (b1.b1 >= b2.b2 AndAlso b1.b2 >= b2.b2)))
     End Function
 
-    Friend Function IsExistKey(ByRef col As Collection, ByRef sKey As String) As Boolean
+    Public Function IsExistKey(ByRef col As Collection, ByRef sKey As String) As Boolean
         Return col.Contains(sKey)
     End Function
 
-    Friend Function GetThirdOs(ByVal FirstOs As Os_bod, ByVal SecondOs As Os_bod) As Os_bod
+    Public Function GetThirdOs(ByVal FirstOs As Os_bod, ByVal SecondOs As Os_bod) As Os_bod
         If FirstOs = Os_bod.Os_aD Then
             Return IIf(SecondOs = Os_bod.Os_bd, Os_bod.Os_L, Os_bod.Os_bd)
 
@@ -85,7 +85,7 @@ Module BasLibrary
 
     End Function
 
-    Friend Sub sortValce(ByRef shapes As ArrayList, ByVal zlava As Boolean)
+    Public Sub sortValce(ByRef shapes As ArrayList, ByVal zlava As Boolean)
         Dim i As Integer
         Dim i2 As Integer
         Dim ss As CoordinatesValec
@@ -125,7 +125,7 @@ Module BasLibrary
 
     End Sub
 
-    Friend Sub SortComputations(ByRef colAllCmps As Collection)
+    Public Sub SortComputations(ByRef colAllCmps As Collection)
         Dim Zvysok1 As Decimal, Zvysok2 As Decimal
         Dim Qty1 As Integer, Qty2 As Integer
         Dim Popis1 As String = "", Popis2 As String = ""
@@ -157,7 +157,7 @@ Module BasLibrary
         colAllCmps = colTmp
     End Sub
 
-    Private Function sortComputationGetData(ByRef oCmp As Object, ByRef Zvysok As Decimal, ByRef Qty As Integer, ByRef Popis As String, ByRef OuterSizeValue As Integer) As Boolean
+    Private Function sortComputationGetData(ByRef oCmp As Object, ByRef Zvysok As Decimal, ByRef Qty As Integer, ByRef Popis As String, ByRef OuterSizeValue As Decimal) As Boolean
         Dim cmpb As ComputationBlok
         Dim cmpv As ComputationValec
 
@@ -178,7 +178,7 @@ Module BasLibrary
         End If
     End Function
 
-    Friend Sub SortSingleSimulations(ByRef colAllSS As Collection)
+    Public Sub SortSingleSimulations(ByRef colAllSS As Collection)
         Dim Zvysok1 As Decimal, Zvysok2 As Decimal
         Dim Qty1 As Integer, Qty2 As Integer
         Dim Popis1 As String = "", Popis2 As String = ""
@@ -210,7 +210,7 @@ Module BasLibrary
         colAllSS = colTmp
     End Sub
 
-    Friend Function GetSortDataFromSS(ByRef oSS As Object, ByRef Zvysok As Decimal, ByRef Qty As Integer, ByRef Popis As String, ByRef OuterSizeValue As Integer) As Boolean
+    Public Function GetSortDataFromSS(ByRef oSS As Object, ByRef Zvysok As Decimal, ByRef Qty As Integer, ByRef Popis As String, ByRef OuterSizeValue As Decimal) As Boolean
         Dim ssb As SingleSimulationBlok
         Dim ssv As SingleSimulationValec
 
@@ -231,7 +231,7 @@ Module BasLibrary
         End If
     End Function
 
-    Friend Sub del(ByVal b1 As CoordinatesBlok, ByVal b2 As CoordinatesBlok, ByRef _coordList As ArrayList)
+    Public Sub del(ByVal b1 As CoordinatesBlok, ByVal b2 As CoordinatesBlok, ByRef _coordList As ArrayList)
 
         '/////////////////////XXXXXXXXXX
         If (b1.a1 < b2.a1) Then
@@ -294,7 +294,7 @@ Module BasLibrary
 
     End Sub
 
-    Friend Sub otoc_abL(ByRef velkost As Coord_bod, ByVal index As Integer)
+    Public Sub otoc_abL(ByRef velkost As Coord_bod, ByVal index As Integer)
         Dim t As Integer
         Select Case index
             Case 1
@@ -372,7 +372,7 @@ Module BasLibrary
 
     End Sub
 
-    Friend Sub CloseConnection(ByRef cnTmp As SqlConnection)
+    Public Sub CloseConnection(ByRef cnTmp As SqlConnection)
         If Not cnTmp Is Nothing Then
             If cnTmp.State = ConnectionState.Open Then cnTmp.Close()
             cnTmp.Dispose()
@@ -447,7 +447,7 @@ Module BasLibrary
         Return cl
     End Function
 
-    Friend Function RoundItNice(ByVal decValue As Decimal) As String
+    Public Function RoundItNice(ByVal decValue As Decimal) As String
         Dim sRoundFmt As String
         If iPocetMiestObjem = 0 Then
             sRoundFmt = "0"
@@ -464,7 +464,7 @@ Module BasLibrary
 
     End Function
 
-    Friend Function ExistFieldInRs(ByRef rsCheck As ADODB.Recordset, ByRef strFieldName As String) As Boolean
+    Public Function ExistFieldInRs(ByRef rsCheck As ADODB.Recordset, ByRef strFieldName As String) As Boolean
         Dim oField As Object
         strFieldName = strFieldName.ToLower
         For Each oField In rsCheck.Fields
@@ -472,7 +472,7 @@ Module BasLibrary
         Next
     End Function
 
-    Friend Function SizeDescriptionBlok(bod As Coord_bod) As String
+    Public Function SizeDescriptionBlok(bod As Coord_bod) As String
 
         If bod.aD = 0 And bod.bd = 0 And bod.L = 0 Then
             Return " - "
@@ -482,7 +482,7 @@ Module BasLibrary
 
     End Function
 
-    Friend Function SizeDescriptionValec(bod As Coord_bod) As String
+    Public Function SizeDescriptionValec(bod As Coord_bod) As String
         If bod.aD = 0 And bod.bd = 0 And bod.L = 0 Then
             Return " - "
         Else
@@ -490,7 +490,7 @@ Module BasLibrary
         End If
     End Function
 
-    Friend Function GetValecSize(coordList As ArrayList) As Coord_bod
+    Public Function GetValecSize(coordList As ArrayList) As Coord_bod
         Dim i As Integer
         Dim v As New Coord_bod With {
                 .aD = 0,
@@ -517,7 +517,7 @@ Module BasLibrary
         Return v
     End Function
 
-    Friend Function getBlokSizeFromZero(ByRef cl As ArrayList) As Coord_bod
+    Public Function getBlokSizeFromZero(ByRef cl As ArrayList) As Coord_bod
         Dim i As Integer
         Dim v As New Coord_bod With {
                 .aD = 0,
@@ -540,7 +540,7 @@ Module BasLibrary
         Return v
     End Function
 
-    Friend Function getBlokSizeMinimum(ByRef cl As ArrayList) As Coord_bod
+    Public Function getBlokSizeMinimum(ByRef cl As ArrayList) As Coord_bod
         Dim i As Integer
         Dim temp As CoordinatesBlok
         Dim v2 As New Coord_bod(0, 0, 0)
