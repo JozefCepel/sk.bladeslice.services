@@ -267,10 +267,6 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                 int la = vyd1.D3D_A;
                 int lb = vyd1.D3D_B;
 
-                la = 1;
-                lb = 1;
-                lL = 1;
-
                 if (la == 0 || lb == 0 || lL == 0 || lPocKs == 0)
                 {
                     throw new WebEasException(null, "Missing necessary simulation data. Check 'a', 'b', 'L', 'Number of pieces'!");
