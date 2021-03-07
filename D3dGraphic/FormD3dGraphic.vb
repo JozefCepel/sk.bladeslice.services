@@ -1429,18 +1429,3 @@ Public Class FormD3dGraphic
     End Sub
 
 End Class
-
-' Riesi Item data pre Combobox, lstBox
-Friend Class ValueDescriptionPair
-    Friend ValueObj As Object
-    Friend ValueText As String
-
-    Friend Sub New(ByVal NewText As String, ByVal NewObj As Object)
-        ValueText = NewText
-        ValueObj = NewObj
-    End Sub
-    Public Overrides Function ToString() As String
-        Return ValueText
-    End Function
-
-End Class

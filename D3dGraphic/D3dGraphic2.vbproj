@@ -124,6 +124,12 @@
     <Compile Include="Coord_bod.vb" />
     <Compile Include="ComputationValec.vb" />
     <Compile Include="D3DReturn.vb" />
+    <Compile Include="Simulations\MultiSimulationBlok2.vb" />
+    <Compile Include="Simulations\MultiSimulationValec2.vb" />
+    <Compile Include="Simulations\SingleSimulation2.vb" />
+    <Compile Include="Simulations\SingleSimulationValec2.vb" />
+    <Compile Include="Simulations\SingleSimulationBlok2.vb" />
+    <Compile Include="FormD3dGraphic2.vb" />
     <Compile Include="D3DSource.vb" />
     <Compile Include="Simulations\SingleSimulationBlok.Designer.vb">
       <DependentUpon>SingleSimulationBlok.vb</DependentUpon>
