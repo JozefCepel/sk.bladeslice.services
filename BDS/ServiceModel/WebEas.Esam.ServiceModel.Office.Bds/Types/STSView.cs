@@ -5,8 +5,8 @@ using WebEas.ServiceModel;
 
 namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 {
-    [Schema("dbo")]
-    [Alias("STS_BDS")]
+    [Schema("bds")]
+    [Alias("STS")]
     [DataContract]
     public class STSView
     {

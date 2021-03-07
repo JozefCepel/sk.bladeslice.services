@@ -5,7 +5,7 @@ using WebEas.ServiceModel;
 
 namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 {
-    [Schema("dbo")]
+    [Schema("bds")]
     [Alias("V_VYD_1")]
     [DataContract]
     public class V_VYD_1View : tblD_VYD_1

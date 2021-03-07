@@ -119,7 +119,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasLibrary.vb" />
-    <Compile Include="clsGrid.vb" />
     <Compile Include="ComputationBlok.vb" />
     <Compile Include="Coord_bod.vb" />
     <Compile Include="ComputationValec.vb" />
@@ -131,47 +130,11 @@
     <Compile Include="Simulations\SingleSimulationBlok2.vb" />
     <Compile Include="FormD3dGraphic2.vb" />
     <Compile Include="D3DSource.vb" />
-    <Compile Include="Simulations\SingleSimulationBlok.Designer.vb">
-      <DependentUpon>SingleSimulationBlok.vb</DependentUpon>
-    </Compile>
-    <Compile Include="Simulations\SingleSimulationBlok.vb">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Simulations\SingleSimulationValec.Designer.vb">
-      <DependentUpon>SingleSimulationValec.vb</DependentUpon>
-    </Compile>
-    <Compile Include="Simulations\SingleSimulationValec.vb">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Simulations\SingleSimulation.Designer.vb">
-      <DependentUpon>SingleSimulation.vb</DependentUpon>
-    </Compile>
-    <Compile Include="Simulations\SingleSimulation.vb">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="SourceObj\ValecSourceObj.vb" />
-    <Compile Include="FormD3dGraphic.Designer.vb">
-      <DependentUpon>FormD3dGraphic.vb</DependentUpon>
-    </Compile>
-    <Compile Include="FormD3dGraphic.vb">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Settings.vb" />
-    <Compile Include="Simulations\MultiSimulationValec.Designer.vb">
-      <DependentUpon>MultiSimulationValec.vb</DependentUpon>
-    </Compile>
-    <Compile Include="Simulations\MultiSimulationValec.vb">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Coordinates\CoordinatesValec.vb" />
     <Compile Include="SourceObj\BlokSourceObj.vb" />
     <Compile Include="Coordinates\CoordinatesBlok.vb" />
-    <Compile Include="Simulations\MultiSimulationBlok.Designer.vb">
-      <DependentUpon>MultiSimulationBlok.vb</DependentUpon>
-    </Compile>
-    <Compile Include="Simulations\MultiSimulationBlok.vb">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -190,30 +153,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="FormD3dGraphic.resx">
-      <DependentUpon>FormD3dGraphic.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Simulations\SingleSimulationBlok.resx">
-      <DependentUpon>SingleSimulationBlok.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Simulations\SingleSimulationValec.resx">
-      <DependentUpon>SingleSimulationValec.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Simulations\SingleSimulation.resx">
-      <DependentUpon>SingleSimulation.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Simulations\MultiSimulationValec.resx">
-      <DependentUpon>MultiSimulationValec.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Simulations\MultiSimulationBlok.resx">
-      <DependentUpon>MultiSimulationBlok.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="My Project\licenses.licx" />
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>

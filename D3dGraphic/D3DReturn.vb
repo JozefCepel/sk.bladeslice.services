@@ -1,4 +1,5 @@
 ﻿Imports D3dGraphic2.FormD3dGraphic
+Imports D3dGraphic2.FormD3dGraphic2
 
 Public Class D3DReturn
     Public Property Type As String
@@ -106,7 +107,7 @@ Public MustInherit Class ReturnObject
         End Get
     End Property
 
-    Public ReadOnly Property ImgTexture As Boolean
+    Public ReadOnly Property imgTexture As Boolean
         Get
             Return d3dSimType = D3dType.D3dType_FoundRezList
         End Get

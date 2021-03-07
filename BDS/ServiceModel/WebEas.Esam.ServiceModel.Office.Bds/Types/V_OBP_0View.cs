@@ -5,8 +5,8 @@ using WebEas.ServiceModel;
 
 namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 {
-    [Schema("dbo")]
-    [Alias("V_OBP_0_BDS")]
+    [Schema("bds")]
+    [Alias("V_OBP_0")]
     [DataContract]
     public class V_OBP_0View : tblK_OBP_0
     {

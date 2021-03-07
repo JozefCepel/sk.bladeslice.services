@@ -5,8 +5,8 @@ using WebEas.ServiceModel;
 
 namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 {
-    [Schema("dbo")]
-    [Alias("fnStsFifo_BDS (@iSkl, @DatTo, @LOCATION, @SN, @SARZA, @SKL_CENA)")]
+    [Schema("bds")]
+    [Alias("fnStsFifo (@iSkl, @DatTo, @LOCATION, @SN, @SARZA, @SKL_CENA)")]
     [DataContract]
     public class STS_FIFOFunction
     {

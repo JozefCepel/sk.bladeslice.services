@@ -211,18 +211,18 @@ Public Module BasLibrary
     End Sub
 
     Public Function GetSortDataFromSS(ByRef oSS As Object, ByRef Zvysok As Decimal, ByRef Qty As Integer, ByRef Popis As String, ByRef OuterSizeValue As Decimal) As Boolean
-        Dim ssb As SingleSimulationBlok
-        Dim ssv As SingleSimulationValec
+        Dim ssb As SingleSimulationBlok2
+        Dim ssv As SingleSimulationValec2
 
-        If TypeOf oSS Is SingleSimulationBlok Then
-            ssb = DirectCast(oSS, SingleSimulationBlok)
+        If TypeOf oSS Is SingleSimulationBlok2 Then
+            ssb = DirectCast(oSS, SingleSimulationBlok2)
             Zvysok = ssb.cmpCurrent.ObjemOdrezku ' Vsetky computation su rovnake tak mozem pouzit current
             Qty = ssb.cmpCurrent.Pocet
             Popis = ssb.cmpCurrent.SourceObjShape.SN & ssb.cmpCurrent.Popis
             OuterSizeValue = ssb.cmpCurrent.OuterSizeFinalBod.aD + ssb.cmpCurrent.OuterSizeFinalBod.bd + ssb.cmpCurrent.OuterSizeFinalBod.L
             Return True
-        ElseIf TypeOf oSS Is SingleSimulationValec Then
-            ssv = DirectCast(oSS, SingleSimulationValec)
+        ElseIf TypeOf oSS Is SingleSimulationValec2 Then
+            ssv = DirectCast(oSS, SingleSimulationValec2)
             Zvysok = ssv.cmpCurrent.ObjemOdrezku
             Qty = ssv.cmpCurrent.Pocet
             Popis = ssv.cmpCurrent.SourceObjShape.SN & ssv.cmpCurrent.Popis
