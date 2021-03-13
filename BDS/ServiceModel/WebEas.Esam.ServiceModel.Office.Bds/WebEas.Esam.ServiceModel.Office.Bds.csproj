@@ -94,6 +94,7 @@
     <Compile Include="Types\V_PRI_1View.cs" />
     <Compile Include="Types\D_PRI_1.cs" />
     <Compile Include="Types\D_SIM_0.cs" />
+    <Compile Include="Types\V_Simulations.cs" />
     <Compile Include="Types\V_SIM_0View.cs" />
     <Compile Include="Types\D_VYD_0.cs" />
     <Compile Include="Types\V_VYD_0View.cs" />

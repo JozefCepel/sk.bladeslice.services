@@ -208,7 +208,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
             //rsSim.Open "SELECT SN, SARZA, LOCATION, D_CENA, PV, A1, A2, B1, B2, D1, D2, L1, L2" & vbCrLf & _
             //"FROM V_SIM_0              WHERE K_TSK_0 = " & lTSK & " AND KOD = '" & sKod & "' AND " & vbCrLf & _
             //"SN IN (SELECT SN FROM STS WHERE K_TSK_0 = " & lTSK & " AND KOD = '" & sKod & "' AND K_SKL_0 = " & lSkl & " GROUP BY SN HAVING SUM(KS) > 0)",
-            var sim = Repository.GetList(Db.From<V_SIM_0View>().Where(e => e.V && e.K_TSK_0 == tsk && e.KOD == sKod && e.SN != "")); // && e.SN == "5062"
+            var sim = Repository.GetList(Db.From<V_Simulations>().Where(e => e.V && e.K_TSK_0 == tsk && e.KOD == sKod && e.SN != "")); // && e.SN == "5062"
 
             //var sourceData = new List<D3DSource>();
             D3DSource[] sourceData = new D3DSource[sim.GroupBy(x => x.SN).Count()];

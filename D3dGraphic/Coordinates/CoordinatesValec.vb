@@ -15,7 +15,7 @@
         _L2 = coord.L2
     End Sub
 
-    Public Sub New(ByVal D1 As Decimal, ByVal d2 As Decimal, ByVal L1 As Decimal, ByVal L2 As Decimal)
+    Public Sub New(ByVal d2 As Decimal, ByVal D1 As Decimal, ByVal L1 As Decimal, ByVal L2 As Decimal)
         _D1 = D1
         _d2 = d2
         _L1 = L1

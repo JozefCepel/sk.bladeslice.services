@@ -95,22 +95,22 @@ Friend Class ValecSourceObj
                         process = True
 
                         If (temp.L1 < remove.L1) Then
-                            novy.Add(New CoordinatesValec(temp.D1, temp.d2, temp.L1, remove.L1))
+                            novy.Add(New CoordinatesValec(temp.d2, temp.D1, temp.L1, remove.L1))
                         End If
 
                         If (temp.D1 > remove.D1) Then
                             If (temp.L2 > remove.L2) Then
-                                novy.Add(New CoordinatesValec(temp.D1, remove.D1, remove.L1, remove.L2))
+                                novy.Add(New CoordinatesValec(remove.D1, temp.D1, remove.L1, remove.L2))
                             Else
-                                novy.Add(New CoordinatesValec(temp.D1, remove.D1, remove.L1, temp.L2))
+                                novy.Add(New CoordinatesValec(remove.D1, temp.D1, remove.L1, temp.L2))
                             End If
                         End If
 
                         If (temp.d2 < remove.d2) Then
                             If (temp.L2 > remove.L2) Then
-                                novy.Add(New CoordinatesValec(remove.d2, temp.d2, remove.L1, remove.L2))
+                                novy.Add(New CoordinatesValec(temp.d2, remove.d2, remove.L1, remove.L2))
                             Else
-                                novy.Add(New CoordinatesValec(remove.d2, temp.d2, remove.L1, temp.L2))
+                                novy.Add(New CoordinatesValec(temp.d2, remove.d2, remove.L1, temp.L2))
                             End If
                         End If
 
@@ -119,7 +119,7 @@ Friend Class ValecSourceObj
                         End If
 
                         If (temp.L2 > remove.L2) Then
-                            novy.Add(New CoordinatesValec(temp.D1, temp.d2, remove.L2, temp.L2))
+                            novy.Add(New CoordinatesValec(temp.d2, temp.D1, remove.L2, temp.L2))
                             done = True
                         End If
                     Else
@@ -133,33 +133,33 @@ Friend Class ValecSourceObj
 
                         If (temp.D1 > remove.D1) Then
                             If (temp.L2 > remove.L2) Then
-                                novy.Add(New CoordinatesValec(temp.D1, remove.D1, remove.L1, remove.L2))
+                                novy.Add(New CoordinatesValec(remove.D1, temp.D1, remove.L1, remove.L2))
                             Else
-                                novy.Add(New CoordinatesValec(temp.D1, remove.D1, remove.L1, temp.L2))
+                                novy.Add(New CoordinatesValec(remove.D1, temp.D1, remove.L1, temp.L2))
                             End If
                         End If
 
                         If (temp.d2 < remove.d2) Then
                             If (temp.L2 > remove.L2) Then
-                                novy.Add(New CoordinatesValec(remove.d2, temp.d2, remove.L1, remove.L2))
+                                novy.Add(New CoordinatesValec(temp.d2, remove.d2, remove.L1, remove.L2))
                             Else
-                                novy.Add(New CoordinatesValec(remove.d2, temp.d2, remove.L1, temp.L2))
+                                novy.Add(New CoordinatesValec(temp.d2, remove.d2, remove.L1, temp.L2))
                             End If
                         End If
 
                         If (temp.L2 > remove.L2) Then
-                            novy.Add(New CoordinatesValec(temp.D1, temp.d2, remove.L2, temp.L2))
+                            novy.Add(New CoordinatesValec(temp.d2, temp.D1, remove.L2, temp.L2))
                             done = True
                         End If
 
                     Else
 
                         If (temp.D1 > remove.D1) Then
-                            novy.Add(New CoordinatesValec(temp.D1, remove.D1, remove.L1, temp.L2))
+                            novy.Add(New CoordinatesValec(remove.D1, temp.D1, remove.L1, temp.L2))
                         End If
 
                         If (temp.d2 < remove.d2) Then
-                            novy.Add(New CoordinatesValec(remove.d2, temp.d2, remove.L1, temp.L2))
+                            novy.Add(New CoordinatesValec(temp.d2, remove.d2, remove.L1, temp.L2))
                         End If
 
                     End If

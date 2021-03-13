@@ -71,7 +71,7 @@ Public MustInherit Class ReturnObject
         Get
             Dim ret As Integer
             Select Case d3dSimType
-                Case D3dType.D3dType_CelyRez
+                Case D3dType.D3dType_Olive
                     ret = &H8000
                 Case D3dType.D3dType_FoundRezList
                     ret = &HFF0000
@@ -96,7 +96,7 @@ Public MustInherit Class ReturnObject
         Get
             Dim ret As Decimal
             Select Case d3dSimType
-                Case D3dType.D3dType_CelyRez
+                Case D3dType.D3dType_Olive
                     ret = 0.4
                 Case D3dType.D3dType_FoundRezList
                     ret = 0.4
@@ -115,7 +115,7 @@ Public MustInherit Class ReturnObject
 
     Public Enum D3dType
         D3dType_NedotknutaCast = 1
-        D3dType_CelyRez = 2
+        D3dType_Olive = 2
         D3dType_FoundRezList = 3
     End Enum
 

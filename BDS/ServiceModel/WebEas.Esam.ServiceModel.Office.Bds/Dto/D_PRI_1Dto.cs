@@ -109,8 +109,8 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
             data.POC_KS = POC_KS;
             data.BAL_KS = POC_KS; //BAL_KS;
             data.MJ = MJ;
-            data.D_CENA = D_CENA;
-            data.Z_CENA = Z_CENA;
+            data.D_CENA = D_CENA ?? 0;
+            data.Z_CENA = Z_CENA ?? 0;
             data.RANK = RANK;
             data.EAN = EAN;
             data.WARRANTY = WARRANTY;

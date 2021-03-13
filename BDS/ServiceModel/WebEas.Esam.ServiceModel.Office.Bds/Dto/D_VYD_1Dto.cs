@@ -130,8 +130,8 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
             data.NAZOV = string.IsNullOrEmpty(NAZOV) ? "" : NAZOV;
             data.POC_KS = POC_KS;
             data.MJ = MJ;
-            data.D_CENA = D_CENA;
-            data.Z_CENA = Z_CENA;
+            data.D_CENA = D_CENA ?? 0;
+            data.Z_CENA = Z_CENA ?? 0;
             data.RANK = RANK;
             data.BAL_KS = POC_KS; //BAL_KS;
             data.BAL_KS1 = 1; // BAL_KS1;

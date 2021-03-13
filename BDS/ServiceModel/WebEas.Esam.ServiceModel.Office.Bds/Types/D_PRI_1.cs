@@ -44,7 +44,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string MJ { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Price", DefaultValue = 0)]
+        [PfeColumn(Text = "Price", DefaultValue = 0, Mandatory = true)]
         public decimal? D_CENA { get; set; }
 
         [DataMember]
