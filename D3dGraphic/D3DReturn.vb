@@ -99,7 +99,7 @@ Public MustInherit Class ReturnObject
                 Case D3dType.D3dType_Olive
                     ret = 0.4
                 Case D3dType.D3dType_FoundRezList
-                    ret = 0.4
+                    ret = 1
                 Case D3dType.D3dType_NedotknutaCast
                     ret = 0.8
             End Select

@@ -69,7 +69,6 @@ Friend Class ValecSourceObj
 
         OptimiseValec(_coordList)
 
-
     End Sub
 
     Private Sub RemoveFromCoordList(ByVal remove As CoordinatesValec)

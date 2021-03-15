@@ -8,10 +8,10 @@
     Friend iValecType As ValecType
     Private foundRez As CoordinatesValec
 
+    Friend OliveRez As ArrayList
     Friend CelyRez As ArrayList
     Friend NedotknutaCast As ArrayList
     Friend FoundRezList As ArrayList
-    Friend OliveRez As ArrayList
 
     Private vyrezInfo As CoordinatesValec
     Private _OuterSizeFinalBod As Coord_bod
@@ -56,10 +56,9 @@
 
         _Rozmery = DdLRozmery
 
-        Dim o, j As Integer
+        Dim o As Integer
         Dim _ZalohaNed As ArrayList = Nothing
         Dim _ZalohaCelyRez As ArrayList = Nothing
-        Dim _ZalohaOliveRez As ArrayList = Nothing
 
         Dim _Source As ArrayList = oSourceObjShape.coordList
 
@@ -68,6 +67,32 @@
             If (FoundRezList.Count > 0) Then
                 bRet = True
             End If
+
+            'Výpočet Olive časti pre INNER
+            For j As Integer = 0 To CelyRez.Count - 1
+                Dim cr As CoordinatesValec = CelyRez.Item(j)
+
+                Dim frZlepene As New ArrayList
+                For Each a As CoordinatesValec In FoundRezList
+                    frZlepene.Add(New CoordinatesValec(a.d2, a.D1, a.L1, a.L2))
+                Next
+                OptimiseValec(frZlepene)
+
+                For k As Integer = 0 To frZlepene.Count - 1
+                    Dim fr As CoordinatesValec = frZlepene.Item(k)
+                    If fr.L1 > cr.L1 Then
+                        OliveRez.Add(New CoordinatesValec(cr.d2, cr.D1, cr.L1, fr.L1))
+                    End If
+                    If fr.L2 < cr.L2 Then
+                        OliveRez.Add(New CoordinatesValec(cr.d2, cr.D1, fr.L2, cr.L2))
+                    End If
+
+                    If cr.d2 < fr.d2 Then
+                        OliveRez.Add(New CoordinatesValec(cr.d2, fr.d2, fr.L1, fr.L2))
+                    End If
+                Next
+            Next
+
         Else
             For o = 1 To iPocKS
                 NedotknutaCast.Clear()
@@ -78,16 +103,38 @@
                 Else
                     If Not _ZalohaNed Is Nothing Then NedotknutaCast = _ZalohaNed
                     If Not _ZalohaCelyRez Is Nothing Then CelyRez = _ZalohaCelyRez
-                    If Not _ZalohaOliveRez Is Nothing Then OliveRez = _ZalohaOliveRez
                     o = iPocKS
                 End If
                 _Source = NedotknutaCast.Clone
                 _ZalohaNed = NedotknutaCast.Clone
                 _ZalohaCelyRez = CelyRez.Clone
-                _ZalohaOliveRez = OliveRez.Clone
             Next
-            OptimiseValec(OliveRez)
+
+            'Výpočet Olive časti
+            For j As Integer = 0 To CelyRez.Count - 1
+                Dim cr As CoordinatesValec = CelyRez.Item(j)
+                Dim f As Boolean = False
+                For k As Integer = 0 To FoundRezList.Count - 1
+                    Dim fr As CoordinatesValec = FoundRezList.Item(k)
+                    If fr.L1 <= cr.L1 And fr.L2 >= cr.L2 Then
+                        'Našiel som prislúchajúci valček k celému rezu
+                        If cr.D1 > fr.D1 Then
+                            OliveRez.Add(New CoordinatesValec(fr.D1, cr.D1, cr.L1, cr.L2))
+                        End If
+                        If cr.d2 < fr.d2 Then
+                            OliveRez.Add(New CoordinatesValec(cr.d2, fr.d2, cr.L1, cr.L2))
+                        End If
+                        f = True
+                        Exit For
+                    End If
+                Next
+                If Not f Then
+                    OliveRez.Add(New CoordinatesValec(cr.d2, cr.D1, cr.L1, cr.L2))
+                End If
+            Next
         End If
+
+        OptimiseValec(OliveRez)
 
         If bRet Then computeRezPily()
 
@@ -168,10 +215,9 @@
                                    ByVal strana_L As Boolean, ByVal iPocKS As Integer) As ArrayList
         Dim found As New ArrayList
         Dim temp As CoordinatesValec = Nothing
-        Dim tempOlive As CoordinatesValec = Nothing
         Dim DesiredValec As New CoordinatesValec(Rozmery.bd, Rozmery.aD, 0, Rozmery.L)
 
-        Dim i, j As Integer
+        Dim i As Integer
         For i = 0 To Source.Count - 1
             temp = Source.Item(i)
             If (temp.D1 > DesiredValec.D1) Then
@@ -192,14 +238,10 @@
             If (temp.D1 = DesiredValec.D1 And temp.d2 <= DesiredValec.d2) Then 'Pridal som kontrolu aj na d2
                 temp = New CoordinatesValec(CelyRez.Item(i))
                 f = True
-            Else
-                tempOlive = New CoordinatesValec(CelyRez.Item(i))
-                OliveRez.Add(New CoordinatesValec(temp.d2, temp.D1, temp.L1, temp.L2))
             End If
             i += 1
         End While
 
-        OliveRez = CelyRez.Clone 'Začínam s celým výrezom
         If Not f Then
             Return found
         End If
@@ -215,23 +257,6 @@
                 i = 0
             End If
         End While
-
-        If found.Count > 0 Then
-            Dim foundZlepene As ArrayList = found.Clone() 'Do pomocnej premennej zlepím vyrezané valce
-            OptimiseValec(foundZlepene)
-            Dim vyrezVal As CoordinatesValec = foundZlepene.Item(0) 'Mal by byť iba jeden
-Again:
-            For j = 0 To OliveRez.Count - 1
-                Dim olive As CoordinatesValec = OliveRez.Item(j)
-                If olive.L1 >= vyrezVal.L1 And olive.L2 <= vyrezVal.L2 Then
-                    OliveRez.RemoveAt(j)
-                    GoTo Again
-                ElseIf olive.L1 <= vyrezVal.L1 And olive.L2 >= vyrezVal.L2 Then
-                    olive.L1 = vyrezVal.L2
-                End If
-            Next
-
-        End If
 
         Return found
 
@@ -255,7 +280,6 @@ Again:
         Dim L As Decimal = DesiredValec.L2 - DesiredValec.L1
         Dim bSpod As Boolean = (iValecType = ValecType.ValecType_Left)
         'Dim bInner As Boolean = (iValecType = ValecType.ValecType_Inner)
-        Dim addCelyRez As CoordinatesValec = Nothing
 
         sortValce(Source, bSpod)
         For i = 0 To Source.Count - 1
@@ -274,9 +298,9 @@ Again:
 
                             If Not strana_d2 Then
                                 If (temp.d2 <> DesiredValec.d2) Then NedotknutaCast.Add(New CoordinatesValec(temp.d2, DesiredValec.d2, L1, L2))
-                                If (temp.D1 <> DesiredValec.d2) Then addCelyRez = New CoordinatesValec(DesiredValec.d2, temp.D1, L1, L2)
+                                If (temp.D1 <> DesiredValec.d2) Then CelyRez.Add(New CoordinatesValec(DesiredValec.d2, temp.D1, L1, L2))
                             Else
-                                addCelyRez = New CoordinatesValec(temp.d2, temp.D1, L1, L2)
+                                CelyRez.Add(New CoordinatesValec(temp.d2, temp.D1, L1, L2))
                             End If
                             If (temp.L2 - temp.L1) > L Then NedotknutaCast.Add(New CoordinatesValec(temp.d2, temp.D1,
                                 temp.L1 + IIf(bSpod, L, 0),
@@ -289,11 +313,11 @@ Again:
 
                                 End If
                                 If (temp.D1 <> DesiredValec.d2) Then
-                                    addCelyRez = New CoordinatesValec(DesiredValec.d2, temp.D1, temp.L1, temp.L2)
+                                    CelyRez.Add(New CoordinatesValec(DesiredValec.d2, temp.D1, temp.L1, temp.L2))
 
                                 End If
                             Else
-                                addCelyRez = New CoordinatesValec(temp.d2, temp.D1, temp.L1, temp.L2)
+                                CelyRez.Add(New CoordinatesValec(temp.d2, temp.D1, temp.L1, temp.L2))
 
                             End If
                             possible = New CoordinatesValec(DesiredValec.d2, DesiredValec.D1, temp.L1, temp.L2)
@@ -304,9 +328,9 @@ Again:
                         End If
                         If Not strana_d2 Then
                             If (temp.d2 <> DesiredValec.d2) Then NedotknutaCast.Add(New CoordinatesValec(temp.d2, DesiredValec.d2, temp.L1, temp.L2))
-                            If (temp.D1 <> DesiredValec.d2) Then addCelyRez = New CoordinatesValec(DesiredValec.d2, temp.D1, temp.L1, temp.L2)
+                            If (temp.D1 <> DesiredValec.d2) Then CelyRez.Add(New CoordinatesValec(DesiredValec.d2, temp.D1, temp.L1, temp.L2))
                         Else
-                            addCelyRez = New CoordinatesValec(temp.d2, temp.D1, temp.L1, temp.L2)
+                            CelyRez.Add(New CoordinatesValec(temp.d2, temp.D1, temp.L1, temp.L2))
                         End If
                         previous = temp
                     End If
@@ -319,9 +343,9 @@ Again:
 
                             If Not strana_d2 Then
                                 If (temp.d2 <> DesiredValec.d2) Then NedotknutaCast.Add(New CoordinatesValec(temp.d2, DesiredValec.d2, L1, L2))
-                                If (temp.D1 <> DesiredValec.d2) Then addCelyRez = New CoordinatesValec(DesiredValec.d2, temp.D1, L1, L2)
+                                If (temp.D1 <> DesiredValec.d2) Then CelyRez.Add(New CoordinatesValec(DesiredValec.d2, temp.D1, L1, L2))
                             Else
-                                addCelyRez = New CoordinatesValec(temp.d2, temp.D1, L1, L2)
+                                CelyRez.Add(New CoordinatesValec(temp.d2, temp.D1, L1, L2))
                             End If
                             If bSpod Then
                                 If ((temp.L2 - temp.L1) > (L - (possible.L2 - possible.L1))) Then NedotknutaCast.Add(New CoordinatesValec(temp.d2, temp.D1, temp.L1 + (L - (possible.L2 - possible.L1)), temp.L2))
@@ -337,11 +361,11 @@ Again:
 
                                 End If
                                 If (temp.D1 <> DesiredValec.d2) Then
-                                    addCelyRez = New CoordinatesValec(DesiredValec.d2, temp.D1, temp.L1, temp.L2)
+                                    CelyRez.Add(New CoordinatesValec(DesiredValec.d2, temp.D1, temp.L1, temp.L2))
 
                                 End If
                             Else
-                                addCelyRez = New CoordinatesValec(temp.d2, temp.D1, temp.L1, temp.L2)
+                                CelyRez.Add(New CoordinatesValec(temp.d2, temp.D1, temp.L1, temp.L2))
 
                             End If
 
@@ -354,24 +378,6 @@ Again:
                     End If
                 End If
 
-            End If
-
-            If addCelyRez IsNot Nothing Then
-                If found IsNot Nothing Then
-                    If addCelyRez.D1 - found.D1 > 0 And addCelyRez.L2 - addCelyRez.L1 > 0 Then
-                        Dim olive As CoordinatesValec = New CoordinatesValec(found.D1, addCelyRez.D1, addCelyRez.L1, addCelyRez.L2)
-                        OliveRez.Add(olive)
-                    End If
-                Else
-                    If addCelyRez.D1 - DesiredValec.D1 > 0 And addCelyRez.L2 - addCelyRez.L1 > 0 Then
-                        Dim olive As CoordinatesValec = New CoordinatesValec(DesiredValec.D1, addCelyRez.D1, addCelyRez.L1, addCelyRez.L2)
-                        OliveRez.Add(olive)
-                    ElseIf DesiredValec.D1 > addCelyRez.D1 And addCelyRez.L2 - addCelyRez.L1 > 0 Then
-                        OliveRez.Add(addCelyRez)
-                    End If
-                End If
-                CelyRez.Add(addCelyRez)
-                addCelyRez = Nothing
             End If
         Next
 

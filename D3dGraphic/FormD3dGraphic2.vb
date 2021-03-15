@@ -387,30 +387,28 @@ Public Class FormD3dGraphic2
                 End If
             End If
 
-            'If vms.SourceObj.coordList.Count > 1 Then
+            If vms.SourceObj.coordList.Count > 1 Then
+                'Zlava
+                vms = New MultiSimulationValec2
+                If vms.GraphicsCompute(colSNObjectShapes(i), pocKs, DesiredValec, ValecType.ValecType_Left) Then
+                    If vms.CountMoznosti > 0 Then
+                        iCount += vms.CountMoznosti
+                        vms.Key = CStr(i) + "_LEFT"
+                        colMs.Add(vms, vms.Key)
+                    End If
+                End If
 
-            'Zlava
-            'vms = New MultiSimulationValec2
-            'If vms.GraphicsCompute(colSNObjectShapes(i), pocKs, DesiredValec, ValecType.ValecType_Left) Then
-            '    If vms.CountMoznosti > 0 Then
-            '        iCount += vms.CountMoznosti
-            '        vms.Key = CStr(i) + "_LEFT"
-            '        colMs.Add(vms, vms.Key)
-            '    End If
-            'End If
+            End If
 
-            'End If
-
-
-            'Zvnutra
-            'vms = New MultiSimulationValec2
-            'If vms.GraphicsCompute(colSNObjectShapes(i), pocKs, DesiredValec, ValecType.ValecType_Inner) Then
-            '    If vms.CountMoznosti > 0 Then
-            '        iCount += vms.CountMoznosti
-            '        vms.Key = CStr(i) + "_INNER"
-            '        colMs.Add(vms, vms.Key)
-            '    End If
-            'End If
+            ''Zvnutra
+            vms = New MultiSimulationValec2
+            If vms.GraphicsCompute(colSNObjectShapes(i), pocKs, DesiredValec, ValecType.ValecType_Inner) Then
+                If vms.CountMoznosti > 0 Then
+                    iCount += vms.CountMoznosti
+                    vms.Key = CStr(i) + "_INNER"
+                    colMs.Add(vms, vms.Key)
+                End If
+            End If
 
         Next
 
@@ -425,59 +423,60 @@ Public Class FormD3dGraphic2
             SortToMaxSim(colMs, maxSim) ' Zotried vsetky SS zo vsetkych MS na prvych MaxSim a potom aj samotne MS
 
             ' Zobraz
-            'For i = 1 To colMs.Count
-            i = 1
-            vms = colMs(i)
-            'vms.AA = rbn_AA.Checked
-            'vms.SVP = rbn_SVP.Checked
-            'vms.rotationSpeed = 9000 - TBCitlivost.Value * 600
+            For i = 1 To colMs.Count
+                'i = 1
+                vms = colMs(i)
+                'vms.AA = rbn_AA.Checked
+                'vms.SVP = rbn_SVP.Checked
+                'vms.rotationSpeed = 9000 - TBCitlivost.Value * 600
 
-            Dim s As ValecSourceObj = vms.SourceObj
+                Dim s As ValecSourceObj = vms.SourceObj
 
-            Dim simulacia As D3DReturn = New D3DReturn(s.SN, s.Sarza, s.Location, s.SklCena, D3dOperation.D3dOperation_SimValec)
-            sims.Add(simulacia)
+                'Dim simulacia As D3DReturn = New D3DReturn(s.SN, s.Sarza, s.Location, s.SklCena, D3dOperation.D3dOperation_SimValec)
+                Dim simulacia As D3DReturn = New D3DReturn(s.SN, s.Sarza, s.Location, i, D3dOperation.D3dOperation_SimValec)
+                sims.Add(simulacia)
 
-            Dim cv As ComputationValec = vms.colComputations(1)
+                Dim cv As ComputationValec = vms.colComputations(1)
 
-            For j As Integer = 0 To cv.FoundRezList.Count - 1
-                Dim coord As CoordinatesValec = cv.FoundRezList.Item(j)
-                simulacia.Valec.Add(New ReturnValec(New CoordinatesValec(coord.d2, coord.D1, coord.L1, coord.L2), ReturnValec.D3dType.D3dType_FoundRezList))
+                For j As Integer = 0 To cv.FoundRezList.Count - 1
+                    Dim coord As CoordinatesValec = cv.FoundRezList.Item(j)
+                    simulacia.Valec.Add(New ReturnValec(New CoordinatesValec(coord.d2, coord.D1, coord.L1, coord.L2), ReturnValec.D3dType.D3dType_FoundRezList))
+                Next
+
+                'For j As Integer = 0 To cv.CelyRez.Count - 1
+                '    Dim coord As CoordinatesValec = cv.CelyRez.Item(j)
+                '    Dim ofs As Integer = (coord.D1 - coord.d2 + coord.L2 - coord.L1) / 200
+                '    ofs = 0
+                '    simulacia.Valec.Add(New ReturnValec(New CoordinatesValec(coord.d2 + ofs, coord.D1 - ofs, coord.L1 + ofs, coord.L2 - ofs), ReturnValec.D3dType.D3dType_Olive))
+                'Next
+
+                For j As Integer = 0 To cv.OliveRez.Count - 1
+                    Dim coord As CoordinatesValec = cv.OliveRez.Item(j)
+                    simulacia.Valec.Add(New ReturnValec(New CoordinatesValec(coord.d2, coord.D1, coord.L1, coord.L2), ReturnValec.D3dType.D3dType_Olive))
+                Next
+
+                For j As Integer = 0 To cv.NedotknutaCast.Count - 1
+                    Dim coord As CoordinatesValec = cv.NedotknutaCast.Item(j)
+                    simulacia.Valec.Add(New ReturnValec(New CoordinatesValec(coord.d2, coord.D1, coord.L1, coord.L2), ReturnValec.D3dType.D3dType_NedotknutaCast))
+                Next
+
+                bRes = True
+                'FLP.Controls.Add(vms)
+                'If Not colEx.Contains(vms.SourceObj.SN) Then  'Robim to cez kolekciu, kedze mozu byt dve simulacie s rovnakym SN
+
+                '    If vms.SSV.cmpCurrent.iValecType = ValecType.ValecType_Left Then
+                '        lboxSN.Items.Add(New ValueDescriptionPair(vms.SourceObj.SizeDescription & " (L) " & vms.SourceObj.SNs, vms))
+                '    ElseIf vms.SSV.cmpCurrent.iValecType = ValecType.ValecType_Right Then
+                '        lboxSN.Items.Add(New ValueDescriptionPair(vms.SourceObj.SizeDescription & " (R) " & vms.SourceObj.SNs, vms))
+                '    ElseIf vms.SSV.cmpCurrent.iValecType = ValecType.ValecType_Inner Then
+                '        lboxSN.Items.Add(New ValueDescriptionPair(vms.SourceObj.SizeDescription & " (I) " & vms.SourceObj.SNs, vms))
+                '    End If
+
+                '    vms.iListItemID = lboxSN.Items.Count - 1
+                'End If
+
+                '   If Not bRes Then Exit For
             Next
-
-            'For j As Integer = 0 To cv.CelyRez.Count - 1
-            '    Dim coord As CoordinatesValec = cv.CelyRez.Item(j)
-            '    Dim ofs As Integer = (coord.D1 - coord.d2 + coord.L2 - coord.L1) / 200
-            '    ofs = 0
-            '    simulacia.Valec.Add(New ReturnValec(New CoordinatesValec(coord.D1 - ofs, coord.d2 + ofs, coord.L1 + ofs, coord.L2 - ofs), ReturnValec.D3dType.D3dType_Olive))
-            'Next
-
-            For j As Integer = 0 To cv.OliveRez.Count - 1
-                Dim coord As CoordinatesValec = cv.OliveRez.Item(j)
-                simulacia.Valec.Add(New ReturnValec(New CoordinatesValec(coord.d2, coord.D1, coord.L1, coord.L2), ReturnValec.D3dType.D3dType_Olive))
-            Next
-
-            For j As Integer = 0 To cv.NedotknutaCast.Count - 1
-                Dim coord As CoordinatesValec = cv.NedotknutaCast.Item(j)
-                simulacia.Valec.Add(New ReturnValec(New CoordinatesValec(coord.d2, coord.D1, coord.L1, coord.L2), ReturnValec.D3dType.D3dType_NedotknutaCast))
-            Next
-
-            bRes = True
-            'FLP.Controls.Add(vms)
-            'If Not colEx.Contains(vms.SourceObj.SN) Then  'Robim to cez kolekciu, kedze mozu byt dve simulacie s rovnakym SN
-
-            '    If vms.SSV.cmpCurrent.iValecType = ValecType.ValecType_Left Then
-            '        lboxSN.Items.Add(New ValueDescriptionPair(vms.SourceObj.SizeDescription & " (L) " & vms.SourceObj.SNs, vms))
-            '    ElseIf vms.SSV.cmpCurrent.iValecType = ValecType.ValecType_Right Then
-            '        lboxSN.Items.Add(New ValueDescriptionPair(vms.SourceObj.SizeDescription & " (R) " & vms.SourceObj.SNs, vms))
-            '    ElseIf vms.SSV.cmpCurrent.iValecType = ValecType.ValecType_Inner Then
-            '        lboxSN.Items.Add(New ValueDescriptionPair(vms.SourceObj.SizeDescription & " (I) " & vms.SourceObj.SNs, vms))
-            '    End If
-
-            '    vms.iListItemID = lboxSN.Items.Count - 1
-            'End If
-
-            '   If Not bRes Then Exit For
-            'Next
         End If
 
         Return iCount > 0
