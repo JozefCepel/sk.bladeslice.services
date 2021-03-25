@@ -29,5 +29,9 @@ namespace WebEas.ServiceModel.Dto
         [DataMember]
         [NotEmptyOrDefault]
         public decimal nHodn { get; set; }
+
+        [DataMember]
+        [NotEmptyOrDefault]
+        public string Modul { get; set; }
     }
 }

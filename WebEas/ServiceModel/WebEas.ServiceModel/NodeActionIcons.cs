@@ -253,6 +253,17 @@ namespace WebEas.ServiceModel
         [EnumMember(Value = "0xf3d1")]
         MoneyBillAlt = 83,
 
+        [EnumMember(Value = "0xf682")]
+        Zostavy = 84,
+
+        [EnumMember(Value = "0xf09d")]
+        FasFaCreditCard,
+
+        [EnumMember(Value = "0xf068")]
+        FasFaMinus,
+
+
+    #region DMS
 
         #region BDS
 
@@ -273,10 +284,10 @@ namespace WebEas.ServiceModel
 
         #region DMS
 
-        /// <summary>
-        /// Ikonka používateľ
-        /// </summary>
-        [EnumMember(Value = "0xf007")]
+    /// <summary>
+    /// Ikonka používateľ
+    /// </summary>
+    [EnumMember(Value = "0xf007")]
         User = 900,
 
         /// <summary>

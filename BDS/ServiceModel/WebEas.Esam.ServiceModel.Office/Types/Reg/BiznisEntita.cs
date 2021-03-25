@@ -1,8 +1,8 @@
 ﻿using ServiceStack.DataAnnotations;
 using System;
 using System.Runtime.Serialization;
+using WebEas.Esam.ServiceModel.Office.Types.Osa;
 using WebEas.ServiceModel;
-using WebEas.ServiceModel.Office.Egov.Reg.Types;
 
 namespace WebEas.Esam.ServiceModel.Office.Types.Reg
 {
@@ -29,7 +29,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         public int C_TypBiznisEntity_Kniha_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_Stav entity", DefaultValue = (int)StavEntityEnum.NOVY, Editable = false)] //Editable = false spôsobi, ze pri funkcii COPY nebude field kopirovat 
+        [PfeColumn(Text = "_Stav entity", DefaultValue = (int)StavEntityEnum.NOVY, Editable = false)] //Editable = false spôsobi, ze pri funkcii COPY nebude field kopirovat
         public int C_StavEntity_Id { get; set; }
 
         [DataMember]
@@ -191,6 +191,21 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         [DataMember]
         [PfeColumn(Text = "_C_Predkontacia_Id")]
         public long? C_Predkontacia_Id { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "_D_OsobaKontakt_Id_Komu")]
+        public long? D_OsobaKontakt_Id_Komu { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Kontaktná osoba", RequiredFields = new[] { nameof(D_Osoba_Id) })]
+        [PfeCombo(typeof(OsobaKontaktView), IdColumn = nameof(D_OsobaKontakt_Id_Komu), ComboDisplayColumn = nameof(OsobaKontaktView.FormatMenoCombo),
+                    CustomSortSqlExp = nameof(OsobaKontaktView.Hlavny) + " DESC, " + nameof(OsobaKontaktView.ZastupcaMeno) + " ASC",
+                    AdditionalWhereSql = nameof(OsobaKontaktView.FormatMenoCombo) + " <> ''", AllowComboCustomValue = true)]
+        public string OsobaKontaktKomu { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "_D_ADR_Adresa_Id")]
+        public long? D_ADR_Adresa_Id { get; set; }
 
         public string ChangeConstraintMessage(string constraintName, int errorCode, WebEasSqlKnownErrorType errorType)
         {

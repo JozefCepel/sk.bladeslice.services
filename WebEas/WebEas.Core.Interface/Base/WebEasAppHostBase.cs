@@ -44,7 +44,7 @@ namespace WebEas.Core.Base
 
         public override ServiceStackHost Init()
         {
-            ServiceStack.Licensing.RegisterLicense(@"8008-e1JlZjo4MDA4LE5hbWU6IkRBVEFMQU4sIGEucy4iLFR5cGU6QnVzaW5lc3MsTWV0YTowLEhhc2g6TzZNRlQxNGFTb1RyV2J3OVJtQkk5T0YwUVQxUTdYUVZLc1Q4OTZCTURyV00yVG1SdlFTeGlNR0J2elljM2dnMGUxZlpTRGxmV1JmYjhGa0RURUlRMG5IU0hSaFMyYzU3T0FPS0pvaXJXdzZZTzN3a2RpWWNNL2dtYnlsTnFScDMxVUVZY2FSZklaWkxoamxXMzlod25WRHRyZ0tBVURjWnpMa0NtWGY0d2ZvPSxFeHBpcnk6MjAyMS0wMy0yM30=");
+            ServiceStack.Licensing.RegisterLicense(@"17741-e1JlZjoxNzc0MSxOYW1lOiJEQVRBTEFOLCBhLnMuIixUeXBlOkJ1c2luZXNzLE1ldGE6MCxIYXNoOlhBeTIxZi9GZUtGR1ZGRk1pTmlabXZVazhuc1lDLzA5ZGdlbGVJS0VjQUw1OVdEWnY0MnN2OFJVSGtsdXZ2ODJ6aUdDdFBKVE1DTUZObHBEY2huZzV2RmNLejFMcnJvbzVBQkJXZGwyWVdoeDZvVTRyZm9Jc2pKRnp1dlF1UCtuaCtZeGNmUkE5LzZsZFVrUWQvckR2dkhIQkpuelIxUjFPV1krM2YwUVc1bz0sRXhwaXJ5OjIwMjItMDMtMjR9");
             return base.Init();
         }
 
@@ -73,7 +73,7 @@ namespace WebEas.Core.Base
 
                 if (response.Response is Exceptions.WebEasResponseStatus)
                 {
-#if DEBUG || DEVELOP
+#if DEBUG || DEVELOP || ITP
                     ((Exceptions.WebEasResponseStatus)response.Response).DetailMessage += $"{Environment.NewLine}http://esam-dev.datalan.sk/esam/api/pfe/lll/{exception.GetIdentifier()}";
 #endif
 
@@ -96,37 +96,48 @@ namespace WebEas.Core.Base
         /// </summary>
         private void ConfigureSerialization()
         {
-            //MSSQL DateTime nema zonu, kedze viem , ze sme posunuti, musim  si zonu pridat a potom dam do ISO8601 - "o"
-            JsConfig<DateTime>.IncludeDefaultValue = true;
-            JsConfig<DateTime>.SerializeFn = time => new DateTime(time.Ticks, DateTimeKind.Utc).ToString("o");
-            JsConfig<DateTime?>.SerializeFn = time => time.HasValue ? new DateTime(time.Value.Ticks, DateTimeKind.Utc).ToString("o") : null;
-            JsConfig<TimeSpan>.SerializeFn = time => new DateTime(time.Ticks, DateTimeKind.Utc).ToString("o");
-            JsConfig<TimeSpan?>.SerializeFn = time => time.HasValue ? new DateTime(time.Value.Ticks, DateTimeKind.Utc).ToString("o") : null;
-            JsConfig<TimeSpan>.DeSerializeFn = time =>
+            static DateTime ModifyDayLightSavingTime(DateTime date)
             {
-                /*if (DateTime.TryParse(time, out DateTime result))
+                if (date.IsDaylightSavingTime())
                 {
-                    return result.TimeOfDay;
+                    var localTime = date.AddHours(1);
+                    return localTime;
                 }
-                return new TimeSpan();*/
-                return DateTime.Parse(time).TimeOfDay;
+                return date;
+            }
+
+            //MSSQL DateTime nema zonu, kedze viem , ze sme posunuti, musim  si zonu pridat a potom dam do ISO8601 - "o"
+            JsConfig<DateTime>.SerializeFn = time =>
+            {
+                return new DateTime(ModifyDayLightSavingTime(time).Ticks, DateTimeKind.Local).ToString("o");
             };
 
-            JsConfig<TimeSpan?>.DeSerializeFn = time =>
+
+            JsConfig<DateTime?>.SerializeFn = time =>
             {
-                /*if (DateTime.TryParse(time, out DateTime result))
+                return time.HasValue ? new DateTime(ModifyDayLightSavingTime(time.Value).Ticks, DateTimeKind.Local).ToString("o") : null;
+            };
+
+            JsConfig<TimeSpan>.SerializeFn = time => new DateTime(time.Ticks, DateTimeKind.Local).ToString("o");
+            JsConfig<TimeSpan?>.SerializeFn = time => time.HasValue ? new DateTime(time.Value.Ticks, DateTimeKind.Local).ToString("o") : null;
+            JsConfig<TimeSpan>.DeSerializeFn = time =>
+            {
+                DateTime result;
+                if (DateTime.TryParse(time, out result))
                 {
                     return result.TimeOfDay;
                 }
-                return null;*/
-
-                if (!string.IsNullOrWhiteSpace(time))
+                return new TimeSpan();
+            };
+            JsConfig<TimeSpan?>.DeSerializeFn = time =>
+            {
+                DateTime result;
+                if (DateTime.TryParse(time, out result))
                 {
-                    return DateTime.Parse(time).TimeOfDay;
+                    return result.TimeOfDay;
                 }
                 return null;
             };
-
             JsConfig<Guid>.SerializeFn = guid => guid.ToString();
             JsConfig<Guid?>.SerializeFn = guid => guid.HasValue ? guid.ToString() : null;
 

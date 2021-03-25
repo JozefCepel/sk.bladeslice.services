@@ -73,7 +73,7 @@ namespace WebEas.ServiceModel
         /// Vytvori instanciu triedy s jednou relaciou typu OneToOne
         /// </summary>
         /// <param name="item">Kod polozky v strome</param>
-        /// <param name="idFields">Nazvy stlpcov pre master a detail oddelene ciarkou (ak rovnaky nazov staci jeden..)</param>
+        /// <param name="idFields">Nazvy stlpcov pre master a detail oddelene ciarkou (ak je nazov rovnaky, staci jeden)</param>
         /// <param name="name">Nazov relacie - potrebné nastaviť identicky ako názov poľa, nad ktorým sa to prepája</param>
         public static LayoutDependency OneToOne(string item, string idFields, string name = null)
         {
@@ -92,7 +92,7 @@ namespace WebEas.ServiceModel
         /// Vytvori instanciu triedy s jednou relaciou typu OneToMany
         /// </summary>
         /// <param name="item">Kod polozky v strome</param>
-        /// <param name="idFields">Nazvy stlpcov pre master a detail oddelene ciarkou (ak rovnaky nazov staci jeden..)</param>
+        /// <param name="idFields">Nazvy stlpcov pre master a detail oddelene ciarkou (ak je nazov rovnaky, staci jeden)</param>
         /// <param name="name">Nazov relacie - nedavat prilis dlhe texty</param>
         public static LayoutDependency OneToMany(string item, string idFields, string name = null)
         {

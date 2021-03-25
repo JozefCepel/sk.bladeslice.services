@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using WebEas.ServiceModel;
+﻿using ServiceStack.DataAnnotations;
+using System;
 
 namespace WebEas.Esam.ServiceModel.Office
 {
@@ -31,6 +30,8 @@ namespace WebEas.Esam.ServiceModel.Office
         PREPLATOK = 20,
         RUCNE = 21
     }
+
+    // TypBiznisEntityEnum sa tusim nedal?
 
     [Flags]
     public enum TypBiznisEntity_KnihaEnum
@@ -125,13 +126,20 @@ namespace WebEas.Esam.ServiceModel.Office
         DanovyVynosPOK = 132,
         DanovyVynosURO = 133,
         DanovyVynosODP = 134,
+        DanovyVynosONE = 135,
+        DanovyVynosDOD = 136,
+        DaPUhradaVsetky = 1000,
         DaPUhradaDane = 1001,
+        DaPUhradaPokutyZaOneskorenie = 1002,
         DaPUhradaUrokuZOmeskania = 1004,
         DaPUhradaPokuty = 1005,
+        DaPUhradaPokutyZaDodatocnePodanie = 1006,
         DaPUhradaUrokuZOdlozeniaSplatok = 1007,
         DAN_Dan = 2001,
+        ONE_PokutaZaOneskorenie = 2002,
         PEN_UrokZOmeskania = 2004,
         POK_Pokuta = 2005,
+        DOD_PokutaZaDodatocnePodanie = 2006,
         URO_UrokZOdlozeniaSplatok = 2007,
         ODP_OdpisPohladavky = 2010
     }
@@ -148,10 +156,40 @@ namespace WebEas.Esam.ServiceModel.Office
     [Flags]
     public enum OrganizaciaTypEnum
     {
-        ROZPOCT_ORG = 1,
-        PRISP_ORG = 2,
-        NEZISK_ORG = 3,
-        PODNIKATEL = 4
+        ROZPOCT_ORG_Obec_Mesto = 1, //11-Rozpočtová organizácia; 22-Obec; 23-Mesto
+        PRISP_ORG = 2,              //02-Príspevková organizácia
+        NEZISK_ORG = 3,             //31-Nezisková organizácia
+        PODNIKATEL = 4              //  -Podnikateľ
     }
 
+    [Flags]
+    public enum FakturaciaVztahEnum
+    {
+        NEURCENE = 0,
+        DOD = 1,
+        ODB = 2,
+        DOD_ODB = 3
+    }
+
+    public enum DialogTypEnum
+    {
+        [Description("-")] //(bez dialógu)
+        BezDialogu = 0,
+        [Description("ReportVykazF112")]
+        ReportVykazF112 = 1,
+        [Description("VykUct1")]
+        VykUct1 = 2,
+        [Description("VykUct2")]
+        VykUct2 = 3,
+        [Description("UctDennik")]
+        UctDennik = 11,
+        [Description("RzpDennik")]
+        RzpDennik = 12,
+        [Description("HlavnaKniha")]
+        HlavnaKniha = 13,
+        [Description("PrehladRzp")]
+        PrehladRzp = 14,
+        [Description("Dph")]
+        Dph = 51,
+    }
 }

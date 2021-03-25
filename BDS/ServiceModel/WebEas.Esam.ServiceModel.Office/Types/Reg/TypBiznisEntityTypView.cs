@@ -11,6 +11,10 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
     public class TypBiznisEntityTypView : TypBiznisEntityTyp, IBaseView
     {
         [DataMember]
+        [PfeColumn(Text = "_TypKod")]
+        public string TypKod { get; set; }
+
+        [DataMember]
         [PfeColumn(Text = "Typ")]
         [PfeCombo(typeof(Typ), ComboDisplayColumn = nameof(Typ.Nazov), IdColumn = nameof(C_Typ_Id))]
         public string TypNazov { get; set; }

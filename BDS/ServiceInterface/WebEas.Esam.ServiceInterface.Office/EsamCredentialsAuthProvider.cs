@@ -29,7 +29,7 @@ namespace WebEas.Esam.ServiceInterface.Office
         private const string IamDcomTokenName = "IAMDCOMToken";
 #endif
 
-#if DEBUG || DEVELOP
+#if DEBUG || DEVELOP || ITP
         private readonly bool dcomRezim = false;
 #elif TEST || PROD
         private readonly bool dcomRezim = true;
@@ -38,10 +38,15 @@ namespace WebEas.Esam.ServiceInterface.Office
         public override bool TryAuthenticate(ServiceStack.IServiceBase authService,
             string userName, string password)
         {
+            if (userName == "IsoNotifyTechUser" && password == "p@55w0rd222")
+            {
+                return true;
+            }
+
             var service = authService.ResolveService<ServiceBase>();
             var passwordHasher = HostContext.TryResolve<IPasswordHasher>();
 
-            if (dcomRezim && userName != "IsoNotifyTechUser")
+            if (dcomRezim)
             {
                 if (!service.Request.Cookies.ContainsKey(IamDcomTokenName))
                 {
@@ -100,7 +105,21 @@ namespace WebEas.Esam.ServiceInterface.Office
             var ses = session as EsamSession;
             User user;
 
-            if (dcomRezim && ses.UserAuthName != "IsoNotifyTechUser")
+            if (ses.UserAuthName == "IsoNotifyTechUser")
+            {
+                var authRequest = (Authenticate)authService.Request.Dto;
+                ses.D_Tenant_Id_Externe = Guid.Parse(authRequest.Meta["TenantId"]);
+                ses.UserId = "00000000-0000-0000-0000-000000000002";
+                ses.FirstName = "Technicky";
+                ses.LastName = "Ucet";
+                ses.Email = "datalan@email.sk";
+                ses.DisplayName = "DATALAN, a.s. Vilo";
+                ses.FullName = ses.DisplayName;
+                ses.EvidCisloZam = "007";
+                return base.OnAuthenticated(authService, ses, tokens, authInfo);
+            }
+
+            if (dcomRezim)
             {
                 //Log.Warn("OnAuthenticated Headers:" + service.Request.Headers.ToDictionary().ToJson());
 
@@ -194,22 +213,13 @@ namespace WebEas.Esam.ServiceInterface.Office
             ses.FullName = user.FullName;
             ses.EvidCisloZam = user.EC;
 
-            if (ses.UserAuthName == "IsoNotifyTechUser")
-            {
-                var authRequest = (Authenticate)authService.Request.Dto;
-                ses.D_Tenant_Id_Externe = Guid.Parse(authRequest.Meta["TenantId"]);
-                ses.TenantId = service.Db.Single<string>("SELECT D_Tenant_Id FROM cfe.D_Tenant WHERE D_Tenant_Id_Externe = @tenantId", new { tenantId = ses.D_Tenant_Id_Externe });
-                SetUserTenantSession(ref ses, service, true);
-                return base.OnAuthenticated(authService, session, tokens, authInfo);
-            }
-
             SetUserTenantSession(ref ses, service);
 
             user.LastLogin = DateTime.Now;
             service.Db.UpdateOnly(user, onlyFields: p => p.LastLogin, where: p => p.D_User_Id == user.D_User_Id);
 
             //Call base method to Save Session and fire Auth/Session callbacks:
-            return base.OnAuthenticated(authService, session, tokens, authInfo);
+            return base.OnAuthenticated(authService, ses, tokens, authInfo);
         }
 
         public override object Logout(ServiceStack.IServiceBase service, Authenticate request)
@@ -323,42 +333,39 @@ namespace WebEas.Esam.ServiceInterface.Office
             }
         }
 
-        public static void SetUserTenantSession(ref EsamSession ses, Service service, bool techUser = false)
+        public static void SetUserTenantSession(ref EsamSession ses, Service service)
         {
             var userId = Guid.Parse(ses.UserId);
 
-            if (!techUser)
+            var tenants = service.Db.Select<Guid>("SELECT D_Tenant_Id FROM cfe.D_UserTenant WHERE (DatumPlatnosti is null or DatumPlatnosti > getdate()) AND D_User_Id = @userid ORDER BY D_UserTenant_Id", new { userid = userId });
+
+            if (!tenants.Any())
             {
-                var tenants = service.Db.Select<Guid>("SELECT D_Tenant_Id FROM cfe.D_UserTenant WHERE (DatumPlatnosti is null or DatumPlatnosti > getdate()) AND D_User_Id = @userid ORDER BY D_UserTenant_Id", new { userid = userId });
+                throw new WebEasValidationException(null, $"User {ses.DisplayName} doesn't have access to any company  !");
+            }
 
-                if (!tenants.Any())
+            if (string.IsNullOrEmpty(ses.TenantId))
+            {
+                var lastUsedTenant = service.Cache.Get<string>($"LastUsedTenant:{ses.UserId}");
+                if (!string.IsNullOrEmpty(lastUsedTenant) && tenants.Contains(Guid.Parse(lastUsedTenant)))
                 {
-                    throw new WebEasValidationException(null, $"User {ses.DisplayName} doesn't have access to any company  !");
-                }
-
-                if (string.IsNullOrEmpty(ses.TenantId))
-                {
-                    var lastUsedTenant = service.Cache.Get<string>($"LastUsedTenant:{ses.UserId}");
-                    if (!string.IsNullOrEmpty(lastUsedTenant) && tenants.Contains(Guid.Parse(lastUsedTenant)))
-                    {
-                        ses.TenantId = lastUsedTenant;
-                    }
-                    else
-                    {
-                        ses.TenantId = tenants.First().ToString();
-                    }
+                    ses.TenantId = lastUsedTenant;
                 }
                 else
                 {
-                    if (!tenants.Contains(ses.TenantIdGuid.Value))
-                    {
-                        throw new WebEasValidationException(null, $"User {ses.DisplayName} doesn't have access to login!");
-                    }
+                    ses.TenantId = tenants.First().ToString();
                 }
-
-                service.Cache.Set($"LastUsedTenant:{ses.UserId}", ses.TenantId);
-                ses.TenantIds = tenants;
             }
+            else
+            {
+                if (!tenants.Contains(ses.TenantIdGuid.Value))
+                {
+                    throw new WebEasValidationException(null, $"User {ses.DisplayName} doesn't have access to login!");
+                }
+            }
+
+            service.Cache.Set($"LastUsedTenant:{ses.UserId}", ses.TenantId);
+            ses.TenantIds = tenants;
 
             if (!string.IsNullOrEmpty(ses.TenantId))
             {
@@ -377,60 +384,57 @@ namespace WebEas.Esam.ServiceInterface.Office
                 cmd.AddParam("context", context, System.Data.ParameterDirection.Input, System.Data.DbType.Binary);
                 cmd.ExecuteNonQuery();
 
-                if (!techUser)
-                {
-                    var permissions = service.Db.Select<string>(@"SELECT DISTINCT CONCAT(UPPER(r.ModulKod), '_', r.kod) as ModulePermissionCode
+                var permissions = service.Db.Select<string>(@"SELECT DISTINCT CONCAT(UPPER(r.ModulKod), '_', r.kod) as ModulePermissionCode
                                                                 FROM cfe.V_RightUser r 
                                                                 WHERE HasRight = 1 AND D_User_Id=@userid", new { userid = userId });
-                    ses.Roles = permissions;
+                ses.Roles = permissions;
 
-                    // SysAdmin budeme nastavovat tu, treba zabezpecit aby sa nedal nastavit z aplikacie ?
-                    ses.AdminLevel = ses.Roles.Any(x => x.Contains(AdminLevel.SysAdmin.ToDescription())) ?
-                        AdminLevel.SysAdmin :
-                        ses.Roles.Any(x => x.Contains("CFE_" + AdminLevel.CfeAdmin.ToDescription())) ?
-                        AdminLevel.CfeAdmin :
-                        AdminLevel.User;
+                // SysAdmin budeme nastavovat tu, treba zabezpecit aby sa nedal nastavit z aplikacie ?
+                ses.AdminLevel = ses.Roles.Any(x => x.Contains(AdminLevel.SysAdmin.ToDescription())) ?
+                    AdminLevel.SysAdmin :
+                    ses.Roles.Any(x => x.Contains("CFE_" + AdminLevel.CfeAdmin.ToDescription())) ?
+                    AdminLevel.CfeAdmin :
+                    AdminLevel.User;
 
-                    var (D_Tenant_Id_Externe, Nazov) = service.Db.Single<(Guid? D_Tenant_Id_Externe, string Nazov)>("SELECT D_Tenant_Id_Externe, Nazov FROM cfe.D_Tenant WHERE D_Tenant_Id = @tenantId", new { tenantId = ses.TenantId });
-                    ses.D_Tenant_Id_Externe = D_Tenant_Id_Externe;
-                    ses.TenantName = Nazov;
-                    ses.OrsPermissions = service.Db.Query<string>("EXEC [cfe].[PR_GetOrsReadPermissions]").Join("");
-                    ses.OrsElementPermisions = new Dictionary<string, string>();
+                var (D_Tenant_Id_Externe, Nazov) = service.Db.Single<(Guid? D_Tenant_Id_Externe, string Nazov)>("SELECT D_Tenant_Id_Externe, Nazov FROM cfe.D_Tenant WHERE D_Tenant_Id = @tenantId", new { tenantId = ses.TenantId });
+                ses.D_Tenant_Id_Externe = D_Tenant_Id_Externe;
+                ses.TenantName = Nazov;
+                ses.OrsPermissions = service.Db.Query<string>("EXEC [cfe].[PR_GetOrsReadPermissions]").Join("");
+                ses.OrsElementPermisions = new Dictionary<string, string>();
 
-                    var elPrava = service.Db.Query<Tuple<int, int, byte>>($@"SELECT C_OrsElementType_Id as Item1, IdValue as Item2, PravoReal as Item3 
+                var elPrava = service.Db.Query<Tuple<int, int, byte>>($@"SELECT C_OrsElementType_Id as Item1, IdValue as Item2, PravoReal as Item3 
                                                                              FROM [cfe].V_OrsElementUser 
                                                                              WHERE IsElementPravo = 1 AND PravoReal > 0 AND D_User_Id = '{userId}'");
-                    foreach (var elPravo in elPrava)
+                foreach (var elPravo in elPrava)
+                {
+                    string dKey = $"ORS_{elPravo.Item1}_"; // {((elPravo.Item3 == 3)? "F" : ((elPravo.Item3 == 2)? "W" : "R"))}";
+
+                    string oldString = "";
+                    if (elPravo.Item3 == 3)
                     {
-                        string dKey = $"ORS_{elPravo.Item1}_"; // {((elPravo.Item3 == 3)? "F" : ((elPravo.Item3 == 2)? "W" : "R"))}";
+                        ses.OrsElementPermisions.TryGetValue(dKey + "F", out oldString);
+                        if (string.IsNullOrEmpty(oldString))
+                            oldString = ",";
 
-                        string oldString = "";
-                        if (elPravo.Item3 == 3)
-                        {
-                            ses.OrsElementPermisions.TryGetValue(dKey + "F", out oldString);
-                            if (string.IsNullOrEmpty(oldString))
-                                oldString = ",";
+                        ses.OrsElementPermisions[dKey + "F"] = oldString + elPravo.Item2 + ",";
+                    }
 
-                            ses.OrsElementPermisions[dKey + "F"] = oldString + elPravo.Item2 + ",";
-                        }
+                    if (elPravo.Item3 >= 2)
+                    {
+                        ses.OrsElementPermisions.TryGetValue(dKey + "W", out oldString);
+                        if (string.IsNullOrEmpty(oldString))
+                            oldString = ",";
 
-                        if (elPravo.Item3 >= 2)
-                        {
-                            ses.OrsElementPermisions.TryGetValue(dKey + "W", out oldString);
-                            if (string.IsNullOrEmpty(oldString))
-                                oldString = ",";
+                        ses.OrsElementPermisions[dKey + "W"] = oldString + elPravo.Item2 + ",";
+                    }
 
-                            ses.OrsElementPermisions[dKey + "W"] = oldString + elPravo.Item2 + ",";
-                        }
+                    if (elPravo.Item3 >= 1)
+                    {
+                        ses.OrsElementPermisions.TryGetValue(dKey + "R", out oldString);
+                        if (string.IsNullOrEmpty(oldString))
+                            oldString = ",";
 
-                        if (elPravo.Item3 >= 1)
-                        {
-                            ses.OrsElementPermisions.TryGetValue(dKey + "R", out oldString);
-                            if (string.IsNullOrEmpty(oldString))
-                                oldString = ",";
-
-                            ses.OrsElementPermisions[dKey + "R"] = oldString + elPravo.Item2 + ",";
-                        }
+                        ses.OrsElementPermisions[dKey + "R"] = oldString + elPravo.Item2 + ",";
                     }
                 }
             }

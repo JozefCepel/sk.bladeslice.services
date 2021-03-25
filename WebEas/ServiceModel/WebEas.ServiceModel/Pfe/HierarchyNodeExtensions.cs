@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Text.RegularExpressions;
 using ServiceStack;
 using ServiceStack.DataAnnotations;
 
@@ -19,10 +21,9 @@ namespace WebEas.ServiceModel
         {
             var node = parent.Find(kodPolozky);
 
-            if (node == null)
-            {
+            if (node == null) 
+            { 
                 throw new WebEasValidationException(null, $"V strome modulu '{parent.Nazov}' sa nenachádza položka '{kodPolozky}'! Boli ste presmerovaný na prvú položku v strome.");
-                //throw new Exception($"Pohľad {kodPolozky} nenájdený");
             }
 
             if (node.ModelType == null)
@@ -365,14 +366,13 @@ namespace WebEas.ServiceModel
         {
             foreach (HierarchyNode node in nodes)
             {
-                if (node.TyBiznisEntity != null && node.TyBiznisEntity.Contains(typEntity))
+                if (node.TypBiznisEntity != null && node.TypBiznisEntity.Contains(typEntity))
                     yield return node;
                 if (node.HasChildren)
                     foreach (var childNode in Find(node.Children, typEntity))
                         yield return childNode;
             }
         }
-
 
         public static string CleanKodPolozky(string kodPolozky)
         {
@@ -416,7 +416,18 @@ namespace WebEas.ServiceModel
         {
             var kodPolozkyList = new List<string>();
             kodPolozky.Split('-').ToList().ForEach(k => kodPolozkyList.Add(k.Split('!')[0]));
-            return String.Join("-", kodPolozkyList);
+            string ret = String.Join("-", kodPolozkyList);
+
+            if (ret.StartsWith("dms-dok-private-"))
+            {
+                ret = "dms-dok-private"; //ˇV DMS ma nezaujíma zvyšok za public a private
+            }
+            else if (ret.StartsWith("dms-dok-share-"))
+            {
+                ret = "dms-dok-share";
+            }
+
+            return ret;
         }
 
         /// <summary>
@@ -429,7 +440,14 @@ namespace WebEas.ServiceModel
         {
             if (kodPolozky == null) return null;
 
-            string first = CleanKodPolozky(kodPolozky).Remove(0, CleanKodPolozky(node.KodPolozky).Length + 1);
+            string nodeKP = CleanKodPolozky(node.KodPolozky);
+
+            if (!kodPolozky.Contains("!") && nodeKP.Contains("!"))
+            {
+                nodeKP = Regex.Replace(nodeKP, "(![^-]*)", "");
+            }
+
+            string first = CleanKodPolozky(kodPolozky).Remove(0, nodeKP.Length + 1);
 
             bool into = first.Contains('-');
             string level = into ? first.Substring(0, first.IndexOf('-')) : first;
@@ -442,7 +460,7 @@ namespace WebEas.ServiceModel
                 data = splitted[1];
             }
 
-            foreach (HierarchyNode child in node.Children)
+            foreach (HierarchyNode child in node.Children.OrderByDescending(x => hasData && x.Parameter != null && x.Parameter.ToString() == data))
             {
                 if (child.Kod == level)
                 {
@@ -611,14 +629,7 @@ namespace WebEas.ServiceModel
                 throw new Exception(String.Format("Model not defined for {0}", node.KodPolozky));
             }
 
-            //if (type == PfeModelType.Form)
-            //{
-            //    return configuredData.Data;
-            //}
-
             var model = new PfeDataModel();
-
-            //Enum.TryParse<DataModel.ModelType>(type, out viewType);
 
             PfeDataModelAttribute defDataModel = node.ModelType.FirstAttribute<PfeDataModelAttribute>();
             //Id
@@ -769,7 +780,7 @@ namespace WebEas.ServiceModel
                 //XType
                 if (defCol.Xtype == PfeXType.SearchFieldMS || defCol.Xtype == PfeXType.SearchFieldSS || defCol.Xtype == PfeXType.Combobox)
                 {
-                    DefineCombo(node, property, defCol, defCol.Xtype);
+                    DefineCombo(node, repository, property, defCol, defCol.Xtype);
                 }
                 else if (defCol.Xtype == PfeXType.Unknown)
                 {
@@ -777,7 +788,7 @@ namespace WebEas.ServiceModel
                     {
                         if (property.HasAttribute<PfeComboAttribute>())
                         {
-                            DefineCombo(node, property, defCol, PfeXType.Combobox);
+                            DefineCombo(node, repository, property, defCol, PfeXType.Combobox);
                         }
                         else
                         {
@@ -804,7 +815,7 @@ namespace WebEas.ServiceModel
                     {
                         if (property.HasAttribute<PfeComboAttribute>())
                         {
-                            DefineCombo(node, property, defCol, PfeXType.Combobox);
+                            DefineCombo(node, repository, property, defCol, PfeXType.Combobox);
                         }
                         else
                         {
@@ -1123,35 +1134,14 @@ namespace WebEas.ServiceModel
 
             if (model.Fields != null)
             {
-                // Nastavovanie SearchFieldDefinition az po customize, kedze mozu byt este dodatocne upravy
-                foreach (var attribute in model.Fields.Where(x => x.SearchFieldDefinition != null && x.PropertyTypeInfo.HasAttribute<PfeComboAttribute>()))
+
+                foreach (PfeColumnAttribute defCol in model.Fields.Where(x => x.SearchFieldDefinition != null && !string.IsNullOrEmpty(x.AdditionalWhereSqlTemp)))
                 {
-                    PfeComboAttribute combo = attribute.PropertyTypeInfo.FirstAttribute<PfeComboAttribute>();
-                    // ak mame na combe IPfeCustomizeCombo vykoname
-                    try
+                    // sql podmienku z comba posielame do nadefinovanych SearchFieldov
+                    //Ak je zadaný filter pri BRW dialógu, môže byť ešte prísnejši ako v combe. Preto ho nechávam nezmenený.
+                    foreach (var sfd in defCol.SearchFieldDefinition.Where(x => string.IsNullOrEmpty(x.AdditionalFilterSql)))
                     {
-                        if (typeof(IPfeCustomizeCombo).IsAssignableFrom(combo.TableType))
-                        {
-                            object modelObject = Activator.CreateInstance(combo.TableType);
-
-                            if (modelObject is IPfeCustomizeCombo)
-                            {
-                                ((IPfeCustomizeCombo)modelObject).ComboCustomize(repository, attribute.Name, node.KodPolozky, ref combo);
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new WebEasException("Customize Pfe Combo", ex);
-                    }
-
-                    if (!string.IsNullOrEmpty(combo.AdditionalWhereSql))
-                    {
-                        // sql podmienku z comba posielame do nadefinovanych SearchFieldov
-                        foreach (var sfd in attribute.SearchFieldDefinition)
-                        {
-                            sfd.AdditionalFilterSql = combo.AdditionalWhereSql;
-                        }
+                        sfd.AdditionalFilterSql = defCol.AdditionalWhereSqlTemp;
                     }
                 }
             }
@@ -1159,32 +1149,41 @@ namespace WebEas.ServiceModel
             return model;
         }
 
-        private static void DefineCombo(HierarchyNode node, PropertyInfo property, PfeColumnAttribute defCol, PfeXType xType)
+        private static void DefineCombo(HierarchyNode node, IWebEasRepositoryBase repository, PropertyInfo property, PfeColumnAttribute defCol, PfeXType xType)
         {
             if (property.HasAttribute<PfeComboAttribute>())
             {
-                string nameField = defCol.Name;
-                if (property.HasAttribute<PfeComboAttribute>())
+                PfeComboAttribute combo = property.FirstAttribute<PfeComboAttribute>();
+                
+                // ak mame na combe IPfeCustomizeCombo vykoname
+                try
                 {
-                    PfeComboAttribute atr = property.FirstAttribute<PfeComboAttribute>();
-                    if (!string.IsNullOrEmpty(atr.IdColumn))
+                    if (typeof(IPfeCustomizeCombo).IsAssignableFrom(combo.TableType))
                     {
-                        nameField = atr.IdColumn;
+                        object modelObject = Activator.CreateInstance(combo.TableType);
+
+                        if (modelObject is IPfeCustomizeCombo o)
+                        {
+                            o.ComboCustomize(repository, defCol.Name, node.KodPolozky, ref combo);
+                        }
                     }
-                    else
-                    {
-                        nameField = atr.ComboIdColumn;
-                    }
-                    defCol.SingleComboFilter = atr.SingleComboFilter;
-                    defCol.AllowComboCustomValue = atr.AllowComboCustomValue;
-                    defCol.Tpl = atr.Tpl;
-                    defCol.MinCharSearch = atr.MinCharSearch;
                 }
+                catch (Exception ex)
+                {
+                    throw new WebEasException("Customize Pfe Combo", ex);
+                }
+
+                defCol.SingleComboFilter = combo.SingleComboFilter;
+                defCol.AllowComboCustomValue = combo.AllowComboCustomValue;
+                defCol.MinCharSearch = combo.MinCharSearch;
+                defCol.SearchComboFromLeft = combo.SearchComboFromLeft;   //Prekladané z comba do columnu
+                defCol.Tpl = combo.Tpl;                                   //Prekladané z comba do columnu
+                defCol.AdditionalWhereSqlTemp = combo.AdditionalWhereSql; //Prekladané z comba do columnu - ak customizácia zmenila Filter pre combo, tak si ho odložím na použitie v Browser dialógu
 
                 defCol.Xtype = xType;
                 defCol.IdField = "id";
                 defCol.ValueField = "value";
-                defCol.NameField = nameField;
+                defCol.NameField = !string.IsNullOrEmpty(combo.IdColumn) ? combo.IdColumn : combo.ComboIdColumn;
                 defCol.DataUrl = $"/office/{node.KodRoot}/combo/{node.KodPolozky}/{property.Name.ToLower()}";
             }
         }
@@ -1278,7 +1277,7 @@ namespace WebEas.ServiceModel
             if (name.Contains(".office"))
             {
                 sb.Append("/office/");
-                sb.Append(name.Substring(name.IndexOf(".office.") + 8, 3));
+                sb.Append(name.Substring(name.IndexOf(".office.") + 8).Split('.')[0]);
             }
             else if (name.Contains(".pfe"))
             {

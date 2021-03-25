@@ -180,14 +180,6 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// <returns></returns>
         public object Get(ListPohladyWithDefault request)
         {
-
-            //DTLNESAMINT-229 : pouzitie jedneho pohladu na vsetky adresare v DMS
-            //if (request.KodPolozky.StartsWith("dms-id"))
-            //{
-            //    request.KodPolozky = "dms-id";
-            //}
-
-            // var pohlady = Repository.GetPohlady(request.KodPolozky.StartsWith("dms-id") ? "dms-id" : request.KodPolozky);
             var pohlady = Repository.GetPohlady(request.KodPolozky, request.Browser ?? false);
 
             int idPohladu = 0;
@@ -213,8 +205,17 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                 var pohladDataModels = pohlady.Select(poh => new { pohlad = poh, dataModel = JsonSerializer.DeserializeFromString<PfeDataModel>(poh.Data) }).Where(w => w.dataModel != null && w.dataModel.UseAsBrowser.GetValueOrDefault());
                 if (pohladDataModels.Any())
                 {
-                    idPohladu = pohladDataModels.OrderBy(x => x.dataModel.UseAsBrowserRank).FirstOrDefault().pohlad.Id;
-                    pohlady = pohladDataModels.OrderBy(x => x.dataModel.UseAsBrowserRank).Select(z => z.pohlad).ToList();
+                    //DTLNESAMINT-645 este sa bude prerabat
+                    if (!request.KodPolozkyModulu.IsNullOrEmpty() && request.KodPolozkyModulu.StartsWith("fin") && request.KodPolozky == "osa-oso")
+                    {
+                        idPohladu = pohladDataModels.OrderByDescending(x => x.dataModel.UseAsBrowserRank).FirstOrDefault().pohlad.Id;
+                        pohlady = pohladDataModels.OrderByDescending(x => x.dataModel.UseAsBrowserRank).Select(z => z.pohlad).ToList();
+                    }
+                    else
+                    {
+                        idPohladu = pohladDataModels.OrderBy(x => x.dataModel.UseAsBrowserRank).FirstOrDefault().pohlad.Id;
+                        pohlady = pohladDataModels.OrderBy(x => x.dataModel.UseAsBrowserRank).Select(z => z.pohlad).ToList();
+                    }
                 }
                 else
                 {
@@ -622,7 +623,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
 
         #region Info
 
-#if DEBUG || DEVELOP || INT || TEST
+#if DEBUG || DEVELOP || INT || TEST || ITP
 
         public object Get(SessionInfo request)
         {
@@ -665,7 +666,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
             {
                 bool dcomRezim = Repository.GetNastavenieI("reg", "eSAMRezim") == 1;
 
-#if DEBUG || DEVELOP
+#if DEBUG || DEVELOP || ITP
                 dcomRezim = false;
 #endif
                 if (dcomRezim)
@@ -846,7 +847,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// <summary>
         /// Gets the service stack attachment.
         /// </summary>
-        /// <param name="report">The report.</param>
+        /// <param name="Zostavy">The report.</param>
         /// <returns></returns>
         public object GetServiceStackAttachment(RendererResult report)
         {
@@ -855,7 +856,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
 
         #region Moduly eSluzieb - hierarchia modulu (debug)
 
-#if DEBUG || DEVELOP || INT || TEST
+#if DEBUG || DEVELOP || INT || TEST || ITP
 
         [ServiceStack.Route("/treeinfo/{modul}", "GET")]
         public class GetTreeInfoRequest
@@ -1442,7 +1443,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
             return dependence;
         }
 
-#if DEBUG || DEVELOP || INT || TEST
+#if DEBUG || DEVELOP || INT || TEST || ITP
 
         public object Get(MergeScriptGlobalViews request)
         {

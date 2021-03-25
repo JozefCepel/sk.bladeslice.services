@@ -33,7 +33,7 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
         //[PfeColumn(Text = "Názov", ReadOnly = true)]
         //public string Nazov { get; set; }
 
-        [DataMember]        
+        [DataMember]
         [PfeColumn(Text = "D_User_Id", ReadOnly = true)]
         public Guid D_User_Id { get; set; }
 

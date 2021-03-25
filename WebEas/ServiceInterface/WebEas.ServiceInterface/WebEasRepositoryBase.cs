@@ -88,7 +88,7 @@ namespace WebEas.ServiceInterface
 
                 return GetList(Db.From<T>().Where(string.Concat(primaryKeyName, " = {0}"), id).Select(cols.ToArray()).Limit(1)).FirstOrDefault();
             }
-            
+
             var data = GetList<T>(new Filter(primaryKeyName, id));
             return data.FirstOrDefault();
         }
@@ -253,43 +253,6 @@ namespace WebEas.ServiceInterface
                     }
                 }
             }
-            
-            // specialita, velmi specificke prepojenie gridov
-            if (node.KodPolozky.Equals("rzp-prh-kmpl") || node.KodPolozky.Equals("rzp-evi-den") || node.KodPolozky.Equals("rzp-evi-zmena-pol") || node.KodPolozky.Equals("rzp-evi-navrh-pol"))
-            {
-                int mes = 0;
-                int rok = 0;
-
-                if (filter.FilterElements.Any())
-                {
-                    //Pri zložitejších podmienkach zasielan=ych z FE nemusím mať rovno FilterElement ale ešte Filter objekt
-                    ExtractFilterFromMasterDetailConnection(ref mes, ref rok, filter);
-                }
-
-                if (mes > 0) //Vnúti pevný filter na stav, keďže FIN 1-12 sa napočítava iba zo zaúčtovaných dát
-                {
-                    if (node.KodPolozky.Equals("rzp-evi-zmena-pol"))
-                    {
-                        filter.And(FilterElement.LessThanOrEq("Mesiac", mes));
-                        filter.And(FilterElement.In("C_StavEntity_Id", new[] { (int)StavEntityEnum.SCHVALENY, (int)StavEntityEnum.EXPORTOVANY, (int)StavEntityEnum.ODOSLANY }));  // ZMENY
-                    }
-                    else if (node.KodPolozky.Equals("rzp-evi-navrh-pol"))
-                    {
-                        filter.And(FilterElement.In("C_StavEntity_Id", new[] { (int)StavEntityEnum.SCHVALENY, (int)StavEntityEnum.EXPORTOVANY, (int)StavEntityEnum.ODOSLANY }));  // ZMENY
-                    }
-                    else if (node.KodPolozky.Equals("rzp-evi-den"))
-                    {
-                        filter.And(FilterElement.LessThanOrEq("UOMesiac", mes));
-                        filter.And(FilterElement.In("C_StavEntity_Id", new[] { (int)StavEntityEnum.ZAUCTOVANY, (int)StavEntityEnum.ZAUCTOVANY_RZP}));
-                        filter.And(FilterElement.In("C_TypBiznisEntity_Id", new[] { (int)TypBiznisEntityEnum.BAN, (int)TypBiznisEntityEnum.PDK, (int)TypBiznisEntityEnum.IND }));
-                    }
-                    else if (node.KodPolozky.Equals("rzp-prh-kmpl"))
-                    {
-                        filter.And(FilterElement.Eq("Obdobie", mes));
-                        filter.And(FilterElement.Eq("Rok", rok));
-                    }
-                }
-            }
 
             // ------ HirarchyNode.AdditionalFilter
             if (node.AdditionalFilter != null)
@@ -306,7 +269,7 @@ namespace WebEas.ServiceInterface
                 }
             }
 
-            // ------ HirarchyNode.ParametrizedDbFilter
+            // ------ HierarchyNode.ParametrizedDbFilter
             Dictionary<string, object> nodeDynamicFilter = node.ParametrizedDbFilter();
             if (nodeDynamicFilter != null)
             {
@@ -399,38 +362,24 @@ namespace WebEas.ServiceInterface
 
             #endregion
 
+            #region FilterRok
+
+            if (filter.Parameters.ContainsValue("FILTERROK"))
+            {
+                var filterRokValue = GetNastavenieI(ActualModul, "FilterRok");
+                foreach (var el in filter.Parameters.Where(x => x.Value.ToString() == "FILTERROK"))
+                {
+                    var filterRok = filter.GetFilterElementByParameterName(el.Key);
+                    filterRok.Value = filterRokValue == 0 ? DateTime.Today.Year : filterRokValue;
+                }
+            }
+
+            #endregion
+
             List<T> data = this.GetList<T>(filter, pagging, userSort, hiddenFields, selectedFields, ribbonFilter, node);
             this.SetAccessFlag(data);
 
             return data;
-        }
-
-        private static void ExtractFilterFromMasterDetailConnection(ref int mes, ref int rok, Filter filter)
-        {
-            for (int i = 0; i < filter.FilterElements.Count; i++)
-            {
-                if (filter.FilterElements[i] is FilterElement el)
-                {
-                    if (Convert.ToString(el.Value).Contains("R@"))
-                    {
-                        string stmp = el.Value.ToString().Split('|')[1];
-                        rok = stmp.Substring(0, stmp.Length - 2).ToInt();
-                        el.Value = el.Value.ToString().Replace($"|{ rok }R@", "");
-                        //Odseparoval som Rok. Mesiac buď bude tiež ako parameter, alebo sa má nastaviť na mesiac k dnešnému dňu
-                        mes = rok == DateTime.Now.Year ? DateTime.Now.Month : rok < DateTime.Now.Year ? 12 : 1;
-                    }
-                    if (Convert.ToString(el.Value).Contains("M@"))
-                    {
-                        string stmp = el.Value.ToString().Split('|')[1];
-                        mes = stmp.Substring(0, stmp.Length - 2).ToInt();
-                        el.Value = el.Value.ToString().Replace($"|{ mes }M@", "");
-                    }
-                }
-                else
-                {
-                    ExtractFilterFromMasterDetailConnection(ref mes, ref rok, (Filter)filter.FilterElements[i]);
-                }
-            }
         }
 
         /// <summary>
@@ -548,7 +497,7 @@ namespace WebEas.ServiceInterface
             data.Validate(this);
 
             long id = -1;
-            using (var transaction = GetActiveTransaction() == null ? BeginTransaction() : null)
+            using (var transaction = BeginTransaction())
             {
                 try
                 {
@@ -566,7 +515,7 @@ namespace WebEas.ServiceInterface
                     {
                         transaction.Rollback();
                     }
-                    
+
                     throw ex;
                 }
             }
@@ -588,7 +537,7 @@ namespace WebEas.ServiceInterface
         {
             long retval;
 
-            using (var transaction = GetActiveTransaction() == null ? BeginTransaction() : null)
+            using (var transaction = BeginTransaction())
             {
                 try
                 {
@@ -708,7 +657,7 @@ namespace WebEas.ServiceInterface
 
             object id = null;
 
-            using (var transaction = GetActiveTransaction() == null ? BeginTransaction() : null)
+            using (var transaction = BeginTransaction())
             {
                 try
                 {
@@ -786,7 +735,7 @@ namespace WebEas.ServiceInterface
 
             if (typeof(T).HasAttribute<AliasAttribute>() && typeof(T).FirstAttribute<AliasAttribute>().Name.ToUpper().StartsWith("C_"))
             {
-                using var transaction = GetActiveTransaction() == null ? BeginTransaction() : null;
+                using var transaction = BeginTransaction();
                 try
                 {
                     retval = this.Db.Exec((IDbCommand dbCmd) => dbCmd.DeleteData<T>(this, false, ids));
@@ -817,7 +766,7 @@ namespace WebEas.ServiceInterface
                 }
             }
 
-            using (var transaction = GetActiveTransaction() == null ? BeginTransaction() : null)
+            using (var transaction = BeginTransaction())
             {
                 try
                 {
@@ -833,7 +782,7 @@ namespace WebEas.ServiceInterface
                     {
                         transaction.Rollback();
                     }
-                    
+
                     throw ex;
                 }
             }
@@ -926,7 +875,12 @@ namespace WebEas.ServiceInterface
         /// <returns></returns>
         public IDbTransaction BeginTransaction()
         {
-            return Db.OpenTransaction(IsolationLevel.ReadCommitted);
+            if (GetActiveTransaction() == null)
+            {
+                return Db.OpenTransaction(IsolationLevel.ReadCommitted);
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -935,7 +889,12 @@ namespace WebEas.ServiceInterface
         /// <returns></returns>
         public IDbTransaction BeginTransaction(IsolationLevel isolationLevel)
         {
-            return Db.OpenTransaction(isolationLevel);
+            if (GetActiveTransaction() == null)
+            {
+                return Db.OpenTransaction(isolationLevel);
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -1208,9 +1167,9 @@ namespace WebEas.ServiceInterface
 
         public List<object> GetListCombo(IListComboDto request)
         {
-            HierarchyNode node = RenderModuleRootNode(request.KodPolozky).FindNode(request.KodPolozky);
-            string[] requestFields = String.IsNullOrEmpty(request.RequiredField) ? null : request.RequiredField.Split('/');
-            return this.GetListCombo(node.ModelType, request.Column, request.KodPolozky, requestFields);
+            var node = RenderModuleRootNode(request.KodPolozky).FindNode(request.KodPolozky);
+            var requestFields = string.IsNullOrEmpty(request.RequiredField) ? null : request.RequiredField.Split('/');
+            return GetListCombo(node.ModelType, request.Column, request.KodPolozky, requestFields, request.Value, request.AdditionalFields);
         }
 
         /// <summary>
@@ -1218,31 +1177,69 @@ namespace WebEas.ServiceInterface
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns></returns>
-        private List<object> GetListCombo(Type modelType, string col, string kodPolozky = null, string[] requestFields = null)
+        private List<object> GetListCombo(Type modelType, string col, string kodPolozky = null, string[] requestFields = null, string value = null, string additionalFields = null)
         {
             PropertyInfo column = modelType.Properties().FirstOrDefault(nav => nav.Name.ToLower() == col.ToLower());
+            PfeComboAttribute combo = column.FirstAttribute<PfeComboAttribute>();
+
+            if (!value.IsNullOrEmpty())
+            {
+                value = Encoding.UTF8.GetString(Convert.FromBase64String(value));
+            }
+
+            if (combo.TableType == null && column.HasAttribute<ReferencesAttribute>())
+            {
+                combo.TableType = column.FirstAttribute<ReferencesAttribute>().Type;
+            }
+
+            if (!additionalFields.IsNullOrEmpty())
+            {
+                var additionalFieldsBytes = Convert.FromBase64String(additionalFields);
+                var additionalFieldsList = ServiceStack.Text.JsonSerializer.DeserializeFromString<List<string>>(Encoding.UTF8.GetString(additionalFieldsBytes));
+
+                if (additionalFieldsList != null && additionalFieldsList.Any())
+                {
+                    if (combo.AdditionalFields == null || !combo.AdditionalFields.Any())
+                    {
+                        combo.AdditionalFields = additionalFieldsList.Distinct().ToArray();
+                    }
+                    else
+                    {
+                        combo.AdditionalFields = combo.AdditionalFields.Union(additionalFieldsList.ToArray()).Distinct().ToArray();
+                    }
+                }
+            }
+
             if (column.HasAttribute<PfeColumnAttribute>() && column.HasAttribute<PfeComboAttribute>())
             {
-                PfeComboAttribute combo = column.FirstAttribute<PfeComboAttribute>();
-                if (combo.TableType == null && column.HasAttribute<ReferencesAttribute>())
+                string[] requiredFields = column.FirstAttribute<PfeColumnAttribute>().RequiredFields;
+
+                if ((requiredFields == null || requiredFields.Length == 0) && requestFields != null && requestFields.Any())
                 {
-                    combo.TableType = column.FirstAttribute<ReferencesAttribute>().Type;
+                    var param = new Dictionary<string, string>();
+                    for (int i = 0; i < requestFields.Length; i++)
+                    {
+                        if (i % 2 != 0)
+                        {
+                            param.AddIfNotExists(requestFields[i-1], requestFields[i]);
+                        }
+                    }
+
+                    return ListCombo(combo, param, col, kodPolozky, value);
                 }
 
-                string[] requiredFields = column.FirstAttribute<PfeColumnAttribute>().RequiredFields;
                 if (combo.TableType != null && combo.TableType.HasInterface(typeof(IStaticCombo)))
                 {
                     var sc = (IStaticCombo)Activator.CreateInstance(combo.TableType);
                     sc.Repository = this;
                     sc.RequiredFields = (requiredFields == null || requiredFields.Length == 0) ? null : GetRequiredValue(requiredFields);
                     sc.KodPolozky = kodPolozky;
-                    return sc.GetComboList(requestFields).ToList<object>();
+                    return sc.GetComboList(requestFields, value).ToList<object>();
                 }
-
 
                 if (requiredFields == null || requiredFields.Length == 0)
                 {
-                    return this.ListCombo(combo, null, col, kodPolozky);
+                    return ListCombo(combo, null, col, kodPolozky, value);
                 }
 
                 if (HttpContext.Current != null && HttpContext.Current.Request != null && HttpContext.Current.Request.QueryString.AllKeys.Any(nav => requiredFields.Any(r => r.ToLower() == nav.ToLower())))
@@ -1253,14 +1250,14 @@ namespace WebEas.ServiceInterface
                         if (requiredFields.Any(nav => nav.ToLower() == key.ToLower()))
                         {
                             string name = requiredFields.First(nav => nav.ToLower() == key.ToLower());
-                            string value = HttpContext.Current.Request.QueryString[key];
-                            if (!String.IsNullOrEmpty(value) && value.ToLower() != "null")
+                            string qsValue = HttpContext.Current.Request.QueryString[key];
+                            if (!string.IsNullOrEmpty(qsValue) && qsValue.ToLower() != "null")
                             {
-                                param.Add(name, value);
+                                param.Add(name, qsValue);
                             }
                         }
                     }
-                    return this.ListCombo(combo, param, col, kodPolozky);
+                    return ListCombo(combo, param, col, kodPolozky, value);
                 }
 
                 if (requestFields != null && requestFields.Length > 0 && requiredFields.Length <= requestFields.Length)
@@ -1271,35 +1268,31 @@ namespace WebEas.ServiceInterface
                         param.Add(requiredFields[i], requestFields[i]);
                     }
 
-                    return this.ListCombo(combo, param, col, kodPolozky);
+                    return ListCombo(combo, param, col, kodPolozky, value);
                 }
-                return this.ListCombo(combo, null, col, kodPolozky);
+
+
+                return ListCombo(combo, null, col, kodPolozky, value);
                 //throw new WebEasException(
                 //    string.Format("Count of required fields mismatch expected {0}, received {1}",
                 //        requiredFields != null && requiredFields.Length > 0 ? requiredFields.Join(",") : "(none)",
                 //        requestFields != null && requestFields.Length > 0 ? requestFields.Join(",") : "(none)"),
-                //    "Zle volanie služby - nesprávny počet parametrov!");                
+                //    "Zle volanie služby - nesprávny počet parametrov!");
             }
 
             if (column.HasAttribute<PfeComboAttribute>())
             {
-                PfeComboAttribute combo = column.FirstAttribute<PfeComboAttribute>();
-                if (combo.TableType == null && column.HasAttribute<ReferencesAttribute>())
-                {
-                    combo.TableType = column.FirstAttribute<ReferencesAttribute>().Type;
-                }
-
-                return this.ListCombo(combo, null, col, kodPolozky);
+                return ListCombo(combo, null, col, kodPolozky, value);
             }
             else if (column.HasAttribute<ReferencesAttribute>())
             {
                 Type type = column.FirstAttribute<ReferencesAttribute>().Type;
 
-                return this.ListCombo(new PfeComboAttribute(type), null, col, kodPolozky);
+                return ListCombo(new PfeComboAttribute(type), null, col, kodPolozky, value);
             }
             else
             {
-                throw new WebEasException(String.Format("Column {0} has not defined combo", col));
+                throw new WebEasException(string.Format("Column {0} has not defined combo", col));
             }
         }
 
@@ -1309,7 +1302,7 @@ namespace WebEas.ServiceInterface
         /// <param name="attribute">The attribute.</param>
         /// <param name="requiredFields">The required fields.</param>
         /// <returns></returns>
-        private List<object> ListCombo(PfeComboAttribute attribute, Dictionary<string, string> requiredFields, string col, string kodPolozky)
+        private List<object> ListCombo(PfeComboAttribute attribute, Dictionary<string, string> requiredFields, string col, string kodPolozky, string value = null)
         {
             string sql = string.Empty;
 
@@ -1499,7 +1492,7 @@ namespace WebEas.ServiceInterface
                 {
                     sqlSelect = $"SELECT [{attribute.ComboIdColumn}]";
                 }
-                
+
                 var sqlSelectPart = new StringBuilder();
                 var sqlOrderPart = new StringBuilder();
 
@@ -1538,13 +1531,28 @@ namespace WebEas.ServiceInterface
                     sqlOrderPart.Append(attribute.CustomSortSqlExp);
                 }
 
+                string comboValueWhere = string.Empty;
+                if (!value.IsNullOrEmpty())
+                {
+                    comboValueWhere = $"{attribute.ComboDisplayColumn} COLLATE Latin1_general_CI_AI LIKE '%{value}%'";
+
+                    if (sqlWhere.Length > 0)
+                    {
+                        comboValueWhere = string.Concat(" AND ", comboValueWhere);
+                    }
+                    else
+                    {
+                        comboValueWhere = string.Concat(comboValueWhere, " AND ");
+                    }
+                }
+
                 if (sqlWhere.Length > 0)
                 {
-                    sql = $"{sqlSelect} FROM {schema}{alias} WHERE {sqlWhere} AND [{attribute.ComboDisplayColumn}] IS NOT NULL ORDER BY {sqlOrderPart}";
+                    sql = $"{sqlSelect} FROM {schema}{alias} WHERE {sqlWhere}{comboValueWhere} AND [{attribute.ComboDisplayColumn}] IS NOT NULL ORDER BY {sqlOrderPart}";
                 }
                 else
                 {
-                    sql = $"{sqlSelect} FROM {schema}{alias} WHERE [{attribute.ComboDisplayColumn}] IS NOT NULL ORDER BY {sqlOrderPart}";
+                    sql = $"{sqlSelect} FROM {schema}{alias} WHERE {comboValueWhere}[{attribute.ComboDisplayColumn}] IS NOT NULL ORDER BY {sqlOrderPart}";
                 }
 
                 object CreateExpandoObject(object obj)
@@ -2173,11 +2181,20 @@ namespace WebEas.ServiceInterface
         {
             if (string.IsNullOrEmpty(Session.TenantId))
             {
-                return "";
+                return string.Empty;
             }
             else
             {
-                return GetCacheOptimizedTenant(string.Format("GetNastavenie:{0}:{1}", modul, kod), () =>
+                var key = string.Format("GetNastavenie:{0}:{1}:{2}", modul, kod, Session.UserId);
+                if (modul.ToLower() == "sys")
+                {
+                    return GetCacheOptimized(key, () =>
+                    {
+                        return Db.Select<string>(string.Format("select reg.F_NastavenieS('{0}','{1}', null)", modul, kod)).FirstOrDefault();
+                    });
+                }
+
+                return GetCacheOptimizedTenant(key, () =>
                 {
                     return Db.Select<string>(string.Format("select reg.F_NastavenieS('{0}','{1}','{2}')", modul, kod, Session.UserId)).FirstOrDefault();
                 });
@@ -2199,35 +2216,19 @@ namespace WebEas.ServiceInterface
             }
             else
             {
-                var res = GetCacheOptimizedTenant(string.Format("GetNastavenie:{0}:{1}", modul, kod), () =>
+                var key = string.Format("GetNastavenie:{0}:{1}:{2}", modul, kod, Session.UserId);
+                if (modul.ToLower() == "sys")
+                {
+                    return GetCacheOptimized(key, () =>
+                    {
+                        return Db.Select<long?>(string.Format("select reg.F_NastavenieI('{0}','{1}', null)", modul, kod)).FirstOrDefault();
+                    }).GetValueOrDefault();
+                }
+
+                return GetCacheOptimizedTenant(key, () =>
                 {
                     return Db.Select<long?>(string.Format("select reg.F_NastavenieI('{0}','{1}','{2}')", modul, kod, Session.UserId)).FirstOrDefault();
-                });
-
-                return res.GetValueOrDefault();
-            }
-        }
-
-        public DateTime? CheckESAMStartDate(DateTime? DatumDo)
-        {
-            DateTime? datumStart = GetNastavenieD("reg", "eSAMStart");
-            if (datumStart != null)
-            {
-                return datumStart.Value.AddDays(-1);
-            }
-            else if (DatumDo != null)
-            {
-                UpdateNastavenieBase nast = new UpdateNastavenieBase
-                {
-                    dHodn = DatumDo.Value.AddDays(1),
-                    Nazov = "eSAMStart"
-                };
-                UpdateNastavenie(nast, "reg");
-                return DatumDo;
-            }
-            else
-            {
-                throw new WebEasException(null, "Nie je nastavený parameter eSAMStart!");
+                }).GetValueOrDefault();
             }
         }
 
@@ -2246,12 +2247,19 @@ namespace WebEas.ServiceInterface
             }
             else
             {
-                var res = GetCacheOptimizedTenant(string.Format("GetNastavenie:{0}:{1}", modul, kod), () =>
+                var key = string.Format("GetNastavenie:{0}:{1}:{2}", modul, kod, Session.UserId);
+                if (modul.ToLower() == "sys")
+                {
+                    return GetCacheOptimized(key, () =>
+                    {
+                        return Db.Select<bool?>(string.Format("select reg.F_NastavenieB('{0}','{1}', null)", modul, kod)).FirstOrDefault();
+                    }).GetValueOrDefault();
+                }
+
+                return GetCacheOptimizedTenant(key, () =>
                 {
                     return Db.Select<bool?>(string.Format("select reg.F_NastavenieB('{0}','{1}','{2}')", modul, kod, Session.UserId)).FirstOrDefault();
-                });
-
-                return res.GetValueOrDefault();
+                }).GetValueOrDefault();
             }
         }
 
@@ -2270,31 +2278,68 @@ namespace WebEas.ServiceInterface
             }
             else
             {
-                var res = GetCacheOptimizedTenant(string.Format("GetNastavenie:{0}:{1}", modul, kod), () =>
+                var key = string.Format("GetNastavenie:{0}:{1}:{2}", modul, kod, Session.UserId);
+                if (modul.ToLower() == "sys")
+                {
+                    return GetCacheOptimized(key, () =>
+                    {
+                        return Db.Select<DateTime?>(string.Format("select reg.F_NastavenieD('{0}','{1}', null)", modul, kod)).FirstOrDefault();
+                    });
+                }
+
+                return GetCacheOptimizedTenant(key, () =>
                 {
                     return Db.Select<DateTime?>(string.Format("select reg.F_NastavenieD('{0}','{1}','{2}')", modul, kod, Session.UserId)).FirstOrDefault();
                 });
+            }
+        }
 
-                return res;
+        public DateTime? CheckESAMStartDate(DateTime? DatumDo)
+        {
+            DateTime? datumStart = GetNastavenieD("reg", "eSAMStart");
+            if (datumStart != null)
+            {
+                return datumStart.Value.AddDays(-1);
+            }
+            else if (DatumDo != null)
+            {
+                UpdateNastavenie(new UpdateNastavenieBase
+                {
+                    dHodn = DatumDo.Value.AddDays(1),
+                    Nazov = "eSAMStart",
+                    Modul = "reg"
+                });
+                return DatumDo;
+            }
+            else
+            {
+                throw new WebEasException(null, "Nie je nastavený parameter eSAMStart!");
             }
         }
 
         public NastavenieView UpdateNastavenie(UpdateNastavenieBase updateNastavenie)
         {
-            return UpdateNastavenie(updateNastavenie, ActualModul);
-        }
-
-        public NastavenieView UpdateNastavenie(UpdateNastavenieBase updateNastavenie, string explicitModul)
-        {
             using (var transaction = BeginTransaction())
             {
-
                 try
                 {
-                    string typ = Db.Scalar<string>("Select Typ from [reg].[V_Nastavenie] where Nazov = @nazov and Modul = @modul", new { nazov = updateNastavenie.Nazov, modul = explicitModul });
+                    string typ = Db.Scalar<string>("Select Typ from [reg].[V_Nastavenie] where Nazov = @nazov and Modul = @modul", new { nazov = updateNastavenie.Nazov, modul = updateNastavenie.Modul });
+                    if (Session.AdminLevel != AdminLevel.SysAdmin && updateNastavenie.Modul.ToLowerInvariant() == "sys")
+                    {
+                        throw new WebEasAuthenticationException();
+                    }
+
                     var p = new DynamicParameters();
-                    p.Add("@tenant", Session.TenantIdGuid, dbType: DbType.Guid);
-                    p.Add("@modul", explicitModul, dbType: DbType.String);
+
+                    if (Session.AdminLevel == AdminLevel.SysAdmin && updateNastavenie.Modul.ToLowerInvariant() == "sys")
+                    {
+                        p.Add("@tenant",null , dbType: DbType.Guid);
+                    }
+                    else
+                    {
+                        p.Add("@tenant", Session.TenantIdGuid, dbType: DbType.Guid);
+                    }
+                    p.Add("@modul", updateNastavenie.Modul, dbType: DbType.String);
                     p.Add("@nazov", updateNastavenie.Nazov, dbType: DbType.String);
                     //p.Add("@pouzivatel", null, dbType: DbType.String);
                     switch (typ)
@@ -2335,9 +2380,14 @@ namespace WebEas.ServiceInterface
                 }
             }
 
-            RemoveFromCacheByRegexOptimizedTenant("GetNastavenie:.*");
+            var redisKey = "GetNastavenie:.*";
+            RemoveFromCacheByRegexOptimizedTenant(redisKey);
+            if (Session.AdminLevel == AdminLevel.SysAdmin && updateNastavenie.Modul.ToLowerInvariant() == "sys")
+            {
+                RemoveFromCacheByRegex(redisKey);
+            }
 
-            return GetList<NastavenieView>(x => x.Nazov == updateNastavenie.Nazov && x.Modul == explicitModul).FirstOrDefault();
+            return GetList<NastavenieView>(x => x.Nazov == updateNastavenie.Nazov && x.Modul == updateNastavenie.Modul).FirstOrDefault();
         }
 
         /// <summary>

@@ -20,7 +20,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         [DataMember]
         [PfeColumn(Text = "_TypeElement_Id")]
         [Ignore]
-        public string TypeElement_Id { get { return "3_" + C_BankaUcet_Id; } }
+        public string TypeElement_Id => "3_" + C_BankaUcet_Id;
 
         [DataMember]
         public DateTime? DatumPlatnosti { get; set; }

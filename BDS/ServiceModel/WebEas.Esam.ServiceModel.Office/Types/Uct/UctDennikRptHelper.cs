@@ -35,6 +35,9 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Uct
         public string BiznisEntitaPopis { get; set; }
 
         [DataMember]
+        public string URL { get; set; }
+
+        [DataMember]
         public short C_TypBiznisEntity_Id { get; set; }
 
         [DataMember]

@@ -16,7 +16,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Rzp
         public long C_FRZdroj_Id { get; set; }
 
         [DataMember]
-        public int C_OrganizaciaTyp_Id { get; set; }
+        public byte C_OrganizaciaTyp_Id { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "ZD1")]

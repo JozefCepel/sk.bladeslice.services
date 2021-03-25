@@ -36,7 +36,7 @@ namespace WebEas.Esam.Office.Cfe
             {
                 WsdlServiceNamespace = "http://schemas.webeas.sk/office/esam/office/1.0",
                 SoapServiceName = "EsamOfficeCfe",
-#if DEBUG || DEVELOP || INT
+#if DEBUG || DEVELOP || INT || ITP
                 DebugMode = true,
                 EnableFeatures = Feature.All.Remove(this.disableFeaturesDebug),
 #else

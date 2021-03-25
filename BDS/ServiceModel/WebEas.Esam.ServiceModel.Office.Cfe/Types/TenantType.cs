@@ -11,15 +11,19 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
     {
         [PrimaryKey]
         [AutoIncrement]
-        [DataMember]        
+        [DataMember]
         public byte C_TenantType_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Typ", Mandatory = true)]
+        [PfeColumn(Text = "Názov", Mandatory = true)]
         public string Typ { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Description")]        
+        [PfeColumn(Text = "Code")]
+        public string Kod { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Description", Mandatory = true)]
         public string Popis { get; set; }
 
     }

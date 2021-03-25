@@ -26,6 +26,13 @@ namespace WebEas.ServiceModel
         /// </summary>
         /// <value>The required field.</value>
         string RequiredField { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Value.
+        /// </summary>
+        string Value { get; set; }
+
+        string AdditionalFields { get; set; }
     }
 
     /// <summary>
@@ -34,7 +41,7 @@ namespace WebEas.ServiceModel
     public interface IStaticCombo
     {
         string KodPolozky { get; set; }
-        List<Types.IComboResult> GetComboList(string[] requestFileds);
+        List<Types.IComboResult> GetComboList(string[] requestFileds, string value);
         IWebEasRepositoryBase Repository { get; set; }
         Dictionary<string, string> RequiredFields { get; set; }
     }

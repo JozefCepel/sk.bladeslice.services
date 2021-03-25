@@ -1,4 +1,5 @@
 ﻿using ServiceStack.DataAnnotations;
+using System;
 using System.Runtime.Serialization;
 using WebEas.ServiceModel;
 
@@ -40,5 +41,48 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Rzp
 
         [DataMember]
         public decimal Suma { get; set; }
+
+        [DataMember]
+        public int Poradie { get; set; }
+
+        [DataMember]
+        public string BiznisEntitaPopis { get; set; }
+
+        [DataMember]
+        [Ignore]
+        public string PrijemVydajText => PrijemVydajCombo.GetText(PrijemVydaj);
+
+        [DataMember]
+        public DateTime DatumDokladu { get; set; }
+
+        [DataMember]
+        public string RzpPolNazov { get; set; }
+
+        [DataMember]
+        public string ProgramFull { get; set; }
+
+        [DataMember]
+        public string StrediskoNazov { get; set; }
+
+        [DataMember]
+        public string ProjektNazov { get; set; }
+
+        [DataMember]
+        public string ZdrojKod { get; set; }
+
+        [DataMember]
+        public string FK { get; set; }
+
+        [DataMember]
+        public string EK { get; set; }
+
+        [DataMember]
+        public string A1 { get; set; }
+
+        [DataMember]
+        public string A2 { get; set; }
+
+        [DataMember]
+        public string A3 { get; set; }
     }
 }

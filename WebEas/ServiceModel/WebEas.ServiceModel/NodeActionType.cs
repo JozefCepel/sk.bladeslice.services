@@ -476,7 +476,6 @@ namespace WebEas.ServiceModel
         [PfeRight(Pravo.Upravovat)]
         NacitatDokladyExterne,
 
-
         [PfeCaption("Migrácia počiatočného stavu")]
         [NodeActionIcon(NodeActionIcons.SyncAlt)]
         [PfeRight(Pravo.Upravovat)]
@@ -502,6 +501,26 @@ namespace WebEas.ServiceModel
         [PfeRight(Pravo.Upravovat)]
         VyberPZ,
 
+        [PfeCaption("Nový s výberom P/Z")]
+        [NodeActionIcon(NodeActionIcons.SearchDollar)]
+        [PfeRight(Pravo.Upravovat)]
+        VyberPZNovy,
+
+        [PfeCaption("Nový príjmový")]
+        [NodeActionIcon(NodeActionIcons.Plus)]
+        [PfeRight(Pravo.Upravovat)]
+        NovyPrijmovy,
+
+        [PfeCaption("Nový príjmový POS")]
+        [NodeActionIcon(NodeActionIcons.FasFaCreditCard)]
+        [PfeRight(Pravo.Upravovat)]
+        NovyPrijmovyPos,
+
+        [PfeCaption("Nový výdajový")]
+        [NodeActionIcon(NodeActionIcons.FasFaMinus)]
+        [PfeRight(Pravo.Upravovat)]
+        NovyVydajovy,
+
         #endregion
 
         #region CRM
@@ -510,6 +529,22 @@ namespace WebEas.ServiceModel
         [NodeActionIcon(NodeActionIcons.SyncAlt)]
         [PfeRight(Pravo.Upravovat)]
         SynchronizovatDoklady,
+
+        [PfeCaption("Účtovný doklad - pdf")]
+        [NodeActionIcon(NodeActionIcons.FilePdfO)]
+        [PfeRight(Pravo.Citat)]
+        ReportUctovnyDoklad,
+
+        [PfeCaption("Účtovný doklad - náhľad")]
+        [NodeActionIcon(NodeActionIcons.Search)]
+        [PfeRight(Pravo.Citat)]
+        ViewReportUctovnyDoklad,
+
+        [PfeCaption("Účtovný doklad - tlač")]
+        [NodeActionIcon(NodeActionIcons.Print)]
+        [PfeRight(Pravo.Citat)]
+        PrintReportUctovnyDoklad,
+
         #endregion
 
         #region RZP
@@ -524,15 +559,31 @@ namespace WebEas.ServiceModel
         [PfeRight(Pravo.Upravovat)]
         SaveToHistory,
 
-        [PfeCaption("Výkaz pdf")]
-        [NodeActionIcon(NodeActionIcons.PieChart)]
+        //[PfeCaption("Výkaz FIN 1-12 - pdf")]
+        [PfeCaption("Výkaz FIN 1-12")]
+        [NodeActionIcon(NodeActionIcons.FilePdfO)]
         [PfeRight(Pravo.Citat)]
-        Vykazf112Pdf,
+        ReportVykazF112,
 
-        [PfeCaption("Export do RISSAM")]
+        [PfeCaption("Výkaz FIN 1-12 - náhľad")]
+        [NodeActionIcon(NodeActionIcons.Search)]
+        [PfeRight(Pravo.Citat)]
+        ViewReportVykazF112,
+
+        [PfeCaption("Výkaz FIN 1-12 - tlač")]
+        [NodeActionIcon(NodeActionIcons.Print)]
+        [PfeRight(Pravo.Citat)]
+        PrintReportVykazF112,
+
+        [PfeCaption("Export FIN výkazov do RISSAM")]
         [NodeActionIcon(NodeActionIcons.FileCsv)]
         [PfeRight(Pravo.Citat)]
-        VykazRissam,
+        ExportFinRissam,
+
+        [PfeCaption("Export rozpočtu do RISSAM")]
+        [NodeActionIcon(NodeActionIcons.FileCsv)]
+        [PfeRight(Pravo.Citat)]
+        ExportRzpRissam,
 
         [PfeCaption("Schváliť")]
         [NodeActionIcon(NodeActionIcons.Gavel)]
@@ -544,10 +595,20 @@ namespace WebEas.ServiceModel
         [PfeRight(Pravo.Upravovat)]
         ZrusitSchvalenie,
 
-        [PfeCaption("Rozpočtový denník")]
+        [PfeCaption("Rozpočtový denník - pdf")]
         [NodeActionIcon(NodeActionIcons.FilePdfO)]
         [PfeRight(Pravo.Citat)]
         ReportRzpDennik,
+
+        [PfeCaption("Rozpočtový denník - náhľad")]
+        [NodeActionIcon(NodeActionIcons.Search)]
+        [PfeRight(Pravo.Citat)]
+        ViewReportRzpDennik,
+
+        [PfeCaption("Rozpočtový denník - tlač")]
+        [NodeActionIcon(NodeActionIcons.Print)]
+        [PfeRight(Pravo.Citat)]
+        PrintReportRzpDennik,
 
         #endregion
 
@@ -567,20 +628,35 @@ namespace WebEas.ServiceModel
 		
         #region UCT
 
-        [PfeCaption("Účtovný denník")]
+        [PfeCaption("Účtovný denník - pdf")]
         [NodeActionIcon(NodeActionIcons.FilePdfO)]
         [PfeRight(Pravo.Citat)]
         ReportUctDennik,
 
-        [PfeCaption("Náhľad účtovného denníka")]
+        [PfeCaption("Účtovný denník - náhľad")]
         [NodeActionIcon(NodeActionIcons.Search)]
         [PfeRight(Pravo.Citat)]
         ViewReportUctDennik,
 
-        [PfeCaption("Hlavná kniha")]
+        [PfeCaption("Účtovný denník - tlač")]
+        [NodeActionIcon(NodeActionIcons.Print)]
+        [PfeRight(Pravo.Citat)]
+        PrintReportUctDennik,
+
+        [PfeCaption("Hlavná kniha - pdf")]
         [NodeActionIcon(NodeActionIcons.FilePdfO)]
         [PfeRight(Pravo.Citat)]
         ReportHlaKniha,
+
+        [PfeCaption("Hlavná kniha - náhľad")]
+        [NodeActionIcon(NodeActionIcons.Search)]
+        [PfeRight(Pravo.Citat)]
+        ViewReportHlaKniha,
+
+        [PfeCaption("Hlavná kniha - tlač")]
+        [NodeActionIcon(NodeActionIcons.Print)]
+        [PfeRight(Pravo.Citat)]
+        PrintReportHlaKniha,
 
         #endregion
 
@@ -616,7 +692,7 @@ namespace WebEas.ServiceModel
 
         [EnumMember(Value = "ItemPermission")]
         [NodeActionIcon(NodeActionIcons.Key)]
-        [PfeCaption("Prístupové práva")]
+        [PfeCaption("Prístupové práva - rozpracované")]
         [PfeRight(Pravo.Upravovat)]
         ItemPermission = 906,
 
@@ -634,7 +710,7 @@ namespace WebEas.ServiceModel
 
         [NodeActionIcon(NodeActionIcons.At)]
         [EnumMember(Value = "ItemNotification")]
-        [PfeCaption("Notifikácie")]
+        [PfeCaption("Notifikácie - rozpracované")]
         [PfeRight(Pravo.Citat)]
         ItemNotification = 909,
 
@@ -651,16 +727,22 @@ namespace WebEas.ServiceModel
         VaVFullTextSearch = 911,
 
         [EnumMember(Value = "DownloadFile")]
-        [PfeCaption("Stiahnuť <br/> súbor")]
+        [PfeCaption("Stiahnuť dokument")]
         [NodeActionIcon(NodeActionIcons.Download)]
         [PfeRight(Pravo.Upravovat)]
         DownloadFile = 912,
 
-        [NodeActionIcon(NodeActionIcons.Folder)]
-        [EnumMember(Value = "OpenFolder")]
-        [PfeCaption("Otvoriť v programe Prieskumník")]
+        [NodeActionIcon(NodeActionIcons.Clipboard)]
+        [EnumMember(Value = "CopyUrlToClipboard")]
+        [PfeCaption("Skopírovať odkaz k adresáru do schránky")]
         [PfeRight(Pravo.Citat)]
-        OpenFolder = 913,
+        CopyUrlToClipboard = 913,
+
+        [NodeActionIcon(NodeActionIcons.Clipboard)]
+        [EnumMember(Value = "CopyPathToClipboard")]
+        [PfeCaption("Skopírovať odkaz")]
+        [PfeRight(Pravo.Citat)]
+        CopyPathToClipboard = 914,
 
         #endregion
 
@@ -748,6 +830,15 @@ namespace WebEas.ServiceModel
         [NodeActionIcon(NodeActionIcons.Eye)]
         [PfeRight(Pravo.Citat)]
         ZobrazitEvidenciuDcom,
+
+        #endregion
+
+        #region VYK
+
+        [PfeCaption("Obnoviť predvolenú definíciu")]
+        [NodeActionIcon(NodeActionIcons.Undo)]
+        [PfeRight(Pravo.Upravovat)]
+        ResetDefaultDefinition,
 
         #endregion
     }

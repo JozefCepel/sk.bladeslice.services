@@ -1,10 +1,13 @@
 ﻿using ServiceStack;
+using ServiceStack.DataAnnotations;
 using ServiceStack.OrmLite;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using WebEas.Esam.ServiceModel.Office.Types.Crm;
 using WebEas.Esam.ServiceModel.Office.Types.Osa;
+using WebEas.Esam.ServiceModel.Office.Types.Uct;
 using WebEas.ServiceModel;
 using WebEas.ServiceModel.Office.Egov.Reg.Types;
 
@@ -23,19 +26,23 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         [DataMember]
         [PfeColumn(Text = "Typ dokladu názov", Hidden = true, Editable = false)]
         public string TypBiznisEntityNazov { get; set; }
-        
+
         [DataMember]
         [PfeColumn(Text = "Kniha", RequiredFields = new[] { nameof(C_TypBiznisEntity_Id) })]
-        [PfeCombo(typeof(TypBiznisEntity_KnihaView), 
-            IdColumn = nameof(C_TypBiznisEntity_Kniha_Id), 
-            ComboDisplayColumn = nameof(TypBiznisEntity_KnihaView.Kod), 
-            FilterByOrsPravo = true, 
+        [PfeCombo(typeof(TypBiznisEntity_KnihaView),
+            IdColumn = nameof(C_TypBiznisEntity_Kniha_Id),
+            ComboDisplayColumn = nameof(TypBiznisEntity_KnihaView.Kod),
+            FilterByOrsPravo = true,
             AdditionalWhereSql = "C_TypBiznisEntity_Id = @C_TypBiznisEntity_Id AND C_TypBiznisEntity_Kniha_Id NOT IN (61,62,63,64)")]
         public string Kniha { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Doklad", Hidden = true, Editable = false, ReadOnly = true)] //LoadWhenVisible = false - musí byť zobrazené kvôli radeniu v gride
+        [PfeColumn(Text = "Doklad", Hidden = true, Editable = false, ReadOnly = true, Xtype = PfeXType.Link)] //LoadWhenVisible = false - musí byť zobrazené kvôli radeniu v gride
         public string BiznisEntitaPopis { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "_URL", Editable = false, ReadOnly = true)] //Natvrdo v kóde hľadá k PfeXType.Link - field URL
+        public string URL { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Stav", Editable = false, DefaultValue = "Nový")]
@@ -52,7 +59,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         [DataMember]
         [PfeColumn(Text = "Ú", Editable = false, ReadOnly = true, Tooltip = "Zaúčtované do účtovníctva")]
         public bool U { get; set; }
-        
+
         [DataMember]
         [PfeColumn(Text = "Konečný stav", Editable = false, ReadOnly = true)]
         public bool JeKoncovyStav { get; set; }
@@ -85,7 +92,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
 
         [DataMember]
         [PfeColumn(Text = "Projekt", RequiredFields = new[] { nameof(DatumDokladu) })]
-        [PfeCombo(typeof(ProjektView), IdColumn = nameof(C_Projekt_Id), ComboDisplayColumn = nameof(ProjektView.Nazov), 
+        [PfeCombo(typeof(ProjektView), IdColumn = nameof(C_Projekt_Id), ComboDisplayColumn = nameof(ProjektView.Nazov),
             AdditionalWhereSql = "ISNULL(@DatumDokladu, GetDate()) BETWEEN PlatnostOd AND ISNULL(PlatnostDo, '2100-01-01')")]
         public string ProjektNazov { get; set; }
 
@@ -99,18 +106,32 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         public short? C_OsobaTyp_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Typ osoby")]
-        [PfeCombo(typeof(OsobaTypView), ComboDisplayColumn = nameof(OsobaTypView.Kod), ComboIdColumn = nameof(OsobaTypView.C_OsobaTyp_Id))]
+        [PfeColumn(Text = "Typ osoby", ReadOnly = true)]
         public string OsobaTypKod { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "RČ / IČO", Xtype = PfeXType.SearchFieldSS, Mandatory = true, RequiredFields = new[] { nameof(C_OsobaTyp_Id) })]
-        [PfeCombo(typeof(OsobaTPSidloComboView), IdColumn = nameof(D_Osoba_Id), ComboDisplayColumn = nameof(OsobaTPSidloComboView.IdentifikatorMeno), 
-            AdditionalFields = new[] { nameof(OsobaTPSidloComboView.FakturaciaSplatnost), nameof(OsobaTPSidloComboView.FormatMenoSort), nameof(OsobaTPSidloComboView.AdresaDlhaByt) })]
+        [PfeColumn(Text = "RČ / IČO", ReadOnly = true)]
         public string Identifikator { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "TP/Sídlo", ReadOnly = true, Editable = false)]
+        [PfeColumn(Text = "Osoba", Xtype = PfeXType.SearchFieldSS, Mandatory = true)]
+        [PfeCombo(typeof(OsobaView), ComboDisplayColumn = nameof(OsobaView.IdFormatMeno), IdColumn = nameof(D_Osoba_Id), MinCharSearch = 3,
+            ComboIdColumn = nameof(OsobaView.D_Osoba_Id),
+            Tpl = "{value};{AdresaTPSidlo}",
+            AdditionalFields = new[] { nameof(OsobaView.FakturaciaSplatnost), nameof(OsobaView.AdresaTPSidlo) })]
+        public string IdFormatMeno { get; set; } //Atribúty "Tpl" a "AdditionalFields" sú pre PDK zmenené v OsobaView.(public void ComboCustomize)
+
+        // virtualny stlpec, ID by malo byt zhodne s D_Osoba_Id, vyuziva sa na druhe combo, v DTo sa to este kontroluje ci su rovnake
+        [DataMember]
+        [Ignore]
+        [PfeColumn(Text = "_D_Osoba_Id_Fake")]
+        public long? D_Osoba_Id_Fake => !string.IsNullOrEmpty(AdresaTPSidlo) ? D_Osoba_Id : null; // Init, preberieme hodnotu
+
+        [DataMember]
+        [PfeColumn(Text = "TP / Sídlo", Xtype = PfeXType.SearchFieldSS )]
+        [PfeCombo(typeof(OsobaView), ComboDisplayColumn = nameof(OsobaView.AdresaTPSidlo), IdColumn = nameof(D_Osoba_Id_Fake),
+                  ComboIdColumn = nameof(OsobaView.D_Osoba_Id), Tpl = "{value};{IdFormatMeno}", MinCharSearch = 2,
+                  AdditionalFields = new[] { nameof(OsobaView.FakturaciaSplatnost), nameof(OsobaView.IdFormatMeno) })]
         public string AdresaTPSidlo { get; set; }
 
         [DataMember]
@@ -126,23 +147,38 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         [PfeCombo(typeof(Lokalita), IdColumn = nameof(C_Lokalita_Id))]
         public string LokalitaNazov { get; set; }
 
+        [DataMember]
+        [PfeColumn(Text = "Zaúčtoval", Editable = false, ReadOnly = true)]
+        public string Zauctoval { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "_OrsPravo", Hidden = true, Editable = false, ReadOnly = true)]
+        public byte OrsPravo { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Fakturačná adresa", RequiredFields = new[] { nameof(D_Osoba_Id) })]
+        [PfeCombo(typeof(AdresaComboView), IdColumn = nameof(D_ADR_Adresa_Id), ComboDisplayColumn = nameof(AdresaComboView.AdresaCombo),
+            CustomSortSqlExp = nameof(AdresaComboView.C_ADR_Typ_Id) + " ASC, " + nameof(AdresaComboView.AdresaCombo) + " ASC")]
+        public string Adresa { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Predkontácia", Mandatory = true, RequiredFields = new[] { nameof(C_TypBiznisEntity_Kniha_Id) })]
+        [PfeCombo(typeof(PredkontaciaCombo), IdColumn = nameof(C_Predkontacia_Id), ComboDisplayColumn = nameof(PredkontaciaCombo.Nazov))]
+        public string Predkontacia { get; set; }
+
         public void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, object masterNodeParameter, string masterNodeKey)
         {
-            CustomizeModelActionsForTypBiznisEntity(model, repository, node, filter, masterNodeParameter);
-        }
-
-        public void CustomizeModelActionsForTypBiznisEntity(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, object masterNodeParameter)
-        {
             const int Dni14 = 14;
+            var vztah = FakturaciaVztahEnum.NEURCENE;
 
-            if (model?.Fields == null || node == null || node.TyBiznisEntity == null) return;
+            if (model?.Fields == null || node == null || node.TypBiznisEntity == null) return;
 
-            if (node.TyBiznisEntity.Count() > 1)
+            if (node.TypBiznisEntity.Count() > 1)
             {
                 throw new NotImplementedException($"C_TypBiznisEntity_Id {C_TypBiznisEntity_Id} is not implemented for multiple entities"); ;
             }
 
-            var typBiznisEntity = node.TyBiznisEntity.First();
+            var typBiznisEntity = node.TypBiznisEntity.First();
             var typBiznisEntityKnihaIntExt = node.TypBiznisEntityKnihaIntExt;
 
             #region DefaultValue spolocne
@@ -162,16 +198,32 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
             {
                 model.Fields.First(p => p.Name == nameof(OsobaTypKod)).Text = "_OsobaTypKod";
                 model.Fields.First(p => p.Name == nameof(Identifikator)).Text = "_Identifikator";
+                model.Fields.First(p => p.Name == nameof(IdFormatMeno)).Text = "_IdFormatMeno";
                 model.Fields.First(p => p.Name == nameof(AdresaTPSidlo)).Text = "_AdresaTPSidlo";
                 model.Fields.First(p => p.Name == nameof(FormatMenoSort)).Text = "_FormatMenoSort";
 
                 model.Fields.First(p => p.Name == nameof(D_Osoba_Id)).Mandatory = false; //Mandatory v combe ide na ID pole
 
             }
+            else if (typBiznisEntity == TypBiznisEntityEnum.DFA || typBiznisEntity == TypBiznisEntityEnum.DZF ||
+                     typBiznisEntity == TypBiznisEntityEnum.DZM || typBiznisEntity == TypBiznisEntityEnum.DOB ||
+                     typBiznisEntity == TypBiznisEntityEnum.DCP || typBiznisEntity == TypBiznisEntityEnum.DDP)
+            {
+                model.Fields.First(p => p.Name == nameof(IdFormatMeno)).Text = "Dodávateľ";
+                vztah = FakturaciaVztahEnum.DOD;
+            }
+            else if (typBiznisEntity == TypBiznisEntityEnum.OFA || typBiznisEntity == TypBiznisEntityEnum.OZF || typBiznisEntity == TypBiznisEntityEnum.DOL ||
+                    typBiznisEntity == TypBiznisEntityEnum.OZM || typBiznisEntity == TypBiznisEntityEnum.OOB ||
+                    typBiznisEntity == TypBiznisEntityEnum.OCP || typBiznisEntity == TypBiznisEntityEnum.ODP)
+            {
+                model.Fields.First(p => p.Name == nameof(IdFormatMeno)).Text = "Odberateľ";
+                vztah = FakturaciaVztahEnum.ODB;
+            }
+
             #endregion
 
             #region Skryvanie Z, R, UOMesiac
-            if (!(typBiznisEntity == TypBiznisEntityEnum.IND || typBiznisEntity == TypBiznisEntityEnum.BAN || typBiznisEntity == TypBiznisEntityEnum.PDK || 
+            if (!(typBiznisEntity == TypBiznisEntityEnum.IND || typBiznisEntity == TypBiznisEntityEnum.BAN || typBiznisEntity == TypBiznisEntityEnum.PDK ||
                  typBiznisEntity == TypBiznisEntityEnum.DFA || typBiznisEntity == TypBiznisEntityEnum.OFA))
             {
                 model.Fields.First(p => p.Name == nameof(U)).Text = "_Ú";
@@ -249,7 +301,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                 //Bank.účet - nezobrazené
                 model.Fields.First(p => p.Name == nameof(BankaUcetNazov)).Text = "_BankaUcetNazov";
                 //Pokladnica - Zobrazené a povinné
-                model.Fields.First(p => p.Name == nameof(C_Pokladnica_Id)).Mandatory = true; 
+                model.Fields.First(p => p.Name == nameof(C_Pokladnica_Id)).Mandatory = true;
                 model.Fields.First(p => p.Name == nameof(PokladnicaNazov)).Mandatory = true;  //Editable = false ale nevadí, že nastavujem aj Mandatory
             }
             else if (typBiznisEntity == TypBiznisEntityEnum.DOB)
@@ -338,6 +390,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
 
                     #region Zmena textu
                     model.Fields.First(p => p.Name == nameof(CisloExterne)).Text = "Číslo faktúry";
+                    model.Fields.First(p => p.Name == nameof(Adresa)).Text = "Korešp. adresa";
                     #endregion
 
                     #region Povinnosti
@@ -358,7 +411,6 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                     model.Fields.First(p => p.Name == nameof(DatumDodania)).DefaultValue = DateTime.Today;
                     model.Fields.First(p => p.Name == nameof(C_TypBiznisEntity_Kniha_Id)).DefaultValue = (int)TypBiznisEntity_KnihaEnum.Dodavatelske_faktury;
                     #endregion
-
 
                     break;
                 case TypBiznisEntityEnum.OFA:
@@ -394,14 +446,13 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                     model.Fields.First(p => p.Name == nameof(DatumVystavenia)).Text = "_DatumVystavenia";
                     model.Fields.First(p => p.Name == nameof(DatumSplatnosti)).Text = "_DatumSplatnosti";
                     model.Fields.First(p => p.Name == nameof(DatumDodania)).Text = "_DatumDodania";
-
                     model.Fields.First(p => p.Name == nameof(D_Osoba_Id)).Mandatory = false; //Mandatory v combe ide na ID pole
-
                     #endregion
 
                     #region Zmena textu
                     model.Fields.First(p => p.Name == nameof(CisloExterne)).Text = "Číslo PD";
                     model.Fields.First(p => p.Name == nameof(Popis)).Text = "Účel";
+                    model.Fields.First(p => p.Name == nameof(OsobaKontaktKomu)).Text = "Príjemca meno";
                     #endregion
 
                     #region Default hodnoty
@@ -467,11 +518,12 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                     #region Skryvanie
                     model.Fields.First(p => p.Name == nameof(DatumDokladu)).Text = "_DatumDokladu";
                     model.Fields.First(p => p.Name == nameof(DatumSplatnosti)).Text = "_DatumSplatnosti";
+                    model.Fields.First(p => p.Name == nameof(Predkontacia)).Text = "_Predkontacia";
                     #endregion
 
                     #region Zmena textu
                     model.Fields.First(p => p.Name == nameof(DatumDodania)).Text = "Požadovaný dátum dodania";
-
+                    model.Fields.First(p => p.Name == nameof(Adresa)).Text = "Korešp. adresa";
                     model.Fields.First(p => p.Name == nameof(CisloExterne)).Text = "Číslo dopytu";
                     #endregion
 
@@ -496,13 +548,13 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                     model.Fields.First(p => p.Name == nameof(DatumDokladu)).Text = "_DatumDokladu";
                     model.Fields.First(p => p.Name == nameof(DatumPrijatia)).Text = "_DatumPrijatia";
                     model.Fields.First(p => p.Name == nameof(DatumSplatnosti)).Text = "_DatumSplatnosti";
-
+                    model.Fields.First(p => p.Name == nameof(Predkontacia)).Text = "_Predkontacia";
                     model.Fields.First(p => p.Name == nameof(CisloExterne)).Text = "_CisloExterne";
-
                     #endregion
 
                     #region Zmena textu
                     model.Fields.First(p => p.Name == nameof(DatumDodania)).Text = "Požadovaný dátum dodania";
+                    model.Fields.First(p => p.Name == nameof(Adresa)).Text = "Korešp. adresa";
                     #endregion
 
                     #region Default hodnoty
@@ -530,6 +582,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                     #region Zmena textu
                     model.Fields.First(p => p.Name == nameof(DatumVystavenia)).Text = "Dátum vypracovania";
                     model.Fields.First(p => p.Name == nameof(DatumDodania)).Text = "Platná do";
+                    model.Fields.First(p => p.Name == nameof(Adresa)).Text = "Korešp. adresa";
                     #endregion
 
                     #region Default hodnoty
@@ -553,6 +606,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                     #region Zmena textu
                     model.Fields.First(p => p.Name == nameof(DatumDodania)).Text = "Platná do";
                     model.Fields.First(p => p.Name == nameof(CisloExterne)).Text = "Číslo cenovej ponuky";
+                    model.Fields.First(p => p.Name == nameof(Adresa)).Text = "Korešp. adresa";
                     #endregion
 
                     #region Default hodnoty
@@ -711,6 +765,8 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
 
                     #region Zmena textu
                     model.Fields.First(p => p.Name == nameof(CisloExterne)).Text = "Číslo zálohy";
+                    model.Fields.First(p => p.Name == nameof(OsobaKontaktKomu)).Text = "Prevzal";
+                    model.Fields.First(p => p.Name == nameof(Adresa)).Text = "Korešp. adresa";
                     #endregion
 
                     #region Default hodnoty
@@ -765,8 +821,13 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                     model.Fields.First(p => p.Name == nameof(DatumDokladu)).Text = "_DatumDokladu";
                     model.Fields.First(p => p.Name == nameof(DatumPrijatia)).Text = "_DatumPrijatia";
                     model.Fields.First(p => p.Name == nameof(DatumSplatnosti)).Text = "_DatumSplatnosti";
-
+                    model.Fields.First(p => p.Name == nameof(Predkontacia)).Text = "_Predkontacia";
                     model.Fields.First(p => p.Name == nameof(CisloExterne)).Text = "_CisloExterne";
+                    #endregion
+
+                    #region Zmena textu
+                    model.Fields.First(p => p.Name == nameof(OsobaKontaktKomu)).Text = "Prevzal";
+                    model.Fields.First(p => p.Name == nameof(Adresa)).Text = "Adresa dodania";
                     #endregion
 
                     #region Default hodnoty
@@ -788,24 +849,31 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
 
             #endregion
 
-            #region Validatory
-
-            #region Disable polí - na základe stavu
-
-            List<string> enblField = new List<string>() { "Predkontacia", "Popis", "Poznamka",
-                                                          "DokladKomu", "Web", "DovodUkoncenia",
-                                                          "CisloOBJ", "CisloDOL", "CisloZML", "CisloFAK",
-                                                          "PodpisalMeno", "PodpisalFunkcia" };
-
-            foreach (PfeColumnAttribute col in model.Fields.Where(f => !f.Text.StartsWith("_") && f.Editable && !enblField.Contains(f.Name) &&
-                                                                      (!f.ReadOnly || f.Xtype == PfeXType.Combobox || f.Xtype == PfeXType.SearchFieldSS || f.Xtype == PfeXType.SearchFieldMS)))
+            if (node.KodPolozky.StartsWith("dms"))
             {
-                col.Validator ??= new PfeValidator { Rules = new List<PfeRule>() };
+                // zobrazoval to ako "Korespondecnu adresu" z BE aj ked je to z DMS a je to skryte (2 polia s rovnakym nazvom)
+                model.Fields.First(p => p.Name == nameof(Adresa)).Text = "_Adresa";
+            }
+            else
+            {
+                #region Validatory
 
-                col.Validator.Rules.Add(new PfeRule
+                #region Disable polí - na základe stavu
+
+                List<string> enblField = new List<string>() { "Predkontacia", "Popis", "Poznamka",
+                                                              "OsobaKontaktKomu", "Web", "DovodUkoncenia",
+                                                              "CisloOBJ", "CisloDOL", "CisloZML", "CisloFAK",
+                                                              "PodpisalMeno", "PodpisalFunkcia" };
+
+                foreach (PfeColumnAttribute col in model.Fields.Where(f => !f.Text.StartsWith("_") && f.Editable && !enblField.Contains(f.Name) &&
+                                                                          (!f.ReadOnly || f.Xtype == PfeXType.Combobox || f.Xtype == PfeXType.SearchFieldSS || f.Xtype == PfeXType.SearchFieldMS)))
                 {
-                    ValidatorType = PfeValidatorType.Disable,
-                    Condition = new List<PfeFilterAttribute>
+                    col.Validator ??= new PfeValidator { Rules = new List<PfeRule>() };
+
+                    col.Validator.Rules.Add(new PfeRule
+                    {
+                        ValidatorType = PfeValidatorType.Disable,
+                        Condition = new List<PfeFilterAttribute>
                     {
                         new PfeFilterAttribute
                         {
@@ -814,20 +882,20 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                             Value = (int)StavEntityEnum.NOVY
                         }
                     }
-                });
-            }
+                    });
+                }
 
-            List<string> disblFieldZau = new List<string>() { "Predkontacia", "Popis", "DokladKomu", "PodpisalMeno", "PodpisalFunkcia" };
+                List<string> disblFieldZau = new List<string>() { "Predkontacia", "Popis", "OsobaKontaktKomu", "PodpisalMeno", "PodpisalFunkcia" };
 
-            foreach (PfeColumnAttribute col in model.Fields.Where(f => !f.Text.StartsWith("_") && f.Editable && disblFieldZau.Contains(f.Name) &&
-                                                                      (!f.ReadOnly || f.Xtype == PfeXType.Combobox || f.Xtype == PfeXType.SearchFieldSS || f.Xtype == PfeXType.SearchFieldMS)))
-            {
-                col.Validator ??= new PfeValidator { Rules = new List<PfeRule>() };
-
-                col.Validator.Rules.Add(new PfeRule
+                foreach (PfeColumnAttribute col in model.Fields.Where(f => !f.Text.StartsWith("_") && f.Editable && disblFieldZau.Contains(f.Name) &&
+                                                                          (!f.ReadOnly || f.Xtype == PfeXType.Combobox || f.Xtype == PfeXType.SearchFieldSS || f.Xtype == PfeXType.SearchFieldMS)))
                 {
-                    ValidatorType = PfeValidatorType.Disable,
-                    Condition = new List<PfeFilterAttribute>
+                    col.Validator ??= new PfeValidator { Rules = new List<PfeRule>() };
+
+                    col.Validator.Rules.Add(new PfeRule
+                    {
+                        ValidatorType = PfeValidatorType.Disable,
+                        Condition = new List<PfeFilterAttribute>
                     {
                         new PfeFilterAttribute
                         {
@@ -836,22 +904,22 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                             Value = (int)StavEntityEnum.SPRACOVANY //hlavne sa jedná o stavy: Vybavený, Zaúčtovaný, Zaúčtovaný RZP, Zaúčtovaný ÚČT
                         }
                     }
-                });
-            }
+                    });
+                }
 
-            #endregion
+                #endregion
 
-            #region Disable - Kniha
+                #region Disable - Kniha
 
-            var kniha = model.Fields.FirstOrDefault(p => p.Name == nameof(Kniha));
-            if (kniha != null)
-            {
-                kniha.Validator ??= new PfeValidator { Rules = new List<PfeRule>() };
-
-                kniha.Validator.Rules.Add(new PfeRule
+                var kniha = model.Fields.FirstOrDefault(p => p.Name == nameof(Kniha));
+                if (kniha != null)
                 {
-                    ValidatorType = PfeValidatorType.Disable,
-                    Condition = new List<PfeFilterAttribute>
+                    kniha.Validator ??= new PfeValidator { Rules = new List<PfeRule>() };
+
+                    kniha.Validator.Rules.Add(new PfeRule
+                    {
+                        ValidatorType = PfeValidatorType.Disable,
+                        Condition = new List<PfeFilterAttribute>
                     {
                         new PfeFilterAttribute
                         {
@@ -861,38 +929,38 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                             LogicOperator = "AND"
                         }
                     }
-                });
-            }
+                    });
+                }
 
-            #endregion
+                #endregion
 
-            #region Disable - ORS na nie novom zázname
-            
-            var orsFieldName = typBiznisEntity switch
-            {
-                TypBiznisEntityEnum.PPP => nameof(BankaUcetNazov),
-                TypBiznisEntityEnum.BAN => "",//nameof(BankaUcetNazov); //Pole je disablované, takže validátor netreba
-                TypBiznisEntityEnum.PDK => "",//nameof(PokladnicaNazov); //Pole je disablované, takže validátor netreba
-                _ => nameof(StrediskoNazov),
-            };
+                #region Disable - ORS na nie novom zázname
 
-            PfeColumnAttribute orsField = null;
-            if (!string.IsNullOrEmpty(orsFieldName))
-            {
-                orsField = model.Fields.FirstOrDefault(p => p.Name == orsFieldName);
-            }
-
-            if (orsField != null)
-            {
-                bool? jednoCislovanie = ((IRepositoryBase)repository).GetTypBiznisEntityNastavView().Where(x => x.C_TypBiznisEntity_Id == (int)node.TyBiznisEntity.First()).FirstOrDefault()?.CislovanieJedno;
-                if (jednoCislovanie == false)
+                var orsFieldName = typBiznisEntity switch
                 {
-                    orsField.Validator ??= new PfeValidator { Rules = new List<PfeRule>() };
+                    TypBiznisEntityEnum.PPP => nameof(BankaUcetNazov),
+                    TypBiznisEntityEnum.BAN => "",//nameof(BankaUcetNazov); //Pole je disablované, takže validátor netreba
+                    TypBiznisEntityEnum.PDK => "",//nameof(PokladnicaNazov); //Pole je disablované, takže validátor netreba
+                    _ => nameof(StrediskoNazov),
+                };
 
-                    orsField.Validator.Rules.Add(new PfeRule
+                PfeColumnAttribute orsField = null;
+                if (!string.IsNullOrEmpty(orsFieldName))
+                {
+                    orsField = model.Fields.FirstOrDefault(p => p.Name == orsFieldName);
+                }
+
+                if (orsField != null)
+                {
+                    bool? jednoCislovanie = ((IRepositoryBase)repository).GetTypBiznisEntityNastavView().Where(x => x.C_TypBiznisEntity_Id == (int)node.TypBiznisEntity.First()).FirstOrDefault()?.CislovanieJedno;
+                    if (jednoCislovanie == false)
                     {
-                        ValidatorType = PfeValidatorType.Disable,
-                        Condition = new List<PfeFilterAttribute>
+                        orsField.Validator ??= new PfeValidator { Rules = new List<PfeRule>() };
+
+                        orsField.Validator.Rules.Add(new PfeRule
+                        {
+                            ValidatorType = PfeValidatorType.Disable,
+                            Condition = new List<PfeFilterAttribute>
                         {
                             new PfeFilterAttribute
                             {
@@ -902,26 +970,26 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                                 LogicOperator = "AND",
                             }
                         }
-                    });
+                        });
+                    }
                 }
-            }
 
-            #endregion
+                #endregion
 
-            #region Zmena referečného dátumu na doklade počas editácie
+                #region Zmena referečného dátumu na doklade počas editácie
 
-            if (typBiznisEntity != TypBiznisEntityEnum.IND &&
-                typBiznisEntity != TypBiznisEntityEnum.BAN &&
-                typBiznisEntity != TypBiznisEntityEnum.PPP &&
-                typBiznisEntity != TypBiznisEntityEnum.PDK
-                )
-            {
-                var beDatum = model.Fields.FirstOrDefault(p => p.Name == nameof(DatumDokladu));
-
-                if (beDatum != null)
+                if (typBiznisEntity != TypBiznisEntityEnum.IND &&
+                    typBiznisEntity != TypBiznisEntityEnum.BAN &&
+                    typBiznisEntity != TypBiznisEntityEnum.PPP &&
+                    typBiznisEntity != TypBiznisEntityEnum.PDK
+                    )
                 {
-                    var tbeNastavenie = ((IRepositoryBase)repository).GetTypBiznisEntityNastavView().Where(x => x.C_TypBiznisEntity_Id == (int)typBiznisEntity).FirstOrDefault();
-                    var tbeNastavenieList = new List<(LokalitaEnum lokalita, string datum)>()
+                    var beDatum = model.Fields.FirstOrDefault(p => p.Name == nameof(DatumDokladu));
+
+                    if (beDatum != null)
+                    {
+                        var tbeNastavenie = ((IRepositoryBase)repository).GetTypBiznisEntityNastavView().Where(x => x.C_TypBiznisEntity_Id == (int)typBiznisEntity).FirstOrDefault();
+                        var tbeNastavenieList = new List<(LokalitaEnum lokalita, string datum)>()
                     {
                         (LokalitaEnum.TU, tbeNastavenie.DatumDokladuTU),
                         (LokalitaEnum.TUS, tbeNastavenie.DatumDokladuTU),
@@ -929,108 +997,110 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                         (LokalitaEnum.DV, tbeNastavenie.DatumDokladuDV),
                     };
 
-                    foreach (var tbeNastavDatum in tbeNastavenieList.Where(x => x.datum != nameof(DatumDokladu)).GroupBy(x => x.datum))
-                    {
-                        beDatum.Validator ??= new PfeValidator();
-                        beDatum.Validator.Rules ??= new List<PfeRule>();
-
-                        var rule = new PfeRule
+                        foreach (var tbeNastavDatum in tbeNastavenieList.Where(x => x.datum != nameof(DatumDokladu)).GroupBy(x => x.datum))
                         {
-                            ValidatorType = PfeValidatorType.SetValue,
-                            Value = "<" + tbeNastavDatum.Key + ">"
-                        };
+                            beDatum.Validator ??= new PfeValidator();
+                            beDatum.Validator.Rules ??= new List<PfeRule>();
 
-                        if (tbeNastavDatum.Count() < 4)
-                        {
-                            rule.Condition = new List<PfeFilterAttribute>();
-                            foreach (var (lokalita, datum) in tbeNastavDatum)
+                            var rule = new PfeRule
                             {
-                                rule.Condition.Add(
-                                new PfeFilterAttribute
+                                ValidatorType = PfeValidatorType.SetValue,
+                                Value = "<" + tbeNastavDatum.Key + ">"
+                            };
+
+                            if (tbeNastavDatum.Count() < 4)
+                            {
+                                rule.Condition = new List<PfeFilterAttribute>();
+                                foreach (var (lokalita, datum) in tbeNastavDatum)
                                 {
-                                    Field = nameof(C_Lokalita_Id),
-                                    ComparisonOperator = "eq",
-                                    Value = (int)lokalita,
-                                    LogicOperator = "OR",
-                                });
+                                    rule.Condition.Add(
+                                    new PfeFilterAttribute
+                                    {
+                                        Field = nameof(C_Lokalita_Id),
+                                        ComparisonOperator = "eq",
+                                        Value = (int)lokalita,
+                                        LogicOperator = "OR",
+                                    });
+                                }
                             }
-                        }
 
-                        beDatum.Validator.Rules.Add(rule);
+                            beDatum.Validator.Rules.Add(rule);
+                        }
                     }
                 }
-            }
 
-            #endregion
+                #endregion
 
-            #endregion
+                #endregion
 
-            #region SearchFieldDefinition
+                #region SearchFieldDefinition
 
-            model.Fields.FirstOrDefault(p => p.Name == nameof(Identifikator)).SearchFieldDefinition = Helpers.AddOsoba_SearchFieldDefinition();
+                model.Fields.FirstOrDefault(p => p.Name == nameof(IdFormatMeno)).SearchFieldDefinition = Helpers.AddIdFormatMeno_SearchFieldDefinition(vztah);
+                model.Fields.FirstOrDefault(p => p.Name == nameof(AdresaTPSidlo)).SearchFieldDefinition = Helpers.AddAdresaTPSidlo_SearchFieldDefinition(vztah);
 
-            #endregion
+                #endregion
 
-            #region Akcie
+                #region Akcie
 
-            var changeStateDtoTypeName = $"WebEas.Esam.ServiceModel.Office.{node.KodRoot}.Dto.ChangeStateDto, WebEas.Esam.ServiceModel.Office.{node.KodRoot}";
-            var changeStateDtoType = Type.GetType(changeStateDtoTypeName, false, true);
-            if (changeStateDtoType == null)
-            {
-                throw new NotImplementedException(string.Concat("Typ {ChangeStateDto} sa nepodarilo nájsť. ChangeStateDto musí byt naimplementovaný v (Namespace, Assembly Name): ", changeStateDtoTypeName));
-            }
-
-            // TODO: Role budu riesene zvlast na kod polozky cez CFE
-            var zmenaStavuAction = new NodeAction(NodeActionType.ZmenaStavu, changeStateDtoType) { IdField = "D_BiznisEntita_Id" };
-            if (!node.Actions.Any(x => x.ActionType == NodeActionType.ZmenaStavu))
-            {
-                node.Actions.Add(zmenaStavuAction);
-            }
-
-            var menuButtAdd = node.Actions.FirstOrDefault(x => x.ActionType == NodeActionType.MenuButtonsAll && x.Caption == "Pridať");
-            if (menuButtAdd != null)
-            {
-                menuButtAdd.MenuButtons.Add(new NodeAction(NodeActionType.DKL_NastavPS) { Url = "/office/reg/DKLNastavPS" });
-
-                if (repository.Session.HasRole("REG_UPRAVA_CISLOVANIA"))
+                var changeStateDtoTypeName = $"WebEas.Esam.ServiceModel.Office.{node.KodRoot}.Dto.ChangeStateDto, WebEas.Esam.ServiceModel.Office.{node.KodRoot}";
+                var changeStateDtoType = Type.GetType(changeStateDtoTypeName, false, true);
+                if (changeStateDtoType == null)
                 {
-                    menuButtAdd.MenuButtons.Add(new NodeAction(NodeActionType.DKL_NastavCislo) { Url = "/office/reg/DKLNastavCislo" });
-                    menuButtAdd.MenuButtons.Add(new NodeAction(NodeActionType.DKL_VyberCislo) { Url = "/office/reg/DKLVyberCislo" });
+                    throw new NotImplementedException(string.Concat("Typ {ChangeStateDto} sa nepodarilo nájsť. ChangeStateDto musí byt naimplementovaný v (Namespace, Assembly Name): ", changeStateDtoTypeName));
                 }
 
-            }
-
-            #endregion
-
-            #region Synchronizacia
-
-            if (typBiznisEntity == TypBiznisEntityEnum.DFA || typBiznisEntity == TypBiznisEntityEnum.OFA || typBiznisEntity == TypBiznisEntityEnum.DZF || typBiznisEntity == TypBiznisEntityEnum.OZF || typBiznisEntity == TypBiznisEntityEnum.DOB || typBiznisEntity == TypBiznisEntityEnum.OOB || typBiznisEntity == TypBiznisEntityEnum.DZM)
-            {
-                int isoZdroj = (int)((IRepositoryBase)repository).GetNastavenieI("reg", "ISOZdroj");
-                var isoZdrojNazov = ((IRepositoryBase)repository).GetNastavenieS("reg", "ISOZdrojNazov");
-                if (isoZdroj > 0 && repository.Session.Roles.Where(w => w.Contains("REG_MIGRATOR")).Any())
+                // TODO: Role budu riesene zvlast na kod polozky cez CFE
+                var zmenaStavuAction = new NodeAction(NodeActionType.ZmenaStavu, changeStateDtoType) { IdField = "D_BiznisEntita_Id" };
+                if (!node.Actions.Any(x => x.ActionType == NodeActionType.ZmenaStavu))
                 {
-                    //node.Actions.RemoveAll(x => x.ActionType == NodeActionType.MenuButtonsAll && x.Caption == "Pridať"); 21.2. - akcie chcem mať 
-                    if (node.Actions.Any(x => x.ActionType == NodeActionType.MenuButtonsAll))
+                    node.Actions.Add(zmenaStavuAction);
+                }
+
+                var menuButtAdd = node.Actions.FirstOrDefault(x => x.ActionType == NodeActionType.MenuButtonsAll && x.Caption == "Pridať");
+                if (menuButtAdd != null)
+                {
+                    menuButtAdd.MenuButtons.Add(new NodeAction(NodeActionType.DKL_NastavPS) { Url = "/office/reg/DKLNastavPS" });
+
+                    if (repository.Session.HasRole("REG_UPRAVA_CISLOVANIA"))
                     {
-                        var polozkaMenuAll = node.Actions.Where(x => x.ActionType == NodeActionType.MenuButtonsAll && x.Caption == "ISO").FirstOrDefault();
-                        if (polozkaMenuAll != null)
+                        menuButtAdd.MenuButtons.Add(new NodeAction(NodeActionType.DKL_NastavCislo) { Url = "/office/reg/DKLNastavCislo" });
+                        menuButtAdd.MenuButtons.Add(new NodeAction(NodeActionType.DKL_VyberCislo) { Url = "/office/reg/DKLVyberCislo" });
+                    }
+
+                }
+
+                #endregion
+
+                #region Synchronizacia
+
+                if (typBiznisEntity == TypBiznisEntityEnum.DFA || typBiznisEntity == TypBiznisEntityEnum.OFA || typBiznisEntity == TypBiznisEntityEnum.DZF || typBiznisEntity == TypBiznisEntityEnum.OZF || typBiznisEntity == TypBiznisEntityEnum.DOB || typBiznisEntity == TypBiznisEntityEnum.OOB || typBiznisEntity == TypBiznisEntityEnum.DZM)
+                {
+                    int isoZdroj = (int)((IRepositoryBase)repository).GetNastavenieI("reg", "ISOZdroj");
+                    var isoZdrojNazov = ((IRepositoryBase)repository).GetNastavenieS("reg", "ISOZdrojNazov");
+                    if (isoZdroj > 0 && repository.Session.Roles.Where(w => w.Contains("REG_MIGRATOR")).Any())
+                    {
+                        //node.Actions.RemoveAll(x => x.ActionType == NodeActionType.MenuButtonsAll && x.Caption == "Pridať"); 21.2. - akcie chcem mať
+                        if (node.Actions.Any(x => x.ActionType == NodeActionType.MenuButtonsAll))
                         {
-                            polozkaMenuAll.Caption = isoZdrojNazov;
+                            var polozkaMenuAll = node.Actions.Where(x => x.ActionType == NodeActionType.MenuButtonsAll && x.Caption == "ISO").FirstOrDefault();
+                            if (polozkaMenuAll != null)
+                            {
+                                polozkaMenuAll.Caption = isoZdrojNazov;
+                            }
+                            //node.Actions.RemoveAll(x => x.ActionType == NodeActionType.Change);
+                            //node.Actions.RemoveAll(x => x.ActionType == NodeActionType.Update); Tuto akciu ponechám
+                            //node.Actions.RemoveAll(x => x.ActionType == NodeActionType.Delete);
                         }
-                        //node.Actions.RemoveAll(x => x.ActionType == NodeActionType.Change);
-                        //node.Actions.RemoveAll(x => x.ActionType == NodeActionType.Update); Tuto akciu ponechám 
-                        //node.Actions.RemoveAll(x => x.ActionType == NodeActionType.Delete);
+                    }
+                    else
+                    {
+                        node.Actions.RemoveAll(x => x.ActionType == NodeActionType.MenuButtonsAll && x.Caption == "ISO");
                     }
                 }
-                else
-                {
-                    node.Actions.RemoveAll(x => x.ActionType == NodeActionType.MenuButtonsAll && x.Caption == "ISO");
-                }
+
+                #endregion
+
             }
-
-
-            #endregion
 
             #region DphRezim
 
@@ -1040,9 +1110,9 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
             {
                 var hideColumns = typBiznisEntity switch
                 {
-                    TypBiznisEntityEnum.DFA or TypBiznisEntityEnum.DZF or 
+                    TypBiznisEntityEnum.DFA or TypBiznisEntityEnum.DZF or
                     TypBiznisEntityEnum.ODP or TypBiznisEntityEnum.OOB or TypBiznisEntityEnum.OZM or
-                    TypBiznisEntityEnum.DCP or 
+                    TypBiznisEntityEnum.DCP or
                     TypBiznisEntityEnum.PDK => dphRezim != 1,
                     _ => true,
                 };
@@ -1060,10 +1130,6 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
 
             #endregion
         }
-
-        [DataMember]
-        [PfeColumn(Text = "_OrsPravo", Hidden = true, Editable = false, ReadOnly = true)]
-        public byte OrsPravo { get; set; }
 
         public void ApplyOrsPravoToAccesFlags()
         {

@@ -115,6 +115,18 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
         public string Email { get; set; }
 
         [DataMember]
+        public string Telefon { get; set; }
+
+        [DataMember]
+        public string Fax { get; set; }
+
+        [DataMember]
+        public string Web { get; set; }
+
+        [DataMember]
+        public string Statutar { get; set; }
+
+        [DataMember]
         public string DomainName { get; set; }
 
         [DataMember]
@@ -152,6 +164,10 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
             data.TitulPred = TitulPred;
             data.TitulZa = TitulZa;
             data.Email = Email;
+            data.Telefon = Telefon;
+            data.Fax = Fax;
+            data.Web = Web;
+            data.Statutar = Statutar;
             data.DomainName = DomainName;
             data.EC = EC;
             data.D_User_Id_Parent = D_User_Id_Parent;

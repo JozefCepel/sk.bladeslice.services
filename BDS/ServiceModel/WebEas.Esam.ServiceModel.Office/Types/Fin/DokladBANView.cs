@@ -6,7 +6,7 @@ using WebEas.Esam.ServiceModel.Office.Types.Reg;
 using WebEas.Esam.ServiceModel.Office.Types.Uct;
 using WebEas.ServiceModel;
 
-namespace WebEas.Esam.ServiceModel.Office.Fin.Types
+namespace WebEas.Esam.ServiceModel.Office.Types.Fin
 {
     [Schema("fin")]
     [Alias("V_DokladBAN")]
@@ -56,11 +56,6 @@ namespace WebEas.Esam.ServiceModel.Office.Fin.Types
         [DataMember]
         [PfeColumn(Text = "Zmenil", Hidden = true, Editable = false, ReadOnly = true, LoadWhenVisible = true)]
         public string ZmenilMeno { get; set; }
-
-        [DataMember]
-        [PfeColumn(Text = "Predkontácia", Mandatory = true, RequiredFields = new[] { nameof(C_TypBiznisEntity_Kniha_Id) })]
-        [PfeCombo(typeof(PredkontaciaCombo), IdColumn = nameof(C_Predkontacia_Id), ComboDisplayColumn = nameof(PredkontaciaCombo.Nazov))]
-        public string Predkontacia { get; set; }
 
         [DataMember]
         [HierarchyNodeParameter]

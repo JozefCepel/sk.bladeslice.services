@@ -19,8 +19,8 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
         public byte C_TenantType_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_OrganizaciaTyp")]
-        public int C_OrganizaciaTyp_Id { get; set; }
+        [PfeColumn(Text = "_OrganizaciaTypDetail")]
+        public byte C_OrganizaciaTypDetail_Id { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Name", Mandatory = true)]
@@ -46,5 +46,30 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
         [DataMember]
         [PfeColumn(Text = "_D_PO_Osoba_Id")]
         public long? D_PO_Osoba_Id { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Telefón")]
+        [StringLength(100)]
+        public string Telefon { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Fax")]
+        [StringLength(100)]
+        public string Fax { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "E-mail")]
+        [StringLength(100)]
+        public string Email { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Web")]
+        [StringLength(100)]
+        public string Web { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Štatutár")]
+        [StringLength(450)]
+        public string Statutar { get; set; }
     }
 }

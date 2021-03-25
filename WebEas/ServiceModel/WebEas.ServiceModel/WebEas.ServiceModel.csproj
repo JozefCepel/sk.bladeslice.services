@@ -59,6 +59,13 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ITP|AnyCPU'">
+    <OutputPath>bin\ITP\</OutputPath>
+    <DefineConstants>TRACE;ITP</DefineConstants>
+    <Optimize>true</Optimize>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -179,7 +186,6 @@
     <Compile Include="TenantUpdatableAttribute.cs" />
     <Compile Include="SyncHelper.cs" />
     <Compile Include="Types\ComboResult.cs" />
-    <Compile Include="Types\DbEnvironment.cs" />
     <Compile Include="Types\IComboResult.cs" />
     <Compile Include="Types\Nastavenie.cs" />
     <Compile Include="Types\NastavenieView.cs" />

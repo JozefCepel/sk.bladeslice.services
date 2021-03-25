@@ -14,7 +14,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
     {
         [DataMember]
         [PfeColumn(Text = "Typ rozpočtu")]
-        [PfeCombo(typeof(RzpTypCis), ComboDisplayColumn = nameof(RzpTypCis.Nazov), IdColumn = nameof(C_RzpTyp_Id))]
+        [PfeCombo(typeof(RzpTyp), ComboDisplayColumn = nameof(RzpTyp.Nazov), IdColumn = nameof(C_RzpTyp_Id))]
         public string RzpTypName { get; set; }
 
         [DataMember]

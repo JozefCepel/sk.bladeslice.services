@@ -37,7 +37,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         public long Identifikator { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Plnenie", Format = "0%", DecimalPlaces = 0, DefaultValue = 100)]
+        [PfeColumn(Text = "Plnenie", Format = "0| %", DecimalPlaces = 0, DefaultValue = 100)]
         public decimal Plnenie { get; set; }
     }
 }

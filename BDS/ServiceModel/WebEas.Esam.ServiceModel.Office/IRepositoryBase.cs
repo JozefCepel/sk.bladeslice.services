@@ -11,18 +11,6 @@ namespace WebEas.Esam.ServiceModel.Office
     public interface IRepositoryBase : IWebEasRepositoryBase
     {
         /// <summary>
-        /// Gets the db environment.
-        /// </summary>
-        /// <value>The db environment.</value>
-        string DbEnvironment { get; }
-
-        /// <summary>
-        /// Gets the db deploy time.
-        /// </summary>
-        /// <value>The db deploy time.</value>
-        DateTime? DbDeployTime { get; }
-
-        /// <summary>
         /// Changes the state.
         /// </summary>
         /// <param name="state">The state.</param>
@@ -62,13 +50,6 @@ namespace WebEas.Esam.ServiceModel.Office
         /// <param name="data"></param>
         /// <returns></returns>
         WebEas.ServiceModel.Types.NastavenieView UpdateNastavenie(UpdateNastavenieBase updateNastavenie);
-
-        /// <summary>
-        /// Update nastavenie do konkrétneho modulu
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        WebEas.ServiceModel.Types.NastavenieView UpdateNastavenie(UpdateNastavenieBase updateNastavenie, string explicitModul);
 
         /// <summary>
         /// Vráti hodnotu používateľského alebo tenantského nastavenia podľa zadaných kritérií.

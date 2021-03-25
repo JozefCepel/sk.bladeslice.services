@@ -41,6 +41,9 @@ namespace WebEas.ServiceModel
         Nullable = 1 << 9,
 
         [EnumMember(Value = "loadwhenvisible")] //na FE 1024
-        LoadWhenVisible = 1 << 10
+        LoadWhenVisible = 1 << 10,
+
+        [EnumMember(Value = "searchcombofromleft")] //na FE 2048
+        SearchComboFromLeft = 1 << 11,
     }
 }

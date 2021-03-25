@@ -34,7 +34,7 @@ namespace WebEas.ServiceModel
         /// <summary>
         /// Nastavenie datumu zmeny z FE
         /// </summary>
-        /// <value>The datum zmeny.</value>                
+        /// <value>The datum zmeny.</value>
         [DataMember(Name = "ci")]
         public long? ChangeIdentifierDto { get; set; }
 

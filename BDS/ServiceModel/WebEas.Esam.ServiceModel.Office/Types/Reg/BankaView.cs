@@ -7,7 +7,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
     [Schema("reg")]
     [Alias("V_Banka")]
     [DataContract]
-    public class BankaView : BankaCis, IBaseView
+    public class BankaView : Banka, IBaseView
     {
         [DataMember]
         [PfeColumn(Text = "Štát")]

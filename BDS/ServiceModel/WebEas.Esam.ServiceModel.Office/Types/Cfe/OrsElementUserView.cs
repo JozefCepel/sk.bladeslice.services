@@ -19,7 +19,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Cfe
         [DataMember]
         [PfeColumn(Text = "_TypeElement_Id")]
         [Ignore]
-        public string TypeElement_Id { get { return C_OrsElementType_Id + "_" + IdValue; } }
+        public string TypeElement_Id => $"{C_OrsElementType_Id}_{IdValue}";
 
         [DataMember]
         [HierarchyNodeParameter]

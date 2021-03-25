@@ -41,7 +41,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
             //var root = RenderModuleRootNode(code);
             //var node = root.TryFindNode(code);
             //HierarchyNode masternode = null;
-            //if (!masterCode.IsNullOrEmpty())
+            //if (!masterCode.IsNullOrEmpty()) //Používať iba ak je modul z code a mastercode rovnaký
             //{
             //    masternode = root.TryFindNode(masterCode);
             //}
@@ -191,6 +191,9 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
                     case "bds":
                         modulesInterfaces.Add(typeof(Bds.BdsRepository));
                         break;
+                    case "vyk":
+                        modulesInterfaces.Add(typeof(Vyk.VykRepository));
+                        break;
                     default:
                         throw new NotImplementedException($"Add '{kodModulu}' to modulesInterfaces!");
                 }
@@ -224,7 +227,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
 
             var p = new DynamicParameters();
             p.Add("@Tenant", rec.D_Tenant_Id, dbType: DbType.Guid);
-            p.Add("@OrganizaciaTypId", rec.C_OrganizaciaTyp_Id, dbType: DbType.Int16);
+            p.Add("@OrganizaciaTypDetail_Id", rec.C_OrganizaciaTypDetail_Id, dbType: DbType.Int16);
             p.Add("@sName", rec.Nazov, dbType: DbType.String);
 
             SqlProcedure("[reg].[TenantCreate]", p);
@@ -252,7 +255,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
 
             var p = new DynamicParameters();
             p.Add("@Tenant", request.D_Tenant_Id, dbType: DbType.Guid);
-            p.Add("@OrganizaciaTypId", request.C_OrganizaciaTyp_Id, dbType: DbType.Int16);
+            p.Add("@OrganizaciaTypDetail_Id", request.C_OrganizaciaTypDetail_Id, dbType: DbType.Int16);
             p.Add("@sName", request.Nazov, dbType: DbType.String);
 
             SqlProcedure("[reg].[TenantCreate]", p);
@@ -679,12 +682,17 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
                 long id = 0;
                 if (long.TryParse(hNode.KodPolozky.Split('!').Last(), out id))
                 {
-                    var adr = GetList<ServiceModel.Office.Dms.Types.AdresarView>(a => a.Id == id).FirstOrDefault();
+                    var adr = GetList<ServiceModel.Office.Dms.Types.AdresarView>(a => a.D_Adresar_Id == id).FirstOrDefault();
                     if (adr != null && adr.SysKod == null)
                         return;
                 }
             }
             */
+
+            if (hNode.GeneratedNode)
+            {
+                return;
+            }
 
             string kodPolozky = HierarchyNodeExtensions.RemoveParametersFromKodPolozky(HierarchyNodeExtensions.CleanKodPolozky(hNode.KodPolozky));
 

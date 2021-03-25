@@ -80,6 +80,32 @@ namespace WebEas.ServiceModel
         }
 
         /// <summary>
+        /// Get FilterElement by parameter name
+        /// </summary>
+        /// <param name="filter">The filter.</param>
+        /// <param name="parameterName">Name of parameter</param>
+        /// <returns></returns>
+        public static FilterElement GetFilterElementByParameterName(this Filter filter, string parameterName)
+        {
+            foreach (var filterElement in filter.FilterElements)
+            {
+                if (filterElement is FilterElement el)
+                {
+                    if (el.ParameterName == parameterName)
+                    {
+                        return el;
+                    }
+                }
+                else if (filterElement is Filter fel)
+                {
+                    return GetFilterElementByParameterName(fel, parameterName);
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Get GetFieldValueAndRemove by sFieldName
         /// </summary>
         /// <param name="values">Returned values.</param>

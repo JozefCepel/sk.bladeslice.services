@@ -141,6 +141,7 @@ namespace WebEas.Esam.ServiceModel.Office
 
             if (parameters.ContainsKey("C_RZPPOL_ID"))
             {
+                // JP: spadne ak sa zavola v "Zmeny rozpoctu" akcia na polozke "Zobrazit prehlad rozpoctu" - vieme o tom riesenie in progress (FE)
                 filter.And(FilterElement.In("C_RzpPol_Id", parameters["C_RZPPOL_ID"].ToString().FromJson<List<int>>()));
             }
 
@@ -278,26 +279,26 @@ namespace WebEas.Esam.ServiceModel.Office
             if (!programIds.IsEmpty())
             {
                 //Multiselect ID hodnôt, filtrujem cez jednotlivé časti programu
-                var prg = repository.Db.Select(repository.Db.From<Program>()
-                    .Select(x => new { x.D_Program_Id, x.program, x.podprogram, x.prvok })
+                var prg = repository.Db.Select(repository.Db.From<ProgramCis>()
+                    .Select(x => new { x.D_Program_Id, x.Program, x.Podprogram, x.Prvok })
                     .Where(x => x.D_Tenant_Id == repository.Session.TenantIdGuid && Sql.In(x.D_Program_Id, programIds.FromJson<List<int>>())));
 
                 List<FilterElement> rue = new List<FilterElement>();
 
                 foreach (var p in prg)
                 {
-                    //Stĺpce "P, Podprogram, Prvok" nie sú v modeli, iba fyzicky v rzp.V_RzpDennik
+                    //Stĺpce "Program, Podprogram, Prvok" nie sú v modeli, iba fyzicky v rzp.V_RzpDennik
                     string flt = string.Empty;
-                    if (p.prvok != null)
+                    if (p.Prvok != null)
                     {
                         flt = $"D_Program_Id = {p.D_Program_Id}"; //Môžem ísť cez ID
                     }
                     else
                     {
-                        flt = $"P = {p.program}";
-                        if (p.podprogram != null)
+                        flt = $"Program = {p.Program}";
+                        if (p.Podprogram != null)
                         {
-                            flt += $" AND Podprogram = {p.podprogram}";
+                            flt += $" AND Podprogram = {p.Podprogram}";
                         }
                     }
                     rue.Add(FilterElement.Custom(flt));
@@ -421,6 +422,7 @@ namespace WebEas.Esam.ServiceModel.Office
             pomocnyFilter.Remove("HODNOTADO");
             pomocnyFilter.Remove("CISLOINTERNEOD");
             pomocnyFilter.Remove("CISLOINTERNEDO");
+            pomocnyFilter.Remove("OBDOBIE"); //Parameter z FIN1 - 12 do RzpDennikRpt
 
             //Filtre dialógov účtovníctva - DEN, OBU, HLK:
             pomocnyFilter.Remove(nameof(UctDennikRptHelper.C_Stredisko_Id));
@@ -449,6 +451,13 @@ namespace WebEas.Esam.ServiceModel.Office
             pomocnyFilter.Remove(nameof(RzpPol.A3));
             pomocnyFilter.Remove("PREDBEZNYRZPID");
 
+            //Filtre dialógov rozpočtu - FIN1-12
+            pomocnyFilter.Remove("ShowP");
+            pomocnyFilter.Remove("ShowV");
+            pomocnyFilter.Remove("ShowB");
+            pomocnyFilter.Remove("ShowK");
+            pomocnyFilter.Remove("ShowF");
+
             //Zobraz Súvzťažnosť
             pomocnyFilter.Remove("RZP");
             pomocnyFilter.Remove("UCT");
@@ -464,6 +473,7 @@ namespace WebEas.Esam.ServiceModel.Office
             pomocnyFilter.Remove("showA1");
             pomocnyFilter.Remove("showA2");
             pomocnyFilter.Remove("showA3");
+            pomocnyFilter.Remove("UOMesiac"); //Posiela ho Rzp.denník a zmeny rozpočtu. Použije sa ako Od-Do
 
             //Hlavná kniha a jej premenné:
 

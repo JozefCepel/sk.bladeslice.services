@@ -7,10 +7,6 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
 {
     [Route("/lllj/{Identifier}", "GET")]
     [Api("Info")]
-    #if DEBUG || INT || DEVELOP
-    
-    #else
-    #endif
     public class LogViewDto
     {
         [DataMember]
@@ -37,10 +33,6 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
 
     [Route("/corrid/{Identifier}", "GET")]
     [Api("Info")]
-#if DEBUG || INT || DEVELOP || TEST
-    
-#else
-#endif
     public class LogViewCorIdRawDto
     {
         [DataMember]

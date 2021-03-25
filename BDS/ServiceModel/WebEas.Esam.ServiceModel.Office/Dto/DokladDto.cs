@@ -112,6 +112,15 @@ namespace WebEas.Esam.ServiceModel.Office.Dto
         public long? C_Predkontacia_Id { get; set; }
 
         [DataMember]
+        public long? D_OsobaKontakt_Id_Komu { get; set; }
+
+        [DataMember]
+        public string OsobaKontaktKomu { get; set; }
+
+        [DataMember]
+        public long? D_ADR_Adresa_Id { get; set; }
+
+        [DataMember]
         public int Cislo { get; set; }
 
         /// <summary>
@@ -154,6 +163,9 @@ namespace WebEas.Esam.ServiceModel.Office.Dto
             data.C_TypBiznisEntity_Kniha_Id = C_TypBiznisEntity_Kniha_Id;
             data.Popis = Popis;
             data.C_Predkontacia_Id = C_Predkontacia_Id;
+            data.D_OsobaKontakt_Id_Komu = D_OsobaKontakt_Id_Komu;
+            data.OsobaKontaktKomu = OsobaKontaktKomu;
+            data.D_ADR_Adresa_Id = D_ADR_Adresa_Id;
         }
     }
     #endregion

@@ -41,8 +41,8 @@ namespace WebEas.ServiceModel
         {
             bool rzpAccounter = rzp && baseRepository.Session.HasRole("RZP_ACCOUNTER");
             bool uctAccounter = uct && baseRepository.Session.HasRole("UCT_ACCOUNTER");
-            bool editRzp = rzp && baseRepository.GetUserTreeRights("rzp-evi-den").FirstOrDefault().Pravo >= (int)Pravo.Upravovat;
-            bool editUct = uct && baseRepository.GetUserTreeRights("uct-evi-den").FirstOrDefault().Pravo >= (int)Pravo.Upravovat;
+            bool editRzp = rzp && baseRepository.GetUserTreeRights("rzp-evi-den").FirstOrDefault() != null && baseRepository.GetUserTreeRights("rzp-evi-den").First().Pravo >= (int)Pravo.Upravovat;
+            bool editUct = uct && baseRepository.GetUserTreeRights("uct-evi-den").FirstOrDefault() != null && baseRepository.GetUserTreeRights("uct-evi-den").First().Pravo >= (int)Pravo.Upravovat;
 
             if (rzp && !uct) //zjednotiť akoby to mali rovnaké
             {
@@ -98,6 +98,49 @@ namespace WebEas.ServiceModel
                 }
             }
 
+            return list;
+        }
+
+        public static List<NodeAction> AddReportActions(this List<NodeAction> list, IWebEasRepositoryBase baseRepository, bool uct)
+        {
+            bool rzpAccounter = baseRepository.Session.HasRole("RZP_ACCOUNTER");   // rzp vzdy
+            bool uctAccounter = uct && baseRepository.Session.HasRole("UCT_ACCOUNTER");
+            bool readRzp = baseRepository.GetUserTreeRights("rzp-evi-den").FirstOrDefault() != null && baseRepository.GetUserTreeRights("rzp-evi-den").First().Pravo >= (int)Pravo.Citat;
+            bool readUct = uct && baseRepository.GetUserTreeRights("uct-evi-den").FirstOrDefault() != null && baseRepository.GetUserTreeRights("uct-evi-den").First().Pravo >= (int)Pravo.Citat;
+
+            if ((rzpAccounter && readRzp) || (uctAccounter && readUct))
+            {
+                list.Add(new NodeAction(NodeActionType.MenuButtons)
+                {
+                    Caption = "Zostavy",
+                    SelectionMode = PfeSelection.Multi,
+                    ActionIcon = NodeActionIcons.Zostavy,
+                    MenuButtons = new List<NodeAction>
+                    {
+                        new NodeAction(NodeActionType.ReportUctovnyDoklad)
+                        {
+                            SelectionMode = PfeSelection.Multi,
+                            IdField = "D_BiznisEntita_Id",
+                            Url = $"/office/uct/long/ReportUctDoklad",
+                            GroupType = "ReportFilter"
+                        },
+                        new NodeAction(NodeActionType.ViewReportUctovnyDoklad)
+                        {
+                            SelectionMode = PfeSelection.Multi,
+                            IdField = "D_BiznisEntita_Id",
+                            Url = $"uct/UctDokladReport.trdp",
+                            GroupType = "ReportViewer"
+                        },
+                        new NodeAction(NodeActionType.PrintReportUctovnyDoklad)
+                        {
+                            SelectionMode = PfeSelection.Multi,
+                            IdField = "D_BiznisEntita_Id",
+                            Url = $"/office/uct/long/ReportUctDoklad",
+                            GroupType = "ReportViewer"
+                        }
+                    }
+                });
+            }
             return list;
         }
     }

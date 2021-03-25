@@ -34,6 +34,18 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         public bool StrediskoNaPolozke { get; set; }
 
         [DataMember]
+        public bool ProjektNaPolozke { get; set; }
+
+        [DataMember]
+        public bool UctKluc1NaPolozke { get; set; }
+
+        [DataMember]
+        public bool UctKluc2NaPolozke { get; set; }
+
+        [DataMember]
+        public bool UctKluc3NaPolozke { get; set; }
+
+        [DataMember]
         public bool EvidenciaDMS { get; set; }
 
         [DataMember]

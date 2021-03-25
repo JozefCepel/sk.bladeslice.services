@@ -61,7 +61,7 @@ namespace WebEas.Esam.ServiceInterface.Office
             Plugins.Add(new MiniProfilerFeature());
             //Plugins.Add(new RequestCorrelationFeature());
 
-#if DEBUG || DEVELOP || INT || TEST
+#if DEBUG || DEVELOP || INT || TEST || ITP
             Plugins.Add(new OpenApiFeature());
 #endif
             new EnumSerializerConfigurator().WithAssemblies(new List<Assembly> { typeof(HierarchyNode).Assembly }).Configure();
@@ -73,9 +73,9 @@ namespace WebEas.Esam.ServiceInterface.Office
                     
 #if DEBUG || DEVELOP
             Config.UseSecureCookies = false;
-#endif
-            
+#else
             Config.UseSameSiteCookies = true;
+#endif
 
             //TODO: do buducnosti
             /*Plugins.Add(new ServerEventsFeature());
@@ -133,11 +133,27 @@ namespace WebEas.Esam.ServiceInterface.Office
             }
         }
 
+        protected void ConfigureMessageServiceForReports<T>(Funq.Container container) where T : Reports.Dto.ReportDataRequestDto
+        {
+            Routes.Add<T>("/GetReportData");
+            container.Resolve<IMessageService>().RegisterHandler<T>(m =>
+            {
+                var req = new BasicRequest
+                {
+                    Verb = HttpMethods.Post
+                };
+
+                req.Headers["X-ss-id"] = m.GetBody().SessionId;
+                var response = ExecuteMessage(m, req);
+                return response;
+            });
+        }
+
         public static void ProcessLongOperationStatus(LongOperationStatus longOperationStatus, IRedisClient redisClient)
         {
             //TODO: HASH NIEJE SORTOVANY, odstranit podla datumu
             var hashId = string.Concat("LongOperationStatus:", longOperationStatus.ProcessKey.Split('!')[0], ":", longOperationStatus.TenantId);
-            redisClient.SetEntryInHashIfNotExists(hashId, string.Concat(longOperationStatus.UserId, "!", longOperationStatus.ProcessKey), longOperationStatus.ToJson());
+            redisClient.SetEntryInHash(hashId, string.Concat(longOperationStatus.UserId, "!", longOperationStatus.ProcessKey), longOperationStatus.ToJson());
 
             if (redisClient.GetHashCount(hashId) > 99)
             {

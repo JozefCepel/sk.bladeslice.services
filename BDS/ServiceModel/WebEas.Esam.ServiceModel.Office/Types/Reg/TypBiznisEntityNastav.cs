@@ -10,26 +10,41 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
     [DataContract]
     public class TypBiznisEntityNastav : BaseTenantEntity
     {
+        [DataMember]
         [PrimaryKey]
         [AutoIncrement]
-        [DataMember]
         public long D_TypBiznisEntityNastav_Id { get; set; }
 
-        [PrimaryKey]
-        [PfeColumn(Mandatory = true)]
         [DataMember]
+        [PfeColumn(Mandatory = true)]
         public short C_TypBiznisEntity_Id { get; set; }
 
-        [PfeColumn(Text = "Stredisko na položke")]
         [DataMember]
+        [PfeColumn(Text = "Stredisko na položke")]
         public bool? StrediskoNaPolozke { get; set; }
 
-        [PfeColumn(Text = "Evidovať v DMS")]
         [DataMember]
+        [PfeColumn(Text = "Projekt na položke")]
+        public bool? ProjektNaPolozke { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Účt. kľúč 1 na položke")]
+        public bool? UctKluc1NaPolozke { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Účt. kľúč 2 na položke")]
+        public bool? UctKluc2NaPolozke { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Účt. kľúč 3 na položke")]
+        public bool? UctKluc3NaPolozke { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Evidovať v DMS")]
         public bool? EvidenciaDMS { get; set; }
 
-        [PfeColumn(Text = "Evidovať v systéme")]
         [DataMember]
+        [PfeColumn(Text = "Evidovať v systéme")]
         public bool? EvidenciaSystem { get; set; }
 
         [DataMember]
@@ -39,6 +54,6 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         [DataMember]
         [PfeColumn(Text = "Účtovať položkovite")]
         public bool? UctovatPolozkovite { get; set; }
-      
+
     }
 }

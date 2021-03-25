@@ -4,18 +4,24 @@ using System;
 using System.Linq;
 using System.Runtime.Serialization;
 using WebEas.ServiceModel;
+using WebEas.Esam.ServiceModel.Office.Types.Cfe;
 
 namespace WebEas.Esam.ServiceModel.Office.Types.Reg
 {
     [Schema("reg")]
     [Alias("V_Pokladnica")]
     [DataContract]
-    public class PokladnicaView : PokladnicaCis, IPfeCustomize, IOrsPravo, IPfeCustomizeCombo, IBaseView
+    public class PokladnicaView : Pokladnica, IPfeCustomize, IOrsPravo, IPfeCustomizeCombo, IBaseView
     {
         [DataMember]
         [PfeColumn(Text = "Mena", Mandatory = true)]
         [PfeCombo(typeof(MenaView), IdColumn = nameof(C_Mena_Id), ComboDisplayColumn = nameof(MenaView.Kod), AdditionalWhereSql = "Poradie > 0")]
         public string MenaKod { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Schválil", Mandatory = true)]
+        [PfeCombo(typeof(UserComboView), IdColumn = nameof(D_User_Id_Podpisal), ComboDisplayColumn = nameof(UserComboView.FullName), AdditionalWhereSql = "C_Modul_Id = 6")]
+        public string PodpisalMeno { get; set; }
 
         [DataMember]
         public DateTime? DatumPlatnosti { get; set; }
