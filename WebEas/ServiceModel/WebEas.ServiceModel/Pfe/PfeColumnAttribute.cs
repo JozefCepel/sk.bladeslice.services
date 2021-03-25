@@ -395,6 +395,13 @@ namespace WebEas.ServiceModel
         public int MinCharSearch { get; set; }
 
         /// <summary>
+        /// Pomocná hodnota filtra z Comba. Používa sa na jeho posun z comba do definícii Browser dialógov
+        /// </summary>
+        /// <value>Filter</value>
+        [IgnoreDataMember]
+        public string AdditionalWhereSqlTemp { get; set; }
+
+        /// <summary>
         /// Zoznam pozadovanych stlpcov pre combo
         /// </summary>
         /// <value>The required fields.</value>
@@ -474,6 +481,13 @@ namespace WebEas.ServiceModel
         //[DataMember(Name = "acv")] //Presunuté do FLAG-u
         [IgnoreDataMember]
         public bool AllowComboCustomValue { get; set; }
+
+        /// <summary>
+        /// Ak je True, v combe sa vyhľadáva po zadaní textu vždy zľava
+        /// </summary>
+        //[DataMember(Name = "scfl")] //Presunuté do FLAG-u
+        [IgnoreDataMember]
+        public bool SearchComboFromLeft { get; set; }
 
         /// <summary>
         /// Typ property
@@ -713,7 +727,7 @@ namespace WebEas.ServiceModel
         /// <returns>A string that represents the current object.</returns>
         public override string ToString()
         {
-            return $"Name: {Name}, Type: {Type}, Editable: {Editable}, Mandatory: {Mandatory}, Hidden: {Hidden}, Hideable: {Hideable}, Width: {Width}, Text: {Text}, Xtype: {Xtype}, Align: {Align}, Tooltip: {Tooltip}, Sortable: {Sortable}, SortDirection: {SortDirection}, Filterable: {Filterable}, Format: {Format}, DecimalPlaces: {DecimalPlaces}, DataUrl: {DataUrl}, DefaultValue: {DefaultValue}, Description: {Description}, Rank: {Rank}, ReadOnly: {ReadOnly}, MaxLength: {MaxLength}, Validator: {Validator}, SearchFieldDefinition: {SearchFieldDefinition}, SingleComboFilter: {SingleComboFilter}, AllowComboCustomValue: {AllowComboCustomValue}, Nullabe: {Nullable}, LoadWhenVisible: {LoadWhenVisible}";
+            return $"Name: {Name}, Type: {Type}, Editable: {Editable}, Mandatory: {Mandatory}, Hidden: {Hidden}, Hideable: {Hideable}, Width: {Width}, Text: {Text}, Xtype: {Xtype}, Align: {Align}, Tooltip: {Tooltip}, Sortable: {Sortable}, SortDirection: {SortDirection}, Filterable: {Filterable}, Format: {Format}, DecimalPlaces: {DecimalPlaces}, DataUrl: {DataUrl}, DefaultValue: {DefaultValue}, Description: {Description}, Rank: {Rank}, ReadOnly: {ReadOnly}, MaxLength: {MaxLength}, Validator: {Validator}, SearchFieldDefinition: {SearchFieldDefinition}, SingleComboFilter: {SingleComboFilter}, AllowComboCustomValue: {AllowComboCustomValue}, SearchComboFromLeft : {SearchComboFromLeft}, Nullabe: {Nullable}, LoadWhenVisible: {LoadWhenVisible}, Tpl: {Tpl}, MinCharSearch: {MinCharSearch}, AdditionalWhereSqlTemp: {AdditionalWhereSqlTemp}";
         }
 
         /// <summary>
@@ -752,10 +766,12 @@ namespace WebEas.ServiceModel
                 result = result * 23 + ((SearchFieldDefinition != null) ? SearchFieldDefinition.GetHashCode() : 0);
                 result = result * 23 + SingleComboFilter.GetHashCode();
                 result = result * 23 + AllowComboCustomValue.GetHashCode();
+                result = result * 23 + SearchComboFromLeft.GetHashCode();
                 result = result * 23 + LoadWhenVisible.GetHashCode();
                 result = result * 23 + Nullable.GetHashCode();
                 result = result * 23 + ((Tpl != null) ? Tpl.GetHashCode() : 0);
                 result = result * 23 + MinCharSearch.GetHashCode();
+                result = result * 23 + ((AdditionalWhereSqlTemp != null) ? AdditionalWhereSqlTemp.GetHashCode() : 0);
                 return result;
             }
         }
@@ -803,9 +819,11 @@ namespace WebEas.ServiceModel
                    Nullable == other.Nullable &&
                    SingleComboFilter == other.SingleComboFilter &&
                    AllowComboCustomValue == other.AllowComboCustomValue &&
+                   SearchComboFromLeft == other.SearchComboFromLeft &&
                    LoadWhenVisible == other.LoadWhenVisible &&
                    Tpl == other.Tpl &&
-                   MinCharSearch == other.MinCharSearch;
+                   MinCharSearch == other.MinCharSearch &&
+                   AdditionalWhereSqlTemp == other.AdditionalWhereSqlTemp;
         }
 
         /// <summary>
@@ -871,6 +889,10 @@ namespace WebEas.ServiceModel
             if (AllowComboCustomValue)
             {
                 flag |= PfeColumnAttributeFlag.AllowComboCustomValue;
+            }
+            if (SearchComboFromLeft)
+            {
+                flag |= PfeColumnAttributeFlag.SearchComboFromLeft;
             }
             if (Nullable == 1)
             {

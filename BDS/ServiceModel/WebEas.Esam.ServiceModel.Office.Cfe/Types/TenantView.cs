@@ -19,14 +19,42 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
         public string TenantTypeName { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Typ organizácie", Mandatory = true)]
-        [PfeCombo(typeof(OrganizaciaTypView), IdColumn = nameof(C_OrganizaciaTyp_Id), ComboDisplayColumn = nameof(OrganizaciaTypView.Nazov))]
+        [PfeColumn(Text = "_OrganizaciaTyp", ReadOnly = true)]
+        public byte C_OrganizaciaTyp_Id { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Typ účt. osnovy", ReadOnly = true)]
         public string OrganizaciaTypNazov { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Typ organizácie", Mandatory = true, DefaultValue = 3)] // Rozpočtová organizácia, Nezisková organizácia, Podnikateľ
+        [PfeCombo(typeof(OrganizaciaTypDetail), IdColumn = nameof(C_OrganizaciaTypDetail_Id), ComboDisplayColumn = nameof(OrganizaciaTypDetail.Nazov))]
+        public string OrganizaciaTypDetailNazov { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "_OrganizaciaTyp", ReadOnly = true)]     // NÚJ, PO, RO
+        public string OrganizaciaTyp { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Typ organizácie kód", ReadOnly = true)] // 22, 21, 11
+        public string OrganizaciaTypKod { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Kód obce", ReadOnly = true)]            // 518158
+        public string KodObce { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "IČO", Xtype = PfeXType.SearchFieldSS)]
         [PfeCombo(typeof(OsobaView), IdColumn = nameof(D_PO_Osoba_Id), ComboDisplayColumn = nameof(OsobaView.IdentifikatorMeno))]
         public string ICO { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "IČ DPH", ReadOnly = true)]
+        public string IcDph { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "DIČ", ReadOnly = true)]
+        public string DIC { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Moja obec/mesto", ReadOnly = true)]

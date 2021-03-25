@@ -14,10 +14,18 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
         [AutoIncrement]
         [PrimaryKey]
         [PfeColumn(Text = "_C_OrganizaciaTyp_Id")]
-        public int C_OrganizaciaTyp_Id { get; set; }
+        public byte C_OrganizaciaTyp_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Názov typu organizácie")]
+        [PfeColumn(Text = "Kód")]
+        public string Kod { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Typ")]
+        public string Typ { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Názov")]
         public string Nazov { get; set; }
 
         [DataMember]

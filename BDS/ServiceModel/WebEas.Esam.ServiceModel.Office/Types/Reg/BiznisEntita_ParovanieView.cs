@@ -55,6 +55,8 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
             IdColumn = nameof(D_BiznisEntita_Id_1),
             ComboIdColumn = nameof(BiznisEntitaView.D_BiznisEntita_Id),
             ComboDisplayColumn = nameof(BiznisEntitaView.BiznisEntitaPopis),
+            AdditionalFields = new[] { nameof(BiznisEntitaView.Popis), nameof(BiznisEntitaView.DM_Suma) },
+            Tpl = "{value};{Popis};{DM_Suma}",
             AdditionalWhereSql = @"C_TypBiznisEntity_Id = @C_TypBiznisEntity_Id_1 AND
                                    D_Osoba_Id = @D_Osoba_Id AND
                                    D_BiznisEntita_Id NOT IN (SELECT D_BiznisEntita_Id_1 FROM reg.V_BiznisEntita_Parovanie 
@@ -70,6 +72,8 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
             IdColumn = nameof(D_BiznisEntita_Id_2),
             ComboIdColumn = nameof(BiznisEntitaView.D_BiznisEntita_Id),
             ComboDisplayColumn = nameof(BiznisEntitaView.BiznisEntitaPopis),
+            AdditionalFields = new[] { nameof(BiznisEntitaView.Popis), nameof(BiznisEntitaView.DM_Suma) },
+            Tpl = "{value};{Popis};{DM_Suma}",
             AdditionalWhereSql = @"C_TypBiznisEntity_Id = @C_TypBiznisEntity_Id_2 AND
                                    D_Osoba_Id = @D_Osoba_Id AND
                                    D_BiznisEntita_Id NOT IN (SELECT D_BiznisEntita_Id_2 FROM reg.V_BiznisEntita_Parovanie 

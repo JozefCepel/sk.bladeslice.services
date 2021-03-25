@@ -1,12 +1,11 @@
-﻿using ServiceStack.OrmLite;
+﻿using ServiceStack;
+using ServiceStack.DataAnnotations;
+using ServiceStack.OrmLite;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.Serialization;
-using WebEas.Esam.ServiceModel.Office.Types.Reg;
 using WebEas.ServiceModel;
-using WebEas.ServiceModel.Office.Egov.Reg.Types;
 using WebEas.ServiceModel.Types;
 
 
@@ -27,7 +26,7 @@ namespace WebEas.Esam.ServiceModel.Office
 
         public Dictionary<string, string> RequiredFields { get; set; }
 
-        public List<IComboResult> GetComboList(string[] requestFields)
+        public List<IComboResult> GetComboList(string[] requestFields, string value)
         {
             byte[] list = new byte[] { 1, 2 };
             return list.Select(a => new ComboResult() { Id = a.ToString(), Value = GetText(a) }).ToList<IComboResult>();
@@ -60,7 +59,7 @@ namespace WebEas.Esam.ServiceModel.Office
 
         public Dictionary<string, string> RequiredFields { get; set; }
 
-        public List<IComboResult> GetComboList(string[] requestFields)
+        public List<IComboResult> GetComboList(string[] requestFields, string value)
         {
             byte[] list = new byte[] { 1, 2 };
             return list.Select(a => new ComboResult() { Id = a.ToString(), Value = GetText(a) }).ToList<IComboResult>();
@@ -85,14 +84,14 @@ namespace WebEas.Esam.ServiceModel.Office
 
         [DataMember]
         public string Nazov { get; set; }
-        
+
         public string KodPolozky { get; set; }
 
         public IWebEasRepositoryBase Repository { get; set; }
 
         public Dictionary<string, string> RequiredFields { get; set; }
 
-        public List<IComboResult> GetComboList(string[] requestFields)
+        public List<IComboResult> GetComboList(string[] requestFields, string value)
         {
             short[] list = new short[] { 0, 1, 2, 3 };
             return list.Select(a => new ComboResult() { Id = a.ToString(), Value = GetText(a) }).ToList<IComboResult>();
@@ -126,7 +125,7 @@ namespace WebEas.Esam.ServiceModel.Office
 
         public Dictionary<string, string> RequiredFields { get; set; }
 
-        public List<IComboResult> GetComboList(string[] requestFields)
+        public List<IComboResult> GetComboList(string[] requestFields, string value)
         {
             short[] list = new short[] { 0, 1, 2, 3, 4 };
             return list.Select(a => new ComboResult() { Id = a.ToString(), Value = GetText(a) }).ToList<IComboResult>();
@@ -160,7 +159,7 @@ namespace WebEas.Esam.ServiceModel.Office
 
         public Dictionary<string, string> RequiredFields { get; set; }
 
-        public List<IComboResult> GetComboList(string[] requestFields)
+        public List<IComboResult> GetComboList(string[] requestFields, string value)
         {
             byte[] list = new byte[] { 1, 2 };
             return list.Select(a => new ComboResult() { Id = a.ToString(), Value = GetText(a) }).ToList<IComboResult>();
@@ -192,7 +191,7 @@ namespace WebEas.Esam.ServiceModel.Office
 
         public Dictionary<string, string> RequiredFields { get; set; }
 
-        public List<IComboResult> GetComboList(string[] requestFields)
+        public List<IComboResult> GetComboList(string[] requestFields, string value)
         {
             byte[] list = new byte[] { 1, 2, 3, 4 };
             return list.Select(a => new ComboResult() { Id = a.ToString(), Value = GetText(a) }).ToList<IComboResult>();
@@ -226,7 +225,7 @@ namespace WebEas.Esam.ServiceModel.Office
 
         public Dictionary<string, string> RequiredFields { get; set; }
 
-        public List<IComboResult> GetComboList(string[] requestFields)
+        public List<IComboResult> GetComboList(string[] requestFields, string value)
         {
             byte[] list = new byte[] { 1, 2, 3 };
             return list.Select(a => new ComboResult() { Id = a.ToString(), Value = GetText(a) }).ToList<IComboResult>();
@@ -259,7 +258,7 @@ namespace WebEas.Esam.ServiceModel.Office
 
         public Dictionary<string, string> RequiredFields { get; set; }
 
-        public List<IComboResult> GetComboList(string[] requestFields)
+        public List<IComboResult> GetComboList(string[] requestFields, string value)
         {
             var ComboList = new List<IComboResult>();
 
@@ -310,7 +309,7 @@ namespace WebEas.Esam.ServiceModel.Office
 
         public Dictionary<string, string> RequiredFields { get; set; }
 
-        public List<IComboResult> GetComboList(string[] requestFields)
+        public List<IComboResult> GetComboList(string[] requestFields, string value)
         {
             char[] list = new char[] { 'A', 'P', 'X', 'N', 'V' };
             return list.Select(a => new ComboResult() { Id = a.ToString(), Value = GetText(a) }).ToList<IComboResult>();
@@ -345,7 +344,7 @@ namespace WebEas.Esam.ServiceModel.Office
 
         public Dictionary<string, string> RequiredFields { get; set; }
 
-        public List<IComboResult> GetComboList(string[] requestFields)
+        public List<IComboResult> GetComboList(string[] requestFields, string value)
         {
             char[] list = new char[] { 'S', 'V', 'U', 'P' };
             return list.Select(a => new ComboResult() { Id = a.ToString(), Value = GetText(a) }).ToList<IComboResult>();
@@ -379,7 +378,7 @@ namespace WebEas.Esam.ServiceModel.Office
 
         public Dictionary<string, string> RequiredFields { get; set; }
 
-        public List<IComboResult> GetComboList(string[] requestFields)
+        public List<IComboResult> GetComboList(string[] requestFields, string value)
         {
             char[] list = new char[] { 'P', 'Z' };
             return list.Select(a => new ComboResult() { Id = a.ToString(), Value = GetText(a) }).ToList<IComboResult>();
@@ -411,7 +410,7 @@ namespace WebEas.Esam.ServiceModel.Office
 
         public Dictionary<string, string> RequiredFields { get; set; }
 
-        public List<IComboResult> GetComboList(string[] requestFields)
+        public List<IComboResult> GetComboList(string[] requestFields, string value)
         {
             char[] list = new char[] { 'K', 'D' };
             return list.Select(a => new ComboResult() { Id = a.ToString(), Value = GetText(a) }).ToList<IComboResult>();
@@ -443,7 +442,7 @@ namespace WebEas.Esam.ServiceModel.Office
 
         public Dictionary<string, string> RequiredFields { get; set; }
 
-        public List<IComboResult> GetComboList(string[] requestFields)
+        public List<IComboResult> GetComboList(string[] requestFields, string value)
         {
             int[] list = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
             return list.Select(a => new ComboResult() { Id = a.ToString(), Value = GetText(a) }).ToList<IComboResult>();
@@ -485,7 +484,7 @@ namespace WebEas.Esam.ServiceModel.Office
 
         public Dictionary<string, string> RequiredFields { get; set; }
 
-        public List<IComboResult> GetComboList(string[] requestFields)
+        public List<IComboResult> GetComboList(string[] requestFields, string value)
         {
             char[] list = new char[] { 'F', 'P' };
             return list.Select(a => new ComboResult() { Id = a.ToString(), Value = GetText(a) }).ToList<IComboResult>();
@@ -517,9 +516,9 @@ namespace WebEas.Esam.ServiceModel.Office
 
         public Dictionary<string, string> RequiredFields { get; set; }
 
-        public List<IComboResult> GetComboList(string[] requestFields)
+        public List<IComboResult> GetComboList(string[] requestFields, string value)
         {
-            short[] list = new short[] { 0, 1, 2, 3};
+            short[] list = new short[] { (int)FakturaciaVztahEnum.NEURCENE, (int)FakturaciaVztahEnum.DOD, (int)FakturaciaVztahEnum.ODB, (int)FakturaciaVztahEnum.DOD_ODB };
             return list.Select(a => new ComboResult() { Id = a.ToString(), Value = GetText(a) }).ToList<IComboResult>();
         }
 
@@ -527,10 +526,10 @@ namespace WebEas.Esam.ServiceModel.Office
         {
             switch (kod)
             {
-                case 0: return "neurčené";
-                case 1: return "dodávateľ";
-                case 2: return "odberateľ";
-                case 3: return "dodávateľ aj odberateľ";
+                case (int)FakturaciaVztahEnum.NEURCENE: return "neurčené";
+                case (int)FakturaciaVztahEnum.DOD: return "dodávateľ";
+                case (int)FakturaciaVztahEnum.ODB: return "odberateľ";
+                case (int)FakturaciaVztahEnum.DOD_ODB: return "dodávateľ aj odberateľ";
                 default: return null;
             }
         }
@@ -548,7 +547,7 @@ namespace WebEas.Esam.ServiceModel.Office
 
         public Dictionary<string, string> RequiredFields { get; set; }
 
-        public List<IComboResult> GetComboList(string[] requestFields)
+        public List<IComboResult> GetComboList(string[] requestFields, string value)
         {
             byte[] list = new byte[] { 1, 2, 3 };
             return list.Select(a => new ComboResult() { Id = a.ToString(), Value = GetText(a) }).ToList<IComboResult>();
@@ -571,13 +570,13 @@ namespace WebEas.Esam.ServiceModel.Office
     {
         public enum VzorAdresyEnum
         {
-            [System.ComponentModel.Description("štandard")]
+            [Description("štandard")]
             standard = 1,
-            [System.ComponentModel.Description("P.O.Box")]
+            [Description("P.O.Box")]
             POBox = 2,
-            [System.ComponentModel.Description("neštruktúrované údaje")]
+            [Description("neštruktúrované údaje")]
             nestrukturovaneUdaje = 3,
-            [System.ComponentModel.Description("pobyt na obci")]
+            [Description("pobyt na obci")]
             pobytNaObci = 4,
         }
 
@@ -593,7 +592,7 @@ namespace WebEas.Esam.ServiceModel.Office
 
         public Dictionary<string, string> RequiredFields { get; set; }
 
-        public List<IComboResult> GetComboList(string[] requestFields)
+        public List<IComboResult> GetComboList(string[] requestFields, string value)
         {
             int[] list = null;
             string typOsoby = "";
@@ -610,27 +609,12 @@ namespace WebEas.Esam.ServiceModel.Office
         {
             return kod switch
             {
-                1 => GetDescription(VzorAdresyEnum.standard),
-                2 => GetDescription(VzorAdresyEnum.POBox),
-                3 => GetDescription(VzorAdresyEnum.nestrukturovaneUdaje),
-                4 => GetDescription(VzorAdresyEnum.pobytNaObci),
+                1 => VzorAdresyEnum.standard.ToDescription(),
+                2 => VzorAdresyEnum.POBox.ToDescription(),
+                3 => VzorAdresyEnum.nestrukturovaneUdaje.ToDescription(),
+                4 => VzorAdresyEnum.pobytNaObci.ToDescription(),
                 _ => "",
             };
-        }
-
-        public static string GetDescription(Enum e)
-        {
-            Type genericEnumType = e.GetType();
-            MemberInfo[] memberInfo = genericEnumType.GetMember(e.ToString());
-            if ((memberInfo != null && memberInfo.Length > 0))
-            {
-                var _Attribs = memberInfo[0].GetCustomAttributes(typeof(System.ComponentModel.DescriptionAttribute), false);
-                if ((_Attribs != null && _Attribs.Count() > 0))
-                {
-                    return ((System.ComponentModel.DescriptionAttribute)_Attribs.ElementAt(0)).Description;
-                }
-            }
-            return e.ToString();
         }
     }
 
@@ -649,7 +633,7 @@ namespace WebEas.Esam.ServiceModel.Office
 
         public Dictionary<string, string> RequiredFields { get; set; }
 
-        public List<IComboResult> GetComboList(string[] requestFields)
+        public List<IComboResult> GetComboList(string[] requestFields, string value)
         {
             int id = 0;
             int.TryParse(RequiredFields["C_TypBiznisEntity_Id"], out id);
@@ -727,6 +711,12 @@ namespace WebEas.Esam.ServiceModel.Office
         [DataMember]
         public string Popis { get; set; }
 
+        [DataMember]
+        public long? D_Osoba_Id { get; set; }
+
+        [DataMember]
+        public string IdFormatMeno { get; set; }
+
         public string KodPolozky { get; set; }
 
         public IWebEasRepositoryBase Repository { get; set; }
@@ -734,7 +724,7 @@ namespace WebEas.Esam.ServiceModel.Office
         public Dictionary<string, string> RequiredFields { get; set; }
 
         // dvojicka UhradaParovanieView, ak sa nieco meni kukni aj tam
-        public List<IComboResult> GetComboList(string[] requestFields)
+        public List<IComboResult> GetComboList(string[] requestFields, string value)
         {
             string additionalOsobaFilter = "";
             int typ = 0;
@@ -763,73 +753,106 @@ namespace WebEas.Esam.ServiceModel.Office
                 }
             }
 
+            string comboValueWhere = string.Empty;
+            if (!value.IsNullOrEmpty())
+            {
+                comboValueWhere = $" AND VS COLLATE Latin1_general_CI_AI LIKE '%{value}%'";
+            }
+
             //Filter musí byť identický ako v "ComboCustomize" - nižšie v kóde
             if (KodPolozky == "crm-vaz-zal")
             {
-                List<(string VS, long Predpis_Id, long? D_BiznisEntita_Id_ZF, decimal Nevyfakturovane, DateTime? DatumUhrady, string Popis)> list = null;
+                List<(string IdFormatMeno, string VS, long? OsobaId, long Predpis_Id, long? D_BiznisEntita_Id_ZF, decimal Nevyfakturovane, DateTime? DatumUhrady, string Popis)> list = null;
                 switch (typ)
                 {
                     case (int)TypEnum.UhradaDZF:
-                        list = Repository.Db.Select<(string VS, long Predpis_Id, long? D_BiznisEntita_Id_ZF, decimal Nevyfakturovane, DateTime? DatumUhrady, string Popis)>($"SELECT VS, D_UhradaParovanie_Id, D_BiznisEntita_Id_Predpis, DM_Nevyfakturovane, DatumPohybu, ISNULL(Popis, UH_Popis) FROM fin.V_UhradaParovanie WHERE {additionalOsobaFilter} C_Typ_Id = {typ} AND C_StavEntity_Id > 1 AND DM_Nevyfakturovane <> 0 ORDER BY VS");
+                        list = Repository.Db.Select<(string IdFormatMeno, string VS, long? OsobaId, long Predpis_Id, long? D_BiznisEntita_Id_ZF, decimal Nevyfakturovane, DateTime? DatumUhrady, string Popis)>($"SELECT IdFormatMeno, VS, D_Osoba_Id, D_UhradaParovanie_Id, D_BiznisEntita_Id_Predpis, DM_Nevyfakturovane, DatumPohybu, ISNULL(Popis, UH_Popis) FROM fin.V_UhradaParovanie WHERE {additionalOsobaFilter} C_Typ_Id = {typ} AND C_StavEntity_Id > 1 AND DM_Nevyfakturovane <> 0 {comboValueWhere} ORDER BY VS");
                         break;
                     case (int)TypEnum.UhradaOZF:
-                        list = Repository.Db.Select<(string VS, long Predpis_Id, long? D_BiznisEntita_Id_ZF, decimal Nevyfakturovane, DateTime? DatumUhrady, string Popis)>($"SELECT VS, D_UhradaParovanie_Id, D_BiznisEntita_Id_Predpis, DM_Nevyfakturovane, DatumPohybu, ISNULL(Popis, UH_Popis) FROM fin.V_UhradaParovanie WHERE {additionalOsobaFilter} C_Typ_Id = {typ} AND C_StavEntity_Id > 1 AND DM_Nevyfakturovane <> 0 ORDER BY VS");
+                        list = Repository.Db.Select<(string IdFormatMeno, string VS, long? OsobaId, long Predpis_Id, long? D_BiznisEntita_Id_ZF, decimal Nevyfakturovane, DateTime? DatumUhrady, string Popis)>($"SELECT IdFormatMeno, VS, D_Osoba_Id, D_UhradaParovanie_Id, D_BiznisEntita_Id_Predpis, DM_Nevyfakturovane, DatumPohybu, ISNULL(Popis, UH_Popis) FROM fin.V_UhradaParovanie WHERE {additionalOsobaFilter} C_Typ_Id = {typ} AND C_StavEntity_Id > 1 AND DM_Nevyfakturovane <> 0 {comboValueWhere} ORDER BY VS");
                         break;
                     case (int)TypEnum.ZalohyPoskytnute:
-                        list = Repository.Db.Select<(string VS, long Predpis_Id, long? D_BiznisEntita_Id_ZF, decimal Nevyfakturovane, DateTime? DatumUhrady, string Popis)>($"SELECT VS, Zaloha_Id, NULL, DM_Nevyfakturovane, DatumPohybu, Popis FROM fin.V_ZalohyPoskytnutePrijate WHERE (D_Osoba_Id = {osobaId} OR D_Osoba_Id IS NULL AND YEAR(DatumPohybu) = {rok}) AND C_Typ_Id = {typ} AND DM_Nevyfakturovane <> 0 ORDER BY VS");
+                        list = Repository.Db.Select<(string IdFormatMeno, string VS, long? OsobaId, long Predpis_Id, long? D_BiznisEntita_Id_ZF, decimal Nevyfakturovane, DateTime? DatumUhrady, string Popis)>($"SELECT IdFormatMeno, VS, D_Osoba_Id, Zaloha_Id, NULL, DM_Nevyfakturovane, DatumPohybu, Popis FROM fin.V_ZalohyPoskytnutePrijate WHERE (D_Osoba_Id = {osobaId} OR D_Osoba_Id IS NULL AND YEAR(DatumPohybu) = {rok}) AND C_Typ_Id = {typ} AND DM_Nevyfakturovane <> 0 {comboValueWhere} ORDER BY VS");
                         break;
                     case (int)TypEnum.ZalohyPrijate:
-                        list = Repository.Db.Select<(string VS, long Predpis_Id, long? D_BiznisEntita_Id_ZF, decimal Nevyfakturovane, DateTime? DatumUhrady, string Popis)>($"SELECT VS, Zaloha_Id, NULL, DM_Nevyfakturovane, DatumPohybu, Popis FROM fin.V_ZalohyPoskytnutePrijate WHERE (D_Osoba_Id = {osobaId} OR D_Osoba_Id IS NULL AND YEAR(DatumPohybu) = {rok}) AND C_Typ_Id = {typ} AND DM_Nevyfakturovane <> 0 ORDER BY VS");
+                        list = Repository.Db.Select<(string IdFormatMeno, string VS, long? OsobaId, long Predpis_Id, long? D_BiznisEntita_Id_ZF, decimal Nevyfakturovane, DateTime? DatumUhrady, string Popis)>($"SELECT IdFormatMeno, VS, D_Osoba_Id, Zaloha_Id, NULL, DM_Nevyfakturovane, DatumPohybu, Popis FROM fin.V_ZalohyPoskytnutePrijate WHERE (D_Osoba_Id = {osobaId} OR D_Osoba_Id IS NULL AND YEAR(DatumPohybu) = {rok}) AND C_Typ_Id = {typ} AND DM_Nevyfakturovane <> 0 {comboValueWhere} ORDER BY VS");
                         break;
                     default:
                         // vratime prazdne combo
                         return new List<IComboResult>();
                 }
-                return list.Select(a => new VSCombo() { Id = a.Predpis_Id.ToString(), Value = a.VS, D_BiznisEntita_Id_ZF = a.D_BiznisEntita_Id_ZF, DM_Nevyfakturovane = a.Nevyfakturovane, DatumUhrady = a.DatumUhrady, Popis = a.Popis }).ToList<IComboResult>();
+                return list.Select(a => new VSCombo()
+                {
+                    Id = a.Predpis_Id.ToString(),
+                    Value = a.VS,
+                    D_BiznisEntita_Id_ZF = a.D_BiznisEntita_Id_ZF,
+                    DM_Nevyfakturovane = a.Nevyfakturovane,
+                    DatumUhrady = a.DatumUhrady,
+                    Popis = a.Popis,
+                    D_Osoba_Id = a.OsobaId,
+                    IdFormatMeno = a.IdFormatMeno
+                }).ToList<IComboResult>();
             }
             else
             {
-                List<(string VS, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)> list = null;
+                List<(string IdFormatMeno, string VS, long? OsobaId, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)> list = null;
                 switch (typ)
                 {
                     case (int)TypEnum.UhradaDFA:
-                        list = Repository.Db.Select<(string VS, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT VS, D_BiznisEntita_Id, DM_Neuhradene, DatumUhrady FROM crm.V_DokladDFA WHERE {additionalOsobaFilter} R = 1 ORDER BY VS");
+                        list = Repository.Db.Select<(string IdFormatMeno, string VS, long? OsobaId, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT IdFormatMeno, VS, D_Osoba_Id, D_BiznisEntita_Id, DM_Neuhradene, DatumUhrady FROM crm.V_DokladDFA WHERE {additionalOsobaFilter} R = 1 {comboValueWhere} ORDER BY VS");
                         break;
                     case (int)TypEnum.UhradaOFA:
-                        list = Repository.Db.Select<(string VS, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT VS, D_BiznisEntita_Id, DM_Neuhradene, DatumUhrady FROM crm.V_DokladOFA WHERE {additionalOsobaFilter} S = 1 ORDER BY VS");
+                        list = Repository.Db.Select<(string IdFormatMeno, string VS, long? OsobaId, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT IdFormatMeno, VS, D_Osoba_Id, D_BiznisEntita_Id, DM_Neuhradene, DatumUhrady FROM crm.V_DokladOFA WHERE {additionalOsobaFilter} S = 1 {comboValueWhere} ORDER BY VS");
                         break;
                     case (int)TypEnum.UhradaDZF:
-                        list = Repository.Db.Select<(string VS, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT VS, D_BiznisEntita_Id, DM_Neuhradene, DatumUhrady FROM crm.V_DokladDZF WHERE {additionalOsobaFilter} R = 1 ORDER BY VS");
+                        list = Repository.Db.Select<(string IdFormatMeno, string VS, long? OsobaId, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT IdFormatMeno, VS, D_Osoba_Id, D_BiznisEntita_Id, DM_Neuhradene, DatumUhrady FROM crm.V_DokladDZF WHERE {additionalOsobaFilter} R = 1 {comboValueWhere} ORDER BY VS");
                         break;
                     case (int)TypEnum.UhradaOZF:
-                        list = Repository.Db.Select<(string VS, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT VS, D_BiznisEntita_Id, DM_Neuhradene, DatumUhrady FROM crm.V_DokladOZF WHERE {additionalOsobaFilter} S = 1 ORDER BY VS");
+                        list = Repository.Db.Select<(string IdFormatMeno, string VS, long? OsobaId, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT IdFormatMeno, VS, D_Osoba_Id, D_BiznisEntita_Id, DM_Neuhradene, DatumUhrady FROM crm.V_DokladOZF WHERE {additionalOsobaFilter} S = 1 {comboValueWhere} ORDER BY VS");
                         break;
 
                     case (int)TypEnum.DobropisDFA:
-                        list = Repository.Db.Select<(string VS, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT VS, D_BiznisEntita_Id, DM_Neuhradene, DatumUhrady FROM crm.V_DokladDFA WHERE {additionalOsobaFilter} DM_Suma < 0 AND R = 1 ORDER BY VS");
+                        list = Repository.Db.Select<(string IdFormatMeno, string VS, long? OsobaId, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT IdFormatMeno, VS, D_Osoba_Id, D_BiznisEntita_Id, DM_Neuhradene, DatumUhrady FROM crm.V_DokladDFA WHERE {additionalOsobaFilter} DM_Suma < 0 AND R = 1 {comboValueWhere} ORDER BY VS");
                         break;
                     case (int)TypEnum.DobropisOFA:
-                        list = Repository.Db.Select<(string VS, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT VS, D_BiznisEntita_Id, DM_Neuhradene, DatumUhrady FROM crm.V_DokladOFA WHERE {additionalOsobaFilter} DM_Suma < 0 AND S = 1 ORDER BY VS");
+                        list = Repository.Db.Select<(string IdFormatMeno, string VS, long? OsobaId, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT IdFormatMeno, VS, D_Osoba_Id, D_BiznisEntita_Id, DM_Neuhradene, DatumUhrady FROM crm.V_DokladOFA WHERE {additionalOsobaFilter} DM_Suma < 0 AND S = 1 {comboValueWhere} ORDER BY VS");
                         break;
 
                     //Nastavenie "0 AS DM_Neuhradene, NULL AS DatumUhrady" je preto, lebo sa musí neskôr vybrať položka rozhodnutia
+                    case (int)TypEnum.DaPUhradaVsetky:
+                        list = Repository.Db.Select<(string IdFormatMeno, string VS, long? OsobaId, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT IdFormatMeno, VS, D_Osoba_Id, D_Vymer_Id, 0 AS DM_Neuhradene, NULL AS DatumUhrady FROM dap.V_Vymer WHERE {additionalOsobaFilter} C_VymerTyp_Id IS NOT NULL {comboValueWhere} ORDER BY VS"); // VymerTypEnum.DaPUhradaVsetky
+                        break;
                     case (int)TypEnum.DaPUhradaDane:
-                        list = Repository.Db.Select<(string VS, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT VS, D_Vymer_Id, 0 AS DM_Neuhradene, NULL AS DatumUhrady FROM dap.V_Vymer WHERE {additionalOsobaFilter} C_VymerTyp_Id = 1 ORDER BY VS"); // VymerTypEnum.DAN
+                        list = Repository.Db.Select<(string IdFormatMeno, string VS, long? OsobaId, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT IdFormatMeno, VS, D_Osoba_Id, D_Vymer_Id, 0 AS DM_Neuhradene, NULL AS DatumUhrady FROM dap.V_Vymer WHERE {additionalOsobaFilter} C_VymerTyp_Id = 1 {comboValueWhere} ORDER BY VS"); // VymerTypEnum.DAN
+                        break;
+                    case (int)TypEnum.DaPUhradaPokutyZaOneskorenie:
+                        list = Repository.Db.Select<(string IdFormatMeno, string VS, long? OsobaId, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT IdFormatMeno, VS, D_Osoba_Id, D_Vymer_Id, 0 AS DM_Neuhradene, NULL AS DatumUhrady FROM dap.V_Vymer WHERE {additionalOsobaFilter} C_VymerTyp_Id = 2 {comboValueWhere} ORDER BY VS"); // VymerTypEnum.ONE
                         break;
                     case (int)TypEnum.DaPUhradaUrokuZOmeskania:
-                        list = Repository.Db.Select<(string VS, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT VS, D_Vymer_Id, 0 AS DM_Neuhradene, NULL AS DatumUhrady FROM dap.V_Vymer WHERE {additionalOsobaFilter} C_VymerTyp_Id = 4 ORDER BY VS"); // VymerTypEnum.PEN
+                        list = Repository.Db.Select<(string IdFormatMeno, string VS, long? OsobaId, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT IdFormatMeno, VS, D_Osoba_Id, D_Vymer_Id, 0 AS DM_Neuhradene, NULL AS DatumUhrady FROM dap.V_Vymer WHERE {additionalOsobaFilter} C_VymerTyp_Id = 4 {comboValueWhere} ORDER BY VS"); // VymerTypEnum.PEN
                         break;
                     case (int)TypEnum.DaPUhradaPokuty:
-                        list = Repository.Db.Select<(string VS, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT VS, D_Vymer_Id, 0 AS DM_Neuhradene, NULL AS DatumUhrady FROM dap.V_Vymer WHERE {additionalOsobaFilter} C_VymerTyp_Id = 5 ORDER BY VS"); // VymerTypEnum.POK
+                        list = Repository.Db.Select<(string IdFormatMeno, string VS, long? OsobaId, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT IdFormatMeno, VS, D_Osoba_Id, D_Vymer_Id, 0 AS DM_Neuhradene, NULL AS DatumUhrady FROM dap.V_Vymer WHERE {additionalOsobaFilter} C_VymerTyp_Id = 5 {comboValueWhere} ORDER BY VS"); // VymerTypEnum.POK
+                        break;
+                    case (int)TypEnum.DaPUhradaPokutyZaDodatocnePodanie:
+                        list = Repository.Db.Select<(string IdFormatMeno, string VS, long? OsobaId, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT IdFormatMeno, VS, D_Osoba_Id, D_Vymer_Id, 0 AS DM_Neuhradene, NULL AS DatumUhrady FROM dap.V_Vymer WHERE {additionalOsobaFilter} C_VymerTyp_Id = 6 {comboValueWhere} ORDER BY VS"); // VymerTypEnum.DOD
                         break;
                     case (int)TypEnum.DaPUhradaUrokuZOdlozeniaSplatok:
-                        list = Repository.Db.Select<(string VS, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT VS, D_Vymer_Id, 0 AS DM_Neuhradene, NULL AS DatumUhrady FROM dap.V_Vymer WHERE {additionalOsobaFilter} C_VymerTyp_Id = 7 ORDER BY VS"); // VymerTypEnum.URO
+                        list = Repository.Db.Select<(string IdFormatMeno, string VS, long? OsobaId, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT IdFormatMeno, VS, D_Osoba_Id, D_Vymer_Id, 0 AS DM_Neuhradene, NULL AS DatumUhrady FROM dap.V_Vymer WHERE {additionalOsobaFilter} C_VymerTyp_Id = 7 {comboValueWhere} ORDER BY VS"); // VymerTypEnum.URO
                         break;
                     default:
                         // vratime prazdne combo
                         return new List<IComboResult>();
                 }
-                return list.Select(a => new VSCombo() { Id = a.Predpis_Id.ToString(), Value = a.VS, DM_Neuhradene = a.Neuhradene, DatumUhrady = a.DatumUhrady }).ToList<IComboResult>();
+                return list.Select(a => new VSCombo()
+                {
+                    Id = a.Predpis_Id.ToString(),
+                    Value = a.VS,
+                    DM_Neuhradene = a.Neuhradene,
+                    DatumUhrady = a.DatumUhrady,
+                    D_Osoba_Id = a.OsobaId,
+                    IdFormatMeno = a.IdFormatMeno
+                }).ToList<IComboResult>();
             }
         }
 
@@ -848,12 +871,14 @@ namespace WebEas.Esam.ServiceModel.Office
                                                     $"     WHEN @C_Typ_Id IN ({(int)TypEnum.UhradaOFA  },{(int)TypEnum.UhradaOZF  }) AND S = 1 THEN 1 " +
                                                     $"     WHEN @C_Typ_Id IN ({(int)TypEnum.DobropisDFA}                           ) AND R = 1 AND DM_Suma < 0 THEN 1 " +
                                                     $"     WHEN @C_Typ_Id IN ({(int)TypEnum.DobropisOFA}                           ) AND S = 1 AND DM_Suma < 0 THEN 1 " +
-                                                    $"     WHEN @C_Typ_Id = {(int)TypEnum.DaPUhradaDane                  } AND C_VymerTyp_Id = 1 THEN 1 " +  // VymerTypEnum.DAN
-                                                    $"     WHEN @C_Typ_Id = {(int)TypEnum.DaPUhradaUrokuZOmeskania       } AND C_VymerTyp_Id = 4 THEN 1 " +  // VymerTypEnum.PEN
-                                                    $"     WHEN @C_Typ_Id = {(int)TypEnum.DaPUhradaPokuty                } AND C_VymerTyp_Id = 5 THEN 1 " +  // VymerTypEnum.POK
-                                                    $"     WHEN @C_Typ_Id = {(int)TypEnum.DaPUhradaUrokuZOdlozeniaSplatok} AND C_VymerTyp_Id = 7 THEN 1 " +  // VymerTypEnum.URO
+                                                    $"     WHEN @C_Typ_Id = {(int)TypEnum.DaPUhradaDane                    } AND C_VymerTyp_Id = 1 THEN 1 " +  // VymerTypEnum.DAN
+                                                    $"     WHEN @C_Typ_Id = {(int)TypEnum.DaPUhradaPokutyZaOneskorenie     } AND C_VymerTyp_Id = 2 THEN 1 " +  // VymerTypEnum.ONE
+                                                    $"     WHEN @C_Typ_Id = {(int)TypEnum.DaPUhradaUrokuZOmeskania         } AND C_VymerTyp_Id = 4 THEN 1 " +  // VymerTypEnum.PEN
+                                                    $"     WHEN @C_Typ_Id = {(int)TypEnum.DaPUhradaPokuty                  } AND C_VymerTyp_Id = 5 THEN 1 " +  // VymerTypEnum.POK
+                                                    $"     WHEN @C_Typ_Id = {(int)TypEnum.DaPUhradaPokutyZaDodatocnePodanie} AND C_VymerTyp_Id = 6 THEN 1 " +  // VymerTypEnum.DOD
+                                                    $"     WHEN @C_Typ_Id = {(int)TypEnum.DaPUhradaUrokuZOdlozeniaSplatok  } AND C_VymerTyp_Id = 7 THEN 1 " +  // VymerTypEnum.URO
                                                     $"     END = 1 AND (D_Osoba_Id = @D_Osoba_Id OR @D_Osoba_Id IS NULL)";
-            } 
+            }
             else if (column.ToLower() == "vs" && kodPolozky == "crm-vaz-zal")
             {
                 //Filter musí byť identický ako v "switch (typ)" - vyššie v kóde
@@ -879,7 +904,7 @@ namespace WebEas.Esam.ServiceModel.Office
 
         public Dictionary<string, string> RequiredFields { get; set; }
 
-        public List<IComboResult> GetComboList(string[] requestFields)
+        public List<IComboResult> GetComboList(string[] requestFields, string value)
         {
             int[] list = new int[] { -1, 0, 1, 2 };
             return list.Select(a => new ComboResult() { Id = a.ToString(), Value = GetText(a) }).ToList<IComboResult>();
@@ -913,7 +938,7 @@ namespace WebEas.Esam.ServiceModel.Office
 
         public Dictionary<string, string> RequiredFields { get; set; }
 
-        public List<IComboResult> GetComboList(string[] requestFields)
+        public List<IComboResult> GetComboList(string[] requestFields, string value)
         {
             short[] list = new short[] { -1, 2, 1, 0 };
             return list.Select(a => new ComboResult() { Id = a.ToString(), Value = GetText(a) }).ToList<IComboResult>();
@@ -947,7 +972,7 @@ namespace WebEas.Esam.ServiceModel.Office
 
         public Dictionary<string, string> RequiredFields { get; set; }
 
-        public List<IComboResult> GetComboList(string[] requestFields)
+        public List<IComboResult> GetComboList(string[] requestFields, string value)
         {
             int rok = DateTime.Today.Year;
             string[] list = new string[] { "N", "A", "M", (rok - 1).ToString(), (rok - 2).ToString(), (rok - 3).ToString(), (rok - 4).ToString(), (rok - 5).ToString() };
@@ -981,7 +1006,7 @@ namespace WebEas.Esam.ServiceModel.Office
 
         public Dictionary<string, string> RequiredFields { get; set; }
 
-        public List<IComboResult> GetComboList(string[] requestFields)
+        public List<IComboResult> GetComboList(string[] requestFields, string value)
         {
             byte[] list = new byte[] { 1, 2, 3, 9 };
             return list.Select(a => new ComboResult() { Id = a.ToString(), Value = GetText(a) }).ToList<IComboResult>();
@@ -1015,7 +1040,7 @@ namespace WebEas.Esam.ServiceModel.Office
 
         public Dictionary<string, string> RequiredFields { get; set; }
 
-        public List<IComboResult> GetComboList(string[] requestFields)
+        public List<IComboResult> GetComboList(string[] requestFields, string value)
         {
             var list = (StavEntityEnum[])Enum.GetValues(typeof(StavEntityEnum));
             return list.Where(x => (int)x >= 18 && (int)x <= 21).Select(a => new ComboResult() { Id = ((int)a).ToString(), Value = GetText(a) }).ToList<IComboResult>();
@@ -1049,7 +1074,7 @@ namespace WebEas.Esam.ServiceModel.Office
 
         public Dictionary<string, string> RequiredFields { get; set; }
 
-        public List<IComboResult> GetComboList(string[] requestFields)
+        public List<IComboResult> GetComboList(string[] requestFields, string value)
         {
             byte[] list = new byte[] { 1, 2, 3, 4 };
             return list.Select(a => new ComboResult() { Id = a.ToString(), Value = GetText(a) }).ToList<IComboResult>();
@@ -1065,6 +1090,71 @@ namespace WebEas.Esam.ServiceModel.Office
                 4 => "N:M",
                 _ => null,
             };
+        }
+    }
+
+    [DataContract]
+    public class DatumTypCombo : IStaticCombo
+    {
+        [DataMember]
+        public string Kod { get; set; }
+
+        [DataMember]
+        public string Nazov { get; set; }
+
+        public string KodPolozky { get; set; }
+
+        public IWebEasRepositoryBase Repository { get; set; }
+
+        public Dictionary<string, string> RequiredFields { get; set; }
+
+        public List<IComboResult> GetComboList(string[] requestFields, string value)
+        {
+            byte[] list = new byte[] { 1, 2 };
+            return list.Select(a => new ComboResult() { Id = a.ToString(), Value = GetText(a) }).ToList<IComboResult>();
+        }
+
+        public static string GetText(byte? kod)
+        {
+            switch (kod)
+            {
+                case 1: return "aktuálny dátum";
+                case 2: return "dátum dokladu";
+                default: return null;
+            }
+        }
+    }
+
+    [DataContract]
+    public class TypSazbyCombo : IStaticCombo
+    {
+        [DataMember]
+        public string Kod { get; set; }
+
+        [DataMember]
+        public string Nazov { get; set; }
+
+        public string KodPolozky { get; set; }
+
+        public IWebEasRepositoryBase Repository { get; set; }
+
+        public Dictionary<string, string> RequiredFields { get; set; }
+
+        public List<IComboResult> GetComboList(string[] requestFields, string value)
+        {
+            byte[] list = new byte[] { 0, 1, 2 };
+            return list.Select(a => new ComboResult() { Id = a.ToString(), Value = GetText(a) }).ToList<IComboResult>();
+        }
+
+        public static string GetText(byte? kod)
+        {
+            switch (kod)
+            {
+                case 0: return "Bez DPH";
+                case 1: return "Znížená sadzba";
+                case 2: return "Základná sadzba";
+                default: return null;
+            }
         }
     }
 }

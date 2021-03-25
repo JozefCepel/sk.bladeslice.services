@@ -28,13 +28,13 @@ namespace WebEas.ServiceModel
 
         [DataMember]
         public const string MapSigns = "fas fa-map-signs";
-        
+
         [DataMember]
         public const string Delicious = "fab fa-delicious";
-        
+
         [DataMember]
         public const string FileImport = "fas fa-file-import";
-        
+
         [DataMember]
         public const string ListOl = "fas fa-list-ol";
 
@@ -151,6 +151,9 @@ namespace WebEas.ServiceModel
 
         [DataMember]
         public const string UsersCog = "fas fa-users-cog";
+
+        [DataMember]
+        public const string Cogs = "fas fa-cogs";
 
         [DataMember]
         public const string FlagUsa = "fas fa-flag-usa";
@@ -271,6 +274,15 @@ namespace WebEas.ServiceModel
 
         [DataMember]
         public const string HandHoldingUsd = "fas fa-hand-holding-usd";
+
+        [DataMember]
+        public const string QuoteRight = "fas fa-quote-right";
+
+        [DataMember]
+        public const string QuoteLeft = "fas fa-quote-left";
+
+        [DataMember]
+        public const string Percent = "fa fa-percent";
 
     }
 }

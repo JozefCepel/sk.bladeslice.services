@@ -86,12 +86,18 @@ namespace WebEas.ServiceModel.Pfe.Types
                 return code;
             }
 
-            if (code.StartsWith("dms-id"))
-            {
-                code = "dms-id";
-            }
+            string ret = code.Contains('!') ? Regex.Replace(code, "(![^-]*)", "") : code;
 
-            return code.Contains('!') ? Regex.Replace(code, "(![^-]*)", "") : code;
+            if (ret.StartsWith("dms-dok") &&
+                !ret.StartsWith("dms-dok-dod-") &&
+                !ret.StartsWith("dms-dok-odb-") &&
+                !ret.StartsWith("dms-dok-fin-") &&
+                !ret.StartsWith("dms-dok-uct-") &&
+                !ret.StartsWith("dms-dok-osa-"))
+            {
+                ret = "dms-dok";
+            }
+            return ret;
         }
 
         /// <summary>

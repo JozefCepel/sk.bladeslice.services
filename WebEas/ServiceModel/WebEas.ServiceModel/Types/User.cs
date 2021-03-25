@@ -32,6 +32,7 @@ namespace WebEas.ServiceModel.Types
         [DataMember]
         [PfeColumn(Text = "Celé meno", ReadOnly = true)]
         [IgnoreInsertOrUpdate]
+        [Compute]
         public string FullName { get; set; }
 
         [DataMember]
@@ -45,6 +46,26 @@ namespace WebEas.ServiceModel.Types
         [DataMember]
         [PfeColumn(Text = "E-mailová adresa", Mandatory = true)]
         public string Email { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Telefón")]
+        [StringLength(100)]
+        public string Telefon { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Fax")]
+        [StringLength(100)]
+        public string Fax { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Web")]
+        [StringLength(100)]
+        public string Web { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Štatutár")]
+        [StringLength(450)]
+        public string Statutar { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Doménové meno")]

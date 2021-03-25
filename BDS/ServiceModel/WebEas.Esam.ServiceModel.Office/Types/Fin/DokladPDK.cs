@@ -34,7 +34,8 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Fin
         public Guid D_User_Id_DokladVyhotovil { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_D_OsobaKontakt_Id_Komu")]
-        public long? D_OsobaKontakt_Id_Komu { get; set; }
+        [PfeColumn(Text = "_D_User_Id_Podpisal")]
+        public Guid? D_User_Id_Podpisal { get; set; }
+
     }
 }

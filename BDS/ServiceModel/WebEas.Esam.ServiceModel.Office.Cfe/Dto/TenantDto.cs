@@ -43,7 +43,7 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
         public byte C_TenantType_Id { get; set; }
 
         [DataMember]
-        public int C_OrganizaciaTyp_Id { get; set; }
+        public byte C_OrganizaciaTypDetail_Id { get; set; }
 
         [DataMember]
         [NotEmptyOrDefault]
@@ -64,6 +64,21 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
         [DataMember]
         public Guid? IsoId { get; set; }
 
+        [DataMember]
+        public string Telefon { get; set; }
+
+        [DataMember]
+        public string Fax { get; set; }
+
+        [DataMember]
+        public string Email { get; set; }
+
+        [DataMember]
+        public string Web { get; set; }
+
+        [DataMember]
+        public string Statutar { get; set; }
+
         /// <summary>
         /// Binds to entity.
         /// </summary>
@@ -71,13 +86,18 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
         protected override void BindToEntity(Tenant data)
         {
             data.C_TenantType_Id  = C_TenantType_Id;
-            data.C_OrganizaciaTyp_Id = C_OrganizaciaTyp_Id;
+            data.C_OrganizaciaTypDetail_Id = C_OrganizaciaTypDetail_Id;
             data.Nazov = Nazov;
             data.Server = Server;
             data.Databaza = Databaza;
             data.D_Tenant_Id_Externe = D_Tenant_Id_Externe;
             data.D_PO_Osoba_Id = D_PO_Osoba_Id;
             data.IsoId = IsoId;
+            data.Telefon = Telefon;
+            data.Fax = Fax;
+            data.Email = Email;
+            data.Web = Web;
+            data.Statutar = Statutar;
         }
     }
     #endregion

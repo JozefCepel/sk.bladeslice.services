@@ -17,6 +17,11 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         public int C_Typ_Id { get; set; }
 
         [DataMember]
+        [PfeColumn(Text = "Kód")]
+        [StringLength(40)]
+        public string Kod { get; set; }
+
+        [DataMember]
         [PfeColumn(Text = "Názov", Mandatory = true)]
         public string Nazov { get; set; }
 
@@ -28,5 +33,5 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         [PfeColumn(Text = "_RzpDefinicia", Mandatory = true)]
         public int RzpDefinicia { get; set; }
     }
- 
+
 }

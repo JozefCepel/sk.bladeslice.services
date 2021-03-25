@@ -57,6 +57,13 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ITP|AnyCPU'">
+    <OutputPath>bin\ITP\</OutputPath>
+    <DefineConstants>TRACE;ITP</DefineConstants>
+    <Optimize>true</Optimize>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -141,6 +148,10 @@
     <ProjectReference Include="..\WebEas.Esam.ServiceInterface.Office.Uct\WebEas.Esam.ServiceInterface.Office.Uct.csproj">
       <Project>{8192e041-11d5-4ba5-a6f6-1bbbbdf21986}</Project>
       <Name>WebEas.Esam.ServiceInterface.Office.Uct</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WebEas.Esam.ServiceInterface.Office.Vyk\WebEas.Esam.ServiceInterface.Office.Vyk.csproj">
+      <Project>{6d5b7f59-755e-4e77-96e8-b502cf92d39b}</Project>
+      <Name>WebEas.Esam.ServiceInterface.Office.Vyk</Name>
     </ProjectReference>
     <ProjectReference Include="..\WebEas.Esam.ServiceInterface.Office\WebEas.Esam.ServiceInterface.Office.csproj">
       <Project>{a0b8a0db-8ac5-47e8-925a-862529231d16}</Project>

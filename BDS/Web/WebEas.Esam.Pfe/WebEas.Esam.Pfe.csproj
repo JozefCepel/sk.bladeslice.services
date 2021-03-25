@@ -60,6 +60,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -90,12 +91,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\PublishProfiles\DevelopProfile.pubxml" />
+    <None Include="Properties\PublishProfiles\ITPProfile.pubxml" />
     <None Include="Properties\PublishProfiles\ProdProfile.pubxml" />
     <None Include="Properties\PublishProfiles\TestProfile.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
     <None Include="Web.Develop.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.ITP.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
     <None Include="Web.Prod.config">
@@ -161,6 +166,10 @@
       <Project>{8192e041-11d5-4ba5-a6f6-1bbbbdf21986}</Project>
       <Name>WebEas.Esam.ServiceInterface.Office.Uct</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\ServiceInterface\WebEas.Esam.ServiceInterface.Office.Vyk\WebEas.Esam.ServiceInterface.Office.Vyk.csproj">
+      <Project>{6d5b7f59-755e-4e77-96e8-b502cf92d39b}</Project>
+      <Name>WebEas.Esam.ServiceInterface.Office.Vyk</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\ServiceInterface\WebEas.Esam.ServiceInterface.Office\WebEas.Esam.ServiceInterface.Office.csproj">
       <Project>{a0b8a0db-8ac5-47e8-925a-862529231d16}</Project>
       <Name>WebEas.Esam.ServiceInterface.Office</Name>
@@ -205,6 +214,10 @@
       <Project>{149d8e1b-1232-4dd0-b100-0897bb31ddef}</Project>
       <Name>WebEas.Esam.ServiceModel.Office.Uct</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\ServiceModel\WebEas.Esam.ServiceModel.Office.Vyk\WebEas.Esam.ServiceModel.Office.Vyk.csproj">
+      <Project>{2aa4f82b-bb3a-4610-8168-c6cf1a86f5e7}</Project>
+      <Name>WebEas.Esam.ServiceModel.Office.Vyk</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\ServiceModel\WebEas.Esam.ServiceModel.Office\WebEas.Esam.ServiceModel.Office.csproj">
       <Project>{b368a929-aa16-4823-87ec-69e90901d0ed}</Project>
       <Name>WebEas.Esam.ServiceModel.Office</Name>
@@ -232,6 +245,13 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ITP|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;ITP</DefineConstants>
+    <Optimize>true</Optimize>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

@@ -121,7 +121,7 @@ namespace WebEas.UnitTest
                                 if (createUpdateDto.type.IsOrHasGenericInterfaceTypeOf(typeof(IReturn<>)))
                                 {
                                     var argumentType = createUpdateDto.type.GetTypeWithGenericTypeDefinitionOf(typeof(IReturn<>)).GetGenericArguments().First();
-                                    if (argumentType != node.ModelType)
+                                    if (argumentType != node.ModelType && !IgnoreIReturn(node.ModelType.Name + "." + argumentType.Name))
                                     {
                                         errorlog.AppendLine($"'{node.KodPolozky}'/{node.ModelType.Name} - IReturn {createUpdateDto.type.FullName}/{argumentType.Name}");
                                     }
@@ -134,7 +134,7 @@ namespace WebEas.UnitTest
                                 var method = service.GetType().GetMethods().Where(x => x.GetParameters().Any(z => z.ParameterType == createUpdateDto.type)).FirstOrDefault();
                                 if (method != null)
                                 {
-                                    if (method.ReturnType != node.ModelType)
+                                    if (method.ReturnType != node.ModelType && !IgnoreIReturn(node.ModelType.Name + "." + method.ReturnType.Name))
                                     {
                                         errorlog.AppendLine($"'{node.KodPolozky}'/{node.ModelType.Name} - {method.DeclaringType.FullName}: {method.ReturnType.Name} {method.Name}({method.GetParameters().First().ParameterType.Name} {method.GetParameters().First().Name}) ");
                                     }
@@ -217,7 +217,12 @@ namespace WebEas.UnitTest
         public void ValidateDbTypes()
         {
             const string providername = "System.Data.SqlClient";
-            var dbReader = new DatabaseReader("server=sd1esamdb31.datalan.sk\\SQL2017;database=esam01;uid=esam_reg;password=9jk2wVuN8B36LuiWvIcO", providername);
+            var connectionString = "server=sd1esamdb31.datalan.sk\\SQL2017;database=esam01;uid=esam_reg;password=9jk2wVuN8B36LuiWvIcO";
+#if ITP
+            connectionString = connectionString.Replace("sd1esamdb31.datalan.sk\\SQL2017", "st1esamdb31.datalan.sk\\SQL2019");
+#endif
+
+            var dbReader = new DatabaseReader(connectionString, providername);
             List<Type> objectWithAlias = new List<Type>();
             foreach (Assembly assembly in LoadAssemblies())
             {
@@ -243,7 +248,8 @@ namespace WebEas.UnitTest
                     continue;
                 }
 
-                if (objDef != null && objDef.GetCustomAttribute<SchemaAttribute>().Name.ToLower().Trim() == obj.SchemaOwner.ToLower().Trim())
+                if (objDef != null && objDef.GetCustomAttribute<SchemaAttribute>().Name.ToLower().Trim() == obj.SchemaOwner.ToLower().Trim() &&
+                    !IgnoreView(obj.SchemaOwner + "." + obj.Name))
                 {
                     foreach (var col in obj.Columns)
                     {
@@ -312,6 +318,43 @@ namespace WebEas.UnitTest
             }
 
             Assert.True(pocet == 0, errorlog.ToString());
+        }
+
+        private bool IgnoreIReturn(string sObject)
+        {
+            if (sObject.StartsWith("AdresarObsah") && sObject.EndsWith("View.AdresarObsahView"))
+            {
+                //Napr. AdresarObsahCrmDfaView.AdresarObsahView
+                return true;
+            }
+
+            bool bIgnore = true;
+            switch (sObject)
+            {
+                default:
+                    bIgnore = false;
+                    break;
+            }
+            return bIgnore;
+        }
+
+        private bool IgnoreView(string sObject)
+        {
+            bool bIgnore = true;
+
+            if (sObject.StartsWith("dms.V_Subor"))
+            {
+                //Napr. dms.V_Subor_CRM_DFA
+                return true;
+            }
+
+            switch (sObject)
+            {
+                default:
+                    bIgnore = false;
+                    break;
+            }
+            return bIgnore;
         }
 
         private bool IgnoreNull(string sObject)

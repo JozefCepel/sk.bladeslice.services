@@ -57,10 +57,14 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ITP|AnyCPU'">
+    <OutputPath>bin\ITP\</OutputPath>
+    <DefineConstants>TRACE;ITP</DefineConstants>
+    <Optimize>true</Optimize>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ClosedXML">
-      <HintPath>..\..\..\TelerikLibraries\ClosedXML.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />

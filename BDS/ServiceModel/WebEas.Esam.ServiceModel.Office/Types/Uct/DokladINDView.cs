@@ -29,11 +29,6 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Uct
         [PfeColumn(Text = "Zmenil", Hidden = true, Editable = false, ReadOnly = true, LoadWhenVisible = true)]
         public string ZmenilMeno { get; set; }
 
-        [DataMember]
-        [PfeColumn(Text = "Predkontácia", Mandatory = true, RequiredFields = new[] { nameof(C_TypBiznisEntity_Kniha_Id) })]
-        [PfeCombo(typeof(PredkontaciaCombo), IdColumn = nameof(C_Predkontacia_Id), ComboDisplayColumn = nameof(PredkontaciaCombo.Nazov))]
-        public string Predkontacia { get; set; }
-
         public new void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, object masterNodeParameter, string masterNodeKey)
         {
             base.CustomizeModel(model, repository, node, filter, masterNodeParameter, masterNodeKey);

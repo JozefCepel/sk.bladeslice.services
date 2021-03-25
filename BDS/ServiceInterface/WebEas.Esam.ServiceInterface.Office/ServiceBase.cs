@@ -70,7 +70,10 @@ namespace WebEas.Esam.ServiceInterface.Office
                     foreach (var node in hierarchyNodesWithUrl)
                     {
                         var userTreeRight = usernoderights.FirstOrDefault(r => r.Kod == RepairNodeKey(node.KodPolozky));
+                        if (node.GeneratedNode)
+                        {
 
+                        }
                         foreach (NodeAction act in node.Actions.Where(z => z.Url != null && z.Url.Contains(routeUrl)))
                         {
                             if (act.ActionType is NodeActionType.MenuButtonsAll)
@@ -95,22 +98,28 @@ namespace WebEas.Esam.ServiceInterface.Office
                     // kontrola na ListDto
                     if (requestDto.GetType().HasInterface(typeof(IListDto)))
                     {
-                        var userTreeRight = usernoderights.FirstOrDefault(r => r.Kod == RepairNodeKey(((IListDto)requestDto).KodPolozky));
+                        var kodPolozky = RepairNodeKey(((IListDto)requestDto).KodPolozky);
+                        var userTreeRight = usernoderights.FirstOrDefault(r => r.Kod == kodPolozky);
 
                         if (userTreeRight == null || userTreeRight.Pravo == 0)
                         {
-                            throw new WebEasUnauthorizedAccessException();
+                            var node = rootNode.Find(kodPolozky);
+                            if (node == null || !node.GeneratedNode || !HasParentPermissionForGeneratedNode(node, usernoderights))
+                                throw new WebEasUnauthorizedAccessException();
                         }
                     }
 
                     // kontrola na ListComboDto
                     if (requestDto.GetType().HasInterface(typeof(IListComboDto)))
                     {
-                        var userTreeRight = usernoderights.FirstOrDefault(r => r.Kod == RepairNodeKey(((IListComboDto)requestDto).KodPolozky));
+                        var kodPolozky = RepairNodeKey(((IListComboDto)requestDto).KodPolozky);
+                        var userTreeRight = usernoderights.FirstOrDefault(r => r.Kod == kodPolozky);
 
                         if (userTreeRight == null || userTreeRight.Pravo == 0)
                         {
-                            throw new WebEasUnauthorizedAccessException();
+                            var node = rootNode.Find(kodPolozky);
+                            if (node == null || !node.GeneratedNode || !HasParentPermissionForGeneratedNode(node, usernoderights))
+                                throw new WebEasUnauthorizedAccessException();
                         }
                     }
 
@@ -118,23 +127,6 @@ namespace WebEas.Esam.ServiceInterface.Office
             }
 
             base.OnBeforeExecute(requestDto);
-        }
-
-        private static string RepairNodeKey(string nodeKey)
-        {
-            if (nodeKey.ToLower().StartsWith("all-"))
-            {
-                if (nodeKey.Contains("!"))
-                {
-                    nodeKey = HierarchyNodeExtensions.CleanKodPolozky(nodeKey);
-                }
-                else
-                {
-                    nodeKey = HostContext.ServiceName + nodeKey.Substring(3); //Namiesto "all" dám meno modulu
-                }
-            }
-
-            return HierarchyNodeExtensions.RemoveParametersFromKodPolozky(nodeKey);
         }
 
         /// <summary>
@@ -173,38 +165,6 @@ namespace WebEas.Esam.ServiceInterface.Office
             }
 
             return data;
-        }
-
-        /// <summary>
-        /// Gets the session info.
-        /// </summary>
-        /// <returns></returns>
-        protected object GetSessionInfo()
-        {
-            return new
-            {
-                Version = Context.Info.ApplicationVersion,
-                Released = Context.Info.Updated.ToString("dd.MM.yyyy HH:mm"),
-                Environment = this.Repository.DbEnvironment,
-                DbDeployed = Repository.DbDeployTime?.ToString("dd.MM.yyyy HH:mm"),
-                IsRedisCache = Cache is ServiceStack.Redis.RedisClientManagerCacheClient,
-                Repository.Session
-            };
-        }
-
-        private Dictionary<string, string> GetPropertyList(Type type)
-        {
-            var properties = new Dictionary<string, string>();
-
-            foreach (PropertyInfo p in type.GetProperties())
-            {
-                string name = p.HasAttribute<DataMemberAttribute>() ? string.IsNullOrEmpty(p.FirstAttribute<DataMemberAttribute>().Name) ? p.Name.ToLower() : p.FirstAttribute<DataMemberAttribute>().Name.ToLower() : p.Name.ToLower();
-                string dbName = p.HasAttribute<AliasAttribute>() ? p.FirstAttribute<AliasAttribute>().Name : p.Name;
-
-                properties.AddIfNotExists(name, dbName);
-            }
-
-            return properties;
         }
 
         /// <summary>
@@ -256,5 +216,66 @@ namespace WebEas.Esam.ServiceInterface.Office
             });
         }
 
+        /// <summary>
+        /// Gets the session info.
+        /// </summary>
+        /// <returns></returns>
+        protected object GetSessionInfo()
+        {
+            var dbReleased = Repository.GetNastavenieD("sys", "Deploy");
+            return new
+            {
+                Version = Context.Info.ApplicationVersion,
+                Released = Context.Info.Updated.ToString("dd.MM.yyyy HH:mm"),
+                Environment = Repository.GetNastavenieS("sys", "Environment"),
+                DbReleased = dbReleased.HasValue ? dbReleased.Value.ToString("dd.MM.yyyy HH:mm") : string.Empty,
+                IsRedisCache = Cache is ServiceStack.Redis.RedisClientManagerCacheClient,
+                Repository.Session
+            };
+        }
+
+        private Dictionary<string, string> GetPropertyList(Type type)
+        {
+            var properties = new Dictionary<string, string>();
+
+            foreach (PropertyInfo p in type.GetProperties())
+            {
+                string name = p.HasAttribute<DataMemberAttribute>() ? string.IsNullOrEmpty(p.FirstAttribute<DataMemberAttribute>().Name) ? p.Name.ToLower() : p.FirstAttribute<DataMemberAttribute>().Name.ToLower() : p.Name.ToLower();
+                string dbName = p.HasAttribute<AliasAttribute>() ? p.FirstAttribute<AliasAttribute>().Name : p.Name;
+
+                properties.AddIfNotExists(name, dbName);
+            }
+
+            return properties;
+        }
+        private static string RepairNodeKey(string nodeKey)
+        {
+            if (nodeKey.ToLower().StartsWith("all-"))
+            {
+                if (nodeKey.Contains("!"))
+                {
+                    nodeKey = HierarchyNodeExtensions.CleanKodPolozky(nodeKey);
+                }
+                else
+                {
+                    nodeKey = HostContext.ServiceName + nodeKey.Substring(3); //Namiesto "all" dám meno modulu
+                }
+            }
+            return HierarchyNodeExtensions.RemoveParametersFromKodPolozky(nodeKey);
+        }
+
+        private bool HasParentPermissionForGeneratedNode(HierarchyNode node, List<UserNodeRight> usernoderights)
+        {
+            if (node.GeneratedNode && node.Parent != null)
+            {
+                return HasParentPermissionForGeneratedNode(node.Parent, usernoderights);
+            }
+            else
+            {
+                var kodPolozky = RepairNodeKey(node.KodPolozky);
+                var userTreeRight = usernoderights.FirstOrDefault(r => r.Kod == kodPolozky);
+                return userTreeRight != null && userTreeRight.Pravo != 0;
+            }
+        }
     }
 }

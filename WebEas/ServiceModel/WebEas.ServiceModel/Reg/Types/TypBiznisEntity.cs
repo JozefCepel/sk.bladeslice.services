@@ -42,14 +42,14 @@ namespace WebEas.ServiceModel.Office.Egov.Reg.Types
         /// <value>The C_TypBiznisEnity_Id.</value>
         [PrimaryKey]
         [AutoIncrement]
-        [DataMember]        
+        [DataMember]
         public short C_TypBiznisEntity_Id { get; set; }
 
         /// <summary>
         /// Gets or sets the C_StavovyPriestor_Id.
         /// </summary>
         /// <value>The C_StavovyPriestor_Id.</value>
-        [DataMember]        
+        [DataMember]
         [PfeSort(Rank = 1)]
         public int C_StavovyPriestor_Id { get; set; }
 

@@ -74,5 +74,11 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Dap
 
         [DataMember]
         public int CisloVymeru { get; set; }
+
+        [DataMember]
+        public string RcIco { get; set; }
+
+        [DataMember]
+        public string MenoNazov { get; set; }
     }
 }

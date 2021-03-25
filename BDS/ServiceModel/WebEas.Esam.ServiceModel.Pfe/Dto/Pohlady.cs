@@ -86,7 +86,7 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
     /// </summary>
     [Route("/pohladyWithDefault/{KodPolozky}", "GET")]
     [Route("/pohladyWithDefault/{KodPolozky}/{Id}", "GET")]
-    [Route("/pohladyWithDefault/{KodPolozky}/{Id}/{Browser}", "GET")]
+    [Route("/pohladyWithDefault/{KodPolozky}/{Id}/{Browser}/{KodPolozkyModulu}", "GET")]
     [Api("Získanie existujúcich pohľadov pre kód položky")]    
     [DataContract]
     public class ListPohladyWithDefault
@@ -102,6 +102,10 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
         [ApiMember(Name = "Browser", Description = "Vráť pohľady, ktoré sú zaškrtnuté ako BrowserDialóg", DataType = "bool", IsRequired = false)]
         [DataMember]
         public bool? Browser { get; set; }
+
+        [ApiMember(Name = "KodPolozkyModulu", Description = "Kod polozky aktualneho modulu na FE", DataType = "string", IsRequired = false)]
+        [DataMember]
+        public string KodPolozkyModulu { get; set; }
 
         [DataMember(Name = "filters")]
         public string Filter { get; set; }

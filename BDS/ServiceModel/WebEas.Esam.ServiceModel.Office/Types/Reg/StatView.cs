@@ -6,6 +6,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
 {
     [Schema("reg")]
     [Alias("V_Stat")]
+    [Cached]
     [DataContract]
     public class StatView : StatCis, IBaseView
     {

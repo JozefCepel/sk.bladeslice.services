@@ -23,7 +23,7 @@ namespace WebEas.UnitTest
     {
         public BaseTest()
         {
-            Licensing.RegisterLicense(@"8008-e1JlZjo4MDA4LE5hbWU6IkRBVEFMQU4sIGEucy4iLFR5cGU6QnVzaW5lc3MsTWV0YTowLEhhc2g6TzZNRlQxNGFTb1RyV2J3OVJtQkk5T0YwUVQxUTdYUVZLc1Q4OTZCTURyV00yVG1SdlFTeGlNR0J2elljM2dnMGUxZlpTRGxmV1JmYjhGa0RURUlRMG5IU0hSaFMyYzU3T0FPS0pvaXJXdzZZTzN3a2RpWWNNL2dtYnlsTnFScDMxVUVZY2FSZklaWkxoamxXMzlod25WRHRyZ0tBVURjWnpMa0NtWGY0d2ZvPSxFeHBpcnk6MjAyMS0wMy0yM30=");
+            Licensing.RegisterLicense(@"17741-e1JlZjoxNzc0MSxOYW1lOiJEQVRBTEFOLCBhLnMuIixUeXBlOkJ1c2luZXNzLE1ldGE6MCxIYXNoOlhBeTIxZi9GZUtGR1ZGRk1pTmlabXZVazhuc1lDLzA5ZGdlbGVJS0VjQUw1OVdEWnY0MnN2OFJVSGtsdXZ2ODJ6aUdDdFBKVE1DTUZObHBEY2huZzV2RmNLejFMcnJvbzVBQkJXZGwyWVdoeDZvVTRyZm9Jc2pKRnp1dlF1UCtuaCtZeGNmUkE5LzZsZFVrUWQvckR2dkhIQkpuelIxUjFPV1krM2YwUVc1bz0sRXhwaXJ5OjIwMjItMDMtMjR9");
         }
 
         public EsamSession CreateLitavaUserSession()
@@ -59,9 +59,13 @@ namespace WebEas.UnitTest
 
         protected BasicAppHost GetBasicAppHost(string connectionString, string modul, EsamSession session = null, List<Assembly> assemblies = null)
         {
+#if ITP
+            connectionString = connectionString.Replace("sd1esamdb31.datalan.sk\\SQL2017", "st1esamdb31.datalan.sk\\SQL2019");
+#endif
             var appHost = new BasicAppHost
             {
                 TestMode = true,
+                ServiceName = "EsamUnitTest",
                 ConfigureContainer = container =>
                 {
                     container.Adapter = new NinjectContainerAdapter(NinjectContainerAdapter.CreateKernel());

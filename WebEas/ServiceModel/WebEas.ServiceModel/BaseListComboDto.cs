@@ -15,5 +15,11 @@ namespace WebEas.ServiceModel
 
         [DataMember]
         public string RequiredField { get; set; }
+        
+        [DataMember]
+        public string Value { get; set; }
+
+        [DataMember(Name = "af")]
+        public string AdditionalFields { get; set; }
     }
 }

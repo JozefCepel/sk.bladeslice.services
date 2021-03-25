@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using WebEas.ServiceModel;
-using WebEas.ServiceModel.Office.Egov.Reg.Types;
 
 namespace WebEas.Esam.ServiceModel.Office.Types.Reg
 {
@@ -61,6 +60,14 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                   AllowComboCustomValue = true)]
         [StringLength(40)]
         public new string VS { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Záloha", Xtype = PfeXType.Link)] //Kvoli URL - LoadWhenVisible = False
+        public string BiznisEntitaPopis_ZF { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "_URL", Editable = false, ReadOnly = true)] //Natvrdo v kóde hľadá k PfeXType.Link - field URL
+        public string URL { get; set; }
 
         //audit stlpce
         [DataMember]

@@ -199,7 +199,7 @@ namespace WebEas.ServiceModel
         public SingleModeActionEnum SingleModeAction { get; set; }
 
         /// <summary>
-        /// Napr. reporty, tie sa potom na FE spracovavaju genericky a nemusi sa pri novom reporte na to robit uprava
+        /// Napr. zostavy, tie sa potom na FE spracovavaju genericky a nemusi sa pri novom reporte na to robit uprava
         /// </summary>
         /// <value>Typ skupiny</value>
         [DataMember(Name = "tyg")]

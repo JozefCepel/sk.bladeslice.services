@@ -906,19 +906,27 @@ namespace WebEas.ServiceInterface
                 var sqlOrderPart = new StringBuilder();
                 var sorts = new List<PfeSortAttribute>();
                 string optionRecompile = "";
+                string tenantFld = "D_Tenant_Id";
 
                 #region Select part
 
                 foreach (FieldDefinition def in fieldDefinition)
                 {
+                    if (def.Name == tenantFld && def.FieldName != tenantFld)
+                    {
+                        tenantFld = def.FieldName; //.PropertyInfo.FirstAttribute<AliasAttribute>().Name;
+                    }
+
                     if (hiddenFields != null && hiddenFields.Contains(def.FieldName))
                     {
                         if (def.PropertyInfo.HasAttribute<PfeColumnAttribute>())
                         {
-                            if (def.PropertyInfo.FirstAttribute<PfeColumnAttribute>().LoadWhenVisible)
+                            //Vypnute 9.2.2021
+                            continue;
+                            /*if (def.PropertyInfo.FirstAttribute<PfeColumnAttribute>().LoadWhenVisible)
                             {
                                 continue;
-                            }
+                            }*/
                         }
                     }
 
@@ -1057,18 +1065,18 @@ namespace WebEas.ServiceInterface
                 {
                     if (isTenantEntity)
                     {
-                        whereFilter.AndEq("D_Tenant_Id", repository.Session.TenantIdGuid.Value);
+                        whereFilter.AndEq(tenantFld, repository.Session.TenantIdGuid.Value);
                     }
                     else
                     {
                         whereFilter.And(Filter.OrElements(
-                            FilterElement.Eq("D_Tenant_Id", repository.Session.TenantIdGuid.Value),
-                            FilterElement.Null("D_Tenant_Id")));
+                            FilterElement.Eq(tenantFld, repository.Session.TenantIdGuid.Value),
+                            FilterElement.Null(tenantFld)));
                     }
                 }
                 else if ((isTenantEntity || isTenantEntityNullable) && repository.Session.TenantId == null)
                 {
-                    whereFilter.AndNull("D_Tenant_Id", false);
+                    whereFilter.AndNull(tenantFld, false);
                 }
 
                 #region IBeforeGetList
@@ -1198,7 +1206,7 @@ namespace WebEas.ServiceInterface
 
         public static void ChangeFilterCondition(Filter filter, string findString, string replaceString)
         {
-            
+
         }
 
         private static readonly ILog logDb = LogManager.GetLogger(typeof(OrmLiteReadCommandExtensions));
@@ -1747,10 +1755,16 @@ namespace WebEas.ServiceInterface
         {
             p.ParameterName = dialectProvider.GetParam(dialectProvider.SanitizeFieldNameForParamName(fieldDef.FieldName));
             dialectProvider.InitDbParam(p, fieldDef.ColumnType);
+
             // pri timespane sa dbtype nenastavi, zabere to az pri sqldbtype
             if ((fieldDef.ColumnType == typeof(System.TimeSpan) || fieldDef.ColumnType == typeof(System.TimeSpan?)) && p is System.Data.SqlClient.SqlParameter)
             {
-                ((System.Data.SqlClient.SqlParameter)p).SqlDbType = SqlDbType.Time;
+                ((SqlParameter)p).SqlDbType = SqlDbType.Time;
+            }
+
+            if (fieldDef.ColumnType == typeof(string) && p is SqlParameter)
+            {
+                ((SqlParameter)p).SqlDbType = SqlDbType.NVarChar;
             }
         }
 

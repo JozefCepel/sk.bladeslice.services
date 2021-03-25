@@ -17,8 +17,9 @@ namespace WebEas.Context
         public static string ApplicationVersion
         {
             get
-            { 
-                return EntryAssembly.GetName().Version.ToString();
+            {
+                //return EntryAssembly.GetName().Version.ToString();
+                return EntryAssembly.GetName().Version.Revision.ToString();
             }
         }
 

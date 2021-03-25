@@ -29,7 +29,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Uct
 
         [DataMember]
         [PfeCombo(typeof(UctOsnovaView), ComboDisplayColumn = nameof(UctOsnovaView.SU), ComboIdColumn = nameof(UctOsnovaView.SU),
-            AdditionalWhereSql = "LEN(SU) = 3",
+            AdditionalWhereSql = "LEN(SU) = 3", SearchComboFromLeft = true,
             AdditionalFields = new string[] { nameof(UctOsnovaView.Nazov), nameof(UctOsnovaView.Typ), nameof(UctOsnovaView.Druh), nameof(UctOsnovaView.SDK) })]
         [PfeColumn(Text = "SÚ", Xtype = PfeXType.SearchFieldSS, Mandatory = true)]
         [StringLength(3)]

@@ -20,7 +20,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         [DataMember]
         [PfeColumn(Text = "_TypeElement_Id")]
         [Ignore]
-        public string TypeElement_Id { get { return "1_" + C_Stredisko_Id; } }
+        public string TypeElement_Id => "1_" + C_Stredisko_Id;
 
         [DataMember]
         [PfeColumn(Text = "Nadradená ORJ")]

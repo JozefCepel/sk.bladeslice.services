@@ -239,6 +239,7 @@ namespace WebEas.ServiceModel
 
                     if (!el.Field.ToLower().Equals("inputsearchfield") && //Špeciálne kvôli performance je field "InputSearchField" otagovaný tiež ako [Ignored] ale filtrovať ho chcem
                         !el.Field.ToLower().Equals("globalrecord") &&     //Globálne záznamy sa filtrujú špeciálne
+                        !el.Field.ToLower().Equals("typeelement_id") &&   //Field "TypeElement_Id" je otagovaný ako [Ignored] ale vo DB viewe sa nachádza
                         allFields.IgnoredFieldDefinitions.Any(item => item.FieldName.ToLower() == el.Field.ToLower()))
                     {
                         throw new WebEasValidationException(null, $"Filter obsahuje nedatabázové pole '{el.Field}', ktoré nie je možné filtrovať!");

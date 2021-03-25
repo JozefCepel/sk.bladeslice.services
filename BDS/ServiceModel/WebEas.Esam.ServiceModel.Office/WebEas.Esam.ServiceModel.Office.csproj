@@ -57,6 +57,13 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ITP|AnyCPU'">
+    <OutputPath>bin\ITP\</OutputPath>
+    <DefineConstants>TRACE;ITP</DefineConstants>
+    <Optimize>true</Optimize>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -97,9 +104,11 @@
     <Compile Include="PossibleStatesResult.cs" />
     <Compile Include="Types\Cfe\Combos\UserComboView.cs" />
     <Compile Include="Types\Cfe\TenantSimpleView.cs" />
+    <Compile Include="Types\Crm\AdresaComboView.cs" />
     <Compile Include="Types\Crm\FaHelper.cs" />
     <Compile Include="Types\Dap\VymerPolViewHelper.cs" />
     <Compile Include="Types\Fin\DokladBAN.cs" />
+    <Compile Include="Types\Fin\DokladCRMPol.cs" />
     <Compile Include="Types\Fin\DokladBANPol.cs" />
     <Compile Include="Types\Fin\DokladBANPolViewHelper.cs" />
     <Compile Include="Types\Fin\DokladBANView.cs" />
@@ -112,13 +121,14 @@
     <Compile Include="Types\Cfe\OrsElementTypeUsersView.cs" />
     <Compile Include="Types\Cfe\OrsElementUserView.cs" />
     <Compile Include="Types\Osa\Osoba.cs" />
+    <Compile Include="Types\Osa\IOsobaExt.cs" />
     <Compile Include="Types\Osa\OsobaKontakt.cs" />
     <Compile Include="Types\Osa\OsobaKontaktView.cs" />
     <Compile Include="Types\Osa\OsobaTPSidloComboView.cs" />
     <Compile Include="Types\Osa\OsobaTyp.cs" />
     <Compile Include="Types\Osa\OsobaTypView.cs" />
     <Compile Include="Types\Osa\OsobaView.cs" />
-    <Compile Include="Types\Reg\BankaCis.cs" />
+    <Compile Include="Types\Reg\Banka.cs" />
     <Compile Include="Types\Reg\BankaUcetCis.cs" />
     <Compile Include="Types\Reg\BankaUcetView.cs" />
     <Compile Include="Types\Reg\BankaView.cs" />
@@ -130,10 +140,12 @@
     <Compile Include="Types\Reg\BiznisEntita_ParovanieView.cs" />
     <Compile Include="Types\Reg\CislovanieCis.cs" />
     <Compile Include="Types\Reg\CislovanieView.cs" />
+    <Compile Include="Types\Reg\DphSadzba.cs" />
     <Compile Include="Types\Reg\Lokalita.cs" />
     <Compile Include="Types\Reg\Mena.cs" />
+    <Compile Include="Types\Reg\DphSadzbaView.cs" />
     <Compile Include="Types\Reg\MenaView.cs" />
-    <Compile Include="Types\Reg\PokladnicaCis.cs" />
+    <Compile Include="Types\Reg\Pokladnica.cs" />
     <Compile Include="Types\Reg\PokladnicaView.cs" />
     <Compile Include="Types\Reg\PredkontaciaCis.cs" />
     <Compile Include="Types\Reg\Projekt.cs" />
@@ -159,14 +171,14 @@
     <Compile Include="Types\Rzp\FRFK.cs" />
     <Compile Include="Types\Rzp\FRZdrojCis.cs" />
     <Compile Include="Types\Rzp\FRZdrojView.cs" />
-    <Compile Include="Types\Rzp\Program.cs" />
+    <Compile Include="Types\Rzp\ProgramCis.cs" />
     <Compile Include="Types\Rzp\RzpPolZmenaViewHelper.cs" />
     <Compile Include="Types\Rzp\RzpPolNavrhViewHelper.cs" />
     <Compile Include="Types\Rzp\RzpDennikViewHelper.cs" />
     <Compile Include="Types\Rzp\RzpPol.cs" />
     <Compile Include="Types\Uct\PredkontaciaRzpViewHelper.cs" />
     <Compile Include="Types\Rzp\RzpDennik.cs" />
-    <Compile Include="Types\Rzp\TypRzpCis.cs" />
+    <Compile Include="Types\Rzp\RzpTyp.cs" />
     <Compile Include="Types\Uct\DokladIND.cs" />
     <Compile Include="Types\Uct\DokladINDView.cs" />
     <Compile Include="Types\Uct\PredkontaciaCombo.cs" />

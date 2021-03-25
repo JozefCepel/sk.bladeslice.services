@@ -17,7 +17,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Uct
 
         [DataMember]
         [PfeColumn(Text = "_C_OrganizaciaTyp_Id")]
-        public int? C_OrganizaciaTyp_Id { get; set; }
+        public byte? C_OrganizaciaTyp_Id { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Platnosť od", Type = PfeDataType.Date)]

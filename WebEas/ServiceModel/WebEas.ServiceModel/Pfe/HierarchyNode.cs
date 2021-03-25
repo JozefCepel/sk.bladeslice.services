@@ -50,7 +50,7 @@ namespace WebEas.ServiceModel
         /// </summary>
         /// <param name="kod">The kod.</param>
         /// <param name="nazov">The nazov.</param>
-        public HierarchyNode(string kod, string nazov, Type modelType = null, Filter additionalFilter = null, 
+        public HierarchyNode(string kod, string nazov, Type modelType = null, Filter additionalFilter = null,
                              string typ = HierarchyNodeType.Unknown, string icon = HierarchyNodeIconCls.Unknown, PfeSelection selectionMode = PfeSelection.Single, bool crossModulItem = false)
         {
             this.Kod = kod;
@@ -153,6 +153,9 @@ namespace WebEas.ServiceModel
                 return false;
             }
         }
+
+        [IgnoreDataMember]
+        public bool GeneratedNode { get; set; }
 
         /// <summary>
         /// Gets the full node path (like "dap-pod-chyb") include parameters
@@ -588,12 +591,19 @@ namespace WebEas.ServiceModel
         }
 
         [IgnoreDataMember]
-        public WebEas.ServiceModel.Office.Egov.Reg.Types.TypBiznisEntityEnum[] TyBiznisEntity { get; set; }
+        public Office.Egov.Reg.Types.TypBiznisEntityEnum[] TypBiznisEntity { get; set; }
+
         [IgnoreDataMember]
         public int? TypBiznisEntityKnihaIntExt { get; set; }
 
+        [DataMember(Name = "dt")]
+        public string DialogTyp { get; set; }
+
         public static bool HasRolePrivileges(NodeAction act, UserNodeRight nodeRight)
         {
+            if (nodeRight == null)
+                return true;
+
             bool hasActionRight = act.ActionType.GetType().GetField(act.ActionType.ToString()).HasAttribute<PfeRightAttribute>();
             if (!hasActionRight)
                 return false;
@@ -622,9 +632,10 @@ namespace WebEas.ServiceModel
 
         public virtual object Render(List<UserNodeRight> roles, List<string> itemsToExclude)
         {
-            var userNodeRight = roles.FirstOrDefault(r => r.Kod == HierarchyNodeExtensions.RemoveParametersFromKodPolozky(HierarchyNodeExtensions.CleanKodPolozky(KodPolozky)));
-            
-            if (userNodeRight != null && userNodeRight.Pravo != 0)
+            string kp = HierarchyNodeExtensions.RemoveParametersFromKodPolozky(HierarchyNodeExtensions.CleanKodPolozky(KodPolozky));
+            var userNodeRight = roles.FirstOrDefault(r => r.Kod == kp);
+
+            if (userNodeRight != null && userNodeRight.Pravo != 0 || KodPolozky.Contains("private") || KodPolozky.Contains("share") || GeneratedNode)
             {
                 HierarchyNode node = this.Clone();
                 node.Children = new List<HierarchyNode>();
@@ -632,7 +643,7 @@ namespace WebEas.ServiceModel
 
                 foreach (NodeAction act in this.Actions)
                 {
-                    if (HierarchyNode.HasRolePrivileges(act, userNodeRight))
+                    if (KodPolozky.Contains("private") || KodPolozky.Contains("share") || GeneratedNode || HasRolePrivileges(act, userNodeRight))
                     {
                         node.Actions.Add(act);
                     }

@@ -2,7 +2,10 @@
 using Ninject.Web.Common;
 using ServiceStack;
 using ServiceStack.Logging;
+using ServiceStack.Messaging;
+using ServiceStack.Messaging.Redis;
 using ServiceStack.OrmLite;
+using ServiceStack.Redis;
 using WebEas.Auth;
 using WebEas.Esam.ServiceInterface.Office;
 using WebEas.Esam.ServiceInterface.Office.Cfe;
@@ -14,6 +17,7 @@ using WebEas.Esam.ServiceInterface.Office.Osa;
 using WebEas.Esam.ServiceInterface.Office.Reg;
 using WebEas.Esam.ServiceInterface.Office.Rzp;
 using WebEas.Esam.ServiceInterface.Office.Uct;
+using WebEas.Esam.ServiceInterface.Office.Vyk;
 using WebEas.Esam.ServiceInterface.Pfe;
 using WebEas.Esam.ServiceModel.Office;
 using WebEas.ServiceInterface;
@@ -51,7 +55,7 @@ namespace WebEas.Esam.Pfe
             {
                 WsdlServiceNamespace = "http://schemas.dcom.sk/private/Egov/pfe/1.0",
                 SoapServiceName = "EsamPfe",
-#if DEBUG || DEVELOP || INT
+#if DEBUG || DEVELOP || INT || ITP
                 DebugMode = true,
                 EnableFeatures = Feature.All.Remove(this.disableFeaturesDebug),
 #else
@@ -61,6 +65,19 @@ namespace WebEas.Esam.Pfe
                 DefaultContentType = MimeTypes.Json,
                 AllowJsonpRequests = true
             });
+
+            container.Register<IMessageService>(c => new RedisMqServer(c.Resolve<IRedisClientsManager>()));
+            container.Resolve<IMessageService>().RegisterHandler<WebEas.ServiceModel.Dto.LongOperationStatus>(m =>
+            {
+                using (var redisClient = base.Resolve<IRedisClientsManager>().GetClient())
+                {
+                    var longOperationStatus = m.GetBody();
+                    ProcessLongOperationStatus(longOperationStatus, redisClient);
+                }
+                return null;
+            });
+
+            container.Resolve<IMessageService>().Start();
         }
 
         /// <summary>
@@ -81,6 +98,7 @@ namespace WebEas.Esam.Pfe
             kernel.Bind<IRegRepository, IWebEasRepositoryBase>().To<RegRepository>().InRequestScope();
             kernel.Bind<IRzpRepository, IWebEasRepositoryBase>().To<RzpRepository>().InRequestScope();
             kernel.Bind<IUctRepository, IWebEasRepositoryBase>().To<UctRepository>().InRequestScope();
+            kernel.Bind<IVykRepository, IWebEasRepositoryBase>().To<VykRepository>().InRequestScope();
 
             kernel.Bind<IPfeRepository, IRepositoryBase> ().To<PfeRepository>().InRequestScope();
 

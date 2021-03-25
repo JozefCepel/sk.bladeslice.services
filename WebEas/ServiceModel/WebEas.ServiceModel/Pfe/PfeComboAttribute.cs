@@ -40,11 +40,12 @@ namespace WebEas.ServiceModel
         /// <param name="filterByOrsPravo">Filtrovanie hodnot na zaklade ORS prava, "OrsPravo > Read"</param>
         /// <param name="singleComboFilter">Single combo filter v ribbone</param>
         /// <param name="allowComboCustomValue">Ak je True, je možné do comba vložiť vlastnú hodnotu</param>
+        /// <param name="searchComboFromLeft ">Ak je True, v combe sa vyhľadáva po zadaní textu vždy zľava</param>
         /// <param name="tpl">Formatovany string ako sa budu v combe zobrazovat hodnoty.</param>
         /// <param name="minCharSearch">FE bude volať combo službu až po zadaní minimálne tohoto počtu znakov (pre > 0)</param>
         public PfeComboAttribute(Type tableType, string idColumn = null, string comboDisplayColumn = null, string comboIdColumn = null,
                                  string[] additionalFields = null, bool filterByOrsPravo = false, string customSortSqlExp = null,
-                                 bool singleComboFilter = false, bool allowComboCustomValue = false, string tpl = null, int minCharSearch = 0)
+                                 bool singleComboFilter = false, bool allowComboCustomValue = false, bool searchComboFromLeft = false, string tpl = null, int minCharSearch = 0)
         {
             TableType = tableType;
             IdColumn = idColumn;
@@ -55,6 +56,7 @@ namespace WebEas.ServiceModel
             FilterByOrsPravo = filterByOrsPravo;
             SingleComboFilter = singleComboFilter;
             AllowComboCustomValue = allowComboCustomValue;
+            SearchComboFromLeft = searchComboFromLeft;
             Tpl = tpl;
             MinCharSearch = minCharSearch;
         }
@@ -162,5 +164,10 @@ namespace WebEas.ServiceModel
         /// Ak je True, je možné do comba vložiť vlastnú hodnotu
         /// </summary>
         public bool AllowComboCustomValue { get; set; }
+
+        /// <summary>
+        /// Ak je True, v combe sa vyhľadáva po zadaní textu vždy zľava
+        /// </summary>
+        public bool SearchComboFromLeft { get; set; }
     }
 }

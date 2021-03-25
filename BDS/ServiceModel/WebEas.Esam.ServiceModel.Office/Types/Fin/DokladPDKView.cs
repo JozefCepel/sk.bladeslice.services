@@ -67,13 +67,14 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Fin
         public string DokladVyhotovil { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_D_OsobaKontakt_Id_Komu")]
-        public long? D_OsobaKontakt_Id_Komu { get; set; }
+        [PfeColumn(Text = "_D_User_Id_Podpisal")]
+        public Guid? D_User_Id_Podpisal { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Kontaktná osoba",  RequiredFields = new[] { nameof(D_Osoba_Id) })]
-        [PfeCombo(typeof(OsobaKontaktView), IdColumn = nameof(D_OsobaKontakt_Id_Komu), ComboDisplayColumn = nameof(OsobaKontaktView.FormatMenoCombo))]
-        public string DokladKomu { get; set; }
+        [PfeColumn(Text = "Schválil")]
+        [PfeCombo(typeof(UserComboView), IdColumn = nameof(D_User_Id_Podpisal), ComboDisplayColumn = nameof(UserComboView.FullName), AdditionalWhereSql = "C_Modul_Id = 6")]
+        public string PodpisalMeno { get; set; }
+
 
         [DataMember]
         [PfeColumn(Text = "Starý zostatok", ReadOnly = true)]
@@ -86,7 +87,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Fin
         [DataMember]
         [PfeColumn(Text = "DCOM", DefaultValue = 0, ReadOnly = true)]
         public bool DCOM { get; set; }
-        
+
         [DataMember]
         [PfeColumn(Text = "Vytvoril", Hidden = true, Editable = false, ReadOnly = true, LoadWhenVisible = true)]
         public string VytvorilMeno { get; set; }
@@ -94,11 +95,6 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Fin
         [DataMember]
         [PfeColumn(Text = "Zmenil", Hidden = true, Editable = false, ReadOnly = true, LoadWhenVisible = true)]
         public string ZmenilMeno { get; set; }
-
-        [DataMember]
-        [PfeColumn(Text = "Predkontácia", Mandatory = true, RequiredFields = new[] { nameof(C_TypBiznisEntity_Kniha_Id) })]
-        [PfeCombo(typeof(PredkontaciaCombo), IdColumn = nameof(C_Predkontacia_Id), ComboDisplayColumn = nameof(PredkontaciaCombo.Nazov))]
-        public string Predkontacia { get; set; }
 
         [DataMember]
         [HierarchyNodeParameter]
@@ -138,11 +134,11 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Fin
                     node.Actions.Add(na);
                 }
 
-                var dokladKomu = model.Fields.FirstOrDefault(p => p.Name == nameof(DokladKomu));
+                var osobaKontaktKomu = model.Fields.FirstOrDefault(p => p.Name == nameof(OsobaKontaktKomu));
 
-                dokladKomu.Validator ??= new PfeValidator { Rules = new List<PfeRule>() };
+                osobaKontaktKomu.Validator ??= new PfeValidator { Rules = new List<PfeRule>() };
 
-                dokladKomu.Validator.Rules.Add(new PfeRule
+                osobaKontaktKomu.Validator.Rules.Add(new PfeRule
                 {
                     ValidatorType = PfeValidatorType.SetLabel,
                     Label = "Prijaté od",
@@ -159,7 +155,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Fin
                     }
                 });
 
-                dokladKomu.Validator.Rules.Add(new PfeRule
+                osobaKontaktKomu.Validator.Rules.Add(new PfeRule
                 {
                     ValidatorType = PfeValidatorType.SetLabel,
                     Label = "Vydané komu",

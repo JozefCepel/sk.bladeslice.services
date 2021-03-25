@@ -51,7 +51,7 @@ namespace WebEas
             }
 
             string tbl = "";
-            string link = "<a href=\"https://esam-dev.datalan.sk/#CFE/cfe-admin-users-modul!3\" target=\"_blank\">reg - Registre</a>";
+            string link = "<a href=\"#CFE/cfe-admin-users-modul!3\" target=\"_blank\">reg - Registre</a>";
 
             Match matchTable = rgTbl.Match(innerException.Message);
             if (matchTable.Success)
@@ -85,7 +85,7 @@ namespace WebEas
                 else if (tbl.Contains("C_Druh"))
                 {
                     tbl = "Druhy daní a poplatkov";
-                    link = "<a href=\"https://esam-dev.datalan.sk/#CFE/cfe-admin-users-modul!9\" target=\"_blank\">dap - Pohľadávky DaP</a>";
+                    link = "<a href=\"#CFE/cfe-admin-users-modul!9\" target=\"_blank\">dap - Pohľadávky DaP</a>";
                 }
                 this.MessageUser = $"Prihlásený používateľ nemá pridelené právo 'Upravovať' na typ prvku ORŠ - '{tbl}' ! " +
                                    $"Kontaktujte svojho administrátora pre nastavenie práv v položke {link}. Záložka 'Typy a Prvky ORŠ'.";

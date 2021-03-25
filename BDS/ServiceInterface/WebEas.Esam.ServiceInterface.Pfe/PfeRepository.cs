@@ -344,9 +344,9 @@ namespace WebEas.Esam.ServiceInterface.Pfe
 
                 if (selectedNode != null)
                 {
-                    if (selectedNode.TyBiznisEntity != null && selectedNode.TyBiznisEntity.Any())
+                    if (selectedNode.TypBiznisEntity != null && selectedNode.TypBiznisEntity.Any())
                     {
-                        selectedNode.DefaultValues.Add(new NodeFieldDefaultValue(nameof(BiznisEntita.C_TypBiznisEntity_Id), (short)selectedNode.TyBiznisEntity.First()));
+                        selectedNode.DefaultValues.Add(new NodeFieldDefaultValue(nameof(BiznisEntita.C_TypBiznisEntity_Id), (short)selectedNode.TypBiznisEntity.First()));
                     }
 
                     PfeDataModel dataModel = selectedNode.GetDataModel(this, selectedView, null, request.Filter, current?.Parameter, current?.Kod);
@@ -376,7 +376,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                     {
                         result.KodPolozky = request.KodPolozky;
                     }
-                    else if (request.KodPolozky != null && request.KodPolozky.StartsWith("dms-id"))
+                    else if (request.KodPolozky != null && request.KodPolozky.StartsWith("dms-dok"))
                     {
                         result.KodPolozky = request.KodPolozky;
                         // Pri DMS akcie dotiahneme pre aktualnu polozku
@@ -514,6 +514,10 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                         if (actionDeleteIndex == -1)
                         {
                             result.Actions.Add(new NodeAction(NodeActionType.Copy) { Url = nodeActionCreate?.Url });
+                        }
+                        else if (result.KodPolozky.StartsWith("dms-"))
+                        {
+                            //Do DMS je akcia Copy zbytočná. Mätie pri iných akciách a samotné skopírovanie nekopíruje súbor, takže by to mohlo iba zmiasť
                         }
                         else
                         {
@@ -1078,17 +1082,17 @@ namespace WebEas.Esam.ServiceInterface.Pfe
 
         public ContextUser GetContextUser(string moduleShortcut)
         {
+            var dbReleased = GetNastavenieD("sys", "Deploy");
             var user = new ContextUser
             {
                 TenantId = Session.TenantId,
                 ActorId = Session.UserId,
                 FormattedName = Session.DisplayName,
-                Version = string.IsNullOrEmpty(DbEnvironment) ? Context.Info.ApplicationVersion : string.Format("{0}{1}", Context.Info.ApplicationVersion, DbEnvironment.Substring(0, 1).ToLower()),
+                Version = Context.Info.ApplicationVersion,
                 Released = Context.Info.Updated.ToString("dd.MM.yyyy HH:mm"),
-                Environment = DbEnvironment ?? "Test",
-                DbReleased = DbDeployTime == null ? "" : DbDeployTime.Value.ToString("dd.MM.yyyy HH:mm"),
-                DcomAdmin = Session.AdminLevel == AdminLevel.SysAdmin,
-                FilterRok = GetNastavenieI(moduleShortcut.ToLower(), "FilterRok"),
+                Environment = GetNastavenieS("sys", "Environment"),
+                DbReleased = dbReleased.HasValue ? dbReleased.Value.ToString("dd.MM.yyyy HH:mm") : string.Empty,
+                DcomAdmin = Session.AdminLevel == AdminLevel.SysAdmin,                
                 DomenaName = "NOTIMPLEMENTED",
                 VillageName = Session.TenantName,
                 HasMultipleTenants = Session.TenantIds != null && Session.TenantIds.Count > 1,
@@ -1098,6 +1102,8 @@ namespace WebEas.Esam.ServiceInterface.Pfe
 
             if (!string.IsNullOrEmpty(moduleShortcut))
             {
+                var filterRok = GetNastavenieI(moduleShortcut, "FilterRok");
+                user.FilterRok = filterRok == 0 ? DateTime.Today.Year : filterRok;
                 user.ModuleAdmin = Session.HasRole(string.Format("{0}_ADMIN", moduleShortcut.ToUpper()));
             }
 
@@ -1311,7 +1317,8 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// <returns>Post deploy script</returns>
         public RendererResult GenerateMergeScriptGlobalViews(MergeScriptGlobalViews request)
         {
-            if (DbEnvironment == "Develop" || DbEnvironment == "TEST")
+            var environment = GetNastavenieS("sys", "Environment") ?? string.Empty;
+            if (environment.StartsWith("IVP") || environment.StartsWith("ITP"))
             {
                 
                 var nzrModulesFilter = new Filter("ViewSharing", 2);//.And(kodPolozkyFilter);
@@ -1625,7 +1632,6 @@ namespace WebEas.Esam.ServiceInterface.Pfe
             try
             {
                 var webEasRepositoryBase = modules.Single(x => x.Code == GetModuleCode(kodPolozky));
-                //pass session            
                 webEasRepositoryBase.Session = Session;
                 var parentNode = webEasRepositoryBase.RenderModuleRootNode(kodPolozky);
                 if (kodPolozky.ToLower() == parentNode.KodPolozky)

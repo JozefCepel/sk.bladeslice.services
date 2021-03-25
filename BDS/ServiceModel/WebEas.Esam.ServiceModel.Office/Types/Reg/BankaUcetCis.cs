@@ -20,7 +20,11 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         public string C_BankaUcet_Id_Externe { get; set; }
 
         [DataMember]
-        [PfeCombo(typeof(BankaView), ComboDisplayColumn = nameof(BankaView.Kod), ComboIdColumn = nameof(BankaView.Kod), AdditionalFields = new[] { nameof(BankaView.Nazov), nameof(BankaView.BIC) }, AllowComboCustomValue = true)]
+        [PfeCombo(typeof(BankaView),
+            ComboDisplayColumn = nameof(BankaView.Kod), 
+            ComboIdColumn = nameof(BankaView.Kod),
+            AdditionalFields = new[] { nameof(BankaView.Nazov), nameof(BankaView.BIC) },
+            AllowComboCustomValue = true, Tpl = "{value};{Nazov}")]
         [PfeColumn(Text = "Kód banky", Mandatory = true)]
         [StringLength(30)]
         public string Kod { get; set; }
