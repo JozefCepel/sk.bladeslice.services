@@ -191,9 +191,6 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
                     case "bds":
                         modulesInterfaces.Add(typeof(Bds.BdsRepository));
                         break;
-                    case "vyk":
-                        modulesInterfaces.Add(typeof(Vyk.VykRepository));
-                        break;
                     default:
                         throw new NotImplementedException($"Add '{kodModulu}' to modulesInterfaces!");
                 }

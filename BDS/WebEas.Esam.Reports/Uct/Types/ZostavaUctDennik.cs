@@ -82,12 +82,12 @@ namespace WebEas.Esam.Reports.Uct.Types
             dennik.Polozky.Add(p);
         }
 
-        public string StrediskoCaption { get; set; }
         public List<ZostavaUctDennikPol> Polozky { get; set; }
 
         [System.ComponentModel.DataObject]
         public class ZostavaUctDennikPol
         {
+            public string StrediskoCaption { get; set; }  // vies to potom nadesignovat priamo v reporte (nemusis robit Find Object)
             public bool Suv { get; set; }
             public DateTime DatumUctovania { get; set; }  // Dátum
             public string BiznisEntitaPopis { get; set; } // Doklad

@@ -133,6 +133,7 @@ namespace WebEas.Esam.ServiceInterface.Office
             }
         }
 
+        /*
         protected void ConfigureMessageServiceForReports<T>(Funq.Container container) where T : Reports.Dto.ReportDataRequestDto
         {
             Routes.Add<T>("/GetReportData");
@@ -148,6 +149,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                 return response;
             });
         }
+        */
 
         public static void ProcessLongOperationStatus(LongOperationStatus longOperationStatus, IRedisClient redisClient)
         {

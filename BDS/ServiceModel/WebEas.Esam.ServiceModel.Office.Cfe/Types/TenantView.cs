@@ -19,6 +19,10 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
         public string TenantTypeName { get; set; }
 
         [DataMember]
+        [PfeColumn(Text = "_OrganizaciaTyp", ReadOnly = true)]
+        public byte C_OrganizaciaTyp_Id { get; set; }
+
+        [DataMember]
         [PfeColumn(Text = "Organization type", Mandatory = true)]
         [PfeCombo(typeof(OrganizaciaTypView), IdColumn = nameof(C_OrganizaciaTyp_Id), ComboDisplayColumn = nameof(OrganizaciaTypView.Nazov))]
         public string OrganizaciaTypNazov { get; set; }

@@ -90,7 +90,6 @@ namespace WebEas.Esam.Reports.Uct.Types
         public string klucCaption1 { get; set; }
         public string klucCaption2 { get; set; }
         public string klucCaption3 { get; set; }
-        public string StrediskoCaption { get; set; }
         public int rok { get; set; }
         public byte? obdobieOd { get; set; }
         public DateTime? datumOd { get; set; }

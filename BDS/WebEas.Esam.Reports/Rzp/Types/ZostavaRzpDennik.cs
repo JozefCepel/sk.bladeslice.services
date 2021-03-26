@@ -90,7 +90,6 @@ namespace WebEas.Esam.Reports.Rzp.Types
 
             dennik.Polozky.Add(p);
         }
-        public string StrediskoCaption { get; set; }
         public List<ZostavaRzpDennikPol> Polozky { get; set; }
 
         [System.ComponentModel.DataObject]

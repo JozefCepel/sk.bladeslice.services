@@ -91,11 +91,13 @@ namespace WebEas.Esam.ServiceModel.Office
 
         public Dictionary<string, string> RequiredFields { get; set; }
 
+        /*
         public List<IComboResult> GetComboList(string[] requestFields, string value)
         {
             byte[] list = new byte[] { 0, 1, 2, 3 };
             return list.Select(a => new ComboResult() { Id = a.ToString(), Value = GetText(a) }).ToList();
         }
+        */
 
         public static string GetText(byte id)
         {

@@ -61,8 +61,8 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
         [DataMember]
         public long? D_PO_Osoba_Id { get; set; }
 
-        [DataMember]
-        public Guid? IsoId { get; set; }
+        //[DataMember]
+        //public Guid? IsoId { get; set; }
 
         [DataMember]
         public string Telefon { get; set; }
@@ -92,7 +92,7 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
             data.Databaza = Databaza;
             data.D_Tenant_Id_Externe = D_Tenant_Id_Externe;
             data.D_PO_Osoba_Id = D_PO_Osoba_Id;
-            data.IsoId = IsoId;
+            //data.IsoId = IsoId;
             data.Telefon = Telefon;
             data.Fax = Fax;
             data.Email = Email;

@@ -262,9 +262,6 @@ namespace WebEas.ServiceModel
         [EnumMember(Value = "0xf068")]
         FasFaMinus,
 
-
-    #region DMS
-
         #region BDS
 
         [EnumMember(Value = "0xf046")]

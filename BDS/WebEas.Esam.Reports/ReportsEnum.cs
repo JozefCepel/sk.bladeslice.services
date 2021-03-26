@@ -6,6 +6,7 @@
 
         HlaKnihaReport,
         UctDennikReport,
+        UctDokladReport,
 
         #endregion
 

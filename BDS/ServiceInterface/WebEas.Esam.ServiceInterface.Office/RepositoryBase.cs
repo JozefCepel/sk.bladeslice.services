@@ -149,7 +149,6 @@ namespace WebEas.Esam.ServiceInterface.Office
                 {
                     string riesitel = piRiesitel == null ? null : (string)piRiesitel.GetValue(baseEntity);
                     Guid? tenantId = piTenantId == null ? null : (Guid?)piTenantId.GetValue(baseEntity);
-                    int pohladId = piPohladId == null ? 0 : (int?)piPohladId.GetValue(baseEntity) ?? 0;
                     Guid? osobaId = piOsoba == null ? null : (Guid?)piOsoba.GetValue(baseEntity);
                     bool jeRiesitel = string.IsNullOrEmpty(riesitel) || dcomId == riesitel.ToUpper();
 

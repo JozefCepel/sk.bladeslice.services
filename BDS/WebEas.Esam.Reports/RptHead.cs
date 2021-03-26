@@ -12,11 +12,13 @@ namespace WebEas.Esam.Reports
         public string PSC { get; set; }
         public string Obec { get; set; }
         public string OrganizaciaTyp { get; set; }
-        public int OrganizaciaTyp_Id { get; set; }
+        public byte OrganizaciaTyp_Id { get; set; }
         public string Telefon { get; set; }
         public string Fax { get; set; }
         public string Mail { get; set; }
         public string Vytlacil { get; set; }
+        public string RptPath { get; set; } = "bin/Reports/"; // Design a Release cesta byva ina (pouziva sa pre subreporty)
+        public string StrediskoCaption { get; set; }  // volitelny nazov strediska
         public string Sidlo
         {
             get { return Ulica + ", " + PSC + " " + Obec; }
@@ -25,7 +27,6 @@ namespace WebEas.Esam.Reports
         {
             get { return Nazov + " (" + Sidlo + ")"; }
         }
-
         public List<ZostavaFilter> Filtre { get; set; }
 
         // ---------------------------------
