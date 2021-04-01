@@ -24,6 +24,7 @@ using WebEas.Esam.Reports.Uct.Types;
 using WebEas.Esam.ServiceModel.Office;
 using WebEas.Esam.ServiceModel.Office.Cfe.Types;
 using WebEas.Esam.ServiceModel.Office.Dto;
+using WebEas.Esam.ServiceModel.Office.Types.Crm;
 using WebEas.Esam.ServiceModel.Office.Types.Fin;
 using WebEas.Esam.ServiceModel.Office.Types.Osa;
 using WebEas.Esam.ServiceModel.Office.Types.Reg;
@@ -1255,6 +1256,11 @@ namespace WebEas.Esam.ServiceInterface.Office
                 be = GetById<BiznisEntita>(data.D_BiznisEntita_Id);
             }
 
+            if (!create && be.C_StavEntity_Id != (int)StavEntityEnum.NOVY && (data.DM_DPH1 != be.DM_DPH1 || data.DM_DPH2 != be.DM_DPH2))
+            {
+                throw new WebEasException($"Zmena DPH je možná iba v stave 'Nový'!");
+            }
+
             // spolocne
             be.C_Lokalita_Id = data.C_Lokalita_Id;
             be.DatumDokladu = data.DatumDokladu;
@@ -1747,7 +1753,13 @@ namespace WebEas.Esam.ServiceInterface.Office
                             tbe == (short)TypBiznisEntityEnum.PDK ||
                             tbe == (short)TypBiznisEntityEnum.IND);
 
-                if (!uhr && tbe != (short)TypBiznisEntityEnum.DFA && tbe != (short)TypBiznisEntityEnum.OFA)
+                if (!uhr &&
+                    tbe != (short)TypBiznisEntityEnum.DFA &&
+                    tbe != (short)TypBiznisEntityEnum.OFA &&
+                    tbe != (short)TypBiznisEntityEnum.DOB &&
+                    tbe != (short)TypBiznisEntityEnum.DZF &&
+                    tbe != (short)TypBiznisEntityEnum.OOB &&
+                    tbe != (short)TypBiznisEntityEnum.OZF)
                 {
                     foreach (var id in request.D_BiznisEntita_Ids)
                     {
@@ -1759,6 +1771,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                 List<UctDennik> uctDennikList = new List<UctDennik>();
                 List<UctDennikViewHelper> uctDennikSdkFA = new List<UctDennikViewHelper>();
                 List<DokladBANPolViewHelper> dokladBanPol = null;
+                List<DokladCRMPolViewHelper> dokladCrmPol = null;
                 List<UhradaParovanieViewHelper> uhradaParovanie = null;
                 List<BiznisEntita_ZalohaView> zalohyFaktury = null;
 
@@ -1798,10 +1811,22 @@ namespace WebEas.Esam.ServiceInterface.Office
                     dokladBanPol = GetList(Db.From<DokladBANPolViewHelper>().Where(e => Sql.In(e.D_BiznisEntita_Id, request.D_BiznisEntita_Ids) && e.Rok == biznisEntity.First().Rok));
                 }
 
-                if (tbe == (short)TypBiznisEntityEnum.DFA || tbe == (short)TypBiznisEntityEnum.OFA)
+                var platneDph = new List<DphSadzbaView>();
+                if (tbe == (short)TypBiznisEntityEnum.DFA ||
+                    tbe == (short)TypBiznisEntityEnum.OFA ||
+                    tbe == (short)TypBiznisEntityEnum.DOB ||
+                    tbe == (short)TypBiznisEntityEnum.DZF ||
+                    tbe == (short)TypBiznisEntityEnum.OOB |
+                    tbe == (short)TypBiznisEntityEnum.OZF)
                 {
                     //Dávam VIEW aby som mal ošetrené zmazané záznamy
                     zalohyFaktury = GetList(Db.From<BiznisEntita_ZalohaView>().Where(e => Sql.In(e.D_BiznisEntita_Id_FA, request.D_BiznisEntita_Ids) && e.Rok == biznisEntity.First().Rok));
+                    dokladCrmPol = GetList(Db.From<DokladCRMPolViewHelper>().Where(e => Sql.In(e.D_BiznisEntita_Id, request.D_BiznisEntita_Ids) && e.Rok == biznisEntity.First().Rok));
+
+                    var flt = new Filter();
+                    flt.And(FilterElement.LessThanOrEq("PlatnostOd", DateTime.Today));
+                    flt.And(new Filter(FilterElement.Eq("PlatnostDo", null)).Or(FilterElement.GreaterThanOrEq("PlatnostDo", DateTime.Today)));
+                    platneDph = GetList<DphSadzbaView>(flt);
                 }
 
 
@@ -1876,7 +1901,11 @@ namespace WebEas.Esam.ServiceInterface.Office
                         switch ((TypBiznisEntityEnum)be.C_TypBiznisEntity_Id)
                         {
                             case TypBiznisEntityEnum.DFA:
+                            case TypBiznisEntityEnum.DOB:
+                            case TypBiznisEntityEnum.DZF:
                             case TypBiznisEntityEnum.OFA:
+                            case TypBiznisEntityEnum.OOB:
+                            case TypBiznisEntityEnum.OZF:
                                 string typBe1 = ((TypBiznisEntityEnum)be.C_TypBiznisEntity_Id).ToString();
                                 var data1 = Db.Select<(string, string, decimal)>($@"SELECT SS AS Item1, KS AS Item2, DM_SumaKUhr AS Item3
                                                                 FROM crm.V_Doklad{typBe1} 
@@ -1885,14 +1914,10 @@ namespace WebEas.Esam.ServiceInterface.Office
                                 KS = data1.Item2;
                                 DM_SumaKUhr = data1.Item3;
                                 break;
-
                             /* //Tieto typy dokladov sa do ÚČT neúčtujú, takže je to zbytočné
-                            case TypBiznisEntityEnum.DOB:
-                            case TypBiznisEntityEnum.OOB:
                             case TypBiznisEntityEnum.DZM:
                             case TypBiznisEntityEnum.OZM:
-                            case TypBiznisEntityEnum.DZF:
-                            case TypBiznisEntityEnum.OZF:
+
                                 string typBe2 = ((TypBiznisEntityEnum)be.C_TypBiznisEntity_Id).ToString();
                                 var data2 = Db.Select<(string, string)>($@"SELECT SS AS Item1, KS AS Item2 
                                                                 FROM crm.D_Doklad{typBe2} 
@@ -1993,6 +2018,49 @@ namespace WebEas.Esam.ServiceInterface.Office
                                     CreateUctDennikFromParovanieUhrad(uctDennikList, ucty, predkontacieUct, uctDennikSdkFA, ref nevyhovujucePolozky, be, banPol, uhrPar, kniha, tbe, strediskoId, bankaUcetId, pokladnicaId, projektId, osobaId, false);
                                     CreateUctDennikFromParovanieUhrad(uctDennikList, ucty, predkontacieUct, uctDennikSdkFA, ref nevyhovujucePolozky, be, banPol, uhrPar, kniha, tbe, strediskoId, bankaUcetId, pokladnicaId, projektId, osobaId, true);
                                 }
+
+                            }
+                        }
+                        else if (dokladCrmPol != null)
+                        {
+                            foreach (var crmPol in dokladCrmPol.Where(b => b.D_BiznisEntita_Id == be.D_BiznisEntita_Id).OrderBy(x => x.Poradie))
+                            {
+                                //Vyfiltruj riadky predkontácie, ktoré vyhovujú a všetky vygeneruj
+                                var predkontCrmPolozky = predkontacieUct.Where(
+                                    x => x.Polozka &&
+                                    x.C_Predkontacia_Id == be.C_Predkontacia_Id &&
+                                    x.C_Typ_Id == crmPol.C_Typ_Id &&
+                                    (x.C_Stredisko_Id == null || x.C_Stredisko_Id == crmPol.C_Stredisko_Id) &&
+                                    (x.C_Projekt_Id == null || x.C_Projekt_Id == crmPol.C_Projekt_Id) &&
+                                    (x.SadzbaDph_Id == -1 ||x.SadzbaDph_Id == platneDph.First(x => x.DPH == crmPol.DPH).C_DPHSadzba_Id) &&
+                                    (x.KS == null || x.KS == KS) &&
+                                    (x.SS == null || x.SS == SS) &&
+                                    (x.VS == null || x.VS == VS));
+
+                                if (predkontCrmPolozky.Count() > 0)
+                                {
+                                    foreach (var def2 in predkontCrmPolozky)
+                                    {
+                                        
+                                        uctDennikList.Add(CreateUctDennikSingleRow(ucty, be, null, null, def2, tbe, kniha, crmPol.C_Stredisko_Id, crmPol.C_Projekt_Id, osobaId, VS, be.DatumDokladu, Math.Round(Math.Abs(crmPol.Mnozstvo * crmPol.DM_Cena), 2, MidpointRounding.AwayFromZero), crmPol.Poradie, Math.Abs(crmPol.Mnozstvo * crmPol.DM_Cena) != crmPol.Mnozstvo * crmPol.DM_Cena, false, false, null, false, ref nevyhovujucePolozky, null));
+                                    }
+                                }
+
+                                //TODO : skontrolovat
+                                /*else
+                                {
+                                    if (crmPol.C_Typ_Id != (int)TypEnum.UhradaPohZav)
+                                    {
+                                        uctDennikList.Add(CreateUctDennikSingleRow(ucty, be, crmPol, null, null, tbe, kniha, strediskoId, projektId, osobaId, null, be.DatumDokladu, Math.Abs(crmPol.Suma), crmPol.Poradie, Math.Abs(crmPol.Suma) != crmPol.Suma, false, false, null, true, ref nevyhovujucePolozky, null));
+                                    }
+                                }*/
+
+                                //Párovanie úhrad jednej položky:
+                                /*foreach (UhradaParovanieViewHelper uhrPar in uhradaParovanie.Where(b => b.D_DokladBANPol_Id == crmPol.D_DokladBANPol_Id).OrderBy(x => x.Poradie))
+                                {
+                                    CreateUctDennikFromParovanieUhrad(uctDennikList, ucty, predkontacieUct, uctDennikSdkFA, ref nevyhovujucePolozky, be, crmPol, uhrPar, kniha, tbe, strediskoId, bankaUcetId, pokladnicaId, projektId, osobaId, false);
+                                    CreateUctDennikFromParovanieUhrad(uctDennikList, ucty, predkontacieUct, uctDennikSdkFA, ref nevyhovujucePolozky, be, crmPol, uhrPar, kniha, tbe, strediskoId, bankaUcetId, pokladnicaId, projektId, osobaId, true);
+                                }*/
 
                             }
                         }
@@ -2158,6 +2226,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                 List<RzpDennik> rzpDennikList = new List<RzpDennik>();
                 List<RzpDennikViewHelper> rzpDennikPredbezne = null;
                 List<DokladBANPolViewHelper> dokladBanPol = null;
+                List<DokladCRMPolViewHelper> dokladCrmPol = null;
                 List<UhradaParovanieViewHelper> uhradaParovanie = null;
 
                 var biznisEntity = GetList(Db.From<BiznisEntitaView>().
@@ -2223,6 +2292,16 @@ namespace WebEas.Esam.ServiceInterface.Office
                             x.PrijemVydaj
                         }).
                         Where(x => Sql.In(x.C_RzpPol_Id, rzpDennikPredbezne.Select(u => u.C_RzpPol_Id).Distinct()))));
+                }
+
+                if (tbe == (short)TypBiznisEntityEnum.DFA ||
+                    tbe == (short)TypBiznisEntityEnum.OFA ||
+                    tbe == (short)TypBiznisEntityEnum.DOB ||
+                    tbe == (short)TypBiznisEntityEnum.DZF ||
+                    tbe == (short)TypBiznisEntityEnum.OOB |
+                    tbe == (short)TypBiznisEntityEnum.OZF)
+                {
+                    dokladCrmPol = GetList(Db.From<DokladCRMPolViewHelper>().Where(e => Sql.In(e.D_BiznisEntita_Id, request.D_BiznisEntita_Ids) && e.Rok == biznisEntity.First().Rok));
                 }
 
                 try
@@ -2328,6 +2407,44 @@ namespace WebEas.Esam.ServiceInterface.Office
                                     CreateRzpDennikFromParovanieUhrad(rzpDennikList, kniha, predkontacieRzp, rzpPolozky, rzpDennikPredbezne, be, strediskoId, projektId, osobaId, banPol, uhrPar, ref nevyhovujucePolozky);
                                 }
 
+                            }
+                        } 
+                        else if (dokladCrmPol != null)
+                        {
+                            foreach (var crmPol in dokladCrmPol.Where(b => b.D_BiznisEntita_Id == be.D_BiznisEntita_Id).OrderBy(x => x.Poradie))
+                            {
+                                //Vyfiltruj riadky predkontácie, ktoré vyhovujú a všetky vygeneruj
+                                var predkontCrmPolozky = predkontacieRzp.Where(
+                                    x => 
+                                    x.Polozka &&
+                                    x.C_Typ_Id == crmPol.C_Typ_Id &&
+                                    x.C_Predkontacia_Id == be.C_Predkontacia_Id &&
+                                    (x.C_Projekt_Id == null || x.C_Projekt_Id == crmPol.C_Projekt_Id));
+
+                                if (predkontCrmPolozky.Count() > 0)
+                                {
+                                    foreach (var def2 in predkontCrmPolozky)
+                                    {
+                                        rzpDennikList.Add(CreateRzpDennikSingleRow(rzpPolozky, be, strediskoId, projektId, null, null, def2, null, Math.Round(Math.Abs(crmPol.Mnozstvo * crmPol.DM_Cena), 2, MidpointRounding.AwayFromZero), crmPol.Poradie));
+                                    }
+                                }
+                                //TODO: skontrolovat
+                                /*else
+                                {
+                                    if (crmPol.C_Typ_Id != (int)TypEnum.UhradaPohZav)
+                                    {
+                                        nevyhovujucePolozky.AddIfNotExists((be.D_BiznisEntita_Id, 1, crmPol.Poradie));
+                                        //Pridám riadok ale bez rzp. položky a programu
+                                        rzpDennikList.Add(CreateRzpDennikSingleRow(rzpPolozky, be, strediskoId, projektId, crmPol, null, null, null, Math.Abs(crmPol.Suma), crmPol.Poradie));
+                                    }
+                                }
+
+                                //Párovanie úhrad jednej položky:
+                                foreach (UhradaParovanieViewHelper uhrPar in uhradaParovanie.Where(b => b.D_DokladBANPol_Id == crmPol.D_DokladBANPol_Id).OrderBy(x => x.Poradie))
+                                {
+                                    CreateRzpDennikFromParovanieUhrad(rzpDennikList, kniha, predkontacieRzp, rzpPolozky, rzpDennikPredbezne, be, strediskoId, projektId, osobaId, crmPol, uhrPar, ref nevyhovujucePolozky);
+                                }
+                                */
                             }
                         }
                         else if (uhradaParovanie != null) //Pokladňa a Vzájomné zápočty IND
@@ -4692,6 +4809,87 @@ namespace WebEas.Esam.ServiceInterface.Office
                 {
                     // Debug.WriteLine("-> " + propFrom.Name);
                     propTo.SetValue(toObject, propFrom.GetValue(fromObject, null), null);
+                }
+            }
+        }
+
+        protected void UpdateDmSumaDokl(long be_Id, short rok, TypBiznisEntityEnum typdokladu)
+        {
+            if (typdokladu == TypBiznisEntityEnum.IND)
+            {
+                //Sumu v IND zatiaľ neriešime
+            }
+            else
+            {
+                using var transaction = BeginTransaction();
+
+                if (rok == default)
+                {
+                    var be = GetById<BiznisEntita>(be_Id, nameof(BiznisEntita.Rok));
+                    rok = be.Rok;
+                }
+
+                if (typdokladu == TypBiznisEntityEnum.BAN)
+                {
+                    Db.ExecuteNonQuery("UPDATE fin.V_DokladBAN_Sumy SET DM_Suma = ISNULL(DM_Suma_Dynamic, 0.00) " +
+                                       "WHERE D_BiznisEntita_Id = @be_Id AND Rok = @rok AND D_Tenant_Id = @tenantId AND " +
+                                       "      DM_Suma <> ISNULL(DM_Suma_Dynamic, 0.00)", new { be_Id, rok, tenantId = Session.TenantId });
+                }
+                else if (typdokladu == TypBiznisEntityEnum.PDK)
+                {
+                    //Vykoná UPDATE na tabuľke reg.D_BiznisEntita
+                    Db.ExecuteNonQuery("UPDATE fin.V_DokladPDK_Sumy SET "
+                                    + "      DM_Suma = DM_Suma_Dynamic, "
+                                    + "      DM_Zak0 = DM_Zak0_Dynamic "
+                                    + "WHERE D_BiznisEntita_Id = @be_Id AND Rok = @rok AND D_Tenant_Id = @tenantId AND "
+                                    + "     (DM_Suma <> DM_Suma_Dynamic OR "
+                                    + "      DM_Zak0 <> DM_Zak0_Dynamic)", new { be_Id, rok, tenantId = Session.TenantId });
+
+                    //Vykoná UPDATE na tabuľke fin.D_DokladPDK
+                    Db.ExecuteNonQuery("UPDATE fin.V_DokladPDK_Sumy SET "
+                                    + "      DM_Uhrady = DM_Uhrady_Dynamic "
+                                    + "WHERE D_BiznisEntita_Id = @be_Id AND Rok = @rok AND D_Tenant_Id = @tenantId AND "
+                                    + "     (DM_Uhrady <> DM_Uhrady_Dynamic)", new { be_Id, rok, tenantId = Session.TenantId });
+                }
+                else if(typdokladu == TypBiznisEntityEnum.OZM ||
+                        typdokladu == TypBiznisEntityEnum.OZF ||
+                        typdokladu == TypBiznisEntityEnum.OOB ||
+                        typdokladu == TypBiznisEntityEnum.OFA ||
+                        typdokladu == TypBiznisEntityEnum.ODP ||
+                        typdokladu == TypBiznisEntityEnum.OCP ||
+                        typdokladu == TypBiznisEntityEnum.DZM ||
+                        typdokladu == TypBiznisEntityEnum.DZF ||
+                        typdokladu == TypBiznisEntityEnum.DOL ||
+                        typdokladu == TypBiznisEntityEnum.DOB ||
+                        typdokladu == TypBiznisEntityEnum.DFA ||
+                        typdokladu == TypBiznisEntityEnum.DDP ||
+                        typdokladu == TypBiznisEntityEnum.DCP)
+                {
+                    //Vykoná UPDATE na tabuľke reg.D_BiznisEntita
+                    Db.ExecuteNonQuery(@"UPDATE crm.V_DokladCRM_Sumy SET 
+                                            DM_Zak0 = DM_Zak_0_Dynamic,
+                                            DM_Zak1 = DM_Zak_1_Dynamic,
+                                            DM_Zak2 = DM_Zak_2_Dynamic,
+                                            DM_DPH1 = DM_DPH1_Dynamic,
+                                            DM_DPH2 = DM_DPH2_Dynamic,
+                                            DM_Suma = DM_Suma_Dynamic
+                                        WHERE D_BiznisEntita_Id = @be_Id AND Rok = @rok AND D_Tenant_Id = @tenantId AND 
+                                               (DM_Zak0 = DM_Zak_0_Dynamic OR
+                                                DM_Zak1 = DM_Zak_1_Dynamic OR
+                                                DM_Zak2 = DM_Zak_2_Dynamic OR
+                                                DM_DPH1 = DM_DPH1_Dynamic OR
+                                                DM_DPH2 = DM_DPH2_Dynamic OR
+                                                DM_Suma = DM_Suma_Dynamic)
+                                        ", new { be_Id, rok, tenantId = Session.TenantId });
+                }
+                else
+                {
+                    throw new NotImplementedException("Nepodporovany typ dokladu"); ;
+                }
+
+                if (transaction != null)
+                {
+                    transaction.Commit();
                 }
             }
         }

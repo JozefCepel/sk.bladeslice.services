@@ -117,15 +117,15 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         public decimal DM_CV { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Základ - bez DPH", Tooltip = "Suma základu pre nulovú sadzbu DPH (v domácej mene)", DefaultValue = 0)]
+        [PfeColumn(Text = "Základ - bez DPH", Tooltip = "Suma základu pre nulovú sadzbu DPH (v domácej mene)", DefaultValue = 0, ReadOnly = true)]
         public decimal DM_Zak0 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Základ - znížená sadzba", Tooltip = "Suma základov znížených sadzieb DPH (v domácej mene)", DefaultValue = 0)]
+        [PfeColumn(Text = "Základ - znížená sadzba", Tooltip = "Suma základov znížených sadzieb DPH (v domácej mene)", DefaultValue = 0, ReadOnly = true)]
         public decimal DM_Zak1 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Základ - základná sadzba", Tooltip = "Suma základu pre základnú sadzbu DPH (v domácej mene)", DefaultValue = 0)]
+        [PfeColumn(Text = "Základ - základná sadzba", Tooltip = "Suma základu pre základnú sadzbu DPH (v domácej mene)", DefaultValue = 0, ReadOnly = true)]
         public decimal DM_Zak2 { get; set; }
 
         [DataMember]
@@ -145,15 +145,15 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         public decimal CM_CV { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_Z-Základ - bez DPH", Tooltip = "Suma základu pre nulovú sadzbu DPH (v mene dokladu)", DefaultValue = 0)]
+        [PfeColumn(Text = "_Z-Základ - bez DPH", Tooltip = "Suma základu pre nulovú sadzbu DPH (v mene dokladu)", DefaultValue = 0, ReadOnly = true)]
         public decimal CM_Zak0 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_Z-Základ - znížená sadzba", Tooltip = "Suma základov znížených sadzieb DPH (v mene dokladu)", DefaultValue = 0)]
+        [PfeColumn(Text = "_Z-Základ - znížená sadzba", Tooltip = "Suma základov znížených sadzieb DPH (v mene dokladu)", DefaultValue = 0, ReadOnly = true)]
         public decimal CM_Zak1 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_Z-Základ - základná sadzba", Tooltip = "Suma základu pre základnú sadzbu DPH (v mene dokladu)", DefaultValue = 0)]
+        [PfeColumn(Text = "_Z-Základ - základná sadzba", Tooltip = "Suma základu pre základnú sadzbu DPH (v mene dokladu)", DefaultValue = 0, ReadOnly = true)]
         public decimal CM_Zak2 { get; set; }
 
         [DataMember]

@@ -1,0 +1,169 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{0C445A3D-404C-469E-83E0-FA5D795EAB80}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WebEas.Esam.ServiceInterface.Office.Reg</RootNamespace>
+    <AssemblyName>WebEas.Esam.ServiceInterface.Office.Reg</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Develop|AnyCPU'">
+    <OutputPath>bin\Develop\</OutputPath>
+    <DefineConstants>TRACE;DEVELOP</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Test|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;TEST</DefineConstants>
+    <Optimize>true</Optimize>
+    <ExcludeGeneratedDebugSymbol>true</ExcludeGeneratedDebugSymbol>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Prod|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ITP|AnyCPU'">
+    <OutputPath>bin\ITP\</OutputPath>
+    <DefineConstants>TRACE;ITP</DefineConstants>
+    <Optimize>true</Optimize>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\WebEas\ServiceInterface\WebEas.ServiceInterface\WebEas.ServiceInterface.csproj">
+      <Project>{E2A6581B-C2D4-42E4-A5D6-14EA0753EE7D}</Project>
+      <Name>WebEas.ServiceInterface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\WebEas\ServiceModel\WebEas.ServiceModel\WebEas.ServiceModel.csproj">
+      <Project>{1B40E5EE-7311-46E7-8241-D9F0C443905D}</Project>
+      <Name>WebEas.ServiceModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\WebEas\WebEas.Core.Common\WebEas.Core.Common.csproj">
+      <Project>{362E3C3F-9257-4CE5-8522-2C50A1B1D044}</Project>
+      <Name>WebEas.Core.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\WebEas\WebEas.Core.Interface\WebEas.Core.Interface.csproj">
+      <Project>{E5782D41-FAB9-4CD1-B035-C644DD77C8AF}</Project>
+      <Name>WebEas.Core.Interface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ServiceModel\WebEas.Esam.ServiceModel.Office.Cfe\WebEas.Esam.ServiceModel.Office.Cfe.csproj">
+      <Project>{034E196C-9754-4AE6-86F7-C05DE96B6913}</Project>
+      <Name>WebEas.Esam.ServiceModel.Office.Cfe</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ServiceModel\WebEas.Esam.ServiceModel.Office.Crm\WebEas.Esam.ServiceModel.Office.Crm.csproj">
+      <Project>{7566C528-3DCF-4BE7-8728-3E624A01952C}</Project>
+      <Name>WebEas.Esam.ServiceModel.Office.Crm</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ServiceModel\WebEas.Esam.ServiceModel.Office.Reg\WebEas.Esam.ServiceModel.Office.Reg.csproj">
+      <Project>{BEFA8B1F-6412-4138-BF6B-8E1DE0210933}</Project>
+      <Name>WebEas.Esam.ServiceModel.Office.Reg</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ServiceModel\WebEas.Esam.ServiceModel.Office\WebEas.Esam.ServiceModel.Office.csproj">
+      <Project>{b368a929-aa16-4823-87ec-69e90901d0ed}</Project>
+      <Name>WebEas.Esam.ServiceModel.Office</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ServiceModel\WebEas.Esam.ServiceModel.Urbis\WebEas.Esam.ServiceModel.Urbis.csproj">
+      <Project>{BF87DA80-9CFB-497D-8B32-DC4A0EACECB4}</Project>
+      <Name>WebEas.Esam.ServiceModel.Urbis</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\WebEas.Esam.DcomWs\WebEas.Esam.DcomWs.csproj">
+      <Project>{1EEB9B6E-4027-4F87-A9EC-4D4259902024}</Project>
+      <Name>WebEas.Esam.DcomWs</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WebEas.Esam.ServiceInterface.Office\WebEas.Esam.ServiceInterface.Office.csproj">
+      <Project>{a0b8a0db-8ac5-47e8-925a-862529231d16}</Project>
+      <Name>WebEas.Esam.ServiceInterface.Office</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="IRegRepository.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="RegRepository.Modul.cs" />
+    <Compile Include="RegRepository.cs" />
+    <Compile Include="RegService.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="ServiceStack">
+      <Version>5.10.2</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Korwin_POK.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Korwin_VBU.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Korwin_STR.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Korwin_PRJ.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Urbis_STR.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Urbis_POK.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Urbis_VBU.sql" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

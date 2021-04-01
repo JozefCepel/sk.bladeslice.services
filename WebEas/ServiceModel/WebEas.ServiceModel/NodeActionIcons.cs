@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace WebEas.ServiceModel
 {
@@ -8,253 +7,253 @@ namespace WebEas.ServiceModel
     {
         //[EnumMember(Value = "0xf016")]
         [EnumMember(Value = "")]
-        Default = 0,
+        Default,
 
         [EnumMember(Value = "0xf06e")]
-        Eye = 1,
+        Eye,
 
         [EnumMember(Value = "0xf0b0")]
-        Filter = 2,
+        Filter,
 
         [EnumMember(Value = "0xf112")]
-        Reply = 3,
+        Reply,
 
         [EnumMember(Value = "0xf05a")]
-        InfoCircle = 4,
+        InfoCircle,
 
         [EnumMember(Value = "0xf067")]
-        Plus = 5,
+        Plus,
 
         [EnumMember(Value = "0xf044")]
-        Edit = 6,
+        Edit,
 
         [EnumMember(Value = "0xf1f8")]
-        Trash = 7,
+        Trash,
 
         [EnumMember(Value = "0xf234")]
-        UserPlus = 8,
+        UserPlus,
 
         [EnumMember(Value = "0xf0c7")]
-        FloppyO = 9,
+        FloppyO,
 
         [EnumMember(Value = "0xf129")]
-        Info = 10,
+        Info,
 
         [EnumMember(Value = "0xf0f6")]
-        FileTextO = 11,
+        FileTextO,
 
         [EnumMember(Value = "0xf07b")]
-        Folder = 12,
+        Folder,
 
         [EnumMember(Value = "0xf153")]
-        Euro = 13,
+        Euro,
 
         [EnumMember(Value = "0xf064")]
-        Share = 14,
+        Share,
 
         [EnumMember(Value = "0xf022")]
-        ListAlt = 15,
+        ListAlt,
 
         [EnumMember(Value = "0xf19c")]
-        Bank = 16,
+        Bank,
 
         [EnumMember(Value = "0xf02f")]
-        Print = 17,
+        Print,
 
         [EnumMember(Value = "0xf019")]
-        Download = 18,
+        Download,
 
         [EnumMember(Value = "0xf093")]
-        Upload = 19,
+        Upload,
 
         [EnumMember(Value = "0xf0c1")]
-        Chain = 20,
+        Chain,
 
         [EnumMember(Value = "0xf127")]
-        ChainBroken = 21,
+        ChainBroken,
 
         [EnumMember(Value = "0xf0c1")]
-        Link = 22,
+        Link,
 
         [EnumMember(Value = "0xf1c3")]
-        FileExcelO = 23,
+        FileExcelO,
 
         [EnumMember(Value = "0xf0ac")]
-        Globe = 24,
+        Globe,
 
         [EnumMember(Value = "0xf0ea")]
-        Clipboard = 25,
+        Clipboard,
 
         [EnumMember(Value = "0xf1ea")]
-        NewspaperO = 26,
+        NewspaperO,
 
         [EnumMember(Value = "0xf0a1")]
-        Bullhorn = 27,
+        Bullhorn,
 
         [EnumMember(Value = "0xf230")]
-        FacebookOfficial = 28,
+        FacebookOfficial,
 
         [EnumMember(Value = "0xf00d")]
-        Close = 29,
+        Close,
 
         [EnumMember(Value = "0xf074")]
-        Random = 31,
+        Random,
 
         [EnumMember(Value = "0xf6dd")]
-        FileCsv = 32,
+        FileCsv,
 
         [EnumMember(Value = "0xf15c")]
-        FileText = 33,
+        FileText,
 
         [EnumMember(Value = "0xf15b")]
-        File = 34,
+        File,
 
         [EnumMember(Value = "0xf1ec")]
-        Calculator = 35,
+        Calculator,
 
         [EnumMember(Value = "0xf044")]
-        PencilSquareO = 37,
+        PencilSquareO,
 
         [EnumMember(Value = "0xf0c4")]
-        Cut = 38,
+        Cut,
 
         [EnumMember(Value = "0xf014")]
-        TrashO = 39,
+        TrashO,
 
         [EnumMember(Value = "0xf13e")]
-        UnlockAlt = 40,
+        UnlockAlt,
 
         [EnumMember(Value = "0xf1c4")]
-        FilePowerpointO = 41,
+        FilePowerpointO,
 
         [EnumMember(Value = "0xf088")]
-        ThumbsODown = 42,
+        ThumbsODown,
 
         [EnumMember(Value = "0xf021")]
-        Refresh = 43,
+        Refresh,
 
         [EnumMember(Value = "0xf003")]
-        EnvelopeO = 44,
+        EnvelopeO,
 
         [EnumMember(Value = "0xf1c1")]
-        FilePdfO = 45,
+        FilePdfO,
 
         [EnumMember(Value = "0xf141")]
-        EllipsisH = 46,
+        EllipsisH,
 
         [EnumMember(Value = "0xf165")]
-        ThumbsDown = 47,
+        ThumbsDown,
 
         [EnumMember(Value = "0xf073")]
-        Calendar = 48,
+        Calendar,
 
         [EnumMember(Value = "0xf200")]
-        PieChart = 49,
+        PieChart,
 
         [EnumMember(Value = "0xf05e")]
-        Ban = 50,
+        Ban,
 
         [EnumMember(Value = "0xf0e3")]
-        Gavel = 51,
+        Gavel,
 
         [EnumMember(Value = "0xf0ec")]
-        Exchange = 52,
+        Exchange,
 
         [EnumMember(Value = "0xf079")]
-        Retweet = 53,
+        Retweet,
 
         [EnumMember(Value = "0xf1b0")]
-        Paw = 54,
+        Paw,
 
         [EnumMember(Value = "0xf015")]
-        Home = 55,
+        Home,
 
         [EnumMember(Value = "0xf1b9")]
-        Car = 56,
+        Car,
 
         [EnumMember(Value = "0xf0ad")]
-        Wrench = 57,
+        Wrench,
 
         [EnumMember(Value = "0xf24d")]
-        Clone = 58,
+        Clone,
 
         [EnumMember(Value = "0xf0c5")]
-        FilesO = 59,
+        FilesO,
 
         [EnumMember(Value = "0xf1c6")]
-        Archive = 60,
+        Archive,
 
         [EnumMember(Value = "0xf2b5")]
-        Handshake = 61,
+        Handshake,
 
         [EnumMember(Value = "0xf0e7")]
-        Bolt = 62,
+        Bolt,
 
         [EnumMember(Value = "0xf2bc")]
-        AddressCard = 63,
+        AddressCard,
 
         [EnumMember(Value = "0xf2c1")]
-        Badge = 64,
+        Badge,
 
         [EnumMember(Value = "0xf164")]
-        ThumbsUp = 65,
+        ThumbsUp,
 
         [EnumMember(Value = "0xf1da")]
-        History = 66,
+        History,
 
         [EnumMember(Value = "0xf017")]
-        Clock = 67,
+        Clock,
 
         [EnumMember(Value = "0xf0e2")]
-        Undo = 68,
+        Undo,
 
         [EnumMember(Value = "0xf084")]
-        Password = 69,
+        Password,
 
         [EnumMember(Value = "0xf0d0")]
-        Magic = 70,
+        Magic,
 
         [EnumMember(Value = "0xf0e7")]
-        FlashBolt = 71,
+        FlashBolt,
 
         [EnumMember(Value = "0xf00c")]
-        Check = 72,
+        Check,
 
         [EnumMember(Value = "0xf14a")]
-        CheckSquare = 73,
+        CheckSquare,
 
         [EnumMember(Value = "0xf058")] //Plny Circle s checkom
-        CheckCircle = 74,
+        CheckCircle,
 
         [EnumMember(Value = "0xf2f1")]
-        SyncAlt = 75,
+        SyncAlt,
 
         [EnumMember(Value = "0xf56f")]
-        FileImport = 76, //fas fa-file-import
+        FileImport, //fas fa-file-import
 
         [EnumMember(Value = "0xf084")]
-        Key = 77,
+        Key,
 
         [EnumMember(Value = "0xf1fa")]
-        At = 78,
+        At,
 
         [EnumMember(Value = "0xf530")]
-        Glasses = 79,
+        Glasses,
 
         [EnumMember(Value = "0xf500")]
-        Friends = 80,
+        Friends,
 
         [EnumMember(Value = "0xf4fa")]
-        UserAltSlash = 81,
+        UserAltSlash,
 
         [EnumMember(Value = "0xf688")]
-        SearchDollar = 82,
+        SearchDollar,
 
         [EnumMember(Value = "0xf3d1")]
-        MoneyBillAlt = 83,
+        MoneyBillAlt,
 
         [EnumMember(Value = "0xf682")]
-        Zostavy = 84,
+        Zostavy,
 
         [EnumMember(Value = "0xf09d")]
         FasFaCreditCard,
@@ -262,26 +261,25 @@ namespace WebEas.ServiceModel
         [EnumMember(Value = "0xf068")]
         FasFaMinus,
 
+        #region DMS
 
-    #region DMS
-
-    /// <summary>
-    /// Ikonka používateľ
-    /// </summary>
-    [EnumMember(Value = "0xf007")]
-        User = 900,
+        /// <summary>
+        /// Ikonka používateľ
+        /// </summary>
+        [EnumMember(Value = "0xf007")]
+        User,
 
         /// <summary>
         /// Ikonka používateľov
         /// </summary>
         [EnumMember(Value = "0xf0c0")]
-        Users = 901,
+        Users,
 
         [EnumMember(Value = "0xf0e0")]
-        Email = 902,
+        Email,
 
         [EnumMember(Value = "0xf002")]
-        Search = 903,
+        Search,
 
         #endregion
     }

@@ -70,8 +70,7 @@ namespace WebEas.Esam.ServiceModel.Office
         Dodavatelia = 2,
         Odberatelia = 3,
         Bankove_vypisy = 8,
-        Prijmove_PD = 51,
-        Vydajove_PD = 52,
+        Pokladnicne_doklady = 50,
         ExtDoklady_DaP = 61,
         ExtDoklady_MJT = 62,
         ExtDoklady_MZD = 63,
@@ -177,10 +176,12 @@ namespace WebEas.Esam.ServiceModel.Office
         BezDialogu = 0,
         [Description("ReportVykazF112")]
         ReportVykazF112 = 1,
-        [Description("VykUct1")]
+        [Description("VykUct1")] //"Obdobie od" je disablované
         VykUct1 = 2,
-        [Description("VykUct2")]
+        [Description("VykUct2")] //"Obdobie od" je enablované
         VykUct2 = 3,
+        [Description("VykUct3")] //"Obdobie od-do" je skryté. Ráta sa od 1-12 za celý rok
+        VykUct3 = 4,
         [Description("UctDennik")]
         UctDennik = 11,
         [Description("RzpDennik")]

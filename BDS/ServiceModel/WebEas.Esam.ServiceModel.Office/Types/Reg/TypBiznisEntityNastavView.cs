@@ -46,6 +46,53 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         [PfeColumn(Text = "Dátum dokladu DV", Mandatory = true, RequiredFields = new[] { nameof(C_TypBiznisEntity_Id) })]
         public string DatumDokladuDV { get; set; }
 
+        [PfeColumn(ReadOnly = true)]
+        [DataMember]
+        public bool Cust_StrediskoNaPolozke { get; set; }
+
+        [PfeColumn(ReadOnly = true)]
+        [DataMember]
+        public bool Cust_ProjektNaPolozke { get; set; }
+
+        [PfeColumn(ReadOnly = true)]
+        [DataMember]
+        public bool Cust_UctKluc1NaPolozke { get; set; }
+
+        [PfeColumn(ReadOnly = true)]
+        [DataMember]
+        public bool Cust_UctKluc2NaPolozke { get; set; }
+
+        [PfeColumn(ReadOnly = true)]
+        [DataMember]
+        public bool Cust_UctKluc3NaPolozke { get; set; }
+
+        [PfeColumn(ReadOnly = true)]
+        [DataMember]
+        public bool Cust_EvidenciaDMS { get; set; }
+
+        [PfeColumn(ReadOnly = true)]
+        [DataMember]
+        public bool Cust_EvidenciaSystem { get; set; }
+
+        [PfeColumn(ReadOnly = true)]
+        [DataMember]
+        public bool Cust_CislovanieJedno { get; set; }
+
+        [PfeColumn(ReadOnly = true)]
+        [DataMember]
+        public bool Cust_DatumDokladuTU { get; set; }
+
+        [PfeColumn(ReadOnly = true)]
+        [DataMember]
+        public bool Cust_DatumDokladuEU { get; set; }
+
+        [PfeColumn(ReadOnly = true)]
+        [DataMember]
+        public bool Cust_DatumDokladuDV { get; set; }
+
+        [PfeColumn(ReadOnly = true)]
+        [DataMember]
+        public bool Cust_UctovatPolozkovite { get; set; }
 
         //audit stlpce
         [DataMember]

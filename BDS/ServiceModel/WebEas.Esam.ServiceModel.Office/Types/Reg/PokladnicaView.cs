@@ -26,6 +26,12 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         [DataMember]
         public DateTime? DatumPlatnosti { get; set; }
 
+        [DataMember]
+        [PfeColumn(Text = "Typ")]
+        [PfeCombo(typeof(TerminalovaTypCombo), IdColumn = nameof(Terminalova))]
+        [Ignore]
+        public string TerminalovaTyp => TerminalovaTypCombo.GetText(Terminalova);
+
         //audit stlpce
         [DataMember]
         [PfeColumn(Text = "Vytvoril", Hidden = true, Editable = false, ReadOnly = true, LoadWhenVisible = true)]
