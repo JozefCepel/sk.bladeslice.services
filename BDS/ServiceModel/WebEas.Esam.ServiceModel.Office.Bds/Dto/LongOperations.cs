@@ -17,7 +17,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     [Route("/long/{OperationName}/_start", "POST")]
     [Api("Bds")]
     [DataContract]
-    public class LongOperationStartDto : LongOperationStartDtoBase
+    public class BdsLongOperationStartDto : LongOperationStartDtoBase
     {
     }
 

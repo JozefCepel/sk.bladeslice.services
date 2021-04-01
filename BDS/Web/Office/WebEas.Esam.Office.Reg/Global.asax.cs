@@ -25,7 +25,7 @@ namespace WebEas.Esam.Office.Reg
         /// <param name="e">The <see cref="System.EventArgs" /> instance containing the event data.</param>
         protected void Application_BeginRequest(object sender, EventArgs e)
         {
-#if DEBUG || DEVELOP || INT
+#if DEBUG || DEVELOP || INT || ITP
             Profiler.Start();
 #else
             if (this.Request.IsLocal)

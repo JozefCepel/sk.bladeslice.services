@@ -29,6 +29,22 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Test|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;TEST</DefineConstants>
+    <Optimize>true</Optimize>
+    <ExcludeGeneratedDebugSymbol>true</ExcludeGeneratedDebugSymbol>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Prod|AnyCPU'">
+    <OutputPath>bin\PROD\</OutputPath>
+    <DefineConstants>TRACE;PROD</DefineConstants>
+    <Optimize>true</Optimize>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -72,13 +88,25 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\PublishProfiles\DevelopProfile.pubxml" />
+    <None Include="Properties\PublishProfiles\ITPProfile.pubxml" />
+    <None Include="Properties\PublishProfiles\ProdProfile.pubxml" />
+    <None Include="Properties\PublishProfiles\TestProfile.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
     <None Include="Web.Develop.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
+    <None Include="Web.ITP.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Prod.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
     <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Test.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
@@ -103,12 +131,9 @@
       <Project>{b85ea2d5-ab2b-425e-be89-42bc75df01f6}</Project>
       <Name>WebEas.Esam.ServiceInterface.Office.Cfe</Name>
     </ProjectReference>
-      <Project>{e85ea2d5-bb2b-425e-be89-d2bc75df04f9}</Project>
-      <Name>WebEas.Esam.ServiceInterface.Office.Bds</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\ServiceInterface\WebEas.Esam.ServiceInterface.Office.Uct\WebEas.Esam.ServiceInterface.Office.Uct.csproj">
-      <Project>{8192e041-11d5-4ba5-a6f6-1bbbbdf21986}</Project>
-      <Name>WebEas.Esam.ServiceInterface.Office.Uct</Name>
+    <ProjectReference Include="..\..\..\ServiceInterface\WebEas.Esam.ServiceInterface.Office.Reg\WebEas.Esam.ServiceInterface.Office.Reg.csproj">
+      <Project>{0c445a3d-404c-469e-83e0-fa5d795eab80}</Project>
+      <Name>WebEas.Esam.ServiceInterface.Office.Reg</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\ServiceInterface\WebEas.Esam.ServiceInterface.Office\WebEas.Esam.ServiceInterface.Office.csproj">
       <Project>{a0b8a0db-8ac5-47e8-925a-862529231d16}</Project>
@@ -118,17 +143,19 @@
       <Project>{034e196c-9754-4ae6-86f7-c05de96b6913}</Project>
       <Name>WebEas.Esam.ServiceModel.Office.Cfe</Name>
     </ProjectReference>
-      <Project>{630888ec-7671-47df-aecd-18bad4ec52ac}</Project>
-      <Name>WebEas.Esam.ServiceModel.Office.Bds</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\ServiceModel\WebEas.Esam.ServiceModel.Office.Uct\WebEas.Esam.ServiceModel.Office.Uct.csproj">
-      <Project>{149d8e1b-1232-4dd0-b100-0897bb31ddef}</Project>
-      <Name>WebEas.Esam.ServiceModel.Office.Uct</Name>
+    <ProjectReference Include="..\..\..\ServiceModel\WebEas.Esam.ServiceModel.Office.Reg\WebEas.Esam.ServiceModel.Office.Reg.csproj">
+      <Project>{befa8b1f-6412-4138-bf6b-8e1de0210933}</Project>
+      <Name>WebEas.Esam.ServiceModel.Office.Reg</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\ServiceModel\WebEas.Esam.ServiceModel.Office\WebEas.Esam.ServiceModel.Office.csproj">
       <Project>{b368a929-aa16-4823-87ec-69e90901d0ed}</Project>
       <Name>WebEas.Esam.ServiceModel.Office</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="ServiceStack">
+      <Version>5.10.2</Version>
+    </PackageReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -145,6 +172,13 @@
     <Optimize>true</Optimize>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ITP|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;ITP</DefineConstants>
+    <Optimize>true</Optimize>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
@@ -154,9 +188,9 @@
         <WebProjectProperties>
           <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>53916</DevelopmentServerPort>
+          <DevelopmentServerPort>59207</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:82/esam/api/office/reg</IISUrl>
+          <IISUrl>http://localhost:85/esam/api/office/reg</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

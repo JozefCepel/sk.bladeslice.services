@@ -139,7 +139,7 @@ namespace WebEas.Esam.ServiceInterface.Office
             HierarchyNode node = Repository.RenderModuleRootNode(request.KodPolozky).FindNode(request.KodPolozky);
             var pagging = new PaggingParameters { PageNumber = request.Page, PageSize = request.Limit };
 
-            var keys = this.Request.QueryString.AllKeys.Except(new string[] { "KodPolozky", "_dc", "page", "start", "limit", "filters", "Mat. group", "sort" }).ToList();
+            var keys = this.Request.QueryString.AllKeys.Except(new string[] { "KodPolozky", "_dc", "page", "start", "limit", "filters", "group", "sort" }).ToList();
             if (keys.Count > 0)
             {
                 Dictionary<string, string> props = this.GetPropertyList(node.ModelType);

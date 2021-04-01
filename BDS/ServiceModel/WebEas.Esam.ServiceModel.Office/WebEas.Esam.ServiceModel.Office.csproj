@@ -105,6 +105,7 @@
     <Compile Include="Types\Cfe\Combos\UserComboView.cs" />
     <Compile Include="Types\Cfe\TenantSimpleView.cs" />
     <Compile Include="Types\Crm\AdresaComboView.cs" />
+    <Compile Include="Types\Crm\DokladCRMPolViewHelper.cs" />
     <Compile Include="Types\Crm\FaHelper.cs" />
     <Compile Include="Types\Dap\VymerPolViewHelper.cs" />
     <Compile Include="Types\Fin\DokladBAN.cs" />

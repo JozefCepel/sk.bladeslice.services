@@ -240,6 +240,9 @@ namespace WebEas.ServiceModel
         public const string ListAlt = "fas fa-list-alt";
 
         [DataMember]
+        public const string Columns = "fas fa-columns";
+
+        [DataMember]
         public const string FileAlt = "fas fa-file-alt";
 
         [DataMember]

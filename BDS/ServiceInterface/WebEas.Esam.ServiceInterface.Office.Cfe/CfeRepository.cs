@@ -186,10 +186,13 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
                 switch (kodModulu)
                 {
                     case "cfe":
-                        modulesInterfaces.Add(typeof(CfeRepository));
+                        modulesInterfaces.Add(typeof(Cfe.CfeRepository));
                         break;
                     case "bds":
                         modulesInterfaces.Add(typeof(Bds.BdsRepository));
+                        break;
+                    case "reg":
+                        modulesInterfaces.Add(typeof(Reg.RegRepository));
                         break;
                     default:
                         throw new NotImplementedException($"Add '{kodModulu}' to modulesInterfaces!");

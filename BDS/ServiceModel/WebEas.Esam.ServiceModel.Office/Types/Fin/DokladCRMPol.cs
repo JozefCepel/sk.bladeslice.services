@@ -54,7 +54,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Crm
         public string MJ { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Množstvo", Mandatory = true, DefaultValue = 0)]
+        [PfeColumn(Text = "Množstvo", Mandatory = true, DecimalPlaces = 4, DefaultValue = 0)]
         public decimal Mnozstvo { get; set; }
 
         [DataMember]

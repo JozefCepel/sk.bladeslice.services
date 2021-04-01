@@ -138,9 +138,9 @@
       <Project>{e85ea2d5-bb2b-425e-be89-d2bc75df04f9}</Project>
       <Name>WebEas.Esam.ServiceInterface.Office.Bds</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\ServiceInterface\WebEas.Esam.ServiceInterface.Office.Vyk\WebEas.Esam.ServiceInterface.Office.Vyk.csproj">
-      <Project>{6d5b7f59-755e-4e77-96e8-b502cf92d39b}</Project>
-      <Name>WebEas.Esam.ServiceInterface.Office.Vyk</Name>
+    <ProjectReference Include="..\..\ServiceInterface\WebEas.Esam.ServiceInterface.Office.Reg\WebEas.Esam.ServiceInterface.Office.Reg.csproj">
+      <Project>{0c445a3d-404c-469e-83e0-fa5d795eab80}</Project>
+      <Name>WebEas.Esam.ServiceInterface.Office.Reg</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\ServiceInterface\WebEas.Esam.ServiceInterface.Office\WebEas.Esam.ServiceInterface.Office.csproj">
       <Project>{a0b8a0db-8ac5-47e8-925a-862529231d16}</Project>
@@ -158,9 +158,9 @@
       <Project>{630888ec-7671-47df-aecd-18bad4ec52ac}</Project>
       <Name>WebEas.Esam.ServiceModel.Office.Bds</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\ServiceModel\WebEas.Esam.ServiceModel.Office.Vyk\WebEas.Esam.ServiceModel.Office.Vyk.csproj">
-      <Project>{2aa4f82b-bb3a-4610-8168-c6cf1a86f5e7}</Project>
-      <Name>WebEas.Esam.ServiceModel.Office.Vyk</Name>
+    <ProjectReference Include="..\..\ServiceModel\WebEas.Esam.ServiceModel.Office.Reg\WebEas.Esam.ServiceModel.Office.Reg.csproj">
+      <Project>{befa8b1f-6412-4138-bf6b-8e1de0210933}</Project>
+      <Name>WebEas.Esam.ServiceModel.Office.Reg</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\ServiceModel\WebEas.Esam.ServiceModel.Office\WebEas.Esam.ServiceModel.Office.csproj">
       <Project>{b368a929-aa16-4823-87ec-69e90901d0ed}</Project>

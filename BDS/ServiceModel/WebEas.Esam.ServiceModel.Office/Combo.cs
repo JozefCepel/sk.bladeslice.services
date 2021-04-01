@@ -1159,4 +1159,37 @@ namespace WebEas.Esam.ServiceModel.Office
             }
         }
     }
+
+    [DataContract]
+    public class TerminalovaTypCombo : IStaticCombo
+    {
+        [DataMember]
+        public string Kod { get; set; }
+
+        [DataMember]
+        public string Nazov { get; set; }
+
+        public string KodPolozky { get; set; }
+
+        public IWebEasRepositoryBase Repository { get; set; }
+
+        public Dictionary<string, string> RequiredFields { get; set; }
+
+        public List<IComboResult> GetComboList(string[] requestFields, string value)
+        {
+            byte[] list = new byte[] { 0, 1, 2 };
+            return list.Select(a => new ComboResult() { Id = a.ToString(), Value = GetText(a) }).ToList<IComboResult>();
+        }
+
+        public static string GetText(byte? kod)
+        {
+            switch (kod)
+            {
+                case 0: return "Hotovostná";
+                case 1: return "Terminálová";
+                case 2: return "Kombinovaná";
+                default: return null;
+            }
+        }
+    }
 }

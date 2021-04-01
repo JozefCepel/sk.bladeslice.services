@@ -10,6 +10,15 @@ using WebEas.Auth;
 using WebEas.Esam.ServiceInterface.Office;
 using WebEas.Esam.ServiceInterface.Office.Cfe;
 using WebEas.Esam.ServiceInterface.Office.Bds;
+//using WebEas.Esam.ServiceInterface.Office.Crm;
+//using WebEas.Esam.ServiceInterface.Office.Dap;
+//using WebEas.Esam.ServiceInterface.Office.Dms;
+//using WebEas.Esam.ServiceInterface.Office.Fin;
+//using WebEas.Esam.ServiceInterface.Office.Osa;
+using WebEas.Esam.ServiceInterface.Office.Reg;
+//using WebEas.Esam.ServiceInterface.Office.Rzp;
+//using WebEas.Esam.ServiceInterface.Office.Uct;
+//using WebEas.Esam.ServiceInterface.Office.Vyk;
 using WebEas.Esam.ServiceInterface.Pfe;
 using WebEas.Esam.ServiceModel.Office;
 using WebEas.ServiceInterface;
@@ -88,7 +97,7 @@ namespace WebEas.Esam.Pfe
             //kernel.Bind<IDmsRepository, IWebEasRepositoryBase>().To<DmsRepository>().InRequestScope();
             //kernel.Bind<IFinRepository, IWebEasRepositoryBase>().To<FinRepository>().InRequestScope();
             //kernel.Bind<IOsaRepository, IWebEasRepositoryBase>().To<OsaRepository>().InRequestScope();
-            //kernel.Bind<IRegRepository, IWebEasRepositoryBase>().To<RegRepository>().InRequestScope();
+            kernel.Bind<IRegRepository, IWebEasRepositoryBase>().To<RegRepository>().InRequestScope();
             //kernel.Bind<IRzpRepository, IWebEasRepositoryBase>().To<RzpRepository>().InRequestScope();
             //kernel.Bind<IUctRepository, IWebEasRepositoryBase>().To<UctRepository>().InRequestScope();
 

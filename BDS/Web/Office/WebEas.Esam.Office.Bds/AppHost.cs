@@ -45,7 +45,7 @@ namespace WebEas.Esam.Office.Bds
                 AllowJsonpRequests = true
             });
 
-            ConfigureMessageServiceForLongOperations<ServiceModel.Office.Bds.Dto.LongOperationStartDto>(container);
+            ConfigureMessageServiceForLongOperations<ServiceModel.Office.Bds.Dto.BdsLongOperationStartDto>(container);
         }
 
         /// <summary>

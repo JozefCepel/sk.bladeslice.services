@@ -48,7 +48,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Osa
         public string AdresaTPSidlo { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Typ osoby")]
+        [PfeColumn(Text = "Typ osoby", ReadOnly = true)]
         public string OsobaTypKod { get; set; }
 
         [DataMember]

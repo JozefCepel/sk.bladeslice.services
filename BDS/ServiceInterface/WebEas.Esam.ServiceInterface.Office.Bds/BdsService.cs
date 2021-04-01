@@ -71,7 +71,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
 
         #region Globalne, Long operations
 
-        public object Post(LongOperationStartDto request)
+        public object Post(BdsLongOperationStartDto request)
         {
             return Repository.LongOperationStart(request);
         }

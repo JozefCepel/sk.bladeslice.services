@@ -314,7 +314,8 @@ Public Class FormD3dGraphic2
             End If
             '*********************************
 
-            h = GetSetting(HKEY_MEMPHIS_NAME, HKEY_SECTION_NAME_TYP, "MS_Height", "-1")
+            'h = GetSetting(HKEY_MEMPHIS_NAME, HKEY_SECTION_NAME_TYP, "MS_Height", "-1")
+
             For i = 1 To colMs.Count
                 bms = colMs(i)
                 bms.GraphicsCombine(False)

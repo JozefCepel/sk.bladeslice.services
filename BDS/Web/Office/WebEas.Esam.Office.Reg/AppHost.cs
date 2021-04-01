@@ -39,7 +39,7 @@ namespace WebEas.Esam.Office.Reg
             {
                 WsdlServiceNamespace = "http://schemas.webeas.sk/office/esam/office/1.0",
                 SoapServiceName = "EsamOfficeReg",
-#if DEBUG || DEVELOP || INT
+#if DEBUG || DEVELOP || INT || ITP
                 DebugMode = true,
                 EnableFeatures = Feature.All.Remove(this.disableFeaturesDebug),
 #else
@@ -58,27 +58,7 @@ namespace WebEas.Esam.Office.Reg
             //    Console.WriteLine(ex.Message);
             //};
 
-            ConfigureMessageService(container);
-        }
-
-        /// <summary>
-        /// Configure message service for long time operations
-        /// </summary>
-        private void ConfigureMessageService(Funq.Container container)
-        {
-            ConfigureMessageServiceForLongOperations<ServiceModel.Office.Reg.Dto.RegLongOperationStartDto>(container, startMessageService: false);
-
-            container.Resolve<IMessageService>().RegisterHandler<WebEas.ServiceModel.Dto.LongOperationStatus>(m =>
-            {
-                using (var redisClient = base.Resolve<IRedisClientsManager>().GetClient())
-                {
-                    var longOperationStatus = m.GetBody();
-                    ProcessLongOperationStatus(longOperationStatus, redisClient);
-                }
-                return null;
-            });
-
-            container.Resolve<IMessageService>().Start();
+            ConfigureMessageServiceForLongOperations<ServiceModel.Office.Reg.Dto.RegLongOperationStartDto>(container);
         }
 
         /// <summary>
