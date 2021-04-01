@@ -11,6 +11,10 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
     public class V_VYD_0View : tblD_VYD_0
     {
         [DataMember]
+        [PfeColumn(Text = "_C_StavEntity_Id")]
+        public int C_StavEntity_Id { get; set; }
+
+        [DataMember]
         [PfeColumn(Text = "Organisation unit")]
         [PfeCombo(typeof(tblK_ORJ_0), ComboIdColumn = "K_ORJ_0", ComboDisplayColumn = "ORJ")]
         public string ORJ { get; set; }

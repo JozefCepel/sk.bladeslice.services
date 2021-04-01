@@ -387,6 +387,7 @@ Public Class FormD3dGraphic2
                 End If
             End If
 
+
             If vms.SourceObj.coordList.Count > 1 Then
                 'Zlava
                 vms = New MultiSimulationValec2
@@ -440,7 +441,7 @@ Public Class FormD3dGraphic2
 
                 For j As Integer = 0 To cv.FoundRezList.Count - 1
                     Dim coord As CoordinatesValec = cv.FoundRezList.Item(j)
-                    simulacia.Valec.Add(New ReturnValec(New CoordinatesValec(coord.d2, coord.D1, coord.L1, coord.L2), ReturnValec.D3dType.D3dType_FoundRezList))
+                    simulacia.Valec.Add(New ReturnValec(New CoordinatesValec(coord.d2, coord.D1, coord.L1, coord.L2), ReturnObject.D3dType.D3dType_FoundRezList))
                 Next
 
                 'For j As Integer = 0 To cv.CelyRez.Count - 1
@@ -452,12 +453,12 @@ Public Class FormD3dGraphic2
 
                 For j As Integer = 0 To cv.OliveRez.Count - 1
                     Dim coord As CoordinatesValec = cv.OliveRez.Item(j)
-                    simulacia.Valec.Add(New ReturnValec(New CoordinatesValec(coord.d2, coord.D1, coord.L1, coord.L2), ReturnValec.D3dType.D3dType_Olive))
+                    simulacia.Valec.Add(New ReturnValec(New CoordinatesValec(coord.d2, coord.D1, coord.L1, coord.L2), ReturnObject.D3dType.D3dType_Olive))
                 Next
 
                 For j As Integer = 0 To cv.NedotknutaCast.Count - 1
                     Dim coord As CoordinatesValec = cv.NedotknutaCast.Item(j)
-                    simulacia.Valec.Add(New ReturnValec(New CoordinatesValec(coord.d2, coord.D1, coord.L1, coord.L2), ReturnValec.D3dType.D3dType_NedotknutaCast))
+                    simulacia.Valec.Add(New ReturnValec(New CoordinatesValec(coord.d2, coord.D1, coord.L1, coord.L2), ReturnObject.D3dType.D3dType_NedotknutaCast))
                 Next
 
                 bRes = True

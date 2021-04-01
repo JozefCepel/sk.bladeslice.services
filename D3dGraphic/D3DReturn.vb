@@ -1,7 +1,8 @@
-﻿Imports D3dGraphic2.FormD3dGraphic
-Imports D3dGraphic2.FormD3dGraphic2
+﻿Imports D3dGraphic2.FormD3dGraphic2
 
 Public Class D3DReturn
+
+    Public Property ID As Guid
     Public Property Type As String
     Public Property SN As String
     Public Property Sarza As String
@@ -11,6 +12,8 @@ Public Class D3DReturn
     Public Property Valec As List(Of ReturnValec)
 
     Public Sub New(_SN As String, _Sarza As String, _Location As String, _SklCena As Decimal, ByVal _D3dOp As D3dOperation)
+
+        ID = Guid.NewGuid()
         SN = _SN
         Location = _Location
         Sarza = _Sarza
@@ -60,12 +63,14 @@ Public Class ReturnValec
         L1 = coord.L1
         L2 = coord.L2
         d3dSimType = type
+        length = L2 - L1
     End Sub
 
 End Class
 
 Public MustInherit Class ReturnObject
     Friend Property d3dSimType As D3dType
+    Friend Property length As Integer
 
     Public ReadOnly Property matColor As Integer
         Get
@@ -86,7 +91,11 @@ Public MustInherit Class ReturnObject
         Get
             Dim ret As Integer = 0
             If d3dSimType = D3dType.D3dType_FoundRezList Then
-                ret = 8
+                If length > 0 Then
+                    Return length / 50 '2% dĺžky
+                Else
+                    Return 8
+                End If
             End If
             Return ret
         End Get

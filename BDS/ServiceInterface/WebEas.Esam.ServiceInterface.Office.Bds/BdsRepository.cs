@@ -5,16 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using WebEas.Esam.ServiceModel.Office.Bds.Defaults;
 using WebEas.Esam.ServiceModel.Office.Bds.Dto;
 using WebEas.Esam.ServiceModel.Office.Bds.Types;
-using WebEas.ServiceInterface;
 using WebEas.ServiceModel;
 using WebEas.ServiceModel.Dto;
-using WebEas.ServiceModel.Office.Egov.Reg.Types;
-using WebEas.ServiceModel.Reg.Types;
 
 namespace WebEas.Esam.ServiceInterface.Office.Bds
 {
@@ -491,50 +486,15 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                     //nastavenie flagov podla vybavenia
                     if (piV != null)
                     {
+                        baseEntity.AccessFlag |= (long)NodeActionFlag.SpracovatDoklad; //Nemám žiaden vyšší stav
+
                         if (jeVybavene)
                         {
                             if ((baseEntity.AccessFlag & (long)NodeActionFlag.Create) > 0) baseEntity.AccessFlag -= (long)(NodeActionFlag.Create);
                             if ((baseEntity.AccessFlag & (long)NodeActionFlag.Update) > 0) baseEntity.AccessFlag -= (long)(NodeActionFlag.Update);
                             if ((baseEntity.AccessFlag & (long)NodeActionFlag.Delete) > 0) baseEntity.AccessFlag -= (long)(NodeActionFlag.Delete);
-                            if ((baseEntity.AccessFlag & (long)NodeActionFlag.VybavitDoklady) > 0) baseEntity.AccessFlag -= (long)(NodeActionFlag.VybavitDoklady);
-                            if ((baseEntity.AccessFlag & (long)NodeActionFlag.OdvybavitDoklady) == 0) baseEntity.AccessFlag |= (long)(NodeActionFlag.OdvybavitDoklady);
-                        }
-                        else
-                        {
-                            if ((baseEntity.AccessFlag & (long)NodeActionFlag.OdvybavitDoklady) > 0) baseEntity.AccessFlag -= (long)(NodeActionFlag.OdvybavitDoklady);
-                            if ((baseEntity.AccessFlag & (long)NodeActionFlag.VybavitDoklady) == 0) baseEntity.AccessFlag |= (long)(NodeActionFlag.VybavitDoklady);
-
-                            //baseEntity.AccessFlag |= (long)(NodeActionFlag.VybavitDoklady);
-                            //baseEntity.AccessFlag |= (long)(NodeActionFlag.Create | NodeActionFlag.Update | NodeActionFlag.Delete | NodeActionFlag.VybavitDoklady); 
                         }
                     }
-
-                    /*
-                    //nastavenie flagov podla stavu
-                    if (stavEntity.HasValue)
-                    {
-                        switch (stavEntity.Value)
-                        {
-                            // ---------------------------- RZP Návrhy
-                            case 1: // NOVY
-                                baseEntity.AccessFlag |= (long)NodeActionFlag.ZmenaStavuPodania;
-                                baseEntity.AccessFlag |= (long)NodeActionFlag.PrevziatNavrhRozpoctu;
-                                break;
-                            case 2: // SCHVALENY
-                                baseEntity.AccessFlag |= (long)NodeActionFlag.ZmenaStavuPodania;
-                                break;
-                            case 3: // NESCHVALENY
-                                baseEntity.AccessFlag |= (long)NodeActionFlag.ZmenaStavuPodania;
-                                break;
-                            case 4: // SCHVALOVANIE_ZRUSENE
-                                baseEntity.AccessFlag |= (long)NodeActionFlag.PrevziatNavrhRozpoctu;
-                                break;
-                            case 5: // ODOSLANY
-                                break;
-                        }
-                    }
-                    */
-
                 }
             }
         }

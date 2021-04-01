@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using WebEas.Esam.ServiceModel.Office.Bds.Types;
 using WebEas.ServiceModel;
 using WebEas.Esam.ServiceModel.Office.Bds.Dto;
+using WebEas.Esam.ServiceModel.Office.Dto;
 
 namespace WebEas.Esam.ServiceInterface.Office.Bds
 {
@@ -31,9 +32,11 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                                 new NodeAction(NodeActionType.Change),
                                 new NodeAction(NodeActionType.Delete, typeof(DeleteD_PRI_0)) {SelectionMode = PfeSelection.Multi },
                                 new NodeAction(NodeActionType.Update, typeof(UpdateD_PRI_0)),
-                                new NodeAction(NodeActionType.VybavitDoklady, typeof(GetVybavDokladyReq)) {SelectionMode = PfeSelection.Multi },
-                                new NodeAction(NodeActionType.OdvybavitDoklady, typeof(GetOdvybavDokladyReq)) {SelectionMode = PfeSelection.Multi }
-                            }.AddMenuButtonsAll(NodeActionType.Create, typeof(CreateD_PRI_0)),
+                                //new NodeAction(NodeActionType.VybavitDoklady, typeof(GetVybavDokladyReq)) {SelectionMode = PfeSelection.Multi },
+                                //new NodeAction(NodeActionType.OdvybavitDoklady, typeof(GetOdvybavDokladyReq)) {SelectionMode = PfeSelection.Multi }
+
+                            }.AddWorkFlowActions(this, typeof(SpracovatDokladDto), null, null, null, false, false)
+                            .AddMenuButtonsAll(NodeActionType.Create, typeof(CreateD_PRI_0)),
                             Children = new List<HierarchyNode>
                             {
                                 new HierarchyNode<V_PRI_1View>("pol", "Items", null, icon : HierarchyNodeIconCls.DatovaPolozka)
@@ -56,9 +59,10 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                                 new NodeAction(NodeActionType.Change),
                                 new NodeAction(NodeActionType.Delete, typeof(DeleteD_VYD_0)) {SelectionMode = PfeSelection.Multi },
                                 new NodeAction(NodeActionType.Update, typeof(UpdateD_VYD_0)),
-                                new NodeAction(NodeActionType.VybavitDoklady, typeof(GetVybavDokladyReq)) {SelectionMode = PfeSelection.Multi },
-                                new NodeAction(NodeActionType.OdvybavitDoklady, typeof(GetOdvybavDokladyReq)) {SelectionMode = PfeSelection.Multi }
-                            }.AddMenuButtonsAll(NodeActionType.Create, typeof(CreateD_VYD_0)),
+                                //new NodeAction(NodeActionType.VybavitDoklady, typeof(GetVybavDokladyReq)) {SelectionMode = PfeSelection.Multi },
+                                //new NodeAction(NodeActionType.OdvybavitDoklady, typeof(GetOdvybavDokladyReq)) {SelectionMode = PfeSelection.Multi }
+                            }.AddWorkFlowActions(this, typeof(SpracovatDokladDto), null, null, null, false, false)
+                            .AddMenuButtonsAll(NodeActionType.Create, typeof(CreateD_VYD_0)),
                             Children = new List<HierarchyNode>
                             {
                                 new HierarchyNode<V_VYD_1View>("pol", "Items", null, icon : HierarchyNodeIconCls.DatovaPolozka)

@@ -205,12 +205,8 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
 
             sCapt = $"{sKod}{((string.IsNullOrEmpty(vyd1.NAZOV) || vyd1.NAZOV == sKod) ? "" : ", " + vyd1.NAZOV)}{(string.IsNullOrEmpty(vyd1.MJ) ? "" : ", " + vyd1.MJ)}";
 
-            //rsSim.Open "SELECT SN, SARZA, LOCATION, D_CENA, PV, A1, A2, B1, B2, D1, D2, L1, L2" & vbCrLf & _
-            //"FROM V_SIM_0              WHERE K_TSK_0 = " & lTSK & " AND KOD = '" & sKod & "' AND " & vbCrLf & _
-            //"SN IN (SELECT SN FROM STS WHERE K_TSK_0 = " & lTSK & " AND KOD = '" & sKod & "' AND K_SKL_0 = " & lSkl & " GROUP BY SN HAVING SUM(KS) > 0)",
-            var sim = Repository.GetList(Db.From<V_Simulations>().Where(e => e.V && e.K_TSK_0 == tsk && e.KOD == sKod && e.SN != "")); // && e.SN == "5062"
+            var sim = Repository.GetList(Db.From<V_Simulations>().Where(e => e.V && e.K_TSK_0 == tsk && e.KOD == sKod && e.SN != ""));
 
-            //var sourceData = new List<D3DSource>();
             D3DSource[] sourceData = new D3DSource[sim.GroupBy(x => x.SN).Count()];
             int i = 0;
 
@@ -219,16 +215,18 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                 var sd = new D3DSource
                 {
                     SN = sn.Key,
-                    //Sarza = vyd1.SARZA,
-                    //Location = vyd1.LOCATION,
-                    //SklCena = vyd1.D_CENA ?? 0,
-                    //PocKs = vyd1.POC_KS,
-                    //' Vybranych (aj menej moze byt)
-                    //ObjemVyrez = vyd1.OBJEM_VYREZ,
-                    //ObjemZvysok = vyd1.OBJEM_ZVYSOK,
-                    //ObjemPlt = vyd1.OBJEM_PLT,
-                    //OuterSize = vyd1.OUTER_SIZE,
-                    //OuterSizeFinal = vyd1.OUTER_SIZE_FINAL
+                    Sarza = sn.First().SARZA,
+                    Location = sn.First().LOCATION,
+                    SklCena = sn.First().SKL_CENA,
+
+                    //Dodatočné parametre výstupu
+                    //PocKs = ...,  Vybranych (aj menej moze byt)
+                    //ObjemVyrez = ...OBJEM_VYREZ,
+                    //ObjemZvysok = ...OBJEM_ZVYSOK,
+                    //ObjemPlt = ...OBJEM_PLT,
+                    //OuterSize = ...OUTER_SIZE,
+                    //OuterSizeFinal = ...OUTER_SIZE_FINAL,
+
                     Type = simType == 2 ? "valec" : "blok",
                     Blok = simType != 2 ? new List<Blok>() : null,
                     Valec = simType == 2 ? new List<Valec>() : null,
@@ -270,9 +268,9 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
 
             int lL = vyd1.D3D_L;
             var f = new FormD3dGraphic2();
-            List<D3DReturn> sims = new List<D3DReturn>();
+            List<D3DReturn> sims = new();
 
-            if (simType == 1 || simType == 3)
+            if (simType is 1 or 3)
             {
                 int la = vyd1.D3D_A;
                 int lb = vyd1.D3D_B;

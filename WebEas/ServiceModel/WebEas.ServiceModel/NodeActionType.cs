@@ -409,7 +409,7 @@ namespace WebEas.ServiceModel
 
         #endregion
 
-        [PfeCaption("Spracovať")]
+        [PfeCaption("Approve")]
         [NodeActionIcon(NodeActionIcons.CheckCircle)]
         [PfeRight(Pravo.Upravovat)]
         SpracovatDoklad,
@@ -614,15 +614,15 @@ namespace WebEas.ServiceModel
 
         #region BDS
 
-        [PfeCaption("Approve")]
-        [NodeActionIcon(NodeActionIcons.CheckSquare)]
-        [PfeRight(Pravo.Upravovat)]
-        VybavitDoklady = 200,
+        //[PfeCaption("Approve")]
+        //[NodeActionIcon(NodeActionIcons.CheckSquare)]
+        //[PfeRight(Pravo.Upravovat)]
+        //VybavitDoklady,
 
-        [PfeCaption("Cancel approve")]
-        [NodeActionIcon(NodeActionIcons.MinusSquare)]
-        [PfeRight(Pravo.Upravovat)]
-        OdvybavitDoklady = 201,
+        //[PfeCaption("Unapprove")]
+        //[NodeActionIcon(NodeActionIcons.MinusSquare)]
+        //[PfeRight(Pravo.Upravovat)]
+        //OdvybavitDoklady,
 
         #endregion
 		

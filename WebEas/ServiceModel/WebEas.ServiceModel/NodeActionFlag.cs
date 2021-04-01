@@ -40,13 +40,13 @@ namespace WebEas.ServiceModel
         [EnumMember(Value = "Create")]
         Create = (long)1 << 46,
 
-        #region BDS - zacina od 200
+        #region BDS - zacina od 100
 
-        [EnumMember(Value = "VybavitDoklady")]
-        VybavitDoklady = (long)1 << 200,
+        //[EnumMember(Value = "VybavitDoklady")]
+        //VybavitDoklady = (long)1 << 101,
 
-        [EnumMember(Value = "OdvybavitDoklady")]
-        OdvybavitDoklady = (long)1 << 201,
+        //[EnumMember(Value = "OdvybavitDoklady")]
+        //OdvybavitDoklady = (long)1 << 102,
 
         #endregion
 
