@@ -9,10 +9,11 @@ using WebEas.ServiceModel.Dto;
 
 namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
 {
-    public static class OperationsList
+    public enum OperationsList
     {
-        public const string InternyPoplatok = "InternyPoplatok";
+        SpracovatDoklad
     }
+
 
     [Route("/long/{OperationName}/_start", "POST")]
     [Api("Bds")]

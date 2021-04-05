@@ -664,7 +664,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                 Start = DateTime.Now,
                 UserId = Session.UserId,
                 TenantId = Session.TenantId,
-                Message = "Operácia je zaradená do spracovania",
+                Message = "The operation is included in processing",
                 State = LongOperationState.Waiting,
                 Changed = DateTimeOffset.Now.ToUnixTimeMilliseconds()
             };
@@ -706,7 +706,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                     Start = DateTime.Now,
                     UserId = Session.UserId,
                     TenantId = Session.TenantId,
-                    Message = "Operácia je zaradená do spracovania",
+                    Message = "The operation is included in processing",
                     State = LongOperationState.Waiting,
                     Changed = DateTimeOffset.Now.ToUnixTimeMilliseconds()
                 };
@@ -1063,7 +1063,7 @@ namespace WebEas.Esam.ServiceInterface.Office
         /// </summary>
         protected void LongOperationStarted(string processKey, string action)
         {
-            LongOperationSetState(processKey, message: $"Operácia \"{action}\" bola spustená.");
+            LongOperationSetState(processKey, message: $"Operation \"{action}\" started.");
         }
 
         /// <summary>
@@ -1096,7 +1096,8 @@ namespace WebEas.Esam.ServiceInterface.Office
         /// </summary>
         protected void LongOperationFinished(string processKey, string action, bool successfully)
         {
-            string result = $"Operácia \"{action}\" sa skončila {(successfully ? "úspešne" : "neúspešne")}.";
+            if (action == "SpracovatDoklad") action = "Approve document";
+            string result = $"The operation \"{action}\" {(successfully ? "ended succesfully" : "did not complete successfully")}.";
             LongOperationSetStateFinished(processKey, string.Empty, result, state: successfully ? LongOperationState.Done : LongOperationState.Failed);
         }
 
@@ -1116,7 +1117,8 @@ namespace WebEas.Esam.ServiceInterface.Office
         /// </summary>
         protected void LongOperationFinishedWithObject(string processKey, string action, bool successfully, object result, string reportId)
         {
-            string message = $"Operácia \"{action}\" sa skončila {(successfully ? "úspešne" : "neúspešne")}.";
+            if (action == "SpracovatDoklad") action = "Approve document";
+            string message = $"The operation \"{action}\" {(successfully ? "ended succesfully" : "did not complete successfully")}.";
             LongOperationSetStateFinished(processKey, message, result, state: successfully ? LongOperationState.Done : LongOperationState.Failed, reportId: reportId);
         }
 
@@ -1136,7 +1138,7 @@ namespace WebEas.Esam.ServiceInterface.Office
         /// </summary>
         protected void LongOperationFinishedWithObject(string processKey, string action, string customText, object result, string reportId)
         {
-            string message = $"Operácia \"{action}\" je ukončená. {customText}";
+            string message = $"The operation \"{action}\" ended. {customText}";
             LongOperationSetStateFinished(processKey, message, result, state: LongOperationState.Done, reportId: reportId);
         }
 
@@ -6111,7 +6113,7 @@ namespace WebEas.Esam.ServiceInterface.Office
 
         #region GetCisloDokladu
 
-        public string OneMatch(string mask, bool raiseValidityError, string pattern, string kod, string stredisko, string pokladnica, string bankUcet, string replaceStr, ref string likeSql, string msg)
+        public string OneMatch(string mask, bool raiseValidityError, string pattern, string kod, string stredisko, string pokladnica, string skl, string replaceStr, ref string likeSql, string msg)
         {
             if (mask.IsEmpty())
                 return "";
@@ -6132,6 +6134,13 @@ namespace WebEas.Esam.ServiceInterface.Office
                 switch (kod)
                 {
                     case "SKL":
+                        charLen = int.Parse(match.Groups[2].Value);
+                        if (raiseValidityError && skl == null)
+                        {
+                            return "<choose warehouse and press refresh>";
+                        }
+                        replaceStr = skl.Substring(0, charLen);
+                        break;
                     case "ORJ":
                         charLen = int.Parse(match.Groups[2].Value);
                         if (raiseValidityError && stredisko == null)
@@ -6147,14 +6156,6 @@ namespace WebEas.Esam.ServiceInterface.Office
                             return "<zvoľte pokladnicu a zatlačte refresh>";
                         }
                         replaceStr = pokladnica.Substring(0, charLen);
-                        break;
-                    case "VBU":
-                        charLen = int.Parse(match.Groups[2].Value);
-                        if (raiseValidityError && bankUcet == null)
-                        {
-                            return "<zvoľte bank. účet a zatlačte refresh>";
-                        }
-                        replaceStr = bankUcet.Substring(0, charLen);
                         break;
                     case "ZAM":
                         charLen = int.Parse(match.Groups[2].Value);

@@ -34,8 +34,8 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                                 new NodeAction(NodeActionType.Update, typeof(UpdateD_PRI_0)),
                                 //new NodeAction(NodeActionType.VybavitDoklady, typeof(GetVybavDokladyReq)) {SelectionMode = PfeSelection.Multi },
                                 //new NodeAction(NodeActionType.OdvybavitDoklady, typeof(GetOdvybavDokladyReq)) {SelectionMode = PfeSelection.Multi }
-
-                            }.AddWorkFlowActions(this, typeof(SpracovatDokladDto), null, null, null, false, false)
+                                new NodeAction(NodeActionType.SpracovatDoklad, typeof(SpracovatDokladDto)) { SelectionMode = PfeSelection.Multi, IdField = nameof(V_PRI_0View.D_PRI_0), Url = "/office/bds/long/SpracovatDoklad" }
+                            }
                             .AddMenuButtonsAll(NodeActionType.Create, typeof(CreateD_PRI_0)),
                             Children = new List<HierarchyNode>
                             {
@@ -59,9 +59,10 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                                 new NodeAction(NodeActionType.Change),
                                 new NodeAction(NodeActionType.Delete, typeof(DeleteD_VYD_0)) {SelectionMode = PfeSelection.Multi },
                                 new NodeAction(NodeActionType.Update, typeof(UpdateD_VYD_0)),
+                                new NodeAction(NodeActionType.SpracovatDoklad, typeof(SpracovatDokladDto)) { SelectionMode = PfeSelection.Multi, IdField = nameof(V_VYD_0View.D_VYD_0), Url = "/office/bds/long/SpracovatDoklad" }
                                 //new NodeAction(NodeActionType.VybavitDoklady, typeof(GetVybavDokladyReq)) {SelectionMode = PfeSelection.Multi },
                                 //new NodeAction(NodeActionType.OdvybavitDoklady, typeof(GetOdvybavDokladyReq)) {SelectionMode = PfeSelection.Multi }
-                            }.AddWorkFlowActions(this, typeof(SpracovatDokladDto), null, null, null, false, false)
+                            }
                             .AddMenuButtonsAll(NodeActionType.Create, typeof(CreateD_VYD_0)),
                             Children = new List<HierarchyNode>
                             {

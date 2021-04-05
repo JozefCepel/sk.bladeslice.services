@@ -1,5 +1,6 @@
 ﻿using ServiceStack.DataAnnotations;
 using System;
+using System.Linq;
 using System.Runtime.Serialization;
 using WebEas.ServiceModel;
 
@@ -8,11 +9,11 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
     [Schema("bds")]
     [Alias("V_SIM_0")]
     [DataContract]
-    public class V_SIM_0View : tblD_SIM_0
+    public class V_SIM_0View : tblD_SIM_0, IPfeCustomize
     {
         [DataMember]
         [PfeCombo(typeof(PV3DCombo), IdColumn = "PV")]
-        [PfeColumn(Text = "Typ")]
+        [PfeColumn(Text = "Type")]
         [Ignore]
         public string PVText
         {
@@ -66,5 +67,34 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         [DataMember]
         [PfeColumn(Text = "Edited by", Hidden = true, Editable = false, ReadOnly = true)]
         public string ZmenilMeno { get; set; }
+
+        public void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, object masterNodeParameter, string masterNodeKey)
+        {
+            if (model.Fields != null)
+            {
+
+                #region SearchFieldDefinition
+
+                if (masterNodeKey == "pri")
+                {
+                    var priPol = model.Fields.FirstOrDefault(p => p.Name == nameof(D_PRI_1));
+                    if (priPol != null)
+                    {
+                        priPol.Mandatory = true;
+                    }
+                }
+                else if (masterNodeKey == "vyd")
+                {
+                    var vydPol = model.Fields.FirstOrDefault(p => p.Name == nameof(D_VYD_1));
+                    if (vydPol != null)
+                    {
+                        vydPol.Mandatory = true;
+                    }
+                }
+
+                #endregion
+
+            }
+        }
     }
 }

@@ -26,7 +26,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Reg
                     new HierarchyNode("ors", "Organizačná štruktúra")
                     {
                         #region Organizačná štruktúra
-
+                        /*
                         Children = new List<HierarchyNode>
                         {
                             new HierarchyNode<StrediskoView>("orj", GetNastavenieS("reg", "OrjNazovMC"), null, icon : HierarchyNodeIconCls.Sitemap)
@@ -195,7 +195,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Reg
                                 }
                             }
                         }
-
+                        */
                         #endregion Organizačná štruktúra
                     },
                     new HierarchyNode("cis", "Číselníky")

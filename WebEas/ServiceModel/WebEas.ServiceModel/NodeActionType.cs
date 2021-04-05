@@ -410,7 +410,7 @@ namespace WebEas.ServiceModel
         #endregion
 
         [PfeCaption("Approve")]
-        [NodeActionIcon(NodeActionIcons.CheckCircle)]
+        [NodeActionIcon(NodeActionIcons.CheckSquare)] //CheckCircle
         [PfeRight(Pravo.Upravovat)]
         SpracovatDoklad,
 
@@ -614,18 +614,8 @@ namespace WebEas.ServiceModel
 
         #region BDS
 
-        //[PfeCaption("Approve")]
-        //[NodeActionIcon(NodeActionIcons.CheckSquare)]
-        //[PfeRight(Pravo.Upravovat)]
-        //VybavitDoklady,
-
-        //[PfeCaption("Unapprove")]
-        //[NodeActionIcon(NodeActionIcons.MinusSquare)]
-        //[PfeRight(Pravo.Upravovat)]
-        //OdvybavitDoklady,
-
         #endregion
-		
+
         #region UCT
 
         [PfeCaption("Účtovný denník - pdf")]

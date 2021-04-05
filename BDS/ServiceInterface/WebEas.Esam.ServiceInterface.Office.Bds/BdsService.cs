@@ -116,7 +116,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
 
         public object Any(CreateD_PRI_0 request)
         {
-            return Repository.Create<V_PRI_0View>(request);
+            return Repository.CreateD_PRI_0(request);
         }
 
         public object Any(UpdateD_PRI_0 request)
@@ -148,15 +148,15 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
             Repository.Delete<tblD_PRI_1>(request.D_PRI_1);
         }
 
-        public object Any(GetVybavDokladyReq request)
-        {
-            return Repository.GetVybavDoklady(request);
-        }
+        //public object Any(GetVybavDokladyReq request)
+        //{
+        //    return Repository.GetVybavDoklady(request);
+        //}
 
-        public object Any(GetOdvybavDokladyReq request)
-        {
-            return Repository.GetOdvybavDoklady(request);
-        }
+        //public object Any(GetOdvybavDokladyReq request)
+        //{
+        //    return Repository.GetOdvybavDoklady(request);
+        //}
 
         #endregion
 
@@ -426,7 +426,8 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
 
         public object Any(CreateD_VYD_0 request)
         {
-            return Repository.Create<V_VYD_0View>(request);
+            return Repository.CreateD_VYD_0(request);
+            //return Repository.Create<V_VYD_0View>(request);
         }
 
         public object Any(UpdateD_VYD_0 request)

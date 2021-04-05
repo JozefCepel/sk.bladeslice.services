@@ -5,9 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
+using System.Text.RegularExpressions;
 using WebEas.Esam.ServiceModel.Office.Bds.Defaults;
 using WebEas.Esam.ServiceModel.Office.Bds.Dto;
 using WebEas.Esam.ServiceModel.Office.Bds.Types;
+using WebEas.Esam.ServiceModel.Office.Dto;
 using WebEas.ServiceModel;
 using WebEas.ServiceModel.Dto;
 
@@ -15,20 +18,19 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
 {
     public partial class BdsRepository : RepositoryBase, IBdsRepository
     {
+        //public List<long> GetOdvybavDoklady(GetOdvybavDokladyReq request)
+        //{
+        //    return GetVybavOdvybavDoklady(request.IDs.ToList(), false, request.IdField);
+        //}
 
-        public List<long> GetOdvybavDoklady(GetOdvybavDokladyReq request)
-        {
-            return GetVybavOdvybavDoklady(request.IDs.ToList(), false, request.IdField);
-        }
+        //public List<long> GetVybavDoklady(GetVybavDokladyReq request)
+        //{
+        //    return GetVybavOdvybavDoklady(request.IDs.ToList(), true, request.IdField);
+        //}
 
-        public List<long> GetVybavDoklady(GetVybavDokladyReq request)
+        public List<long> GetVybavOdvybavDoklady(long[] Ids, bool pri)
         {
-            return GetVybavOdvybavDoklady(request.IDs.ToList(), true, request.IdField);
-        }
-
-        public List<long> GetVybavOdvybavDoklady(List<long> request, bool Vybavit, string idfield)
-        {
-            // Vybavi doklady
+            // Vybavi doklady. V zozname by mali byt iba V jedněho typu
 
             var result = new List<long>();
 
@@ -36,30 +38,35 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
 
             try
             {
-
-                foreach (var ID in request)
+                if (pri)
                 {
-                    if (idfield == "D_PRI_0")
+                    var doklady = GetList(Db.From<tblD_PRI_0>().Where(x => Sql.In(x.D_PRI_0, Ids)));
+                    if (!doklady.Any())
                     {
-                        var doklad = this.Db.SingleById<tblD_PRI_0>(ID);
-                        if (doklad.V != Vybavit)
-                        {
-                            doklad.V = Vybavit;
-                            result.Add(ID);
-                        }
-                        UpdateData(doklad);
+                        throw new WebEasValidationException(null, "No receipts found");
                     }
-                    else if (idfield == "D_VYD_0")
+
+                    foreach (var dkl in doklady)
                     {
-                        var doklad = this.Db.SingleById<tblD_VYD_0>(ID);
-                        if (doklad.V != Vybavit)
-                        {
-                            doklad.V = Vybavit;
-                            result.Add(ID);
-                        }
-                        UpdateData(doklad);
+                        dkl.V = !dkl.V;
+                        UpdateData(dkl);
+                    }
+
+                }
+                else
+                {
+                    var doklady = GetList(Db.From<tblD_VYD_0>().Where(x => Sql.In(x.D_VYD_0, Ids)));
+                    if (!doklady.Any())
+                    {
+                        throw new WebEasValidationException(null, "No expenses found");
+                    }
+                    foreach (var dkl in doklady)
+                    {
+                        dkl.V = !dkl.V;
+                        UpdateData(dkl);
                     }
                 }
+
                 transaction.Commit();
             }
             catch (WebEasException ex)
@@ -78,7 +85,6 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
             //return result;
         }
 
-
         #region Warehouse
 
         #endregion
@@ -87,10 +93,25 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
 
         protected override void LongOperationProcess(WebEas.ServiceModel.Dto.LongOperationStartDtoBase request)
         {
-            switch (request.OperationName)
+            string operationParametersDecoded = Encoding.UTF8.GetString(Convert.FromBase64String(request.OperationParameters));
+            string operationInfoDecoded = Encoding.UTF8.GetString(Convert.FromBase64String(request.OperationInfo));
+
+            if (Enum.TryParse(request.OperationName, out OperationsList operation))
             {
-                default:
-                    throw new WebEasException($"Long operation with the name {request.OperationName} is not implemented", "Operácia nie je implementovaná!");
+                SpracovatDokladDto par = operationParametersDecoded.FromJson<SpracovatDokladDto>();
+                LongOperationInfo inf = operationInfoDecoded.FromJson<LongOperationInfo>();
+                switch (operation)
+                {
+                    // Operacie
+                    case OperationsList.SpracovatDoklad:
+                        GetVybavOdvybavDoklady(par.Ids, inf.Druh == "Receipts");
+                        //SpracujDoklad(par, request.ProcessKey, out string spracovatDokladReportId);
+                        break;
+                }
+            }
+            else
+            {
+                throw new WebEasException($"Long operation with the name {request.OperationName} is not implemented", "Operácia nie je implementovaná!");
             }
         }
 
@@ -501,5 +522,71 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
 
         #endregion
 
+        #region V_PRI_0View
+
+        public V_PRI_0View CreateD_PRI_0(CreateD_PRI_0 data)
+        {
+            int i = GetCisloDokladuSkl(data.DAT_DKL, data.K_SKL_0, "bds.V_PRI_0", out string interneCisloDokladu);
+            data.DKL_C = interneCisloDokladu;
+            var dkl = Create<V_PRI_0View>(data);
+            return dkl;
+        }
+
+        #endregion
+
+        #region V_VYD_0View
+
+        public V_VYD_0View CreateD_VYD_0(CreateD_VYD_0 data)
+        {
+            int i = GetCisloDokladuSkl(data.DAT_DKL, data.K_SKL_0, "bds.V_VYD_0", out string interneCisloDokladu);
+            data.DKL_C = interneCisloDokladu;
+            var dkl = Create<V_VYD_0View>(data);
+            return dkl;
+        }
+
+        #endregion
+
+
+        private int GetCisloDokladuSkl(DateTime datumDokladu, int sklId, string tableName, out string newCisloInterne)
+        {
+            bool ok = GetDefCisloDokladu(datumDokladu, sklId, out newCisloInterne, out string likeSql);
+            string txt;
+            char paddingChar;
+            string newCounter;
+
+            likeSql = likeSql.Replace(Regex.Match(likeSql, @"<C,(\d*)>").Groups[0].Value,
+                "_".PadLeft(int.Parse(Regex.Match(likeSql, @"<C,(\d*)>").Groups[1].Value), '_'));
+
+            newCounter = Db.Scalar<string>($@"SELECT TOP(1) DKL_C FROM {tableName}
+                                              WHERE CisloInterne like '{likeSql}' 
+                                              ORDER BY DKL_C DESC");
+
+            paddingChar = '0';
+            txt = newCounter.ToString();
+            newCisloInterne = newCisloInterne.Replace(Regex.Match(newCisloInterne, @"<.,(\d*)>").Groups[0].Value, txt.PadLeft(int.Parse(Regex.Match(newCisloInterne, @"<.,(\d*)>").Groups[1].Value), paddingChar));
+            return 1;
+            //return newCounter;
+        }
+
+        private bool GetDefCisloDokladu(DateTime datumDokladu, int sklId, out string newCisloInterne, out string likeSql)
+        {
+            // Zistenie masky
+            bool raiseValidityError = true;
+
+            newCisloInterne = "[SKL3]-[RR].{MM}/<C,4>";
+
+            string skl = Db.Scalar<string>("SELECT KOD FROM [bds].[V_SKL_0] WHERE K_SKL_0 = @K_SKL_0", new { K_SKL_0 = sklId });
+
+            likeSql = newCisloInterne.Replace("_", "[_]");
+
+            //ORJ SKL POK VBU ZAM
+            newCisloInterne = OneMatch(newCisloInterne, raiseValidityError, @"[[{](ORJ|SKL|POK|VBU|ZAM)(\d*)[]}]", "", "", "", skl, "", ref likeSql, "Nepodarilo sa vygenerovať číslo dokladu. Skontrolujte nastavenie číselného radu (kód ORŠ - strediska, bank.účtu alebo pokladnice)!");
+            //Mesiac
+            newCisloInterne = OneMatch(newCisloInterne, raiseValidityError, @"[[{](MM)(\d*)[]}]", "MM", "", "", "", datumDokladu.Month.ToString().PadLeft(2, '0'), ref likeSql, "Nepodarilo sa vygenerovať číslo dokladu. Skontrolujte nastavenie číselného radu (mesiac)!");
+            //Rok
+            newCisloInterne = OneMatch(newCisloInterne, raiseValidityError, @"[[{](R|RR|RRRR)(\d*)[]}]", "", "", "", "", datumDokladu.Year.ToString(), ref likeSql, "Nepodarilo sa vygenerovať číslo dokladu. Skontrolujte nastavenie číselného radu (rok)!");
+
+            return true;
+        }
     }
 }

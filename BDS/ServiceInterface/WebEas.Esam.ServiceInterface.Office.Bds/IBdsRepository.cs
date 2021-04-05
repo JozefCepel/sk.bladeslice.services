@@ -28,12 +28,16 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
         /// Vybaví doklady príjemka
         /// </summary>
         /// <param name="request"></param>
-        List<long> GetVybavDoklady(GetVybavDokladyReq request);
+        //List<long> GetVybavDoklady(GetVybavDokladyReq request);
 
         /// <summary>
         /// Odvybaví doklady príjemka
         /// </summary>
         /// <param name="request"></param>
-        List<long> GetOdvybavDoklady(GetOdvybavDokladyReq request);
+        //List<long> GetOdvybavDoklady(GetOdvybavDokladyReq request);
+
+        V_PRI_0View CreateD_PRI_0(CreateD_PRI_0 data);
+        V_VYD_0View CreateD_VYD_0(CreateD_VYD_0 data);
+
     }
 }

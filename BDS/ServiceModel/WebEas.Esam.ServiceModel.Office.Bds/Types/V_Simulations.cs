@@ -12,7 +12,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
     {
         [DataMember]
         [PfeCombo(typeof(PV3DCombo), IdColumn = "PV")]
-        [PfeColumn(Text = "Typ")]
+        [PfeColumn(Text = "Type")]
         [Ignore]
         public string PVText
         {
