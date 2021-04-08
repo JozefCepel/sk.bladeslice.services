@@ -20,8 +20,8 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string ORJ { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Warehouse", RequiredFields = new[] { "K_ORJ_0" })]
-        [PfeCombo(typeof(V_ORJ_1View), ComboIdColumn = "K_SKL_0", ComboDisplayColumn = "SKL")]
+        [PfeColumn(Text = "Warehouse", RequiredFields = new[] { nameof(K_ORJ_0) })]
+        [PfeCombo(typeof(V_ORJ_1View), ComboIdColumn = nameof(V_ORJ_1View.K_SKL_0), ComboDisplayColumn = nameof(V_ORJ_1View.SKL))]
         public string SKL { get; set; }
 
         [DataMember]

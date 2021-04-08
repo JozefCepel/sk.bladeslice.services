@@ -1,6 +1,5 @@
 ﻿using ServiceStack;
 using ServiceStack.DataAnnotations;
-using System;
 using System.Runtime.Serialization;
 using WebEas.Esam.ServiceModel.Office.Bds.Types;
 using WebEas.ServiceModel;
@@ -39,7 +38,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     public class D_PRI_1Dto : BaseDto<tblD_PRI_1>
     {
         [DataMember]
-        public int? D_PRI_0 { get; set; }
+        public int D_PRI_0 { get; set; }
 
         [DataMember]
         public int K_TSK_0 { get; set; }
@@ -47,8 +46,8 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
         //[DataMember]
         //public int K_TYP_0 { get; set; }
 
-        [DataMember]
-        public string KOD_ID { get; set; }
+        //[DataMember]
+        //public string KOD_ID { get; set; }
 
         [DataMember]
         public string KOD { get; set; }
@@ -104,10 +103,11 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
             data.D_PRI_0 = D_PRI_0;
             data.K_TSK_0 = K_TSK_0;
             data.K_TYP_0 = 2; //K_TYP_0;
-            data.KOD = KOD != null ? KOD : KOD_ID;
+            //data.KOD = KOD != null ? KOD : KOD_ID;
+            data.KOD = KOD;
             data.NAZOV = string.IsNullOrEmpty(NAZOV) ? "" : NAZOV;
-            data.POC_KS = POC_KS;
-            data.BAL_KS = POC_KS; //BAL_KS;
+            data.POC_KS = POC_KS ?? 0;
+            data.BAL_KS = POC_KS ?? 0; //BAL_KS;
             data.MJ = MJ;
             data.D_CENA = D_CENA ?? 0;
             data.Z_CENA = Z_CENA ?? 0;

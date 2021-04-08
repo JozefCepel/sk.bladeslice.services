@@ -52,7 +52,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string DL_C { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "V", DefaultValue = false, Editable = false)]
+        [PfeColumn(Text = "A", DefaultValue = false, Editable = false)]
         public bool V { get; set; }
 
         [DataMember]

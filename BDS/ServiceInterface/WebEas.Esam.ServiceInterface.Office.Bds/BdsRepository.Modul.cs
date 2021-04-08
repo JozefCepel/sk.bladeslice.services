@@ -89,7 +89,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                                 new NodeAction(NodeActionType.Update, typeof(UpdateD_SIM_0))
                             }.AddMenuButtonsAll(NodeActionType.Create, typeof(CreateD_SIM_0))
                         },
-                        new HierarchyNode<STS_FIFOView>("sts", "Stock info", null, HierarchyNodeType.Program)
+                        new HierarchyNode<STS_FIFOFunction>("sts", "Stock info", null, HierarchyNodeType.Program)
                         {
                             Children = new List<HierarchyNode>
                             {

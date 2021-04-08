@@ -86,6 +86,7 @@
     <Compile Include="Types\K_MAT_0.cs" />
     <Compile Include="Types\K_OWN_0.cs" />
     <Compile Include="Types\K_TOB_0.cs" />
+    <Compile Include="Types\STS_FIFOFull.cs" />
     <Compile Include="Types\STS_FIFOFunction.cs" />
     <Compile Include="Types\STS_FIFOView.cs" />
     <Compile Include="Types\V_MAT_0View.cs" />

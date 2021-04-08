@@ -8,20 +8,16 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
     [Schema("bds")]
     [Alias("STS_FIFO")]
     [DataContract]
-    public class STS_FIFOView
+    public class zzSTS_FIFOView
     {
         //[DataMember]
         //[PfeColumn(Text = "_K_SKL_0")]
         //public int? K_SKL_0 { get; set; }
 
+        [DataMember]
         [PrimaryKey]
-        [DataMember]
-        [PfeColumn(Text = "ID_POL")]
-        public string ID_POL { get; set; }
-
-        [DataMember]
-        [PfeColumn(Text = "ID_JOIN")]
-        public string ID_JOIN { get; set; }
+        [Ignore]
+        public Guid STS_FIFOView_Guid => Guid.NewGuid();
 
         [DataMember]
         [PfeColumn(Text = "Warehouse")]

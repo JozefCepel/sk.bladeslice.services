@@ -17,7 +17,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 
         [DataMember]
         [PfeColumn(Text = "_D_PRI_0")]
-        public int? D_PRI_0 { get; set; }
+        public int D_PRI_0 { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "_K_TSK_0", Mandatory = true)]
@@ -28,7 +28,10 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public int K_TYP_0 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_KOD", Mandatory = true)] //Pole sa napĺňa za KOD_ID, na ktorom je combo
+        [PfeColumn(Text = "Code", Mandatory = true, Xtype = PfeXType.SearchFieldSS)] //, RequiredFields = new[] { "K_TSK_0" }
+        [PfeCombo(typeof(V_MAT_0View), ComboIdColumn = nameof(V_MAT_0View.KOD), ComboDisplayColumn = nameof(V_MAT_0View.KOD), IdColumn = nameof(KOD),
+            AdditionalFields = new[] { nameof(V_MAT_0View.NAZOV), nameof(V_MAT_0View.TSK), nameof(V_MAT_0View.K_TSK_0), nameof(V_MAT_0View.EAN), nameof(V_MAT_0View.MJ), nameof(V_MAT_0View.N_CENA) },
+            Tpl = "{value};{TSK}")]
         public string KOD { get; set; }
 
         [DataMember]
@@ -36,8 +39,8 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string NAZOV { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Amount", DefaultValue = 0, Mandatory = true)]
-        public decimal? POC_KS { get; set; }
+        [PfeColumn(Text = "Amount", DefaultValue = 0, DecimalPlaces = 4, Mandatory = true)]
+        public decimal POC_KS { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "UoM", Tooltip = "Unit of Measure")]
@@ -45,7 +48,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 
         [DataMember]
         [PfeColumn(Text = "Price", DefaultValue = 0, Mandatory = true)]
-        public decimal? D_CENA { get; set; }
+        public decimal D_CENA { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "_Z_CENA", DefaultValue = 0)]
@@ -57,7 +60,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 
         [DataMember]
         [PfeColumn(Text = "_BAL_KS", DefaultValue = 0)]
-        public decimal? BAL_KS { get; set; }
+        public decimal BAL_KS { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "EAN code")]

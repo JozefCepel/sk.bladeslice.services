@@ -1,5 +1,7 @@
 ﻿using ServiceStack.DataAnnotations;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using WebEas.ServiceModel;
 
@@ -8,28 +10,29 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
     [Schema("bds")]
     [Alias("V_VYD_1")]
     [DataContract]
-    public class V_VYD_1View : tblD_VYD_1
+    public class V_VYD_1View : tblD_VYD_1, IPfeCustomize
     {
         [DataMember]
-        [PfeColumn(Text = "Číslo výdajky")]
+        [PfeColumn(Text = "Expense No.")]
         [PfeCombo(typeof(tblD_VYD_0), ComboIdColumn = "D_VYD_0", ComboDisplayColumn = "DKL_C")]
         public string DKL_C { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "V", Editable = false, ReadOnly = true)]
+        [PfeColumn(Text = "A", Editable = false, ReadOnly = true)]
         public bool V { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_Položka výdajky", ReadOnly = true)]
+        [PfeColumn(Text = "Expense item", ReadOnly = true)]
         public string VydPol { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "_K_SKL_0", ReadOnly = true)] //Iba kvoli RequiredField
         public int K_SKL_0 { get; set; }
 
+        //[PfeColumn(Text = "Mat. group", RequiredFields = new[] { "K_SKL_0" })]
+        //[PfeCombo(typeof(V_SKL_1View), ComboIdColumn = "K_TSK_0", ComboDisplayColumn = "TSK")]
         [DataMember]
-        [PfeColumn(Text = "Mat. group", RequiredFields = new[] { "K_SKL_0" })]
-        [PfeCombo(typeof(V_SKL_1View), ComboIdColumn = "K_TSK_0", ComboDisplayColumn = "TSK")]
+        [PfeColumn(Text = "Mat. group", ReadOnly = true)]
         public string TSK { get; set; }
 
         [DataMember]
@@ -37,16 +40,10 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public byte SKL_SIMULATION { get; set; }
 
         [DataMember]
-        [PfeCombo(typeof(SimulationType), IdColumn = "SKL_SIMULATION")]
+        [PfeCombo(typeof(SimulationType), IdColumn = nameof(SKL_SIMULATION))]
         [PfeColumn(Text = "3D simulation", ReadOnly = true, Editable = false)]
         [Ignore]
-        public string SKL_SIMULATIONText
-        {
-            get
-            {
-                return SimulationType.GetText(SKL_SIMULATION);
-            }
-        }
+        public string SKL_SIMULATIONText => SimulationType.GetText(SKL_SIMULATION);
 
         //audit stlpce
         [DataMember]
@@ -56,5 +53,54 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         [DataMember]
         [PfeColumn(Text = "Edited by", Hidden = true, Editable = false, ReadOnly = true)]
         public string ZmenilMeno { get; set; }
+
+        public void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, object masterNodeParameter, string masterNodeKey)
+        {
+            if (model.Fields != null)
+            {
+                var kodField = model.Fields.FirstOrDefault(p => p.Name == nameof(KOD));
+                if (kodField != null)
+                {
+                    kodField.SearchFieldDefinition = new List<PfeSearchFieldDefinition>
+                    {
+                        new PfeSearchFieldDefinition
+                        {
+                            Code = "bds-kat-mat",
+                            NameField = nameof(V_MAT_0View.KOD),
+                            DisplayField = nameof(V_MAT_0View.KOD),
+                            /*
+                            Condition = new List<PfeFilterAttribute>
+                            {
+                                new PfeFilterAttribute
+                                {
+                                    Field = nameof(ExpenseBy),
+                                    ComparisonOperator = "eq",
+                                    Value = 2,             //3D - to znamená, že vyberám z katalógu
+                                }
+                            },
+                            */
+                        },
+                        /*
+                        new PfeSearchFieldDefinition
+                        {
+                            Code = "bds-skl-sts",
+                            NameField = nameof(V_MAT_0View.KOD),
+                            DisplayField = nameof(V_MAT_0View.KOD),
+                            Condition = new List<PfeFilterAttribute>
+                            {
+                                new PfeFilterAttribute
+                                {
+                                    Field = nameof(ExpenseBy),
+                                    ComparisonOperator = "eq",
+                                    Value = 1,             //Stock - to znamená, že vyberám zo stavu skladu
+                                }
+                            },
+                        }
+                        */
+
+                    };
+                }
+            }
+        }
     }
 }

@@ -10,6 +10,11 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
     [DataContract]
     public class STSView
     {
+        [DataMember]
+        [PrimaryKey]
+        [Ignore]
+        public Guid STSView_Guid => Guid.NewGuid();
+
         //[DataMember]
         //[PfeColumn(Text = "_K_ORJ_0")]
         //public int K_ORJ_0 { get; set; }

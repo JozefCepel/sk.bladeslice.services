@@ -36,7 +36,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string MJ { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_Poznámka")]
+        [PfeColumn(Text = "Note")]
         public string POZN { get; set; }
 
         [DataMember]

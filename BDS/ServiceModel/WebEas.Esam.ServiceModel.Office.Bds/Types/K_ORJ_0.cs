@@ -1,5 +1,4 @@
 ﻿using ServiceStack.DataAnnotations;
-using System;
 using System.Runtime.Serialization;
 using WebEas.ServiceModel;
 

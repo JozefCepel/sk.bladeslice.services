@@ -15,6 +15,16 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         [PfeCombo(typeof(tblK_TSK_0), ComboIdColumn = "K_TSK_0", ComboDisplayColumn = "TSK")]
         public string TSK { get; set; }
 
+        [DataMember]
+        [PfeColumn(Text = "_3D simulácia")]
+        public byte SKL_SIMULATION { get; set; }
+
+        [DataMember]
+        [PfeCombo(typeof(SimulationType), IdColumn = nameof(SKL_SIMULATION))]
+        [PfeColumn(Text = "3D simulation", ReadOnly = true, Editable = false)]
+        [Ignore]
+        public string SKL_SIMULATIONText => SimulationType.GetText(SKL_SIMULATION);
+
         //audit stlpce
         [DataMember]
         [PfeColumn(Text = "Created by", Hidden = true, Editable = false, ReadOnly = true)]

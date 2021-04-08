@@ -111,6 +111,39 @@ namespace WebEas.Esam.ServiceModel.Office
             }
         }
     }
+    
+    /*
+    [DataContract]
+    public class ExpenseByCombo : IStaticCombo
+    {
+        [DataMember]
+        public byte Id { get; set; }
+
+        [DataMember]
+        public string Nazov { get; set; }
+
+        public string KodPolozky { get; set; }
+        
+        public IWebEasRepositoryBase Repository { get; set; }
+
+        public Dictionary<string, string> RequiredFields { get; set; }
+
+        public List<IComboResult> GetComboList(string[] requestFields, string value)
+        {
+            byte[] list = new byte[] { 1, 2 };
+            return list.Select(a => new ComboResult() { Id = a.ToString(), Value = GetText(a) }).ToList<IComboResult>();
+        }
+
+        public static string GetText(byte? id)
+        {
+            return id switch
+            {
+                2 => "3D",
+                _ => "Stock",
+            };
+        }
+    }
+    */
 
     [DataContract]
     public class PredbeznyRzpCombo : IStaticCombo
@@ -890,6 +923,140 @@ namespace WebEas.Esam.ServiceModel.Office
             }
         }
     }
+
+    /*
+    [DataContract]
+    public class CmbVydajka : IStaticCombo, IComboResult, IPfeCustomizeCombo
+    {
+        [DataMember(Name = "id")]
+        public string Id { get; set; }
+
+        [DataMember(Name = "value")]
+        public string Value { get; set; }
+
+        [DataMember]
+        public long K_TSK_0 { get; set; }
+
+        [DataMember]
+        public string TSK { get; set; }
+
+        [DataMember]
+        public string EAN { get; set; }
+
+        [DataMember]
+        public string NAZOV { get; set; }
+
+        [DataMember]
+        public string MJ { get; set; }
+
+        [DataMember]
+        public decimal N_CENA { get; set; }
+
+        [DataMember]
+        public string SN { get; set; }
+
+        [DataMember]
+        public string LOCATION { get; set; }
+
+        [DataMember]
+        public string SARZA { get; set; }
+
+        [DataMember]
+        public decimal? POC_KS { get; set; }
+
+        public string KodPolozky { get; set; }
+
+        public IWebEasRepositoryBase Repository { get; set; }
+
+        public Dictionary<string, string> RequiredFields { get; set; }
+
+        // dvojicka UhradaParovanieView, ak sa nieco meni kukni aj tam
+        public List<IComboResult> GetComboList(string[] requestFields, string value)
+        {
+            byte expenseBy = 1; //1 - Stok, 2 - 3D
+            int sklId = 0;
+            if (RequiredFields != null)
+            {
+                if (RequiredFields.Any())
+                {
+                    if (RequiredFields.ContainsKey("ExpenseBy"))
+                    {
+                        byte.TryParse(RequiredFields["ExpenseBy"], out expenseBy);
+                    }
+                }
+                if (RequiredFields.ContainsKey("K_SKL_0"))
+                {
+                    int.TryParse(RequiredFields["K_SKL_0"], out sklId);
+                }
+
+            }
+            List<(string kod, long tskId, string tsk, string ean, string nazov, string mj, string sn, string location, string sarza, decimal nCena, decimal pocKs)> list = null;
+            //List<(string TSK, string EAN, string NAZOV, string MJ, string SN, string LOC, decimal POC_KS)> list = null;
+            switch (expenseBy)
+            {
+                case 1:  //1 - Stock
+                    //list = Repository.Db.Select<(string TSK, string EAN, string NAZOV, string MJ, string SN, string LOC, decimal POC_KS)> ($"SELECT TOP 10 TSK, EAN, NAZOV, MJ, 'SN' AS SN, 'LOC' AS LOC, POC_KS FROM bds.fnStsFifo (NULL, 1, 1, 1, 1) WHERE K_SKL_0 = {sklId} AND POC_KS > 0 ORDER BY KOD");
+                    list = Repository.Db.Select<(string kod, long tskId, string tsk, string ean, string nazov, string mj, string sn, string location, string sarza, decimal nCena, decimal pocKs)>($"SELECT kod, K_TSK_0 AS TskId, tsk, ean, nazov, mj, sn, [location], sarza, skl_Cena AS NCena, poc_ks AS PocKs FROM bds.fnStsFifo (NULL, 1, 1, 1, 1) WHERE K_SKL_0 = {sklId} AND POC_KS > 0 ORDER BY KOD");
+                    break;
+                case 2: //2 - 3D
+                    //, decimal N_CENA, decimal POC_KS
+                    list = Repository.Db.Select<(string kod, long tskId, string tsk, string ean, string nazov, string mj, string sn, string location, string sarza, decimal nCena, decimal pocKs) >($"SELECT KOD, K_TSK_0 AS TskId, TSK, EAN, NAZOV, MJ, NULL, NULL, NULL, N_CENA AS NCena, NULL FROM bds.V_MAT_0 ORDER BY KOD");
+                    //list = Repository.Db.Select<(string TSK, string EAN, string NAZOV, string MJ, string SN, string LOC, decimal POC_KS)>($"SELECT TSK, EAN, NAZOV, MJ, NULL AS SN, NULL AS [LOCATION], NULL AS SARZA, N_CENA, NULL AS POC_KS FROM bds.V_MAT_0 ORDER BY KOD");
+                    break;
+                default:
+                    // vratime prazdne combo
+                    return new List<IComboResult>();
+            }
+            return list.Select(a => new CmbVydajka()
+            {
+                Id = a.kod,
+                Value = a.kod,
+                K_TSK_0 = a.tskId,
+                TSK = a.tsk,
+                EAN = a.ean,
+                NAZOV = a.nazov,
+                MJ = a.mj,
+                SN = a.sn,
+                LOCATION = a.location,
+                SARZA = a.sarza,
+                N_CENA = a.nCena,
+                POC_KS = a.pocKs
+            }).ToList<IComboResult>();
+        }
+
+        public static string GetText(string kod)
+        {
+            return null;
+        }
+
+        public void ComboCustomize(IWebEasRepositoryBase repository, string column, string kodPolozky, ref PfeComboAttribute comboAttribute)
+        {
+            if (column.ToLower() == "vs" && kodPolozky == "fin-pol-par")
+            {
+                //Filter musí byť identický ako v "switch (typ)" - vyššie v kóde
+                comboAttribute.AdditionalWhereSql = Environment.NewLine +
+                                                    $"CASE WHEN @C_Typ_Id IN ({(int)TypEnum.UhradaDFA  },{(int)TypEnum.UhradaDZF  }) AND R = 1 THEN 1 " +
+                                                    $"     WHEN @C_Typ_Id IN ({(int)TypEnum.UhradaOFA  },{(int)TypEnum.UhradaOZF  }) AND S = 1 THEN 1 " +
+                                                    $"     WHEN @C_Typ_Id IN ({(int)TypEnum.DobropisDFA}                           ) AND R = 1 AND DM_Suma < 0 THEN 1 " +
+                                                    $"     WHEN @C_Typ_Id IN ({(int)TypEnum.DobropisOFA}                           ) AND S = 1 AND DM_Suma < 0 THEN 1 " +
+                                                    $"     WHEN @C_Typ_Id = {(int)TypEnum.DaPUhradaDane                    } AND C_VymerTyp_Id = 1 THEN 1 " +  // VymerTypEnum.DAN
+                                                    $"     WHEN @C_Typ_Id = {(int)TypEnum.DaPUhradaPokutyZaOneskorenie     } AND C_VymerTyp_Id = 2 THEN 1 " +  // VymerTypEnum.ONE
+                                                    $"     WHEN @C_Typ_Id = {(int)TypEnum.DaPUhradaUrokuZOmeskania         } AND C_VymerTyp_Id = 4 THEN 1 " +  // VymerTypEnum.PEN
+                                                    $"     WHEN @C_Typ_Id = {(int)TypEnum.DaPUhradaPokuty                  } AND C_VymerTyp_Id = 5 THEN 1 " +  // VymerTypEnum.POK
+                                                    $"     WHEN @C_Typ_Id = {(int)TypEnum.DaPUhradaPokutyZaDodatocnePodanie} AND C_VymerTyp_Id = 6 THEN 1 " +  // VymerTypEnum.DOD
+                                                    $"     WHEN @C_Typ_Id = {(int)TypEnum.DaPUhradaUrokuZOdlozeniaSplatok  } AND C_VymerTyp_Id = 7 THEN 1 " +  // VymerTypEnum.URO
+                                                    $"     END = 1 AND (D_Osoba_Id = @D_Osoba_Id OR @D_Osoba_Id IS NULL)";
+            }
+            else if (column.ToLower() == "vs" && kodPolozky == "crm-vaz-zal")
+            {
+                //Filter musí byť identický ako v "switch (typ)" - vyššie v kóde
+                comboAttribute.AdditionalWhereSql = Environment.NewLine +
+                                                    $"CASE WHEN @C_Typ_Id IN ({(int)TypEnum.UhradaDZF},{(int)TypEnum.UhradaOZF}) AND C_StavEntity_Id > 1 AND DM_Nevyfakturovane <> 0 THEN 1 " +
+                                                    $"     END = 1 AND (D_Osoba_Id = @D_Osoba_Id OR @D_Osoba_Id IS NULL)";
+            }
+        }
+    }
+    */
 
     [DataContract]
     public class RegRzpDefiniciaCombo : IStaticCombo

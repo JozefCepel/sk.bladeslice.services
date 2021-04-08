@@ -44,7 +44,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string VydPol { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "V", Editable = false, ReadOnly = true)]
+        [PfeColumn(Text = "A", Editable = false, ReadOnly = true)]
         public bool V { get; set; }
 
         [DataMember]

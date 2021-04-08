@@ -128,12 +128,12 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
             data.K_TYP_0 = 2; //K_TYP_0;
             data.KOD = KOD;
             data.NAZOV = string.IsNullOrEmpty(NAZOV) ? "" : NAZOV;
-            data.POC_KS = POC_KS;
+            data.POC_KS = POC_KS ?? 0;
             data.MJ = MJ;
             data.D_CENA = D_CENA ?? 0;
             data.Z_CENA = Z_CENA ?? 0;
             data.RANK = RANK;
-            data.BAL_KS = POC_KS; //BAL_KS;
+            data.BAL_KS = POC_KS ?? 0; //BAL_KS;
             data.BAL_KS1 = 1; // BAL_KS1;
             data.EAN = EAN;
             data.WARRANTY = WARRANTY;
