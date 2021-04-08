@@ -36,6 +36,12 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string TSK { get; set; }
 
         [DataMember]
+        [PfeColumn(Text = "Stock item", RequiredFields = new[] { nameof(K_SKL_0), nameof(K_TSK_0), nameof(KOD) }, Mandatory = true)]
+        [PfeCombo(typeof(STS_FIFOFull), ComboIdColumn = nameof(STS_FIFOFull.STS_ITEM), ComboDisplayColumn = nameof(STS_FIFOFull.STS_ITEM), IdColumn = nameof(STS_ITEM),
+            AdditionalFields = new[] { nameof(STS_FIFOFull.SN), nameof(STS_FIFOFull.SARZA), nameof(STS_FIFOFull.LOCATION), nameof(STS_FIFOFull.POC_KS), nameof(STS_FIFOFull.SKL_CENA) })]
+        public string STS_ITEM { get; set; }
+
+        [DataMember]
         [PfeColumn(Text = "_3D simulácia")]
         public byte SKL_SIMULATION { get; set; }
 

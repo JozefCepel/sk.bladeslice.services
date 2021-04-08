@@ -120,6 +120,10 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public decimal? UCT_SUMA { get; set; }
 
         [DataMember]
+        [PfeColumn(Text = "_STS_ITEM")]
+        public string STS_ITEM { get; set; }
+
+        [DataMember]
         [PfeColumn(Text = "Receipt date", Type = PfeDataType.Date)]
         public DateTime? DAT_PRI { get; set; }
 

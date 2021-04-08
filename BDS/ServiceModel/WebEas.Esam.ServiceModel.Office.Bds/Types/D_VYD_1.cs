@@ -74,11 +74,15 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         [PfeColumn(Text = "_WARRANTY", DefaultValue = 0)]
         public int WARRANTY { get; set; }
 
+        //[DataMember]
+        //[PfeColumn(Text = "Serial No.", RequiredFields = new[] { nameof(K_TSK_0), nameof(KOD) })]
+        //[PfeCombo(typeof(STS_FIFOFull), ComboIdColumn = nameof(STS_FIFOFull.SN), ComboDisplayColumn = nameof(STS_FIFOFull.SN), IdColumn = nameof(SN),
+        //    AdditionalFields = new[] { nameof(STS_FIFOFull.SARZA), nameof(STS_FIFOFull.POC_KS), nameof(STS_FIFOFull.LOCATION), nameof(STS_FIFOFull.SKL_CENA) },
+        //    Tpl = "{value};{SARZA};{LOCATION};{POC_KS};{SKL_CENA}")]
+        //public string SN { get; set; }
+
         [DataMember]
-        [PfeColumn(Text = "Serial No.", RequiredFields = new[] { nameof(K_TSK_0), nameof(KOD) })]
-        [PfeCombo(typeof(STS_FIFOFull), ComboIdColumn = nameof(STS_FIFOFull.SN), ComboDisplayColumn = nameof(STS_FIFOFull.SN), IdColumn = nameof(SN),
-            AdditionalFields = new[] { nameof(STS_FIFOFull.SARZA), nameof(STS_FIFOFull.POC_KS), nameof(STS_FIFOFull.LOCATION), nameof(STS_FIFOFull.SKL_CENA) },
-            Tpl = "{value};{SARZA};{LOCATION};{POC_KS};{SKL_CENA}")]
+        [PfeColumn(Text = "Serial No.")]
         public string SN { get; set; }
 
         [DataMember]
