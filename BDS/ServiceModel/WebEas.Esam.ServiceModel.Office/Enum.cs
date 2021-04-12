@@ -174,6 +174,8 @@ namespace WebEas.Esam.ServiceModel.Office
     {
         [Description("-")] //(bez dialógu)
         BezDialogu = 0,
+        [Description("BdsWarehouse")]
+        BdsWarehouse = 41,
         [Description("ReportVykazF112")]
         ReportVykazF112 = 1,
         [Description("VykUct1")] //"Obdobie od" je disablované

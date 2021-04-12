@@ -5,6 +5,7 @@ using WebEas.Esam.ServiceModel.Office.Bds.Types;
 using WebEas.ServiceModel;
 using WebEas.Esam.ServiceModel.Office.Bds.Dto;
 using WebEas.Esam.ServiceModel.Office.Dto;
+using WebEas.Esam.ServiceModel.Office;
 
 namespace WebEas.Esam.ServiceInterface.Office.Bds
 {
@@ -91,6 +92,8 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                         },
                         new HierarchyNode<STS_FIFOFunction>("sts", "Stock info", null, HierarchyNodeType.Program)
                         {
+                            DialogTyp = DialogTypEnum.BdsWarehouse.ToString(),
+                            //DialogTyp = DialogTypEnum.PrehladRzp.ToString(),
                             Children = new List<HierarchyNode>
                             {
                                 new HierarchyNode<STSView>("itm", "Stock moves", null, icon : HierarchyNodeIconCls.History)
