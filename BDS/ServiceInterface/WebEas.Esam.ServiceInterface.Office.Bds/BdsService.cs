@@ -112,6 +112,31 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
 
         #endregion
 
+
+        #region Nastavenie
+
+        public WebEas.ServiceModel.Types.NastavenieView Any(UpdateNastavenie request)
+        {
+            return Repository.UpdateNastavenie(request);
+        }
+
+        #endregion
+
+
+        //#region Nastavenie
+
+        //public object Any(GetParameterType request)
+        //{
+        //    return Repository.GetParameterTypeBds(request);
+        //}
+
+        //public object Any(UpdateNastavenie request)
+        //{
+        //    return Repository.UpdateNastavenieBds(request);
+        //}
+
+        //#endregion
+
         #region D_PRI_0
 
         public object Any(CreateD_PRI_0 request)
@@ -635,20 +660,6 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
         public void Any(DeleteK_TYP_0 request)
         {
             Repository.Delete<tblK_TYP_0>(request.K_TYP_0);
-        }
-
-        #endregion
-
-        #region Nastavenie
-
-        public object Any(GetParameterType request)
-        {
-            return Repository.GetParameterTypeBds(request);
-        }
-
-        public object Any(UpdateNastavenie request)
-        {
-            return Repository.UpdateNastavenieBds(request);
         }
 
         #endregion

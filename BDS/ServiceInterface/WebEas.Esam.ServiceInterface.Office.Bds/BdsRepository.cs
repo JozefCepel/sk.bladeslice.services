@@ -18,15 +18,6 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
 {
     public partial class BdsRepository : RepositoryBase, IBdsRepository
     {
-        //public List<long> GetOdvybavDoklady(GetOdvybavDokladyReq request)
-        //{
-        //    return GetVybavOdvybavDoklady(request.IDs.ToList(), false, request.IdField);
-        //}
-
-        //public List<long> GetVybavDoklady(GetVybavDokladyReq request)
-        //{
-        //    return GetVybavOdvybavDoklady(request.IDs.ToList(), true, request.IdField);
-        //}
 
         public List<long> GetVybavOdvybavDoklady(long[] Ids, bool pri)
         {
@@ -224,92 +215,92 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
 
         #region Nastavenie
 
-        public object GetParameterTypeBds(GetParameterType data)
-        {
-            Nastavenie typ;
+        //public object GetParameterTypeBds(GetParameterType data)
+        //{
+        //    Nastavenie typ;
 
-            var filter = new Filter();
-            filter.AndEq("Nazov", data.Nazov);
-            filter.AndEq("Modul", "bds");
+        //    var filter = new Filter();
+        //    filter.AndEq("Nazov", data.Nazov);
+        //    filter.AndEq("Modul", "bds");
 
-            typ = GetList<Nastavenie>(filter).FirstOrDefault();
-            if (typ == null)
-            {
-                throw new WebEasException(null, "Parameter nenájdený!");
-            }
+        //    typ = GetList<Nastavenie>(filter).FirstOrDefault();
+        //    if (typ == null)
+        //    {
+        //        throw new WebEasException(null, "Parameter nenájdený!");
+        //    }
 
-            switch (typ.Typ)
-            {
-                case "S":
-                    return new { typ.Typ, hodnota = typ.Hodn };
-                case "I":
-                    return new { typ.Typ, hodnota = Convert.ToInt64(typ.Hodn) };
-                case "B":
-                    bool byt = typ.Hodn == "1";
-                    return new { typ.Typ, hodnota = byt };
-                case "D":
-                    return new { typ.Typ, hodnota = Convert.ToDateTime(typ.Hodn) };
-                case "T":
-                    return new { typ.Typ, hodnota = Convert.ToDateTime(typ.Hodn) };
-                case "N":
-                    return new { typ.Typ, hodnota = Convert.ToDecimal(typ.Hodn) };
-                default:
-                    return null;
-            }
-        }
+        //    switch (typ.Typ)
+        //    {
+        //        case "S":
+        //            return new { typ.Typ, hodnota = typ.Hodn };
+        //        case "I":
+        //            return new { typ.Typ, hodnota = Convert.ToInt64(typ.Hodn) };
+        //        case "B":
+        //            bool byt = typ.Hodn == "1";
+        //            return new { typ.Typ, hodnota = byt };
+        //        case "D":
+        //            return new { typ.Typ, hodnota = Convert.ToDateTime(typ.Hodn) };
+        //        case "T":
+        //            return new { typ.Typ, hodnota = Convert.ToDateTime(typ.Hodn) };
+        //        case "N":
+        //            return new { typ.Typ, hodnota = Convert.ToDecimal(typ.Hodn) };
+        //        default:
+        //            return null;
+        //    }
+        //}
 
-        public long UpdateNastavenieBds(UpdateNastavenie data)
-        {
-            System.Data.IDbTransaction transaction = this.BeginTransaction();
+        //public long UpdateNastavenieBds(UpdateNastavenie data)
+        //{
+        //    System.Data.IDbTransaction transaction = this.BeginTransaction();
 
-            try
-            {
-                string typ = Db.Scalar<string>("Select Typ from [reg].[V_Nastavenie] where Nazov = @nazov and Modul = 'rzp'", new { nazov = data.Nazov });
-                var p = new DynamicParameters();
-                p.Add("@tenant", Session.TenantIdGuid, dbType: System.Data.DbType.Guid);
-                p.Add("@modul", "bds", dbType: System.Data.DbType.String);
-                p.Add("@nazov", data.Nazov, dbType: System.Data.DbType.String);
-                p.Add("@pouzivatel", null, dbType: System.Data.DbType.String);
-                switch (typ)
-                {
-                    case "I":
-                        p.Add("@bigint", data.iHodn, dbType: System.Data.DbType.Int64);
-                        break;
-                    case "S":
-                        p.Add("@string", data.sHodn, dbType: System.Data.DbType.String);
-                        break;
-                    case "B":
-                        p.Add("@bit", data.bHodn, dbType: System.Data.DbType.Boolean);
-                        break;
-                    case "D":
-                        p.Add("@date", data.dHodn, dbType: System.Data.DbType.Date);
-                        break;
-                    case "T":
-                        p.Add("@datetime", data.tHodn, dbType: System.Data.DbType.DateTime);
-                        break;
-                    case "N":
-                        p.Add("@numeric", data.nHodn, dbType: System.Data.DbType.Decimal);
-                        break;
-                }
+        //    try
+        //    {
+        //        string typ = Db.Scalar<string>("Select Typ from [reg].[V_Nastavenie] where Nazov = @nazov and Modul = 'rzp'", new { nazov = data.Nazov });
+        //        var p = new DynamicParameters();
+        //        p.Add("@tenant", Session.TenantIdGuid, dbType: System.Data.DbType.Guid);
+        //        p.Add("@modul", "bds", dbType: System.Data.DbType.String);
+        //        p.Add("@nazov", data.Nazov, dbType: System.Data.DbType.String);
+        //        p.Add("@pouzivatel", null, dbType: System.Data.DbType.String);
+        //        switch (typ)
+        //        {
+        //            case "I":
+        //                p.Add("@bigint", data.iHodn, dbType: System.Data.DbType.Int64);
+        //                break;
+        //            case "S":
+        //                p.Add("@string", data.sHodn, dbType: System.Data.DbType.String);
+        //                break;
+        //            case "B":
+        //                p.Add("@bit", data.bHodn, dbType: System.Data.DbType.Boolean);
+        //                break;
+        //            case "D":
+        //                p.Add("@date", data.dHodn, dbType: System.Data.DbType.Date);
+        //                break;
+        //            case "T":
+        //                p.Add("@datetime", data.tHodn, dbType: System.Data.DbType.DateTime);
+        //                break;
+        //            case "N":
+        //                p.Add("@numeric", data.nHodn, dbType: System.Data.DbType.Decimal);
+        //                break;
+        //        }
 
-                SqlProcedure("[reg].[PR_Nastavenie]", p);
+        //        SqlProcedure("[reg].[PR_Nastavenie]", p);
 
-                transaction.Commit();
-            }
-            catch (WebEasValidationException ex)
-            {
-                transaction.Rollback();
-                throw ex;
-            }
-            catch (Exception ex)
-            {
-                transaction.Rollback();
-                throw new WebEasException("Nastala chyba pri volaní SQL procedúry [reg].[PR_Nastavenie]", "Parameter sa nepodarilo upraviť kvôli internej chybe", ex);
-            }
+        //        transaction.Commit();
+        //    }
+        //    catch (WebEasValidationException ex)
+        //    {
+        //        transaction.Rollback();
+        //        throw ex;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        transaction.Rollback();
+        //        throw new WebEasException("Nastala chyba pri volaní SQL procedúry [reg].[PR_Nastavenie]", "Parameter sa nepodarilo upraviť kvôli internej chybe", ex);
+        //    }
 
-            RemoveFromCacheByRegex(string.Concat("ten:", Session.TenantId, ":GetNastavenie:*"));
-            return 1;
-        }
+        //    RemoveFromCacheByRegex(string.Concat("ten:", Session.TenantId, ":GetNastavenie:*"));
+        //    return 1;
+        //}
 
         #endregion
 
@@ -346,8 +337,13 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
 
                         if (jeVybavene)
                         {
-                            if ((baseEntity.AccessFlag & (long)NodeActionFlag.Create) > 0) baseEntity.AccessFlag -= (long)(NodeActionFlag.Create);
-                            if ((baseEntity.AccessFlag & (long)NodeActionFlag.Update) > 0) baseEntity.AccessFlag -= (long)(NodeActionFlag.Update);
+                            //if ((baseEntity.AccessFlag & (long)NodeActionFlag.Create) > 0) baseEntity.AccessFlag -= (long)(NodeActionFlag.Create);
+
+                            if (viewData is not List<V_PRI_0View> and not List<V_VYD_0View>)
+                            {
+                                if ((baseEntity.AccessFlag & (long)NodeActionFlag.Update) > 0) baseEntity.AccessFlag -= (long)(NodeActionFlag.Update);
+                            }
+
                             if ((baseEntity.AccessFlag & (long)NodeActionFlag.Delete) > 0) baseEntity.AccessFlag -= (long)(NodeActionFlag.Delete);
                         }
                     }
@@ -361,8 +357,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
 
         public V_PRI_0View CreateD_PRI_0(CreateD_PRI_0 data)
         {
-            int i = GetCisloDokladuSkl(data.DAT_DKL, data.K_SKL_0, "bds.V_PRI_0", out string interneCisloDokladu);
-            data.DKL_C = interneCisloDokladu;
+            data.DKL_C = GetCisloDokladuSkl(data.DAT_DKL, data.K_SKL_0, "bds.V_PRI_0", GetNastavenieS("bds", "DocNoReceipt"));
             var dkl = Create<V_PRI_0View>(data);
             return dkl;
         }
@@ -373,8 +368,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
 
         public V_VYD_0View CreateD_VYD_0(CreateD_VYD_0 data)
         {
-            int i = GetCisloDokladuSkl(data.DAT_DKL, data.K_SKL_0, "bds.V_VYD_0", out string interneCisloDokladu);
-            data.DKL_C = interneCisloDokladu;
+            data.DKL_C = GetCisloDokladuSkl(data.DAT_DKL, data.K_SKL_0, "bds.V_VYD_0", GetNastavenieS("bds", "DocNoExpense"));
             var dkl = Create<V_VYD_0View>(data);
             return dkl;
         }
@@ -382,9 +376,9 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
         #endregion
 
 
-        private int GetCisloDokladuSkl(DateTime datumDokladu, int sklId, string tableName, out string newCisloInterne)
+        private string GetCisloDokladuSkl(DateTime datumDokladu, int sklId, string tableName, string mask)
         {
-            bool ok = GetDefCisloDokladu(datumDokladu, sklId, out newCisloInterne, out string likeSql);
+            bool ok = GetDefCisloDokladu(datumDokladu, sklId, mask, out mask, out string likeSql);
             string txt;
             char paddingChar;
             string newCounter;
@@ -393,33 +387,39 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                 "_".PadLeft(int.Parse(Regex.Match(likeSql, @"<C,(\d*)>").Groups[1].Value), '_'));
 
             newCounter = Db.Scalar<string>($@"SELECT TOP(1) DKL_C FROM {tableName}
-                                              WHERE CisloInterne like '{likeSql}' 
+                                              WHERE DKL_C like '{likeSql}' 
                                               ORDER BY DKL_C DESC");
 
+            txt = "1";
+            if (newCounter != null)
+            {
+                if (int.TryParse(newCounter.Substring(mask.IndexOf('<'), int.Parse(Regex.Match(mask, @"<.,(\d*)>").Groups[1].Value)), out int newId))
+                {
+                    txt = (newId + 1).ToString();
+                }
+            }
+
             paddingChar = '0';
-            txt = newCounter.ToString();
-            newCisloInterne = newCisloInterne.Replace(Regex.Match(newCisloInterne, @"<.,(\d*)>").Groups[0].Value, txt.PadLeft(int.Parse(Regex.Match(newCisloInterne, @"<.,(\d*)>").Groups[1].Value), paddingChar));
-            return 1;
-            //return newCounter;
+            return mask.Replace(Regex.Match(mask, @"<.,(\d*)>").Groups[0].Value, txt.PadLeft(int.Parse(Regex.Match(mask, @"<.,(\d*)>").Groups[1].Value), paddingChar));
         }
 
-        private bool GetDefCisloDokladu(DateTime datumDokladu, int sklId, out string newCisloInterne, out string likeSql)
+        private bool GetDefCisloDokladu(DateTime datumDokladu, int sklId, string maskIn, out string maskOut, out string likeSql)
         {
             // Zistenie masky
             bool raiseValidityError = true;
 
-            newCisloInterne = "[SKL3]-[RR].{MM}/<C,4>";
+            //mask = "E-[WRH3]-[RR].{MM}/<C,4>";
 
             string skl = Db.Scalar<string>("SELECT KOD FROM [bds].[V_SKL_0] WHERE K_SKL_0 = @K_SKL_0", new { K_SKL_0 = sklId });
 
-            likeSql = newCisloInterne.Replace("_", "[_]");
+            likeSql = maskIn.Replace("_", "[_]");
 
-            //ORJ SKL POK VBU ZAM
-            newCisloInterne = OneMatch(newCisloInterne, raiseValidityError, @"[[{](ORJ|SKL|POK|VBU|ZAM)(\d*)[]}]", "", "", "", skl, "", ref likeSql, "Nepodarilo sa vygenerovať číslo dokladu. Skontrolujte nastavenie číselného radu (kód ORŠ - strediska, bank.účtu alebo pokladnice)!");
+            //ORJ WRH POK VBU ZAM
+            maskIn = OneMatch(maskIn, raiseValidityError, @"[[{](ORJ|WRH|POK|VBU|ZAM)(\d*)[]}]", "", "", "", skl, "", ref likeSql, "Unable to generate document Number. Check settings!");
             //Mesiac
-            newCisloInterne = OneMatch(newCisloInterne, raiseValidityError, @"[[{](MM)(\d*)[]}]", "MM", "", "", "", datumDokladu.Month.ToString().PadLeft(2, '0'), ref likeSql, "Nepodarilo sa vygenerovať číslo dokladu. Skontrolujte nastavenie číselného radu (mesiac)!");
+            maskIn = OneMatch(maskIn, raiseValidityError, @"[[{](MM)(\d*)[]}]", "MM", "", "", "", datumDokladu.Month.ToString().PadLeft(2, '0'), ref likeSql, "Unable to generate document Number.  Check numbering setting (month)!");
             //Rok
-            newCisloInterne = OneMatch(newCisloInterne, raiseValidityError, @"[[{](R|RR|RRRR)(\d*)[]}]", "", "", "", "", datumDokladu.Year.ToString(), ref likeSql, "Nepodarilo sa vygenerovať číslo dokladu. Skontrolujte nastavenie číselného radu (rok)!");
+            maskOut = OneMatch(maskIn, raiseValidityError, @"[[{](R|RR|RRRR)(\d*)[]}]", "", "", "", "", datumDokladu.Year.ToString(), ref likeSql, "Unable to generate document Number. Check numbering setting (year)!");
 
             return true;
         }

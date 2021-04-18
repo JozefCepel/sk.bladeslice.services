@@ -18,7 +18,7 @@ namespace WebEas.ServiceModel.Types
             if (node.KodRoot != "reg" && model?.Fields != null)
             {
                 model.Fields.First(p => p.Name == nameof(Modul)).Text = "_Modul";
-                model.Fields.First(p => p.Name == nameof(Modul)).LoadWhenVisible = true;
+                //model.Fields.First(p => p.Name == nameof(Modul)).LoadWhenVisible = true;
             }
         }
     }

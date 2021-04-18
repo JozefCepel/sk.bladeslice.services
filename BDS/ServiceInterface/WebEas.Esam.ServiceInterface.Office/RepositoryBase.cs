@@ -6133,7 +6133,7 @@ namespace WebEas.Esam.ServiceInterface.Office
 
                 switch (kod)
                 {
-                    case "SKL":
+                    case "WRH":
                         charLen = int.Parse(match.Groups[2].Value);
                         if (raiseValidityError && skl == null)
                         {

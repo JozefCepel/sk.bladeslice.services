@@ -9,7 +9,7 @@ using WebEas.ServiceModel;
 namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 {
     [Schema("bds")]
-    [Alias("fnStsFifo (@DatTo, @K_SKL_0, @ShowLocation, @ShowSN, @ShowSarza, @ShowSklCena)")]
+    [Alias("fnStsFifo (@DatTo, @K_SKL_0, @K_TSK_0, @ShowLocation, @ShowSN, @ShowSarza, @ShowSklCena)")]
     [DataContract]
     public class STS_FIFOFunction: IBeforeGetList, IPfeCustomize
     {
@@ -141,19 +141,71 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
             var newFilter = new Filter();
 
             //@DatTo DATE, @ShowLocation bit, @ShowSN bit, @ShowSarza bit, @ShowSklCena bit
-            sqlFromAlias = sqlFromAlias.Replace("@DatTo", "NULL");
-            sqlFromAlias = sqlFromAlias.Replace("@K_SKL_0", "NULL");
 
-            sqlFromAlias = sqlFromAlias.Replace("@ShowLocation", parameters.ContainsKey("ShowLocation".ToUpper()) ? "0" : "1");
-            sqlFromAlias = sqlFromAlias.Replace("@ShowSN", parameters.ContainsKey("ShowSN".ToUpper()) ? "0" : "1");
-            sqlFromAlias = sqlFromAlias.Replace("@ShowSarza", parameters.ContainsKey("ShowSarza".ToUpper()) ? "0" : "1");
-            sqlFromAlias = sqlFromAlias.Replace("@ShowSklCena", parameters.ContainsKey("ShowSklCena".ToUpper()) ? "0" : "1");
+            string datDo = parameters.ContainsKey("DATTO") ? "'" + DateTime.Parse(parameters["DATTO"].ToString()).ToString("yyyy-MM-dd") + "'" : "NULL";
+
+            sqlFromAlias = sqlFromAlias.Replace("@DatTo", datDo);
+
+            sqlFromAlias = parseParam(filter, sqlFromAlias, parameters, "K_SKL_0");
+            sqlFromAlias = parseParam(filter, sqlFromAlias, parameters, "K_TSK_0");
+
+            sqlFromAlias = sqlFromAlias.Replace("@ShowLocation", parameters.ContainsKey("ShowLocation".ToUpper()) ? "1" : "0");
+            sqlFromAlias = sqlFromAlias.Replace("@ShowSN", parameters.ContainsKey("ShowSN".ToUpper()) ? "1" : "0");
+            sqlFromAlias = sqlFromAlias.Replace("@ShowSarza", parameters.ContainsKey("ShowSarza".ToUpper()) ? "1" : "0");
+            sqlFromAlias = sqlFromAlias.Replace("@ShowSklCena", parameters.ContainsKey("ShowSklCena".ToUpper()) ? "1" : "0");
 
             if (filter?.Parameters != null)
             {
-                filter = BookFilterGenerator.AddNoDialogFilters(filter, newFilter);
+                filter.ReplaceEqualsToStartsWith(nameof(SN));
+                filter.ReplaceEqualsToStartsWith(nameof(SARZA));
+                filter.ReplaceEqualsToStartsWith(nameof(LOCATION));
+
+                //filter = BookFilterGenerator.AddNoDialogFilters(filter, newFilter);
+                filter = AddNoDialogFilters(filter, newFilter);
+            }
+
+            static string parseParam(Filter filter, string sqlFromAlias, Dictionary<string, object> parameters, string fld)
+            {
+                if (parameters.ContainsKey(fld))
+                {
+                    string ids = parameters[fld].ToString();
+                    if (ids.Contains(","))
+                    {
+                        sqlFromAlias = sqlFromAlias.Replace("@" + fld, "NULL");
+                        filter.Remove(fld);
+                        filter.And(FilterElement.In(fld, ids.FromJson<List<int>>()));
+                    }
+                    else
+                    {
+                        sqlFromAlias = sqlFromAlias.Replace("@" + fld, ids);
+                        filter.Remove(fld);
+                    }
+                }
+                else
+                {
+                    sqlFromAlias = sqlFromAlias.Replace("@" + fld, "NULL");
+                }
+
+                return sqlFromAlias;
             }
         }
+
+        private static Filter AddNoDialogFilters(Filter filter, Filter newFilter)
+        {
+            Filter pomocnyFilter = filter.CloneAsFilter();
+            //Odstránenie použitých filtrov:
+            pomocnyFilter.Remove("DatTo");
+
+            pomocnyFilter.Remove("ShowLocation");
+            pomocnyFilter.Remove("ShowSN");
+            pomocnyFilter.Remove("ShowSarza");
+            pomocnyFilter.Remove("ShowSklCena");
+
+
+            filter = pomocnyFilter.IsEmpty() ? newFilter : newFilter.And(pomocnyFilter);
+            return filter;
+        }
+
 
         public void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, object masterNodeParameter, string masterNodeKey)
         {

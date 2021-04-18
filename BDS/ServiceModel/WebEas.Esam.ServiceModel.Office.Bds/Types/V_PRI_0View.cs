@@ -1,5 +1,7 @@
 ﻿using ServiceStack.DataAnnotations;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using WebEas.ServiceModel;
 
@@ -8,7 +10,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
     [Schema("bds")]
     [Alias("V_PRI_0")]
     [DataContract]
-    public class V_PRI_0View : tblD_PRI_0
+    public class V_PRI_0View : tblD_PRI_0, IPfeCustomize
     {
         [DataMember]
         [PfeColumn(Text = "_C_StavEntity_Id")]
@@ -25,8 +27,31 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string SKL { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Contractor")]
-        [PfeCombo(typeof(tblK_OBP_0), ComboIdColumn = "K_OBP_0", ComboDisplayColumn = "NAZOV1", AdditionalWhereSql = "K_TOB_0 IN  (1, 2)")] //Dodávateľ
+        [PfeColumn(Text = "Contractor", Xtype = PfeXType.SearchFieldSS, Mandatory = true)]
+        [PfeCombo(typeof(V_OBP_0View), ComboDisplayColumn = nameof(V_OBP_0View.IdFormatMeno),
+            ComboIdColumn = nameof(V_OBP_0View.K_OBP_0),
+            AdditionalWhereSql = "K_TOB_0 IN  (1, 2)", //Dodávateľ
+            Tpl = "{value};{AdresaTPSidlo}",
+            AdditionalFields = new[] { nameof(V_OBP_0View.AdresaTPSidlo) })]
+        public string IdFormatMeno { get; set; }
+
+        // virtualny stlpec, ID by malo byt zhodne s K_OBP_0, vyuziva sa na druhe combo, v DTo sa to este kontroluje ci su rovnake
+        [DataMember]
+        [Ignore]
+        [PfeColumn(Text = "_K_OBP_0_Fake")]
+        public long? K_OBP_0_Fake => !string.IsNullOrEmpty(AdresaTPSidlo) ? K_OBP_0 : null; // Init, preberieme hodnotu
+
+        [DataMember]
+        [PfeColumn(Text = "Address", Xtype = PfeXType.SearchFieldSS)]
+        [PfeCombo(typeof(V_OBP_0View), ComboDisplayColumn = nameof(V_OBP_0View.AdresaTPSidlo), IdColumn = nameof(K_OBP_0_Fake),
+            ComboIdColumn = nameof(V_OBP_0View.K_OBP_0),
+            AdditionalWhereSql = "K_TOB_0 IN  (1, 2)", //Dodávateľ
+            Tpl = "{value};{IdFormatMeno}",
+            AdditionalFields = new[] { nameof(V_OBP_0View.IdFormatMeno) })]
+        public string AdresaTPSidlo { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Name 1", ReadOnly = true, Editable = false)]
         public string NAZOV1 { get; set; }
 
         [DataMember]
@@ -62,5 +87,72 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         [DataMember]
         [PfeColumn(Text = "Edited by", Hidden = true, Editable = false, ReadOnly = true)]
         public string ZmenilMeno { get; set; }
+
+        public void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, object masterNodeParameter, string masterNodeKey)
+        {
+            if (model?.Fields == null || node == null) return;
+
+            #region Browser dialog na osobu
+            var nazov1Field = model.Fields.FirstOrDefault(p => p.Name == nameof(IdFormatMeno));
+            if (nazov1Field != null)
+            {
+                nazov1Field.SearchFieldDefinition = new List<PfeSearchFieldDefinition>
+                {
+                    new PfeSearchFieldDefinition
+                    {
+                        Code = "bds-kat-obp",
+                        NameField = nameof(V_OBP_0View.K_OBP_0),
+                        DisplayField = nameof(V_OBP_0View.IdFormatMeno),
+                        AdditionalFilterSql = $"K_TOB_0 IN  (1, 2)",
+                        AdditionalFilterDesc = "Contractors"
+
+                    }
+                };
+            }
+
+            var adresaField = model.Fields.FirstOrDefault(p => p.Name == nameof(AdresaTPSidlo));
+            if (adresaField != null)
+            {
+                adresaField.SearchFieldDefinition = new List<PfeSearchFieldDefinition>
+                {
+                    new PfeSearchFieldDefinition
+                    {
+                        Code = "bds-kat-obp",
+                        NameField = nameof(V_OBP_0View.K_OBP_0),
+                        DisplayField = nameof(V_OBP_0View.AdresaTPSidlo),
+                        AdditionalFilterSql = $"K_TOB_0 IN  (1, 2)",
+                        AdditionalFilterDesc = "Contractors"
+                    }
+                };
+            }
+
+            #endregion
+
+            #region Disable polí - na základe stavu
+
+            List<string> enblField = new() { "Poznamka", "DL_C" };
+
+            foreach (PfeColumnAttribute col in model.Fields.Where(f => !f.Text.StartsWith("_") && f.Editable && !enblField.Contains(f.Name) &&
+                                                                      (!f.ReadOnly || f.Xtype == PfeXType.Combobox || f.Xtype == PfeXType.SearchFieldSS || f.Xtype == PfeXType.SearchFieldMS)))
+            {
+                col.Validator ??= new PfeValidator { Rules = new List<PfeRule>() };
+
+                col.Validator.Rules.Add(new PfeRule
+                {
+                    ValidatorType = PfeValidatorType.Disable,
+                    Condition = new List<PfeFilterAttribute>
+                    {
+                        new PfeFilterAttribute
+                        {
+                            Field = nameof(V),
+                            ComparisonOperator = "eq",
+                            Value = true
+                        }
+                    }
+                });
+            }
+
+            #endregion
+        }
     }
 }

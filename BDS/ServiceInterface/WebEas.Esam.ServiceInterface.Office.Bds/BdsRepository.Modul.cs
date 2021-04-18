@@ -6,6 +6,7 @@ using WebEas.ServiceModel;
 using WebEas.Esam.ServiceModel.Office.Bds.Dto;
 using WebEas.Esam.ServiceModel.Office.Dto;
 using WebEas.Esam.ServiceModel.Office;
+using WebEas.ServiceModel.Types;
 
 namespace WebEas.Esam.ServiceInterface.Office.Bds
 {
@@ -229,21 +230,18 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                                 new NodeAction(NodeActionType.Update, typeof(UpdateK_OWN_0))
                             }
                         },
-                        new HierarchyNode<Nastavenie>("mset", "Parameter configuration", null, icon : HierarchyNodeIconCls.Settings)
+
+                        #region Konfigurácia parametrov modulu
+
+                        new HierarchyNode<NastavenieView>("mset", "Parameter configuration", f => f.Modul == "bds", null, HierarchyNodeIconCls.Settings, true)
                         {
-                            #region Konfigurácia parametrov modulu
                             Actions = new List<NodeAction>
                             {
                                 new NodeAction(NodeActionType.UpdateNastavenie, typeof(UpdateNastavenie))
                             }
-                            #endregion
-                        },
-                        //new HierarchyNode<BdsDummyData>("pre", "Preklady", null, icon : HierarchyNodeIconCls.Ciselnik)
-                        //{
-                        //    #region História zmien stavov
-                            
-                        //    #endregion
-                        //}
+                        }
+                        
+                        #endregion
                     }
                     
                     #endregion

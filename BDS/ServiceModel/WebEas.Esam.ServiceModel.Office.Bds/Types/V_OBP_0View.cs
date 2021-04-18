@@ -16,6 +16,14 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         public string TOB { get; set; }
 
         [DataMember]
+        [PfeColumn(Text = "_IdFormatMeno", ReadOnly = true, Editable = false)] //Pomocné na combo pole
+        public string IdFormatMeno { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "TP / Sídlo", Editable = false, ReadOnly = true, LoadWhenVisible = true)]
+        public string AdresaTPSidlo { get; set; }
+
+        [DataMember]
         [PfeColumn(Text = "VAT payer", ReadOnly = true)]
         public bool IS_PLATCA { get; set; }
 

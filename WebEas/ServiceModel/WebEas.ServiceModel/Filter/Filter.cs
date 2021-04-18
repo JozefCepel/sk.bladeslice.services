@@ -405,6 +405,28 @@ namespace WebEas.ServiceModel
             return filter;
         }
 
+        public FilterElement ReplaceEqualsToStartsWith(string key)
+        {
+            foreach (var filterElement in this.FilterElements)
+            {
+                if (filterElement is FilterElement el)
+                {
+                    if (el.Key.ToLower() == key.ToLower())
+                    {
+                        el.Operator = "LIKE";
+                        if (!el.Value.ToString().EndsWith("%"))
+                            el.Value = el.Value.ToString() + "%";
+                        return el;
+                    }
+                }
+                else if (filterElement is Filter fel)
+                {
+                    return fel.ReplaceEqualsToStartsWith(key);
+                }
+            }
+
+            return null;
+        }
         public Filter ToFilter()
         {
             return this;
