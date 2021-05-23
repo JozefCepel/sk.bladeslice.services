@@ -72,7 +72,7 @@ namespace WebEas.Esam.ServiceModel.Office.Reg.Dto
             data.D_User_Id_Vykonal = D_User_Id_Vykonal;
             data.Vykonal = (D_User_Id_Vykonal == null) ? Vykonal : null;
             data.DatumTyp = DatumTyp;
-            data.Datum = Datum;
+            data.Datum = (DatumTyp == null) ? Datum : null;
             data.Text = Text;
             data.Poradie = Poradie;
             data.PismoTucne = PismoTucne;

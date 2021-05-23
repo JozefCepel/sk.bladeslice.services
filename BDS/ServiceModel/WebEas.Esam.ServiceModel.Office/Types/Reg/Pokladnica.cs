@@ -62,5 +62,9 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         [DataMember]
         [PfeColumn(Text = "_Terminalova", Mandatory = true, DefaultValue = 0)]
         public byte Terminalova { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "_CisloStrana")]
+        public byte? CisloStrana { get; set; }
     }
 }

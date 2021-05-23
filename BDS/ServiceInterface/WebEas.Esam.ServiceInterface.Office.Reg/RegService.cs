@@ -1,14 +1,10 @@
 ﻿using ServiceStack;
-using System;
 using ServiceStack.OrmLite;
 using System.Linq;
-using WebEas.Esam.ServiceModel.Office.Dto;
 using WebEas.Esam.ServiceModel.Office.Reg.Dto;
 using WebEas.Esam.ServiceModel.Office.Reg.Types;
 using WebEas.Esam.ServiceModel.Office.Types.Reg;
-//using WebEas.Esam.ServiceModel.Urbis.Dto;
 using WebEas.ServiceModel;
-using WebEas.ServiceModel.Dto;
 using WebEas.ServiceModel.Office.Egov.Reg.Types;
 using WebEas.ServiceModel.Reg.Types;
 
@@ -207,11 +203,6 @@ namespace WebEas.Esam.ServiceInterface.Office.Reg
             return this.GetSessionInfo();
         }
 
-        public object Get(AppStatus.HealthCheckDto request)
-        {
-            return GetHealthCheck(request);
-        }
-
         #region Nasledovny stav
 
         public object Post(CreateNasledovnyStavEntity request)
@@ -326,22 +317,22 @@ namespace WebEas.Esam.ServiceInterface.Office.Reg
 
         public object Any(GetNastavenieB request)
         {
-            return new ResultResponse<bool> { Result = ((RepositoryBase)Repository).GetNastavenieB(request.Modul, request.Kod) };
+            return new ResultResponse<bool> { Result = Repository.GetNastavenieB(request.Modul, request.Kod) };
         }
 
         public object Any(GetNastavenieI request)
         {
-            return new ResultResponse<long> { Result = ((RepositoryBase)Repository).GetNastavenieI(request.Modul, request.Kod) };
+            return new ResultResponse<long> { Result = Repository.GetNastavenieI(request.Modul, request.Kod) };
         }
 
         public object Any(GetNastavenieS request)
         {
-            return new ResultResponse<string> { Result = ((RepositoryBase)Repository).GetNastavenieS(request.Modul, request.Kod) };
+            return new ResultResponse<string> { Result = Repository.GetNastavenieS(request.Modul, request.Kod) };
         }
 
         public object Any(GetNastavenieD request)
         {
-            return new ResultResponse<System.DateTime?> { Result = ((RepositoryBase)Repository).GetNastavenieD(request.Modul, request.Kod) };
+            return new ResultResponse<System.DateTime?> { Result = Repository.GetNastavenieD(request.Modul, request.Kod) };
         }
 
         #endregion
@@ -353,14 +344,14 @@ namespace WebEas.Esam.ServiceInterface.Office.Reg
             return Repository.CreateStredisko(request);
         }
 
-        public StrediskoView Any(UpdateStredisko request)
+        public StrediskoResult Any(UpdateStredisko request)
         {
             return Repository.UpdateStredisko(request);
         }
 
-        public void Any(DeleteStredisko request)
+        public StrediskoResult Any(DeleteStredisko request)
         {
-            Repository.DeleteStredisko(request);
+            return Repository.DeleteStredisko(request);
         }
 
         #endregion
@@ -456,14 +447,14 @@ namespace WebEas.Esam.ServiceInterface.Office.Reg
             return Repository.CreatePokladnica(request);
         }
 
-        public PokladnicaView Any(UpdatePokladnica request)
+        public PokladnicaResult Any(UpdatePokladnica request)
         {
             return Repository.UpdatePokladnica(request);
         }
 
-        public void Any(DeletePokladnica request)
+        public PokladnicaResult Any(DeletePokladnica request)
         {
-            Repository.DeletePokladnica(request);
+            return Repository.DeletePokladnica(request);
         }
         #endregion
 
@@ -473,14 +464,14 @@ namespace WebEas.Esam.ServiceInterface.Office.Reg
             return Repository.CreateBankaUcet(request);
         }
 
-        public BankaUcetView Any(UpdateBankaUcet request)
+        public BankaUcetResult Any(UpdateBankaUcet request)
         {
             return Repository.UpdateBankaUcet(request);
         }
 
-        public void Any(DeleteBankaUcet request)
+        public BankaUcetResult Any(DeleteBankaUcet request)
         {
-            Repository.DeleteBankaUcet(request);
+            return Repository.DeleteBankaUcet(request);
         }
 
         #endregion
@@ -595,11 +586,15 @@ namespace WebEas.Esam.ServiceInterface.Office.Reg
         #region Textacia
         public TextaciaView Any(CreateTextacia request)
         {
+            if (request.RokOd > request.RokDo)
+                throw new WebEasValidationException(null, "'Rok do' nesmie byť nižší ako 'Rok od'.");
             return Repository.Create<TextaciaView>(request);
         }
 
         public TextaciaView Any(UpdateTextacia request)
         {
+            if (request.RokOd > request.RokDo)
+                throw new WebEasValidationException(null, "'Rok do' nesmie byť nižší ako 'Rok od'.");
             return Repository.Update<TextaciaView>(request);
         }
 

@@ -68,14 +68,14 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         [PfeColumn(Text = "Edited by", Hidden = true, Editable = false, ReadOnly = true)]
         public string ZmenilMeno { get; set; }
 
-        public void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, object masterNodeParameter, string masterNodeKey)
+        public void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, HierarchyNode masterNode)
         {
             if (model.Fields != null)
             {
 
                 #region SearchFieldDefinition
 
-                if (masterNodeKey == "pri")
+                if (masterNode.KodPolozky == "pri")
                 {
                     var priPol = model.Fields.FirstOrDefault(p => p.Name == nameof(D_PRI_1));
                     if (priPol != null)
@@ -83,7 +83,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
                         priPol.Mandatory = true;
                     }
                 }
-                else if (masterNodeKey == "vyd")
+                else if (masterNode.KodPolozky == "vyd")
                 {
                     var vydPol = model.Fields.FirstOrDefault(p => p.Name == nameof(D_VYD_1));
                     if (vydPol != null)

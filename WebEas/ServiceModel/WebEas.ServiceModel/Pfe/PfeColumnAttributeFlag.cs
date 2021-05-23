@@ -28,8 +28,8 @@ namespace WebEas.ServiceModel
         [EnumMember(Value = "sortable")] //na FE 32
         Sortable = 1 << 5,
 
-        [EnumMember(Value = "filterable")] //na FE 64
-        Filterable = 1 << 6,
+        //[EnumMember(Value = "XXXXX")] //na FE 64    Tento flag sa môže použiť v budúcnosti na niečo iné !!!!
+        //XXXXX = 1 << 6,
 
         [EnumMember(Value = "singlecombofilter")] //na FE 128
         SingleComboFilter = 1 << 7,

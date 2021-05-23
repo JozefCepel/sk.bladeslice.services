@@ -36,12 +36,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
 
         #region Globalne, ale musia byt v moduloch
 
-        public object Get(AppStatus.HealthCheckDto request)
-        {
-            return GetHealthCheck(request);
-        }
-
-        public object Get(ListDto request)
+        public object Any(ListDto request)
         {
             return base.GetList(request);
         }

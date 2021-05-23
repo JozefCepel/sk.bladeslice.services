@@ -7,21 +7,13 @@ namespace WebEas.ServiceModel.Reg.Types
     [Schema("reg")]
     [Alias("V_StavEntity")]
     [DataContract]
-    public class StavEntityView : BaseEntity
+    public class StavEntityView : BaseEntity, IPfeCustomizeCombo
     {
-        /// <summary>
-        /// Gets or sets the c_staventity_id.
-        /// </summary>
-        /// <value>The c_staventity_id.</value>
         [PrimaryKey]
         [AutoIncrement]
         [DataMember]
         public int C_StavEntity_Id { get; set; }
 
-        /// <summary>
-        /// Gets or sets the nazov.
-        /// </summary>
-        /// <value>The nazov.</value>
         [DataMember]
         [PfeColumn(Text = "Názov")]
         [PfeValueColumn]
@@ -29,93 +21,64 @@ namespace WebEas.ServiceModel.Reg.Types
         [StringLength(255)]
         public string Nazov { get; set; }
 
-        /// <summary>
-        /// Gets or sets the Kod.
-        /// </summary>
-        /// <value>The Kod.</value>
         [DataMember]
         [PfeColumn(Text = "Kód")]
         [Required]
         [StringLength(50)]
         public string Kod { get; set; }
 
-        /// <summary>
-        /// Gets or sets the Strom.
-        /// </summary>
-        /// <value>The Strom.</value>
         [DataMember]
         [PfeColumn(Text = "Strom")]
         [StringLength(50)]
         public string Strom { get; set; }
 
-        /// <summary>
-        /// Gets or sets the D_Formular_Id.
-        /// </summary>
-        /// <value>The D_Formular_Id.</value>
         [DataMember]
         public int? C_Formular_Id { get; set; }
 
-        /// <summary>
-        /// Gets or sets the d_ formular_ nazov.
-        /// </summary>
-        /// <value>The d_ formular_ nazov.</value>
         [DataMember]
         [PfeColumn(Text = "Formulár šablóny")]
         [PfeCombo(typeof(Formular), ComboIdColumn = nameof(Formular.Nazov), AdditionalWhereSql = "VstupnyFormular=0")]
         public string C_Formular_Nazov { get; set; }
 
-        /// <summary>
-        /// Gets or sets the PociatocnyStav.
-        /// </summary>
-        /// <value>The PociatocnyStav.</value>
         [DataMember]
         [PfeColumn(Text = "Počiatočný stav")]
         public bool JePociatocnyStav { get; set; }
 
-        /// <summary>
-        /// Gets or sets the KoncovyStav.
-        /// </summary>
-        /// <value>The KoncovyStav.</value>
         [DataMember]
         [PfeColumn(Text = "Koncový stav")]
         public bool JeKoncovyStav { get; set; }
 
-        /// <summary>
-        /// Gets or sets the JeKladneVybavenie.
-        /// </summary>
-        /// <value>The JeKladneVybavenie.</value>
         [DataMember]
         [PfeColumn(Text = "Kladné vybavenie")]
         public bool JeKladneVybavenie { get; set; }
 
-        /// <summary>
-        /// Gets or sets the Textacia.
-        /// </summary>
-        /// <value>The Textacia.</value>
         [DataMember]
         [PfeColumn(Text = "Textácia")]
         [StringLength(512)]
         public string Textacia { get; set; }
 
-        /// <summary>
-        /// Gets or sets the BiznisAkcia.
-        /// </summary>
-        /// <value>The BiznisAkcia.</value>
         [DataMember]
         [PfeColumn(Text = "Biznis akcia")]
         [StringLength(255)]
         public string BiznisAkcia { get; set; }
 
-        /// <summary>
-        /// Gets or sets the PovinnyDokument.
-        /// </summary>
-        /// <value>The PovinnyDokument.</value>
         [DataMember]
         [PfeColumn(Text = "Povinný dokument")]
         public bool PovinnyDokument { get; set; }
 
-        //[Ignore]
-        //[PfeIgnore]
-        //public List<StavEntityView> NasledovneStavy { get; set; }
+        public void ComboCustomize(IWebEasRepositoryBase repository, string column, string kodPolozky, ref PfeComboAttribute comboAttribute)
+        {
+            if (column.ToLower() == "StavNazov".ToLower() && (kodPolozky.StartsWith("crm-dod-")) || kodPolozky.StartsWith("crm-odb-"))
+            {
+                comboAttribute.AdditionalWhereSql = "C_StavEntity_Id IN (-2, -1, 1, 7, 8, 10, 14, 15)";
+            }
+            else if(column.ToLower() == "StavNazov".ToLower() && (kodPolozky.StartsWith("fin-pok-") ||
+                                                                  kodPolozky.StartsWith("fin-bnk-") ||
+                                                                  kodPolozky.StartsWith("all-evi-intd") ||
+                                                                  kodPolozky.StartsWith("uct-evi-exd-")))
+            {
+                comboAttribute.AdditionalWhereSql = "C_StavEntity_Id IN (1, 7, 10, 14, 15)";
+            }
+        }
     }
 }

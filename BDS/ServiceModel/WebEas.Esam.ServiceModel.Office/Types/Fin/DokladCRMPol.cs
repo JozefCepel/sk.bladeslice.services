@@ -54,15 +54,15 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Crm
         public string MJ { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Množstvo", Mandatory = true, DecimalPlaces = 4, DefaultValue = 0)]
+        [PfeColumn(Text = "Množstvo", Mandatory = true, DecimalPlaces = 4, DefaultValue = 1)]
         public decimal Mnozstvo { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Cena", Mandatory = true, DefaultValue = 0)]
+        [PfeColumn(Text = "Cena", Mandatory = true, DecimalPlaces = 4, DefaultValue = 0)]
         public decimal DM_Cena { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_Z-Cena", Mandatory = true, DefaultValue = 0)]
+        [PfeColumn(Text = "_Z-Cena", Mandatory = true, DecimalPlaces = 4, DefaultValue = 0)]
         public decimal CM_Cena { get; set; }
 
         [DataMember]

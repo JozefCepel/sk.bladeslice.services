@@ -16,7 +16,7 @@ namespace WebEas.Esam.Office.Cfe
         /// <summary>
         /// Initializes a new instance of the <see cref="AppHost" /> class.
         /// </summary>
-        public AppHost() : base("cfe", typeof(CfeService).Assembly)
+        public AppHost() : base("cfe", typeof(CfeService).Assembly, typeof(PublicService).Assembly)
         {
         }
 

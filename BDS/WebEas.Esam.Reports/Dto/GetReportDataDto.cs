@@ -18,4 +18,14 @@
     {
 
     }
+
+    public class FinReportDataRequestDto : ReportDataRequestDto
+    {
+
+    }
+
+    public class CrmReportDataRequestDto : ReportDataRequestDto
+    {
+
+    }
 }

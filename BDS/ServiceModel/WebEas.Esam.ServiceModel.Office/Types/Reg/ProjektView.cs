@@ -37,7 +37,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         [PfeColumn(Text = "Zmenil", Hidden = true, Editable = false, ReadOnly = true, LoadWhenVisible = true)]
         public string ZmenilMeno { get; set; }
 
-        public void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, object masterNodeParameter, string masterNodeKey)
+        public void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, HierarchyNode masterNode)
         {
             if (model.Fields != null)
             {
@@ -57,19 +57,19 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                 }
             }
 
-            int isoZdroj = (int)((IRepositoryBase)repository).GetNastavenieI("reg", "ISOZdroj");
-            var isoZdrojNazov = ((IRepositoryBase)repository).GetNastavenieS("reg", "ISOZdrojNazov");
-            if (isoZdroj != 1 || !repository.Session.Roles.Where(w => w.Contains("REG_MIGRATOR")).Any())
-            {
-                node.Actions.RemoveAll(x => x.ActionType == NodeActionType.MenuButtonsAll && x.Caption == "ISO");
-            }
-            else
+            int isoZdroj = (int)repository.GetNastavenieI("reg", "ISOZdroj");
+            var isoZdrojNazov = repository.GetNastavenieS("reg", "ISOZdrojNazov");
+            if (isoZdroj == 1 && repository.Session.Roles.Where(w => w.Contains("REG_MIGRATOR")).Any() && model.Type != PfeModelType.Form)
             {
                 var polozkaMenuAll = node.Actions.Where(x => x.ActionType == NodeActionType.MenuButtonsAll && x.Caption == "ISO").FirstOrDefault();
                 if (polozkaMenuAll != null)
                 {
                     polozkaMenuAll.Caption = isoZdrojNazov;
                 }
+            }
+            else
+            {
+                node.Actions.RemoveAll(x => x.ActionType == NodeActionType.MenuButtonsAll && x.Caption == "ISO");
             }
         }
     }

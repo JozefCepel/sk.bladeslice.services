@@ -28,7 +28,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         public int? C_TypBiznisEntity_Kniha_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Pč", Mandatory = true)]
+        [PfeColumn(Text = "Pč", Mandatory = true, DefaultValue = 0)]
         public short Poradie { get; set; }
     }
 }

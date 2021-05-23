@@ -33,7 +33,6 @@ namespace WebEas.ServiceModel
         /// <param name="tooltip">Tooltip pre stĺpec</param>
         /// <param name="sortable">Povolanie zoradenia</param>
         /// <param name="sortDirection">Určenie povoloného zoradenia</param>
-        /// <param name="filterable">Povolenie možnosti textového filtra</param>
         /// <param name="format">Formátovanie obsahu stĺpca</param>
         /// <param name="decimalPalces">Počet miest na zaokrúhľovanie</param>
         /// <param name="dataUrl"><Odkaz na číselník/param>
@@ -44,8 +43,7 @@ namespace WebEas.ServiceModel
         /// <param name="loadWhenVisible">Ak je dany stlpec visible tak sa bude selectovat z DB</param>
         public PfeColumnAttribute(string name, string text, int rank, bool hidden = false, bool? hideable = null, PfeDataType type = PfeDataType.Unknown, PfeXType xtype = PfeXType.Unknown,
             bool? editable = null, bool? mandatory = null, int width = 0, PfeAligment align = PfeAligment.Unknown, string tooltip = "", bool sortable = true, PfeOrder sortDirection = PfeOrder.Asc,
-            bool filterable = true, string format = "0", int decimalPlaces = 2, string dataUrl = "", object defaultValue = null, bool? readOnly = null, int? maxlength = null, string description = "",
-            bool loadWhenVisible = false)
+            string format = "0", int decimalPlaces = 2, string dataUrl = "", object defaultValue = null, bool? readOnly = null, int? maxlength = null, string description = "", bool loadWhenVisible = false)
         {
             this.Name = name;
             this.Text = text;
@@ -61,7 +59,6 @@ namespace WebEas.ServiceModel
             this.Tooltip = tooltip;
             this.Sortable = sortable;
             this.SortDirection = sortDirection;
-            this.Filterable = filterable;
             this.Format = format;
             this.DecimalPlaces = decimalPlaces;
             this.DataUrl = dataUrl;
@@ -84,7 +81,6 @@ namespace WebEas.ServiceModel
             this.Tooltip = String.Empty;
             this.Sortable = true;
             this.SortDirection = PfeOrder.Asc;
-            this.Filterable = true;
             // this.Format = "0";
             this.DecimalPlaces = 2;
             this.DataUrl = String.Empty;
@@ -327,14 +323,6 @@ namespace WebEas.ServiceModel
         /// <value>The sort direction.</value>
         [DataMember(Name = "sdr")]
         public PfeOrder SortDirection { get; set; }
-
-        /// <summary>
-        /// Povolenie možnosti textového filtra
-        /// </summary>
-        /// <value>The filterable.</value>
-        //[DataMember(Name = "filterable")]
-        [IgnoreDataMember]
-        public bool Filterable { get; set; }
 
         /// <summary>
         /// Formátovanie obsahu stĺpca
@@ -727,7 +715,7 @@ namespace WebEas.ServiceModel
         /// <returns>A string that represents the current object.</returns>
         public override string ToString()
         {
-            return $"Name: {Name}, Type: {Type}, Editable: {Editable}, Mandatory: {Mandatory}, Hidden: {Hidden}, Hideable: {Hideable}, Width: {Width}, Text: {Text}, Xtype: {Xtype}, Align: {Align}, Tooltip: {Tooltip}, Sortable: {Sortable}, SortDirection: {SortDirection}, Filterable: {Filterable}, Format: {Format}, DecimalPlaces: {DecimalPlaces}, DataUrl: {DataUrl}, DefaultValue: {DefaultValue}, Description: {Description}, Rank: {Rank}, ReadOnly: {ReadOnly}, MaxLength: {MaxLength}, Validator: {Validator}, SearchFieldDefinition: {SearchFieldDefinition}, SingleComboFilter: {SingleComboFilter}, AllowComboCustomValue: {AllowComboCustomValue}, SearchComboFromLeft : {SearchComboFromLeft}, Nullabe: {Nullable}, LoadWhenVisible: {LoadWhenVisible}, Tpl: {Tpl}, MinCharSearch: {MinCharSearch}, AdditionalWhereSqlTemp: {AdditionalWhereSqlTemp}";
+            return $"Name: {Name}, Type: {Type}, Editable: {Editable}, Mandatory: {Mandatory}, Hidden: {Hidden}, Hideable: {Hideable}, Width: {Width}, Text: {Text}, Xtype: {Xtype}, Align: {Align}, Tooltip: {Tooltip}, Sortable: {Sortable}, SortDirection: {SortDirection}, Format: {Format}, DecimalPlaces: {DecimalPlaces}, DataUrl: {DataUrl}, DefaultValue: {DefaultValue}, Description: {Description}, Rank: {Rank}, ReadOnly: {ReadOnly}, MaxLength: {MaxLength}, Validator: {Validator}, SearchFieldDefinition: {SearchFieldDefinition}, SingleComboFilter: {SingleComboFilter}, AllowComboCustomValue: {AllowComboCustomValue}, SearchComboFromLeft : {SearchComboFromLeft}, Nullabe: {Nullable}, LoadWhenVisible: {LoadWhenVisible}, Tpl: {Tpl}, MinCharSearch: {MinCharSearch}, AdditionalWhereSqlTemp: {AdditionalWhereSqlTemp}";
         }
 
         /// <summary>
@@ -753,7 +741,6 @@ namespace WebEas.ServiceModel
                 result = result * 23 + ((Tooltip != null) ? Tooltip.GetHashCode() : 0);
                 result = result * 23 + Sortable.GetHashCode();
                 result = result * 23 + SortDirection.GetHashCode();
-                result = result * 23 + Filterable.GetHashCode();
                 result = result * 23 + ((Format != null) ? Format.GetHashCode() : 0);
                 result = result * 23 + DecimalPlaces.GetHashCode();
                 result = result * 23 + ((DataUrl != null) ? DataUrl.GetHashCode() : 0);
@@ -805,7 +792,6 @@ namespace WebEas.ServiceModel
                    Equals(Tooltip, other.Tooltip) &&
                    Sortable == other.Sortable &&
                    SortDirection.Equals(other.SortDirection) &&
-                   Filterable == other.Filterable &&
                    Equals(Format, other.Format) &&
                    DecimalPlaces == other.DecimalPlaces &&
                    Equals(DataUrl, other.DataUrl) &&
@@ -877,10 +863,6 @@ namespace WebEas.ServiceModel
             if (Sortable)
             {
                 flag |= PfeColumnAttributeFlag.Sortable;
-            }
-            if (Filterable)
-            {
-                flag |= PfeColumnAttributeFlag.Filterable;
             }
             if (SingleComboFilter)
             {

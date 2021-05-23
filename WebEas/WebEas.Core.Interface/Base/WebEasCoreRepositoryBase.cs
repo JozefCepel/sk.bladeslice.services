@@ -89,11 +89,14 @@ namespace WebEas.Core.Base
         [Inject]
         public override IRedisClientsManager RedisManager { get; set; }
 
+        [Inject]
+        public IServerEvents ServerEvents { get; set; }
+
         /// <summary>
         /// Gets the session.
         /// </summary>
         /// <value>The session.</value>
-        
+
         public virtual IWebEasSession Session
         {
             get

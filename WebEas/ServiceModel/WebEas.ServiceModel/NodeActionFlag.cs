@@ -129,6 +129,12 @@ namespace WebEas.ServiceModel
         [EnumMember(Value = "Import mesačných pohybov")]
         ImportMesacnychPohybov = (long)1 << 605,
 
+        [EnumMember(Value = "Vytvoriť plat. príkaz")]
+        VytvoritPlatPrikaz = (long)1 << 606,
+
+        [EnumMember(Value = "Povoliť tlačiť zostavu pre stav > ako NOVY")]
+        Tlac = (long)1 << 607,
+
         #region UCT - zacina od 700
 
         [EnumMember(Value = "Predkontovať")]

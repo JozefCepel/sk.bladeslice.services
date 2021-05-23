@@ -7,7 +7,7 @@ using ServiceStack;
 namespace WebEas.ServiceModel
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     [DataContract(Name = "Action")]
     public class NodeAction : IEquatable<NodeAction>
@@ -53,7 +53,7 @@ namespace WebEas.ServiceModel
                     this.Url = "https://egov.intra.dcom.sk/DAP/#dap-cis-ndas";
                     break;
 
-                
+
 
             }
         }
@@ -206,6 +206,12 @@ namespace WebEas.ServiceModel
         public string GroupType { get; set; }
 
         /// <summary>
+        /// Ci je akcia skryta
+        /// </summary>
+        [DataMember(Name = "hdn")]
+        public bool Hidden { get; set; }
+
+        /// <summary>
         /// Serves as a hash function for a particular type.
         /// </summary>
         /// <returns>A hash code for the current object.</returns>
@@ -219,6 +225,7 @@ namespace WebEas.ServiceModel
                 result = result * 23 + ((this.CustomName != null) ? this.CustomName.GetHashCode() : 0);
                 result = result * 23 + ((this.Url != null) ? this.Url.GetHashCode() : 0);
                 result = result * 23 + ((this.CustomActionType != null) ? this.CustomActionType.GetHashCode() : 0);
+                result = result * 23 + this.Hidden.GetHashCode();
                 return result;
             }
         }
@@ -240,7 +247,8 @@ namespace WebEas.ServiceModel
                    Equals(this.Node, other.Node) &&
                    Equals(this.CustomName, other.CustomName) &&
                    Equals(this.Url, other.Url) &&
-                   Equals(this.CustomActionType, other.CustomActionType);
+                   Equals(this.CustomActionType, other.CustomActionType) &&
+                   Equals(this.Hidden, other.Hidden);
         }
 
         /// <summary>
@@ -281,7 +289,8 @@ namespace WebEas.ServiceModel
                 Node = this.Node,
                 Path = this.Path,
                 SelectionMode = this.SelectionMode,
-                url = this.url
+                url = this.url,
+                Hidden = this.Hidden
             };
 
             if (this.MenuButtons != null)
@@ -369,6 +378,17 @@ namespace WebEas.ServiceModel
                 case NodeActionType.MigraciaPociatocnehoStavu:
                     accessFlag = NodeActionFlag.MigraciaPociatocnehoStavu;
                     break;
+                case NodeActionType.ReportUctovnyDoklad:
+                case NodeActionType.PrintReportUctovnyDoklad:
+                case NodeActionType.ViewReportUctovnyDoklad:
+                case NodeActionType.ReportPoklDoklad:
+                case NodeActionType.PrintReportPoklDoklad:
+                case NodeActionType.ViewReportPoklDoklad:
+                case NodeActionType.ReportKryciList:
+                case NodeActionType.PrintReportKryciList:
+                case NodeActionType.ViewReportKryciList:
+                    accessFlag = NodeActionFlag.Tlac;
+                    break;
 
                 #region RZP
 
@@ -415,7 +435,9 @@ namespace WebEas.ServiceModel
                 case NodeActionType.ZrusitSchvalenie:
                     accessFlag = NodeActionFlag.ZrusitSchvalenie;
                     break;
-
+                case NodeActionType.VytvoritPlatPrikaz:
+                    accessFlag = NodeActionFlag.VytvoritPlatPrikaz;
+                    break;
 
                 #endregion
 
@@ -423,12 +445,12 @@ namespace WebEas.ServiceModel
 
                 //TODO : POZOR AKCIE
                 //
-                // V DCOME  
+                // V DCOME
                 //case NodeActionType.Change:
                 //accessFlag = NodeActionFlag.Update;
                 //break;
                 //
-                // v DMS 
+                // v DMS
                 //case NodeActionType.Change:
                 //    accessFlag = NodeActionFlag.Change;
                 //    break;
@@ -468,6 +490,11 @@ namespace WebEas.ServiceModel
             }
 
             return accessFlag;
+        }
+
+        public bool ShouldSerializeHidden()
+        {
+            return Hidden;
         }
     }
 }

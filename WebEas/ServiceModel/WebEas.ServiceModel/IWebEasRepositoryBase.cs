@@ -188,5 +188,51 @@ namespace WebEas.ServiceModel
         /// </summary>
         /// <param name="path">path</param>
         void InvalidateTreeCountsForPath(string path);
+
+        #region Nastavenie
+
+        /// <summary>
+        /// Update nastavenia v aktuálnom module
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        WebEas.ServiceModel.Types.NastavenieView UpdateNastavenie(Dto.UpdateNastavenieBase updateNastavenie);
+
+        /// <summary>
+        /// Vráti hodnotu používateľského alebo tenantského nastavenia podľa zadaných kritérií.
+        /// Ak sa dopytuje na používateľské nastavenie ktoré používateľ nemá zadané, použije sa príslušné tenantské. Ak nastavenie nie je zadané vôbec, vráti sa preddefinovaná hodnota.
+        /// </summary>
+        /// <param name="modul">Kód modulu</param>
+        /// <param name="kod">Kód nastavenia</param>
+        /// <returns>Boolean</returns>
+        bool GetNastavenieB(string modul, string kod);
+
+        /// <summary>
+        /// Vráti hodnotu používateľského alebo tenantského nastavenia podľa zadaných kritérií.
+        /// Ak sa dopytuje na používateľské nastavenie ktoré používateľ nemá zadané, použije sa príslušné tenantské. Ak nastavenie nie je zadané vôbec, vráti sa preddefinovaná hodnota.
+        /// </summary>
+        /// <param name="modul">Kód modulu</param>
+        /// <param name="kod">Kód nastavenia</param>
+        /// <returns>Long</returns>
+        long GetNastavenieI(string modul, string kod);
+
+        /// <summary>
+        /// Vráti hodnotu používateľského alebo tenantského nastavenia podľa zadaných kritérií.
+        /// Ak sa dopytuje na používateľské nastavenie ktoré používateľ nemá zadané, použije sa príslušné tenantské. Ak nastavenie nie je zadané vôbec, vráti sa preddefinovaná hodnota.
+        /// </summary>
+        /// <param name="modul">Kód modulu</param>
+        /// <param name="kod">Kód nastavenia</param>
+        /// <returns>String</returns>
+        string GetNastavenieS(string modul, string kod);
+
+        /// <summary>
+        /// Vráti hodnotu používateľského alebo tenantského nastavenia podľa zadaných kritérií.
+        /// Ak sa dopytuje na používateľské nastavenie ktoré používateľ nemá zadané, použije sa príslušné tenantské. Ak nastavenie nie je zadané vôbec, vráti sa preddefinovaná hodnota.
+        /// </summary>
+        /// <param name="modul">Kód modulu</param>
+        /// <param name="kod">Kód nastavenia</param>
+        /// <returns>String</returns>
+        DateTime? GetNastavenieD(string modul, string kod);
+        #endregion
     }
 }

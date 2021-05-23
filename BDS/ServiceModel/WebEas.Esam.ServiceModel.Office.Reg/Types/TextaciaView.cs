@@ -20,12 +20,14 @@ namespace WebEas.Esam.ServiceModel.Office.Reg.Types
         public string TypBiznisEntityNazov { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Kniha")]
-        [PfeCombo(typeof(TypBiznisEntity_KnihaView), IdColumn = nameof(C_TypBiznisEntity_Kniha_Id), ComboDisplayColumn = nameof(TypBiznisEntity_KnihaView.Kod))]
+        [PfeColumn(Text = "Kniha", RequiredFields = new[] { nameof(C_TypBiznisEntity_Id)} )]
+        [PfeCombo(typeof(TypBiznisEntity_KnihaView), IdColumn = nameof(C_TypBiznisEntity_Kniha_Id),
+                ComboDisplayColumn = nameof(TypBiznisEntity_KnihaView.Kod),
+                AdditionalWhereSql = "C_TypBiznisEntity_Id = @C_TypBiznisEntity_Id")]
         public string Kniha { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Druh dane")]
+        [PfeColumn(Text = "_Druh dane")]
         //[PfeCombo(typeof(DruhView), IdColumn = nameof(C_Druh_Id), AdditionalFields = new[] { nameof(DruhView.Druh) })]
         public string DruhDane { get; set; }
 

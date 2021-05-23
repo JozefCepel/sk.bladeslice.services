@@ -110,7 +110,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
         //    }
         //}
 
-        public void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, object masterNodeParameter, string masterNodeKey)
+        public void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, HierarchyNode masterNode)
         {
             if (model?.Fields == null || node == null) return;
 

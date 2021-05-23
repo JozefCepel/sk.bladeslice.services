@@ -56,7 +56,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
 
         }
 
-        public void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, object masterNodeParameter, string masterNodeKey)
+        public void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, HierarchyNode masterNode)
         {
             if (model.Fields != null)
             {
@@ -77,31 +77,17 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                     };
                 }
 
-                model.Fields
-                    .First(p => p.Name == nameof(Kod))
-                    .Validator = new PfeValidator
-                    {
-                        Rules = new List<PfeRule>
-                        {
-                            new PfeRule
-                            {
-                                ValidatorType = PfeValidatorType.SetMin,
-                                Min = "2"
-                            }
-                        }
-                    };
-
-                if (((IRepositoryBase)repository).GetNastavenieI("reg", "eSAMRezim") != 1)
+                if (repository.GetNastavenieI("reg", "eSAMRezim") != 1)
                 {
                     model.Fields.FirstOrDefault(p => p.Name == nameof(DCOM)).Text = "_DCOM";
                 }
 
-                model.Fields.FirstOrDefault(p => p.Name == nameof(KodNazovParent)).Text = "Nadradené - " + ((IRepositoryBase)repository).GetNastavenieS("reg", "OrjNazovJC");
+                model.Fields.FirstOrDefault(p => p.Name == nameof(KodNazovParent)).Text = "Nadradené - " + repository.GetNastavenieS("reg", "OrjNazovJC");
             }
 
-            int isoZdroj = (int)((IRepositoryBase)repository).GetNastavenieI("reg", "ISOZdroj");
-            var isoZdrojNazov = ((IRepositoryBase)repository).GetNastavenieS("reg", "ISOZdrojNazov");
-            if (isoZdroj > 0 && repository.Session.Roles.Where(w => w.Contains("REG_MIGRATOR")).Any())
+            int isoZdroj = (int)repository.GetNastavenieI("reg", "ISOZdroj");
+            var isoZdrojNazov = repository.GetNastavenieS("reg", "ISOZdrojNazov");
+            if (isoZdroj > 0 && repository.Session.Roles.Where(w => w.Contains("REG_MIGRATOR")).Any() && model.Type != PfeModelType.Form)
             {
                 //Akcie dostupné aj v tomto režime
                 //node.Actions.RemoveAll(x => x.ActionType == NodeActionType.MenuButtonsAll && x.Caption == "Pridať");

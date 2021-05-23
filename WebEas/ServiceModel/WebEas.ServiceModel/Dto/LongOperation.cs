@@ -15,11 +15,11 @@ namespace WebEas.ServiceModel.Dto
         public string OperationParameters { get; set; }
 
         [DataMember]
-        [ApiMember(Name = "OperationName", Description = "Nazov operacie", DataType = "string", ParameterType = "path", IsRequired = true)]
+        //[ApiMember(Name = "OperationName", Description = "Nazov operacie", DataType = "string", ParameterType = "path", IsRequired = true)]
         public string OperationName { get; set; }
 
         [DataMember]
-        [ApiMember(Name = "OperationInfo", Description = "Info o operacii", DataType = "string")]
+        //[ApiMember(Name = "OperationInfo", Description = "Info o operacii", DataType = "string")]
         public string OperationInfo { get; set; }
 
         [DataMember]
@@ -396,6 +396,12 @@ namespace WebEas.ServiceModel.Dto
         /// </summary>
         [DataMember(Name = "modul")]
         public string Modul { get; set; }
+
+        /// <summary>
+        /// Sem si FE uklada info o operacii (napr. odkial bola pustena...)
+        /// </summary>
+        [DataMember]
+        public string ViewParam { get; set; }
     }
 
     [DataContract]
@@ -436,5 +442,11 @@ namespace WebEas.ServiceModel.Dto
         /// </summary>
         [EnumMember(Value = "6")]
         Restored
+    }
+
+    public class LongOperationStatusCount
+    {
+        public long Tenant { get; set; }
+        public long User { get; set; }
     }
 }

@@ -63,6 +63,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Reg
                                 LayoutDependencies = new List<LayoutDependency>
                                 {
                                     LayoutDependency.OneToMany("cfe-admin-users-modul-tors-ors", "TypeElement_Id", "Práva"),
+                                    LayoutDependency.OneToMany("uct-def-kont-konf-rzp", nameof(StrediskoView.C_Stredisko_Id), "Predkontácia do rzp."),
                                     LayoutDependency.OneToMany("uct-def-kont-konf-uct", nameof(StrediskoView.C_Stredisko_Id), "Predkontácia do účt.")
                                 },
 
@@ -288,6 +289,16 @@ namespace WebEas.Esam.ServiceInterface.Office.Reg
                                 {
                                     new HierarchyNode<TypBiznisEntityTypView>("map", "Priradenie k dokladom", null, icon : HierarchyNodeIconCls.FileImport)
                                     {
+                                        LayoutDependencies = new List<LayoutDependency>
+                                        {
+                                            LayoutDependency.OneToMany("uct-def-kont-konf-rzp", nameof(TypBiznisEntityTypView.C_Typ_Id), "Predkontácia do rzp."),
+                                            LayoutDependency.OneToMany("uct-def-kont-konf-uct", nameof(TypBiznisEntityTypView.C_Typ_Id), "Predkontácia do účt.")
+                                            
+                                            //Nefunguje predpĺňanie prepojovacieho poľa - takže to takto zatiaľ nejdem robiť
+                                            //LayoutDependency.OneToMany("uct-def-kont-konf-rzp", nameof(TypBiznisEntityTypView.C_Typ_Id) + ';' + nameof(TypBiznisEntityTypView.SkupinaPredkont_Id), "Predkontácia do rzp."),
+                                            //LayoutDependency.OneToMany("uct-def-kont-konf-uct", nameof(TypBiznisEntityTypView.C_Typ_Id) + ';' + nameof(TypBiznisEntityTypView.SkupinaPredkont_Id), "Predkontácia do účt.")
+
+                                        },
                                         Actions = new List<NodeAction>
                                         {
                                             new NodeAction(NodeActionType.Change),

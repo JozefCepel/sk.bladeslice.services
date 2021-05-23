@@ -113,6 +113,16 @@ namespace WebEas.ServiceModel
         [PfeRight(Pravo.Upravovat)]
         TlacOznamenia,
 
+        [PfeCaption("Kópia dokladu")]
+        [NodeActionIcon(NodeActionIcons.FilesO)]
+        [PfeRight(Pravo.Upravovat)]
+        CopyMe,
+
+        [PfeCaption("Cielovy doklad")]
+        [NodeActionIcon(NodeActionIcons.FilesO)]
+        [PfeRight(Pravo.Upravovat)]
+        CopyTo,
+
         #region Informovanie a poradenstvo
 
         [PfeCaption("Manuálne <br/> zverejnenie")]
@@ -521,6 +531,26 @@ namespace WebEas.ServiceModel
         [PfeRight(Pravo.Upravovat)]
         NovyVydajovy,
 
+        [PfeCaption("Pokladničný doklad - pdf")]
+        [NodeActionIcon(NodeActionIcons.FilePdfO)]
+        [PfeRight(Pravo.Citat)]
+        ReportPoklDoklad,
+
+        [PfeCaption("Pokladničný doklad - náhľad")]
+        [NodeActionIcon(NodeActionIcons.Search)]
+        [PfeRight(Pravo.Citat)]
+        ViewReportPoklDoklad,
+
+        [PfeCaption("Pokladničný doklad - tlač")]
+        [NodeActionIcon(NodeActionIcons.Print)]
+        [PfeRight(Pravo.Citat)]
+        PrintReportPoklDoklad,
+
+        [PfeCaption("Pokladničná kniha")]
+        [NodeActionIcon(NodeActionIcons.Book)]
+        [PfeRight(Pravo.Citat)]
+        ReportPoklKniha,
+
         #endregion
 
         #region CRM
@@ -529,6 +559,21 @@ namespace WebEas.ServiceModel
         [NodeActionIcon(NodeActionIcons.SyncAlt)]
         [PfeRight(Pravo.Upravovat)]
         SynchronizovatDoklady,
+
+        [PfeCaption("Krycí list - pdf")]
+        [NodeActionIcon(NodeActionIcons.FilePdfO)]
+        [PfeRight(Pravo.Citat)]
+        ReportKryciList,
+
+        [PfeCaption("Krycí list - náhľad")]
+        [NodeActionIcon(NodeActionIcons.Search)]
+        [PfeRight(Pravo.Citat)]
+        ViewReportKryciList,
+
+        [PfeCaption("Krycí list - tlač")]
+        [NodeActionIcon(NodeActionIcons.Print)]
+        [PfeRight(Pravo.Citat)]
+        PrintReportKryciList,
 
         [PfeCaption("Účtovný doklad - pdf")]
         [NodeActionIcon(NodeActionIcons.FilePdfO)]
@@ -544,6 +589,11 @@ namespace WebEas.ServiceModel
         [NodeActionIcon(NodeActionIcons.Print)]
         [PfeRight(Pravo.Citat)]
         PrintReportUctovnyDoklad,
+
+        [PfeCaption("Vytvoriť platobný príkaz")]
+        [NodeActionIcon(NodeActionIcons.FasFaCommentDollar)]
+        [PfeRight(Pravo.Citat)]
+        VytvoritPlatPrikaz,
 
         #endregion
 

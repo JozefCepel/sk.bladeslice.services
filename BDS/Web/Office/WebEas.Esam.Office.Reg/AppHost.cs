@@ -18,7 +18,7 @@ namespace WebEas.Esam.Office.Reg
         /// <summary>
         /// Initializes a new instance of the <see cref="AppHost" /> class.
         /// </summary>
-        public AppHost() : base("reg", typeof(RegService).Assembly)
+        public AppHost() : base("reg", typeof(RegService).Assembly, typeof(PublicService).Assembly)
         {
         }
 
@@ -58,7 +58,11 @@ namespace WebEas.Esam.Office.Reg
             //    Console.WriteLine(ex.Message);
             //};
 
+#if !DEBUG
             ConfigureMessageServiceForLongOperations<ServiceModel.Office.Reg.Dto.RegLongOperationStartDto>(container);
+#endif
+
+
         }
 
         /// <summary>

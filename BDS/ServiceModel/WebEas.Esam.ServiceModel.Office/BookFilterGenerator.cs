@@ -401,11 +401,11 @@ namespace WebEas.Esam.ServiceModel.Office
                 AddFilterForIDsDkl(newFilter, parameters);
                 AddFilterForIDsUct(newFilter, parameters);
 
-                filter = AddNoDialogFilters(filter, newFilter);
+                filter = AddNoDialogFilters(filter, newFilter, true);
             }
         }
 
-        public static Filter AddNoDialogFilters(Filter filter, Filter newFilter)
+        public static Filter AddNoDialogFilters(Filter filter, Filter newFilter, bool uct = false)
         {
             Filter pomocnyFilter = filter.CloneAsFilter();
             //Odstránenie použitých filtrov:
@@ -460,6 +460,7 @@ namespace WebEas.Esam.ServiceModel.Office
 
             //Zobraz Súvzťažnosť
             pomocnyFilter.Remove("RZP");
+            pomocnyFilter.Remove("RZPCACHE");
             pomocnyFilter.Remove("UCT");
 
             //RzpKomplet
@@ -473,7 +474,7 @@ namespace WebEas.Esam.ServiceModel.Office
             pomocnyFilter.Remove("showA1");
             pomocnyFilter.Remove("showA2");
             pomocnyFilter.Remove("showA3");
-            pomocnyFilter.Remove("UOMesiac"); //Posiela ho Rzp.denník a zmeny rozpočtu. Použije sa ako Od-Do
+            if (!uct) pomocnyFilter.Remove("UOMesiac"); //Posiela ho Rzp.denník a zmeny rozpočtu. Použije sa ako Od-Do
 
             //Hlavná kniha a jej premenné:
 

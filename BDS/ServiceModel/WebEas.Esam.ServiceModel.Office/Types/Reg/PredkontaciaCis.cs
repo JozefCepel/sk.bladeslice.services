@@ -7,7 +7,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
     [DataContract]
     [Schema("uct")]
     [Alias("C_Predkontacia")]
-    public class PredkontaciaCis : BaseTenantEntity
+    public class PredkontaciaCis : BaseTenantEntity, IValidateConstraint
     {
         [DataMember]
         [AutoIncrement]
@@ -33,5 +33,15 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         [PfeColumn(Text = "Názov")]
         [StringLength(100)]
         public string Nazov { get; set; }
+
+        public string ChangeConstraintMessage(string constraintName, int errorCode, WebEasSqlKnownErrorType errorType)
+        {
+            if (constraintName == "FK_D_BiznisEntita_C_Predkontacia")
+            {
+                return "Predkontáciu nie je možné zmazať, je priradená dokladom!";
+            }
+
+            return null;
+        }
     }
 }

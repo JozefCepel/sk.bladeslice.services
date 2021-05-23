@@ -15,11 +15,11 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
         public Guid D_Tenant_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_Typ", DefaultValue = 1)]
+        [PfeColumn(Text = "_Typ", DefaultValue = 1)] //1 - 'Zákazník (obec, mesto, zriadená organiz.)'
         public byte C_TenantType_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_OrganizaciaTypDetail")]
+        [PfeColumn(Text = "_OrganizaciaTypDetail", DefaultValue = 3)] //3 - 'Obec'
         public byte C_OrganizaciaTypDetail_Id { get; set; }
 
         [DataMember]
@@ -27,7 +27,7 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
         public string Nazov { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Server", Mandatory = true)]
+        [PfeColumn(Text = "Server")] //, Mandatory = true
         public string Server { get; set; }
 
         [DataMember]

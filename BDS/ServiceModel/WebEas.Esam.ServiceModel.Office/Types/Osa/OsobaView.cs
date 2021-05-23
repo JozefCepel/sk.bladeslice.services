@@ -11,6 +11,10 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Osa
     public class OsobaView : Osoba, IBaseView, IOsobaExt, IPfeCustomizeCombo
     {
         [DataMember]
+        [PfeColumn(Text = "Poznámka", ReadOnly = true)]
+        public new string Poznamka { get; set; }
+
+        [DataMember]
         [PfeColumn(Text = "Externé ISO ID osoby", ReadOnly = true, Editable = false)]
         public long? D_Osoba_Id_ExterneISO { get; set; }
 
@@ -26,7 +30,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Osa
         public string FormatMeno { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Formát. meno (priezv.)", ReadOnly = true, Editable = false)]
+        [PfeColumn(Text = "Osoba", ReadOnly = true, Editable = false)]
         [StringLength(460)]
         public string FormatMenoSort { get; set; }
 

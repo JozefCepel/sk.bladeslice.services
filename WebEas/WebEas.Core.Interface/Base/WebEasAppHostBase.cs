@@ -73,8 +73,12 @@ namespace WebEas.Core.Base
 
                 if (response.Response is Exceptions.WebEasResponseStatus)
                 {
-#if DEBUG || DEVELOP || ITP
-                    ((Exceptions.WebEasResponseStatus)response.Response).DetailMessage += $"{Environment.NewLine}http://esam-dev.datalan.sk/esam/api/pfe/lll/{exception.GetIdentifier()}";
+#if DEBUG
+                    ((Exceptions.WebEasResponseStatus)response.Response).DetailMessage += $"{Environment.NewLine}http://localhost:82/esam/api/pfe/lll/{exception.GetIdentifier()}";
+#elif DEVELOP
+                    ((Exceptions.WebEasResponseStatus)response.Response).DetailMessage += $"{Environment.NewLine}https://esam-dev.datalan.sk/esam/api/pfe/lll/{exception.GetIdentifier()}";
+#elif ITP
+                    ((Exceptions.WebEasResponseStatus)response.Response).DetailMessage += $"{Environment.NewLine}https://esam-test.datalan.sk/esam/api/pfe/lll/{exception.GetIdentifier()}";
 #endif
 
                 }

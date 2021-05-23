@@ -13,6 +13,7 @@ using ServiceStack.OrmLite.SqlServer;
 using ServiceStack.Redis;
 using ServiceStack.Request.Correlation;
 using ServiceStack.Text.EnumMemberSerializer;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Reflection;
@@ -20,6 +21,7 @@ using WebEas.Core.Base;
 using WebEas.Esam.ServiceModel.Office;
 using WebEas.ServiceModel;
 using WebEas.ServiceModel.Dto;
+using System.Linq;
 
 namespace WebEas.Esam.ServiceInterface.Office
 {
@@ -77,13 +79,14 @@ namespace WebEas.Esam.ServiceInterface.Office
             Config.UseSameSiteCookies = true;
 #endif
 
-            //TODO: do buducnosti
-            /*Plugins.Add(new ServerEventsFeature());
-
-            container.Register<IServerEvents>(c =>
-                new RedisServerEvents(c.Resolve<IRedisClientsManager>()));
-
-            container.Resolve<IServerEvents>().Start();*/
+            var mse = new ServerEventsFeature()
+            {
+                LimitToAuthenticatedUsers = true
+            };
+            //mse.HeartbeatInterval = TimeSpan.FromSeconds(30);
+            //mse.IdleTimeout = TimeSpan.FromSeconds(mse.HeartbeatInterval.TotalSeconds * 3);
+            //LC: Pri 30000 to raz pada raz nie. 
+            Plugins.Add(mse);
         }
 
         /// <summary>
@@ -149,20 +152,13 @@ namespace WebEas.Esam.ServiceInterface.Office
             });
         }
 
-        public static void ProcessLongOperationStatus(LongOperationStatus longOperationStatus, IRedisClient redisClient)
+        public static void ProcessLongOperationStatus(LongOperationStatus longOperationStatus, IRedisClient redisClient, IServerEvents serverEvents)
         {
             //TODO: HASH NIEJE SORTOVANY, odstranit podla datumu
             var hashId = string.Concat("LongOperationStatus:", longOperationStatus.ProcessKey.Split('!')[0], ":", longOperationStatus.TenantId);
             redisClient.SetEntryInHash(hashId, string.Concat(longOperationStatus.UserId, "!", longOperationStatus.ProcessKey), longOperationStatus.ToJson());
-
-            if (redisClient.GetHashCount(hashId) > 99)
-            {
-                var allKeys = redisClient.GetHashKeys(hashId);
-                for (int i = 49; i < allKeys.Count - 1; i++)
-                {
-                    redisClient.RemoveEntryFromHash(hashId, allKeys[i]);
-                }
-            }
+            var keys = redisClient.GetHashKeys(hashId);
+            serverEvents.NotifyChannel(longOperationStatus.TenantId, new LongOperationStatusCount { Tenant = keys.Count, User = keys.Count(x => x.StartsWith(longOperationStatus.UserId)) });
         }
     }
 }

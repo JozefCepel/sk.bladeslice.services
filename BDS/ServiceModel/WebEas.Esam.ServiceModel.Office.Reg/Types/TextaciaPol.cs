@@ -1,6 +1,7 @@
 ﻿using ServiceStack.DataAnnotations;
 using System;
 using System.Runtime.Serialization;
+using WebEas.Esam.ServiceModel.Office.Types.Cfe;
 using WebEas.ServiceModel;
 using WebEas.ServiceModel.Types;
 
@@ -27,8 +28,8 @@ namespace WebEas.Esam.ServiceModel.Office.Reg.Types
 
         [DataMember]
         [PfeColumn(Text = "Vykonal")]
-        [PfeCombo(typeof(UserView), IdColumn = nameof(D_User_Id_Vykonal), ComboDisplayColumn = nameof(UserView.FullName),
-                  AllowComboCustomValue = true)]
+        [PfeCombo(typeof(UserComboView), IdColumn = nameof(D_User_Id_Vykonal), ComboDisplayColumn = nameof(UserComboView.FullName),
+                AdditionalWhereSql = "C_Modul_Id = 3", AllowComboCustomValue = true)]
         public string Vykonal { get; set; } // ID alebo Vykonal podla toho kt je vyplnene
 
         [DataMember]

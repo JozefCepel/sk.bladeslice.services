@@ -1,4 +1,5 @@
 ﻿using ServiceStack;
+using ServiceStack.Text;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -74,6 +75,43 @@ namespace WebEas.Esam.ServiceModel.Office
             }
             
             throw new KeyNotFoundException();
+        }
+
+        public static void AddGuidRecordsToCache<T>(IWebEasRepositoryBase repository, IEnumerable<KeyValuePair<string, string>> recordsToCache, string hashId = null)
+        {
+            if (recordsToCache.Any())
+            {
+                hashId ??= UrnId.Create<T>(repository.Session.Id);
+                repository.Redis.Remove(hashId);
+                repository.Redis.SetRangeInHash(hashId, recordsToCache);
+                var sessionKey = SessionFeature.GetSessionKey(repository.Session.Id);
+                var ttl = repository.Redis.GetTimeToLive(sessionKey);
+                if (ttl.HasValue)
+                {
+                    repository.Redis.ExpireEntryIn(hashId, ttl.Value);
+                }
+            }
+        }
+
+        public static List<T> GetGuidRecordsFromCache<T>(IWebEasRepositoryBase repository, Guid id, string hashId = null) where T : class
+        {
+            hashId ??= UrnId.Create<T>(repository.Session.Id);
+            var redisData = repository.Redis.GetValueFromHash(hashId, id.ToString());
+            var data = new List<T>();
+            if (!redisData.IsNullOrEmpty())
+            {
+                //je to pole stringov
+                if (redisData.StartsWith("[\""))
+                {
+                    var dataForGuid = repository.Redis.GetValuesFromHash(hashId, redisData.FromJson<List<string>>().ToArray());
+                    dataForGuid.ForEach(x => data.AddRange(x.FromJson<List<T>>()));
+                }
+                else
+                {
+                    data = redisData.FromJson<List<T>>();
+                }
+            }
+            return data;
         }
     }
 }

@@ -57,6 +57,7 @@ namespace WebEas.Esam.ServiceModel.Office
         Dodacie_listy = 20,
         Prijmove_pokladnicne_doklady = 51,
         Vydajove_pokladnicne_doklady = 52,
+        Terminalove_pokladnicne_doklady = 53,
         Externe_doklady_DaP = 61,
         Externe_doklady_majetok = 62,
         Externe_doklady_mzdy = 63,
@@ -194,5 +195,37 @@ namespace WebEas.Esam.ServiceModel.Office
         PrehladRzp = 14,
         [Description("Dph")]
         Dph = 51,
+    }
+
+    public enum VykazDruhEnum // Doplnaj si podla potreby
+    {
+        Fin_1_12 = 2,
+        Fin_2_04 = 3,
+        Fin_3_04 = 4,
+        Fin_4_04 = 5,
+        Fin_5_04 = 6,
+        Fin_6_04 = 7,
+        Fin_1_01 = 101, // Súvaha Úč ROPO SFOV 1-01
+        Fin_2_01 = 102, // Výkaz ziskov a strát Úč ROPO SFOV 2-01
+    }
+
+    public enum ParovanieTypEnum
+    {
+        par_1_1 = 1,
+        par_1_N = 2,
+        par_N_1 = 3,
+        par_N_M = 4
+    }
+
+    public enum ParovanieDefEnum // Doplnaj si podla potreby
+    {
+        DOB_DFA = 4,
+        DZM_DFA = 6,
+        OOB_OFA = 9,
+        OZM_OFA = 11,
+        DOB_DZF = 15,
+        DZM_DZF = 16,
+        OOB_OZF = 17,
+        OZM_OZF = 18
     }
 }

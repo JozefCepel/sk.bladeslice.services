@@ -310,7 +310,13 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                             //Specialny pripad, kedy chcem vrati subpohlad z konkretneho modulu pre cross-modulovu polozku
                             if (request.KodPolozky.ToLower().StartsWith("all-"))
                             {
-                                itemCode = string.Format("{0}!{1}", itemCode, request.KodPolozky.Substring(request.KodPolozky.Length - 3));
+                                //DTLNESAMINT-622: Dirty prepojenie na RZP polozku
+                                if (itemCode == "all-prh-rzpd")
+                                {
+                                    itemCode = "all-prh-rzpd!rzp";
+                                }
+                                else
+                                    itemCode = string.Format("{0}!{1}", itemCode, request.KodPolozky.Substring(request.KodPolozky.Length - 3));
                             }
                             else
                             {
@@ -349,7 +355,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                         selectedNode.DefaultValues.Add(new NodeFieldDefaultValue(nameof(BiznisEntita.C_TypBiznisEntity_Id), (short)selectedNode.TypBiznisEntity.First()));
                     }
 
-                    PfeDataModel dataModel = selectedNode.GetDataModel(this, selectedView, null, request.Filter, current?.Parameter, current?.Kod);
+                    PfeDataModel dataModel = selectedNode.GetDataModel(this, selectedView, null, request.Filter, current);
 
                     // DCOMDEUS-1173
                     // ak nadradena polozka ma parameter prenesieme ju aj do podradenej
@@ -389,7 +395,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                     }
                     else
                     {
-                        result.KodPolozky = string.IsNullOrEmpty(kodPolozkyWithParams) ? selectedView.KodPolozky : kodPolozkyWithParams;
+                        result.KodPolozky = string.IsNullOrEmpty(kodPolozkyWithParams) ? selectedNode.KodPolozky : kodPolozkyWithParams;
                     }
 
                     result.Id = selectedView.Id;
@@ -642,7 +648,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                 {
                     Db.Delete<Pohlad>(x => x.Id == id);
                 }
-                if (Session.AdminLevel == AdminLevel.SysAdmin) //Odstránenie z CACHE všetkých tenantov 
+                if (Session.AdminLevel == AdminLevel.SysAdmin) //Odstránenie z CACHE všetkých tenantov
                 {
                     RemoveFromCacheByRegex(string.Format("ten:[^:]*:pfe:poh[^:]*:{0}.*", pohl.KodPolozky));
                     RemoveFromCacheByRegex(string.Format("ten:[^:]*:pfe:poh:{0}.*", id));
@@ -901,7 +907,11 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                 PfeDataModel currentLayout = JsonSerializer.DeserializeFromString<PfeDataModel>(pohlad.Data);
                 foreach (var subpohlad in currentLayout.Layout)
                 {
-                    UnLockPfeLayoutRecursive(subpohlad, zamknut, stack);
+                    //Zakazujem odomykat odradene pohlady. Musi sa to robit iba po jednom. Robi nam to strasne problemy.
+                    if (zamknut)
+                    {
+                        UnLockPfeLayoutRecursive(subpohlad, zamknut, stack);
+                    }
                 }
             }
         }
@@ -1075,7 +1085,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         {
             var reportId = string.Concat("Report:", request.ReportId);
             var report = GetFromCache<RendererResult>(reportId, useGzipCompression: true);
-            
+
             if (report == null)
             {
                 throw new WebEasValidationException(null, $"Report {reportId} nenájdený !");
@@ -1095,11 +1105,12 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                 Released = Context.Info.Updated.ToString("dd.MM.yyyy HH:mm"),
                 Environment = GetNastavenieS("sys", "Environment"),
                 DbReleased = dbReleased.HasValue ? dbReleased.Value.ToString("dd.MM.yyyy HH:mm") : string.Empty,
-                DcomAdmin = Session.AdminLevel == AdminLevel.SysAdmin,                
+                DcomAdmin = Session.AdminLevel == AdminLevel.SysAdmin,
                 DomenaName = "NOTIMPLEMENTED",
                 VillageName = Session.TenantName,
                 HasMultipleTenants = Session.TenantIds != null && Session.TenantIds.Count > 1,
                 OperationType = GetNastavenieI("reg", "eSAMRezim") == 1 ? "DCOM" : null,
+                AccountingPeriod = GetNastavenieD("uct", "UctovneObdobie")?.ToShortDateString() ?? GetNastavenieD("reg", "eSAMStart")?.ToShortDateString() ?? new DateTime(DateTime.Today.Year, 1, 1).ToShortDateString(),
                 Roles = Session.Roles
             };
 
@@ -1126,7 +1137,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                 {
                     foreach (PfeLayoutPages page in layout.Center.Pages)
                     {
-                        Pohlad pohlad = GetById<Pohlad>(page.Id);
+                        var pohlad = GetPohlad(page.Id);
                         if (pohlad != null)
                         {
                             page.Title = pohlad.Nazov;
@@ -1145,7 +1156,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                 {
                     foreach (PfeLayoutPages page in layout.Other.Pages)
                     {
-                        Pohlad pohlad = GetById<Pohlad>(page.Id);
+                        var pohlad = GetPohlad(page.Id);
                         if (pohlad != null)
                         {
                             page.Title = pohlad.Nazov;
@@ -1214,7 +1225,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         }
 
         #region Translations
-        
+
         /// <summary>
         /// Gets the list of translated columns
         /// </summary>
@@ -1262,7 +1273,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                 return translateColumns;
             }, new TimeSpan(12, 0, 0));
         }
-        
+
 
         /// <summary>
         /// Gets the list of translated expressions for concrete column
@@ -1323,7 +1334,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
             var environment = GetNastavenieS("sys", "Environment") ?? string.Empty;
             if (environment.StartsWith("IVP") || environment.StartsWith("ITP"))
             {
-                
+
                 var nzrModulesFilter = new Filter("ViewSharing", 2);//.And(kodPolozkyFilter);
                 if(request.FW)
                 {
@@ -1737,7 +1748,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                 var id = InsertData(p);
                 //PohladCustom result = Create<PohladCustom>(p);
             }
-            else 
+            else
             {
                 UpdateData(p);
             }

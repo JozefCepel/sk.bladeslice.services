@@ -17,7 +17,7 @@ namespace WebEas.Esam.ServiceModel.Office.Reg.Dto
     [Route("/UpdatePokladnica", "PUT")]
     [Api("Pokladnica")]
     [DataContract]
-    public class UpdatePokladnica : PokladnicaDto, IReturn<PokladnicaView>
+    public class UpdatePokladnica : PokladnicaDto, IReturn<PokladnicaResult>
     {
         [PrimaryKey]
         [DataMember(IsRequired = true)]
@@ -28,10 +28,20 @@ namespace WebEas.Esam.ServiceModel.Office.Reg.Dto
     [Route("/DeletePokladnica", "DELETE")]
     [Api("Pokladnica")]
     [DataContract]
-    public class DeletePokladnica
+    public class DeletePokladnica: IReturn<PokladnicaResult>
     {
         [DataMember(IsRequired = true)]
         public int[] C_Pokladnica_Id { get; set; }
+    }
+
+    [DataContract]
+    public class PokladnicaResult
+    {
+        [DataMember]
+        public PokladnicaView Record { get; set; }
+
+        [DataMember]
+        public string DcomError { get; set; }
     }
 
     #region DTO

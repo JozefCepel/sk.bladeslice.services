@@ -14,7 +14,13 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
         [DataMember]
         public Guid D_Tenant_Id { get; set; }
         [DataMember]
+        public long D_PO_Osoba_Id { get; set; }
+        [DataMember]
         public string ICO { get; set; }
+        [DataMember]
+        public string IcDph { get; set; }
+        [DataMember]
+        public string Dic { get; set; }
         [DataMember]
         public string MenoObchodne { get; set; }
         [DataMember]
@@ -33,5 +39,11 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
         public string OrganizaciaTypKod { get; set; }
         [DataMember]
         public string KodObce { get; set; }
+        [DataMember]
+        public string Telefon { get; set; }
+        [DataMember]
+        public string Fax { get; set; }
+        [DataMember]
+        public string Email { get; set; }
     }
 }
