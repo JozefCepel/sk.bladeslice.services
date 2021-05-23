@@ -75,7 +75,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 
                 #region SearchFieldDefinition
 
-                if (masterNode.KodPolozky == "pri")
+                if (masterNode.KodPolozky == "bds-skl-pri")
                 {
                     var priPol = model.Fields.FirstOrDefault(p => p.Name == nameof(D_PRI_1));
                     if (priPol != null)
@@ -83,7 +83,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
                         priPol.Mandatory = true;
                     }
                 }
-                else if (masterNode.KodPolozky == "vyd")
+                else if (masterNode.KodPolozky == "bds-skl-vyd")
                 {
                     var vydPol = model.Fields.FirstOrDefault(p => p.Name == nameof(D_VYD_1));
                     if (vydPol != null)
