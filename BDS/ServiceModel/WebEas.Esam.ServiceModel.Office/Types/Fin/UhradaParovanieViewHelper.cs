@@ -14,6 +14,9 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Fin
         [PrimaryKey]
         public long D_UhradaParovanie_Id { get; set; }
 
+        [IgnoreDataMember]
+        public Guid D_Tenant_Id { get; set; }
+
         [DataMember]
         public short Rok { get; set; }
 
@@ -121,5 +124,32 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Fin
 
         [DataMember]
         public int C_StavEntity_Id { get; set; }
+
+        [DataMember]
+        public string Rozhodnutie { get; set; }
+
+        [DataMember]
+        public string DruhDane { get; set; }
+
+        [DataMember]
+        public string DruhDaneNazov { get; set; }
+
+        [DataMember]
+        public int CisloVymer { get; set; }
+
+        [DataMember]
+        public string TypBiznisEntityKod_Predpis { get; set; }
+
+        [DataMember]
+        public string TypBiznisEntityNazov_Predpis { get; set; }
+
+        [DataMember]
+        public string CisloInterne_Predpis { get; set; }
+
+        [DataMember]
+        public string CisloExterne_Predpis { get; set; }
+
+        [DataMember]
+        public string Popis_Predpis { get; set; }
     }
 }

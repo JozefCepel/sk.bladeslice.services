@@ -42,54 +42,7 @@ namespace WebEas.Esam.ServiceModel.Office
 
         #endregion
 
-        #region Nastavenie
-
-        /// <summary>
-        /// Update nastavenia v aktuálnom module
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        WebEas.ServiceModel.Types.NastavenieView UpdateNastavenie(UpdateNastavenieBase updateNastavenie);
-
-        /// <summary>
-        /// Vráti hodnotu používateľského alebo tenantského nastavenia podľa zadaných kritérií.
-        /// Ak sa dopytuje na používateľské nastavenie ktoré používateľ nemá zadané, použije sa príslušné tenantské. Ak nastavenie nie je zadané vôbec, vráti sa preddefinovaná hodnota.
-        /// </summary>
-        /// <param name="modul">Kód modulu</param>
-        /// <param name="kod">Kód nastavenia</param>
-        /// <returns>Boolean</returns>
-        bool GetNastavenieB(string modul, string kod);
-
-        /// <summary>
-        /// Vráti hodnotu používateľského alebo tenantského nastavenia podľa zadaných kritérií.
-        /// Ak sa dopytuje na používateľské nastavenie ktoré používateľ nemá zadané, použije sa príslušné tenantské. Ak nastavenie nie je zadané vôbec, vráti sa preddefinovaná hodnota.
-        /// </summary>
-        /// <param name="modul">Kód modulu</param>
-        /// <param name="kod">Kód nastavenia</param>
-        /// <returns>Long</returns>
-        long GetNastavenieI(string modul, string kod);
-
-        /// <summary>
-        /// Vráti hodnotu používateľského alebo tenantského nastavenia podľa zadaných kritérií.
-        /// Ak sa dopytuje na používateľské nastavenie ktoré používateľ nemá zadané, použije sa príslušné tenantské. Ak nastavenie nie je zadané vôbec, vráti sa preddefinovaná hodnota.
-        /// </summary>
-        /// <param name="modul">Kód modulu</param>
-        /// <param name="kod">Kód nastavenia</param>
-        /// <returns>String</returns>
-        string GetNastavenieS(string modul, string kod);
-
-        /// <summary>
-        /// Vráti hodnotu používateľského alebo tenantského nastavenia podľa zadaných kritérií.
-        /// Ak sa dopytuje na používateľské nastavenie ktoré používateľ nemá zadané, použije sa príslušné tenantské. Ak nastavenie nie je zadané vôbec, vráti sa preddefinovaná hodnota.
-        /// </summary>
-        /// <param name="modul">Kód modulu</param>
-        /// <param name="kod">Kód nastavenia</param>
-        /// <returns>String</returns>
-        DateTime? GetNastavenieD(string modul, string kod);
-
         string GetTypBiznisEntityNastav(TypBiznisEntityEnum typBiznisEntity, LokalitaEnum lokalita);
-
-        #endregion
 
         #region Doklady
 
@@ -104,5 +57,8 @@ namespace WebEas.Esam.ServiceModel.Office
         string FormatujUcet(string ucet, string fmt);
 
         void OdstranitFormatovanieUctuFiltra(string ucet, ref Filter filter);
+        object CopyDoklad(CopyDokladDto request);
+        BiznisEntita_ZalohaView CreateBiznisEntita_Zaloha(BiznisEntita_ZalohaDto data);
+        BiznisEntita_ZalohaView UpdateBiznisEntita_Zaloha(BiznisEntita_ZalohaDto data);
     }
 }

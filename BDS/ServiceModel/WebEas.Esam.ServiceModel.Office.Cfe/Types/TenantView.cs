@@ -27,7 +27,7 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
         public string OrganizaciaTypNazov { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Typ organizácie", Mandatory = true, DefaultValue = 3)] // Rozpočtová organizácia, Nezisková organizácia, Podnikateľ
+        [PfeColumn(Text = "Typ organizácie", Mandatory = true)]
         [PfeCombo(typeof(OrganizaciaTypDetail), IdColumn = nameof(C_OrganizaciaTypDetail_Id), ComboDisplayColumn = nameof(OrganizaciaTypDetail.Nazov))]
         public string OrganizaciaTypDetailNazov { get; set; }
 
@@ -85,7 +85,7 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Types
         [PfeColumn(Text = "Zmenil", Hidden = true, Editable = false, ReadOnly = true, LoadWhenVisible = true)]
         public string ZmenilMeno { get; set; }
 
-        public void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, object masterNodeParameter, string masterNodeKey)
+        public void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, HierarchyNode masterNode)
         {
             if (model.Fields != null)
             {

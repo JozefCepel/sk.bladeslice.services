@@ -1,6 +1,5 @@
 ﻿using ServiceStack.DataAnnotations;
 using System.Runtime.Serialization;
-using WebEas.Esam.ServiceModel.Office.Types.Reg;
 using WebEas.ServiceModel;
 
 namespace WebEas.Esam.ServiceModel.Office.Types.Reg
@@ -15,6 +14,10 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         [PfeCombo(typeof(RegRzpDefiniciaCombo), IdColumn = nameof(RzpDefinicia), ComboDisplayColumn = nameof(RegRzpDefiniciaCombo.Nazov))]
         [Ignore]
         public string RzpDefiniciaText { get { return RegRzpDefiniciaCombo.GetText(RzpDefinicia); } }
+
+        [IgnoreDataMember]
+        [PfeColumn(Text = "_PolozkaText", LoadWhenVisible = true)] //Využíva sa iba pri combo poli
+        public string PolozkaText { get; set; }
 
         //audit stlpce
         [DataMember]

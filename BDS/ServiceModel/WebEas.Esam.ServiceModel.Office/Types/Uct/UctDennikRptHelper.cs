@@ -139,7 +139,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Uct
         public void AfterGetList<T>(IWebEasRepositoryBase repository, ref List<T> data, Filter filter)
         {
             //Identický kód v UctDennikView
-            string fmt = ((IRepositoryBase)repository).GetNastavenieS("uct", "FormatUctuVRozvrhu");
+            string fmt = repository.GetNastavenieS("uct", "FormatUctuVRozvrhu");
 
             foreach (var row in data as List<UctDennikRptHelper>)
             {

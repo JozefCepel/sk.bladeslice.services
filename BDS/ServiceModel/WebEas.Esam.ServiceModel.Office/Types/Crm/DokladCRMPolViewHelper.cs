@@ -50,5 +50,11 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Crm
 
         [DataMember]
         public long? C_UctKluc3_Id { get; set; }
+
+        [DataMember]
+        public int RzpDefinicia { get; set; }
+
+        [DataMember]
+        public decimal? DM_SumaSDph { get; set; }
     }
 }

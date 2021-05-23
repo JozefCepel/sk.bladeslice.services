@@ -33,12 +33,4 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         public string Nazov { get; set; }
     }
 
-    [Flags]
-    public enum ParovanieTypEnum
-    {  
-        par_1_1 = 1,
-        par_1_N = 2,
-        par_N_1 = 3,
-        par_N_M = 4
-    }
 }

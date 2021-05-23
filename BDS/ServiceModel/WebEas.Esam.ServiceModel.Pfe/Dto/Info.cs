@@ -46,10 +46,12 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
     {
     }
 
-    [Route("/appinfo", "GET")]
+    [Route("/appinfo", "POST")]
     [Api("Info")]
-    public class AppInfo
+    public class AppStatusDto
     {
+        public bool DeployInProgress { get; set; }
+        public string Msg { get; set; }
     }
 }
  

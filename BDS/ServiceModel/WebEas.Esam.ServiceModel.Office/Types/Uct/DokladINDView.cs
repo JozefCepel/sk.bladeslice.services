@@ -29,12 +29,12 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Uct
         [PfeColumn(Text = "Zmenil", Hidden = true, Editable = false, ReadOnly = true, LoadWhenVisible = true)]
         public string ZmenilMeno { get; set; }
 
-        public new void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, object masterNodeParameter, string masterNodeKey)
+        public new void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, HierarchyNode masterNode)
         {
-            base.CustomizeModel(model, repository, node, filter, masterNodeParameter, masterNodeKey);
-            var eSAMRezim = ((IRepositoryBase)repository).GetNastavenieI("reg", "eSAMRezim");
-            var isoZdroj = ((IRepositoryBase)repository).GetNastavenieI("reg", "ISOZdroj");
-            var isoZdrojNazov = ((IRepositoryBase)repository).GetNastavenieS("reg", "ISOZdrojNazov");
+            base.CustomizeModel(model, repository, node, filter, masterNode);
+            var eSAMRezim = repository.GetNastavenieI("reg", "eSAMRezim");
+            var isoZdroj = repository.GetNastavenieI("reg", "ISOZdroj");
+            var isoZdrojNazov = repository.GetNastavenieS("reg", "ISOZdrojNazov");
 
             if (model.Fields != null)
             {
@@ -65,7 +65,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Uct
                 node.Actions.Add(na);
             }
 
-            if (isoZdroj > 0 && repository.Session.Roles.Where(w => w.Contains("REG_MIGRATOR")).Any())
+            if (isoZdroj > 0 && repository.Session.Roles.Where(w => w.Contains("REG_MIGRATOR")).Any() && model.Type != PfeModelType.Form)
             {
                 if (node.Actions.Any(x => x.ActionType == NodeActionType.MenuButtonsAll))
                 {

@@ -19,7 +19,12 @@ namespace WebEas.Esam.Pfe
         protected void Application_Start(object sender, EventArgs e)
         {
             new AppHost().Init();
+            
             var host = string.Empty;
+#if !DEBUG
+            host = "localhost";
+#endif
+
             var bootPaths = new List<string>
             {
                 $"http://{host}/esam/api/office/cfe/v1/app-status",
@@ -35,10 +40,6 @@ namespace WebEas.Esam.Pfe
                 $"http://{host}/esam/api/reports/formats"
             };
 
-
-#if !DEBUG
-            host = "localhost";
-#endif
             if (!string.IsNullOrEmpty(host))
             {
                 foreach (var path in bootPaths)

@@ -24,6 +24,9 @@ namespace WebEas.ServiceModel
         [EnumMember(Value = "0xf067")]
         Plus,
 
+        [EnumMember(Value = "0xf101")]
+        AngleDoubleRight,
+
         [EnumMember(Value = "0xf044")]
         Edit,
 
@@ -140,6 +143,9 @@ namespace WebEas.ServiceModel
 
         [EnumMember(Value = "0xf141")]
         EllipsisH,
+
+        [EnumMember(Value = "0xf142")]
+        EllipsisV,
 
         [EnumMember(Value = "0xf165")]
         ThumbsDown,
@@ -260,6 +266,12 @@ namespace WebEas.ServiceModel
 
         [EnumMember(Value = "0xf068")]
         FasFaMinus,
+
+        [EnumMember(Value = "0xf651")]
+        FasFaCommentDollar,
+
+        [EnumMember(Value = "0xf02d")]
+        Book,
 
         #region DMS
 

@@ -109,7 +109,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         public long? D_Osoba_Id { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Suma", Tooltip = "Suma dokladu (v domácej mene)", DefaultValue = 0, ReadOnly = true)]
+        [PfeColumn(Text = "Suma", Tooltip = "Suma dokladu (v domácej mene)", DefaultValue = 0)]
         public decimal DM_Suma { get; set; }
 
         [DataMember]
@@ -117,15 +117,15 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         public decimal DM_CV { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Základ - bez DPH", Tooltip = "Suma základu pre nulovú sadzbu DPH (v domácej mene)", DefaultValue = 0, ReadOnly = true)]
+        [PfeColumn(Text = "Základ - bez DPH", Tooltip = "Suma základu pre nulovú sadzbu DPH (v domácej mene)", DefaultValue = 0)]
         public decimal DM_Zak0 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Základ - znížená sadzba", Tooltip = "Suma základov znížených sadzieb DPH (v domácej mene)", DefaultValue = 0, ReadOnly = true)]
+        [PfeColumn(Text = "Základ - znížená sadzba", Tooltip = "Suma základov znížených sadzieb DPH (v domácej mene)", DefaultValue = 0)]
         public decimal DM_Zak1 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Základ - základná sadzba", Tooltip = "Suma základu pre základnú sadzbu DPH (v domácej mene)", DefaultValue = 0, ReadOnly = true)]
+        [PfeColumn(Text = "Základ - základná sadzba", Tooltip = "Suma základu pre základnú sadzbu DPH (v domácej mene)", DefaultValue = 0)]
         public decimal DM_Zak2 { get; set; }
 
         [DataMember]
@@ -137,7 +137,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         public decimal DM_DPH2 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_Z-Suma", Tooltip = "Suma dokladu (v mene dokladu)", DefaultValue = 0, ReadOnly = true)]
+        [PfeColumn(Text = "_Z-Suma", Tooltip = "Suma dokladu (v mene dokladu)", DefaultValue = 0)]
         public decimal CM_Suma { get; set; }
 
         [DataMember]
@@ -145,15 +145,15 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         public decimal CM_CV { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_Z-Základ - bez DPH", Tooltip = "Suma základu pre nulovú sadzbu DPH (v mene dokladu)", DefaultValue = 0, ReadOnly = true)]
+        [PfeColumn(Text = "_Z-Základ - bez DPH", Tooltip = "Suma základu pre nulovú sadzbu DPH (v mene dokladu)", DefaultValue = 0)]
         public decimal CM_Zak0 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_Z-Základ - znížená sadzba", Tooltip = "Suma základov znížených sadzieb DPH (v mene dokladu)", DefaultValue = 0, ReadOnly = true)]
+        [PfeColumn(Text = "_Z-Základ - znížená sadzba", Tooltip = "Suma základov znížených sadzieb DPH (v mene dokladu)", DefaultValue = 0)]
         public decimal CM_Zak1 { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_Z-Základ - základná sadzba", Tooltip = "Suma základu pre základnú sadzbu DPH (v mene dokladu)", DefaultValue = 0, ReadOnly = true)]
+        [PfeColumn(Text = "_Z-Základ - základná sadzba", Tooltip = "Suma základu pre základnú sadzbu DPH (v mene dokladu)", DefaultValue = 0)]
         public decimal CM_Zak2 { get; set; }
 
         [DataMember]
@@ -200,12 +200,16 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         [PfeColumn(Text = "Kontaktná osoba", RequiredFields = new[] { nameof(D_Osoba_Id) })]
         [PfeCombo(typeof(OsobaKontaktView), IdColumn = nameof(D_OsobaKontakt_Id_Komu), ComboDisplayColumn = nameof(OsobaKontaktView.FormatMenoCombo),
                     CustomSortSqlExp = nameof(OsobaKontaktView.Hlavny) + " DESC, " + nameof(OsobaKontaktView.ZastupcaMeno) + " ASC",
-                    AdditionalWhereSql = nameof(OsobaKontaktView.FormatMenoCombo) + " <> ''", AllowComboCustomValue = true)]
+                    AdditionalWhereSql = nameof(OsobaKontaktView.FormatMenoCombo) + " <> '' AND D_Osoba_Id = @D_Osoba_Id", AllowComboCustomValue = true)]
         public string OsobaKontaktKomu { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "_D_ADR_Adresa_Id")]
         public long? D_ADR_Adresa_Id { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "_D_Subor_Id")]
+        public int? D_Subor_Id { get; set; }
 
         public string ChangeConstraintMessage(string constraintName, int errorCode, WebEasSqlKnownErrorType errorType)
         {

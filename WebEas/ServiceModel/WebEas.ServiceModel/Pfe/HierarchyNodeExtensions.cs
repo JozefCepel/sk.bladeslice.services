@@ -622,7 +622,7 @@ namespace WebEas.ServiceModel
         /// <param name="configuredData">The configured data.</param>
         /// <param name="type">The type.</param>
         /// <returns></returns>
-        public static PfeDataModel GetDataModel(this HierarchyNode node, IWebEasRepositoryBase repository, IPohlad configuredData = null, PfeModelType? type = null, string filterString = null, object masterNodeParameter = null, string masterNodeKey = "")
+        public static PfeDataModel GetDataModel(this HierarchyNode node, IWebEasRepositoryBase repository, IPohlad configuredData = null, PfeModelType? type = null, string filterString = null, HierarchyNode masterNode = null)
         {
             if (node.ModelType == null)
             {
@@ -1008,20 +1008,20 @@ namespace WebEas.ServiceModel
                 }
             }
 
+            /*
+            performance
+            OLD
             // Nastavovanie comboboxov
             foreach (PfeColumnAttribute attribute in model.Fields)
             {
                 // Nastavenie atributu idckoveho stlpca Editable=false ak je takto nastaveny combo stlpec, ktory ho referencuje
-                {
-                    PfeColumnAttribute refColumn = model.Fields.Where(x => x.PropertyTypeInfo.HasAttribute<PfeComboAttribute>() &&
+                PfeColumnAttribute refColumn = model.Fields.Where(x => x.PropertyTypeInfo.HasAttribute<PfeComboAttribute>() &&
                                                                            x.PropertyTypeInfo.FirstAttribute<PfeComboAttribute>().IdColumn == attribute.Name).FirstOrDefault();
-
-                    if (refColumn != null)
+                if (refColumn != null)
+                {
+                    if (!refColumn.Editable)
                     {
-                        if (!refColumn.Editable)
-                        {
-                            attribute.Editable = refColumn.Editable;
-                        }
+                        attribute.Editable = refColumn.Editable;
                     }
                 }
 
@@ -1036,6 +1036,31 @@ namespace WebEas.ServiceModel
                         {
                             attribute.Mandatory = idColumn.Mandatory;
                         }
+                    }
+                }
+            }
+            */
+
+            // performance
+            // NEW
+            // Nastavovanie comboboxov
+            var idColumns = model.Fields.Where(x => x.PropertyTypeInfo.HasAttribute<PfeComboAttribute>())
+                .Select(x => new { att = x, idcol = model.Fields.FirstOrDefault(z => z.Name == x.PropertyTypeInfo.FirstAttribute<PfeComboAttribute>().IdColumn) });
+
+            foreach (var col in idColumns)
+            {
+                if (col.idcol != null)
+                {
+                    // Nastavenie atributu idckoveho stlpca Editable=false ak je takto nastaveny combo stlpec, ktory ho referencuje
+                    if (!col.idcol.Editable)
+                    {
+                        col.att.Editable = col.idcol.Editable;
+                    }
+                    
+                    // Nastavenie atributu Mandatory=true ak ma idckovy stlpec Mandatory=true
+                    if (col.idcol.Mandatory)
+                    {
+                        col.att.Mandatory = col.idcol.Mandatory;
                     }
                 }
             }
@@ -1123,7 +1148,7 @@ namespace WebEas.ServiceModel
                     }
                     if (modelObject is IPfeCustomize)
                     {
-                        ((IPfeCustomize)modelObject).CustomizeModel(model, repository, node, filterString, masterNodeParameter, masterNodeKey);
+                        ((IPfeCustomize)modelObject).CustomizeModel(model, repository, node, filterString, masterNode);
                     }
                 }
             }

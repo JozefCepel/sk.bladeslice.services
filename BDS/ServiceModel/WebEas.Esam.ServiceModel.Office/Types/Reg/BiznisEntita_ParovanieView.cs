@@ -83,18 +83,40 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         )]
         public string BiznisEntitaPopis_2 { get; set; }
 
+        [DataMember]
+        [PfeColumn(Text = "Číslo dokladu 1", ReadOnly = true, Xtype = PfeXType.Link)]
+        public string CisloInterne_1 { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Číslo dokladu 2", ReadOnly = true, Xtype = PfeXType.Link)]
+        public string CisloInterne_2 { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "_URL_1", ReadOnly = true)] //Natvrdo v kóde hľadá k PfeXType.Link - field URL_1
+        public string URL_1 { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "_URL_2", ReadOnly = true)] //Natvrdo v kóde hľadá k PfeXType.Link - field URL_2
+        public string URL_2 { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "_DatumDokladu_1", ReadOnly = true, Type = PfeDataType.Date)]
+        public DateTime DatumDokladu_1 { get; set; }
+
+        [PfeColumn(Text = "_DatumDokladu_2", ReadOnly = true, Type = PfeDataType.Date)]
+        public DateTime DatumDokladu_2 { get; set; }
+
         //audit stlpce
         [DataMember]
-        [PfeColumn(Text = "Vytvoril", Hidden = true, Editable = false, ReadOnly = true, LoadWhenVisible = true)]
+        [PfeColumn(Text = "Vytvoril", Hidden = true, ReadOnly = true, LoadWhenVisible = true)]
         public string VytvorilMeno { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Zmenil", Hidden = true, Editable = false, ReadOnly = true, LoadWhenVisible = true)]
+        [PfeColumn(Text = "Zmenil", Hidden = true, ReadOnly = true, LoadWhenVisible = true)]
         public string ZmenilMeno { get; set; }
 
-        public void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, object masterNodeParameter, string masterNodeKey)
+        public void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, HierarchyNode masterNode)
         {
-
             #region TypBeParovanieNazov
 
             var be = model.Fields.FirstOrDefault(p => p.Name == nameof(TypBeParovanieNazov));
@@ -160,6 +182,15 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                         // ParovanieSearchFieldDef(TypBiznisEntityEnum.ODP, "crm-odb-odp", nameof(C_TypBiznisEntity_Id_2), nameof(BiznisEntitaPopis_2)),
                     };
             }
+            #endregion
+
+            #region Akcie
+
+            if (masterNode.Kod == "par")
+            {
+                node.Actions.RemoveAll(x => x.ActionType != NodeActionType.ReadList);
+            }
+
             #endregion
         }
 

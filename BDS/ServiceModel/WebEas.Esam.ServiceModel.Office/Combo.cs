@@ -262,18 +262,18 @@ namespace WebEas.Esam.ServiceModel.Office
         {
             var ComboList = new List<IComboResult>();
 
-            string kluc = ((IRepositoryBase)Repository).GetNastavenieS("uct", "UctKluc1Nazov");
+            string kluc = Repository.GetNastavenieS("uct", "UctKluc1Nazov");
             if (!string.IsNullOrEmpty(kluc))
             {
                 ComboList.Add(new ComboResult() { Id = ((byte)1).ToString(), Value = kluc });
             }
 
-            kluc = ((IRepositoryBase)Repository).GetNastavenieS("uct", "UctKluc2Nazov");
+            kluc = Repository.GetNastavenieS("uct", "UctKluc2Nazov");
             if (!string.IsNullOrEmpty(kluc))
             {
                 ComboList.Add(new ComboResult() { Id = ((byte)2).ToString(), Value = kluc });
             }
-            kluc = ((IRepositoryBase)Repository).GetNastavenieS("uct", "UctKluc3Nazov");
+            kluc = Repository.GetNastavenieS("uct", "UctKluc3Nazov");
             if (!string.IsNullOrEmpty(kluc))
             {
                 ComboList.Add(new ComboResult() { Id = ((byte)3).ToString(), Value = kluc });
@@ -286,9 +286,9 @@ namespace WebEas.Esam.ServiceModel.Office
         {
             switch (kod)
             {
-                case 1: return ((IRepositoryBase)Repository).GetNastavenieS("uct", "UctKluc1Nazov");
-                case 2: return ((IRepositoryBase)Repository).GetNastavenieS("uct", "UctKluc2Nazov");
-                case 3: return ((IRepositoryBase)Repository).GetNastavenieS("uct", "UctKluc3Nazov");
+                case 1: return Repository.GetNastavenieS("uct", "UctKluc1Nazov");
+                case 2: return Repository.GetNastavenieS("uct", "UctKluc2Nazov");
+                case 3: return Repository.GetNastavenieS("uct", "UctKluc3Nazov");
                 default: return null;
             }
         }
@@ -690,6 +690,8 @@ namespace WebEas.Esam.ServiceModel.Office
     [DataContract]
     public class VSCombo : IStaticCombo, IComboResult, IPfeCustomizeCombo
     {
+        private long? kontrolaNaRozpocet;
+
         [DataMember(Name = "id")]
         public string Id { get; set; }
 
@@ -723,6 +725,15 @@ namespace WebEas.Esam.ServiceModel.Office
 
         public Dictionary<string, string> RequiredFields { get; set; }
 
+        private long GetKontrolaNaRozpocet(IWebEasRepositoryBase repository = null)
+        {
+            if (!kontrolaNaRozpocet.HasValue)
+            {
+                kontrolaNaRozpocet = (repository ?? Repository).GetNastavenieI("crm", "KontrolaNaRozpocet");
+            }
+            return kontrolaNaRozpocet.Value;
+        }
+
         // dvojicka UhradaParovanieView, ak sa nieco meni kukni aj tam
         public List<IComboResult> GetComboList(string[] requestFields, string value)
         {
@@ -754,9 +765,19 @@ namespace WebEas.Esam.ServiceModel.Office
             }
 
             string comboValueWhere = string.Empty;
+            bool vyberPz = false;
             if (!value.IsNullOrEmpty())
             {
-                comboValueWhere = $" AND VS COLLATE Latin1_general_CI_AI LIKE '%{value}%'";
+                // Vyber VS z dialogu "Výber P/Z"
+                vyberPz = typ == (int)TypEnum.UhradaDFA || typ == (int)TypEnum.UhradaOFA || typ == (int)TypEnum.UhradaDZF || typ == (int)TypEnum.UhradaOZF;
+                if (vyberPz)
+                {
+                    comboValueWhere = $" AND VyberPZSearchField COLLATE Latin1_general_CI_AI LIKE '%{value}%'";
+                }
+                else
+                {
+                    comboValueWhere = $" AND VS COLLATE Latin1_general_CI_AI LIKE '%{value}%'";
+                }
             }
 
             //Filter musí byť identický ako v "ComboCustomize" - nižšie v kóde
@@ -795,24 +816,30 @@ namespace WebEas.Esam.ServiceModel.Office
             }
             else
             {
+                string kontrolovatRozpocet = "R = 1";
+                if (GetKontrolaNaRozpocet() == 0)
+                {
+                    kontrolovatRozpocet = "S = 1";
+                }
+
                 List<(string IdFormatMeno, string VS, long? OsobaId, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)> list = null;
                 switch (typ)
                 {
                     case (int)TypEnum.UhradaDFA:
-                        list = Repository.Db.Select<(string IdFormatMeno, string VS, long? OsobaId, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT IdFormatMeno, VS, D_Osoba_Id, D_BiznisEntita_Id, DM_Neuhradene, DatumUhrady FROM crm.V_DokladDFA WHERE {additionalOsobaFilter} R = 1 {comboValueWhere} ORDER BY VS");
+                        list = Repository.Db.Select<(string IdFormatMeno, string VS, long? OsobaId, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT IdFormatMeno, {(vyberPz ? "VyberPZSearchField" : "VS")}, D_Osoba_Id, D_BiznisEntita_Id, DM_Neuhradene, DatumUhrady FROM crm.V_DokladDFA WHERE {additionalOsobaFilter} {kontrolovatRozpocet} {comboValueWhere} ORDER BY VS");
                         break;
                     case (int)TypEnum.UhradaOFA:
-                        list = Repository.Db.Select<(string IdFormatMeno, string VS, long? OsobaId, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT IdFormatMeno, VS, D_Osoba_Id, D_BiznisEntita_Id, DM_Neuhradene, DatumUhrady FROM crm.V_DokladOFA WHERE {additionalOsobaFilter} S = 1 {comboValueWhere} ORDER BY VS");
+                        list = Repository.Db.Select<(string IdFormatMeno, string VS, long? OsobaId, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT IdFormatMeno, {(vyberPz ? "VyberPZSearchField" : "VS")}, D_Osoba_Id, D_BiznisEntita_Id, DM_Neuhradene, DatumUhrady FROM crm.V_DokladOFA WHERE {additionalOsobaFilter} S = 1 {comboValueWhere} ORDER BY VS");
                         break;
                     case (int)TypEnum.UhradaDZF:
-                        list = Repository.Db.Select<(string IdFormatMeno, string VS, long? OsobaId, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT IdFormatMeno, VS, D_Osoba_Id, D_BiznisEntita_Id, DM_Neuhradene, DatumUhrady FROM crm.V_DokladDZF WHERE {additionalOsobaFilter} R = 1 {comboValueWhere} ORDER BY VS");
+                        list = Repository.Db.Select<(string IdFormatMeno, string VS, long? OsobaId, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT IdFormatMeno, {(vyberPz ? "VyberPZSearchField" : "VS")}, D_Osoba_Id, D_BiznisEntita_Id, DM_Neuhradene, DatumUhrady FROM crm.V_DokladDZF WHERE {additionalOsobaFilter} {kontrolovatRozpocet} {comboValueWhere} ORDER BY VS");
                         break;
                     case (int)TypEnum.UhradaOZF:
-                        list = Repository.Db.Select<(string IdFormatMeno, string VS, long? OsobaId, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT IdFormatMeno, VS, D_Osoba_Id, D_BiznisEntita_Id, DM_Neuhradene, DatumUhrady FROM crm.V_DokladOZF WHERE {additionalOsobaFilter} S = 1 {comboValueWhere} ORDER BY VS");
+                        list = Repository.Db.Select<(string IdFormatMeno, string VS, long? OsobaId, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT IdFormatMeno, {(vyberPz ? "VyberPZSearchField" : "VS")}, D_Osoba_Id, D_BiznisEntita_Id, DM_Neuhradene, DatumUhrady FROM crm.V_DokladOZF WHERE {additionalOsobaFilter} S = 1 {comboValueWhere} ORDER BY VS");
                         break;
 
                     case (int)TypEnum.DobropisDFA:
-                        list = Repository.Db.Select<(string IdFormatMeno, string VS, long? OsobaId, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT IdFormatMeno, VS, D_Osoba_Id, D_BiznisEntita_Id, DM_Neuhradene, DatumUhrady FROM crm.V_DokladDFA WHERE {additionalOsobaFilter} DM_Suma < 0 AND R = 1 {comboValueWhere} ORDER BY VS");
+                        list = Repository.Db.Select<(string IdFormatMeno, string VS, long? OsobaId, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT IdFormatMeno, VS, D_Osoba_Id, D_BiznisEntita_Id, DM_Neuhradene, DatumUhrady FROM crm.V_DokladDFA WHERE {additionalOsobaFilter} DM_Suma < 0 AND {kontrolovatRozpocet} {comboValueWhere} ORDER BY VS");
                         break;
                     case (int)TypEnum.DobropisOFA:
                         list = Repository.Db.Select<(string IdFormatMeno, string VS, long? OsobaId, long Predpis_Id, decimal Neuhradene, DateTime? DatumUhrady)>($"SELECT IdFormatMeno, VS, D_Osoba_Id, D_BiznisEntita_Id, DM_Neuhradene, DatumUhrady FROM crm.V_DokladOFA WHERE {additionalOsobaFilter} DM_Suma < 0 AND S = 1 {comboValueWhere} ORDER BY VS");
@@ -865,11 +892,17 @@ namespace WebEas.Esam.ServiceModel.Office
         {
             if (column.ToLower() == "vs" && kodPolozky == "fin-pol-par")
             {
+                string kontrolovatRozpocet = "R = 1";
+                if (GetKontrolaNaRozpocet(repository) == 0)
+                {
+                    kontrolovatRozpocet = "S = 1";
+                }
+
                 //Filter musí byť identický ako v "switch (typ)" - vyššie v kóde
                 comboAttribute.AdditionalWhereSql = Environment.NewLine +
-                                                    $"CASE WHEN @C_Typ_Id IN ({(int)TypEnum.UhradaDFA  },{(int)TypEnum.UhradaDZF  }) AND R = 1 THEN 1 " +
+                                                    $"CASE WHEN @C_Typ_Id IN ({(int)TypEnum.UhradaDFA  },{(int)TypEnum.UhradaDZF  }) AND {kontrolovatRozpocet} THEN 1 " +
                                                     $"     WHEN @C_Typ_Id IN ({(int)TypEnum.UhradaOFA  },{(int)TypEnum.UhradaOZF  }) AND S = 1 THEN 1 " +
-                                                    $"     WHEN @C_Typ_Id IN ({(int)TypEnum.DobropisDFA}                           ) AND R = 1 AND DM_Suma < 0 THEN 1 " +
+                                                    $"     WHEN @C_Typ_Id IN ({(int)TypEnum.DobropisDFA}                           ) AND {kontrolovatRozpocet} AND DM_Suma < 0 THEN 1 " +
                                                     $"     WHEN @C_Typ_Id IN ({(int)TypEnum.DobropisOFA}                           ) AND S = 1 AND DM_Suma < 0 THEN 1 " +
                                                     $"     WHEN @C_Typ_Id = {(int)TypEnum.DaPUhradaDane                    } AND C_VymerTyp_Id = 1 THEN 1 " +  // VymerTypEnum.DAN
                                                     $"     WHEN @C_Typ_Id = {(int)TypEnum.DaPUhradaPokutyZaOneskorenie     } AND C_VymerTyp_Id = 2 THEN 1 " +  // VymerTypEnum.ONE

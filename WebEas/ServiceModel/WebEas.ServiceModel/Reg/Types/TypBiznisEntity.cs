@@ -53,6 +53,9 @@ namespace WebEas.ServiceModel.Office.Egov.Reg.Types
         [PfeSort(Rank = 1)]
         public int C_StavovyPriestor_Id { get; set; }
 
+        [DataMember]
+        public string Kod { get; set; }
+
         /// <summary>
         /// Gets or sets the nazov.
         /// </summary>

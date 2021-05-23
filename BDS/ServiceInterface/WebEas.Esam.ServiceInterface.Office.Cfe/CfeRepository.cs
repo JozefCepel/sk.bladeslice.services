@@ -181,6 +181,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
                 kernel.Settings.AllowNullInjection = true;
                 kernel.Bind<ServiceStack.Data.IDbConnectionFactory>().ToMethod(c => DbFactory);
                 kernel.Bind<ServiceStack.Redis.IRedisClientsManager>().ToMethod(ctx => RedisManager);
+                kernel.Bind<IServerEvents>().ToMethod(ctx => null).InSingletonScope();
                 var modulesInterfaces = new List<Type>();
 
                 switch (kodModulu)
@@ -292,6 +293,15 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
 
         #region Users
 
+
+        public void GrantUserPermToDms(Guid tenantId)
+        {
+            using (var db = DbFactory.CreateDbConnection())
+            {
+                db.Execute("set context_info 0x10101010101010101010101010101010; EXEC dms.TenantCreateModule @tenantId", new { tenantId });
+            }
+        }
+
         // specialita: primary key je GUID a to framework nevie
         public UserView CreateUser(CreateUser request)
         {
@@ -317,7 +327,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
             };
 
             Create(tenantUser);
-
+            GrantUserPermToDms(tenantUser.D_Tenant_Id);
             var u = GetList<UserView>(t => t.D_User_Id == rec.D_User_Id).FirstOrDefault();
             InvalidateTreeCountsForPath("cfe-admin-users");
             return u;
@@ -463,7 +473,12 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
         // specialita: framework nedokaze spravit UPDATE D_Tenant_ID
         public UserTenantView UpdateTenantUsers(UpdateUserTenant request)
         {
-            return Update<UserTenantView>(request);
+            var rec = Db.SingleById<UserTenant>(request.D_UserTenant_Id);
+            request.UpdateEntity(rec);
+            rec.DatumZmeny = DateTime.Now;
+            rec.Zmenil = Session.UserIdGuid;
+            Db.Update(rec);
+            return GetById<UserTenantView>(request.D_UserTenant_Id);
         }
 
         public List<Guid> GetMyTenantsUsersIDs()
@@ -870,6 +885,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
                 }
             }
         }
+
 
         #endregion
     }

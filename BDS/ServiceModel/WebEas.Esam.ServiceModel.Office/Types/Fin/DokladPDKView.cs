@@ -4,9 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using WebEas.Esam.ServiceModel.Office.Types.Cfe;
-using WebEas.Esam.ServiceModel.Office.Types.Osa;
 using WebEas.Esam.ServiceModel.Office.Types.Reg;
-using WebEas.Esam.ServiceModel.Office.Types.Uct;
 using WebEas.ServiceModel;
 
 namespace WebEas.Esam.ServiceModel.Office.Types.Fin
@@ -16,6 +14,11 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Fin
     [DataContract]
     public class DokladPDKView : BiznisEntitaDokladView, IPfeCustomize, IBaseView
     {
+        [DataMember]
+        [Ignore] //Stĺpec potrebný na prepojenie Master/Detail - ak majú fieldy rovnaké meno, tak môžem dať do prepojenia aj Rok
+        [PfeColumn(Text = "_D_BiznisEntita_Id_Uhrada")]
+        public long D_BiznisEntita_Id_Uhrada => D_BiznisEntita_Id;
+
         [DataMember]
         [PfeColumn(Text = "Úhrady P/Z", ReadOnly = true)]
         public decimal DM_Uhrady { get; set; }
@@ -72,9 +75,12 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Fin
 
         [DataMember]
         [PfeColumn(Text = "Schválil")]
-        [PfeCombo(typeof(UserComboView), IdColumn = nameof(D_User_Id_Podpisal), ComboDisplayColumn = nameof(UserComboView.FullName), AdditionalWhereSql = "C_Modul_Id = 6")]
+        [PfeCombo(typeof(UserComboView), IdColumn = nameof(D_User_Id_Podpisal), ComboDisplayColumn = nameof(UserComboView.FullName), AdditionalWhereSql = "C_Modul_Id = 7")]
         public string PodpisalMeno { get; set; }
 
+        [DataMember]
+        [PfeColumn(Text = "_Terminalova")]
+        public byte Terminalova { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Starý zostatok", ReadOnly = true)]
@@ -100,14 +106,31 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Fin
         [HierarchyNodeParameter]
         public new int? C_Pokladnica_Id { get; set; }
 
-        public new void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, object masterNodeParameter, string masterNodeKey)
+        public new void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, HierarchyNode masterNode)
         {
-            base.CustomizeModel(model, repository, node, filter, masterNodeParameter, masterNodeKey);
+            base.CustomizeModel(model, repository, node, filter, masterNode);
             if (model.Fields != null)
             {
-                var eSAMRezim = ((IRepositoryBase)repository).GetNastavenieI("reg", "eSAMRezim");
-                var isoZdroj = ((IRepositoryBase)repository).GetNastavenieI("reg", "ISOZdroj");
-                var isoZdrojNazov = ((IRepositoryBase)repository).GetNastavenieS("reg", "ISOZdrojNazov");
+                var eSAMRezim = repository.GetNastavenieI("reg", "eSAMRezim");
+                var isoZdroj = repository.GetNastavenieI("reg", "ISOZdroj");
+                var isoZdrojNazov = repository.GetNastavenieS("reg", "ISOZdrojNazov");
+
+                if (node != null && node.Parameter != null)
+                {
+                    var pokladnica = ((IRepositoryBase)repository).GetById<Pokladnica>(node.Parameter, nameof(Pokladnica.Terminalova));
+                    var actions = node.Actions.Where(x => x.MenuButtons != null).SelectMany(x => x.MenuButtons);
+                    if (pokladnica == null || pokladnica.Terminalova == 1)
+                    {
+                        actions.Single(x => x.ActionType == NodeActionType.NovyPrijmovy).Hidden = true;
+                        actions.Single(x => x.ActionType == NodeActionType.NovyVydajovy).Hidden = true;
+                    }
+
+                    if (pokladnica == null || pokladnica.Terminalova == 0)
+                    {
+                        actions.Single(x => x.ActionType == NodeActionType.NovyPrijmovyPos).Hidden = true;
+                    }
+                }
+
 
                 if (eSAMRezim != 1)
                 {
@@ -150,7 +173,17 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Fin
                             ComparisonOperator = "eq",
                             Value = (int)TypBiznisEntity_KnihaEnum.Prijmove_pokladnicne_doklady,
                             LeftBrace = 1,
-                            RightBrace = 1
+                            RightBrace = 1,
+                            LogicOperator =  "OR"
+                        },
+                        new PfeFilterAttribute
+                        {
+                            Field = nameof(C_TypBiznisEntity_Kniha_Id),
+                            ComparisonOperator = "eq",
+                            Value = (int)TypBiznisEntity_KnihaEnum.Terminalove_pokladnicne_doklady,
+                            LeftBrace = 1,
+                            RightBrace = 1,
+                            LogicOperator =  "OR"
                         }
                     }
                 });
@@ -172,7 +205,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Fin
                     }
                 });
 
-                if (isoZdroj > 0 && repository.Session.Roles.Where(w => w.Contains("REG_MIGRATOR")).Any())
+                if (isoZdroj > 0 && repository.Session.Roles.Where(w => w.Contains("REG_MIGRATOR")).Any() && model.Type != PfeModelType.Form)
                 {
                     if (node.Actions.Any(x => x.ActionType == NodeActionType.MenuButtonsAll))
                     {

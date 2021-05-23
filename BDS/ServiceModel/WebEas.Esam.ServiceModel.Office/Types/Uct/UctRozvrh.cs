@@ -111,7 +111,8 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Uct
         {
             if (constraintName.StartsWith("CK_C_UctRozvrh_AU"))
             {
-                return "Hodnota 'AÚ' nesmie obsahovať znaky \" \"; \".\"; \" - \"; \" / \". Znaky je možné nadefinovať pomocou parametra <a href=\"/#UCT/all-sm-mset!uct\" target =\"_blank\">'FormatUctuVRozvrhu'</a>.";
+                //Vynechávam  ".", kvôli urbisu
+                return "Hodnota 'AÚ' nesmie obsahovať znaky \" \";\"; \" - \"; \" / \". Znaky je možné nadefinovať pomocou parametra <a href=\"/#UCT/all-sm-mset!uct\" target =\"_blank\">'FormatUctuVRozvrhu'</a>.";
             }
 
             return null;

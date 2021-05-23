@@ -119,7 +119,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Rzp
         [PfeColumn(Text = "_Old_Id", ReadOnly = true, Editable = false)]
         public string Old_Id { get; set; }
 
-        public void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, object masterNodeParameter, string masterNodeKey)
+        public void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, HierarchyNode masterNode)
         {
             if (model.Fields != null)
             {

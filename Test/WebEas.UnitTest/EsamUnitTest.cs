@@ -328,6 +328,11 @@ namespace WebEas.UnitTest
                 return true;
             }
 
+            if (sObject.StartsWith("StrediskoView") || sObject.StartsWith("BankaUcetView") || sObject.StartsWith("PokladnicaView"))
+            {
+                return true;
+            }
+
             bool bIgnore = true;
             switch (sObject)
             {

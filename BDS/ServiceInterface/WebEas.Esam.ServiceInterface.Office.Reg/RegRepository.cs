@@ -206,7 +206,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Reg
             #region TextaciaPol
             if (node != null && node.ModelType == typeof(TextaciaPolView))
             {
-                var poradieMax = Db.Scalar<short>(Db.From<TextaciaPolView>().Select(x => new { Poradie = Sql.Max(x.Poradie) }));
+                var poradieMax = Db.Scalar<short>(Db.From<TextaciaPolView>().Select(x => new { Poradie = Sql.Max(x.Poradie) }).Where(x => x.C_Textacia_Id == Convert.ToInt32(masterRowId)));
                 return new // TextaciaPolView()
                 {
                     C_Textacia_Id = masterRowId,
@@ -336,71 +336,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Reg
         }
         #endregion
 
-        #region BiznisEntita_Zaloha
-        public BiznisEntita_ZalohaView CreateBiznisEntita_Zaloha(CreateBiznisEntita_Zaloha data)
-        {
-            BiznisEntita_Zaloha par;
-            par = data.ConvertToEntity();
-            var be = GetById<BiznisEntita>(data.D_BiznisEntita_Id_FA);
-            if (be != null) par.Rok = be.Rok; // zober rok z dokladu
-            InsertData(par);
-            UpdateZalohaInHead(be.D_BiznisEntita_Id, be.C_TypBiznisEntity_Id, be?.Rok ?? par.Rok);
-            var result = GetById<BiznisEntita_ZalohaView>(par.D_BiznisEntita_Zaloha_Id);
-            return result;
-        }
-
-        public BiznisEntita_ZalohaView UpdateBiznisEntita_Zaloha(UpdateBiznisEntita_Zaloha data)
-        {
-            BiznisEntita_Zaloha par;
-            par = data.ConvertToEntity();
-            var be = GetById<BiznisEntita>(data.D_BiznisEntita_Id_FA);
-            if (be != null) par.Rok = be.Rok; // zober rok z dokladu
-            UpdateData(par);
-            UpdateZalohaInHead(be.D_BiznisEntita_Id, be.C_TypBiznisEntity_Id, be?.Rok ?? par.Rok);
-            var result = GetById<BiznisEntita_ZalohaView>(par.D_BiznisEntita_Zaloha_Id);
-            return result;
-        }
-
-        public void UpdateZalohaInHead(long id, int typ, short rok)
-        {
-            var zalPol = GetList(Db.From<BiznisEntita_ZalohaView>().Select(x => new { x.DM_Cena, x.VS }). //View  berie iba platne zaznamy
-                Where(e => e.D_BiznisEntita_Id_FA == id && e.Rok == rok));   //Rok je filtrovaný iba kvôli performance na partícii
-
-            //foreach (var zal in zalPol)
-            //{
-            //    suma += zal.DM_Cena;
-            //    if (cislo != "") cislo += ", ";
-            //    cislo += zal.VS;
-            //}
-
-            decimal suma = zalPol.Sum(x => x.DM_Cena);
-            string cislo = zalPol.OrderBy(o => o.VS).Select(x => x.VS).Distinct().Join(", ");
-
-            if (typ == (int)TypBiznisEntityEnum.DFA)
-            {
-                var dfa = GetById<CrmDokladDFA>(id);
-                if (dfa != null)
-                {
-                    dfa.DM_SumaZal = suma;
-                    dfa.CisloFAK = cislo;
-                    Update(dfa);
-                }
-            }
-            else if (typ == (int)TypBiznisEntityEnum.OFA)
-            {
-                var ofa = GetById<CrmDokladOFA>(id);
-                if (ofa != null)
-                {
-                    ofa.DM_SumaZal = suma;
-                    ofa.CisloFAK = cislo;
-                    Update(ofa);
-                }
-            }
-
-            // na FE sa potom refreshne master grid
-        }
-
-        #endregion
+        
 
         #region Stredisko
 
@@ -415,48 +351,70 @@ namespace WebEas.Esam.ServiceInterface.Office.Reg
             return result;
         }
 
-        public StrediskoView UpdateStredisko(UpdateStredisko data)
+        public StrediskoResult UpdateStredisko(UpdateStredisko data)
         {
             bool dcomRezim = GetNastavenieI("reg", "eSAMRezim") == 1;
             KontrolaStredisko(data.Kod, dcomRezim);
             var result = Update<StrediskoView>(data);
             SetCislovanie();
 
+            var res = new StrediskoResult
+            {
+                Record = result
+            };
+
             if (result.DCOM.GetValueOrDefault() && dcomRezim)
             {
-                using var client = new PlatbyClient();
-                var dcmHeader = new DcmHeader
+                try
                 {
-                    tenantId = Session.D_Tenant_Id_Externe?.ToString() ?? throw new ArgumentException("nie je zadefinovane D_Tenant_Id_Externe"),
-                    isoId = Session.IsoId,
-                    requestId = WebEas.Context.Current.CurrentCorrelationID.ToString()
-                };
-                UpdateStrediskoDcom(null, new List<StrediskoView> { result }, client, ref dcmHeader);
+                    using var client = new PlatbyClient();
+                    var dcmHeader = new DcmHeader
+                    {
+                        tenantId = Session.D_Tenant_Id_Externe?.ToString() ?? throw new ArgumentException("nie je zadefinovane D_Tenant_Id_Externe"),
+                        isoId = Session.IsoId,
+                        requestId = WebEas.Context.Current.CurrentCorrelationID.ToString()
+                    };
+                    UpdateStrediskoDcom(null, new List<StrediskoView> { result }, client, ref dcmHeader);
+                }
+                catch (WebEasException ex)
+                {
+                    res.DcomError = ex.HasMessageUser ? ex.MessageUser : ex.Message;
+                }
+                
             }
 
-            return result;
+            return res;
         }
 
-        public void DeleteStredisko(DeleteStredisko data)
+        public StrediskoResult DeleteStredisko(DeleteStredisko data)
         {
             var eSamRezim = GetNastavenieI("reg", "eSAMRezim");
+            var res = new StrediskoResult();
 
             if (eSamRezim == 1)
             {
-                var strediska = GetList(Db.From<StrediskoView>().Where(x => data.C_Stredisko_Id.Contains(x.C_Stredisko_Id)));
-                strediska.RemoveAll(x => !x.DCOM.GetValueOrDefault());
-                using var client = new PlatbyClient();
-                var dcmHeader = new DcmHeader
+                try
                 {
-                    tenantId = Session.D_Tenant_Id_Externe?.ToString() ?? throw new ArgumentException("nie je zadefinovane D_Tenant_Id_Externe"),
-                    isoId = Session.IsoId,
-                    requestId = WebEas.Context.Current.CurrentCorrelationID.ToString()
-                };
-                UpdateStrediskoDcom(null, strediska, client, ref dcmHeader, delete: true);
+                    var strediska = GetList(Db.From<StrediskoView>().Where(x => data.C_Stredisko_Id.Contains(x.C_Stredisko_Id)));
+                    strediska.RemoveAll(x => !x.DCOM.GetValueOrDefault());
+                    using var client = new PlatbyClient();
+                    var dcmHeader = new DcmHeader
+                    {
+                        tenantId = Session.D_Tenant_Id_Externe?.ToString() ?? throw new ArgumentException("nie je zadefinovane D_Tenant_Id_Externe"),
+                        isoId = Session.IsoId,
+                        requestId = WebEas.Context.Current.CurrentCorrelationID.ToString()
+                    };
+                    UpdateStrediskoDcom(null, strediska, client, ref dcmHeader, delete: true);
+                }
+                catch (WebEasException ex)
+                {
+                    res.DcomError = ex.HasMessageUser ? ex.MessageUser : ex.Message;
+                }
             }
 
             Delete<StrediskoCis>(data.C_Stredisko_Id);
             InvalidateTreeCountsForPath("reg-ors-orj");
+            return res;
         }
 
         #endregion
@@ -474,48 +432,71 @@ namespace WebEas.Esam.ServiceInterface.Office.Reg
             return result;
         }
 
-        public PokladnicaView UpdatePokladnica(UpdatePokladnica data)
+        public PokladnicaResult UpdatePokladnica(UpdatePokladnica data)
         {
             var dcomRezim = GetNastavenieI("reg", "eSAMRezim") == 1;
             KontrolaPokladnica(data.Kod, dcomRezim);
             PokladnicaView result = Update<PokladnicaView>(data);
             SetCislovanie();
 
+            var res = new PokladnicaResult
+            {
+                Record = result
+            };
+
             if (result.DCOM.GetValueOrDefault() && dcomRezim)
             {
-                using var client = new PlatbyClient();
-                var dcmHeader = new DcmHeader
+                try
                 {
-                    tenantId = Session.D_Tenant_Id_Externe?.ToString() ?? throw new ArgumentException("nie je zadefinovane D_Tenant_Id_Externe"),
-                    isoId = Session.IsoId,
-                    requestId = WebEas.Context.Current.CurrentCorrelationID.ToString()
-                };
-                UpdatePokladnicaDcom(null, new List<PokladnicaView> { result }, client, ref dcmHeader);
+                    using var client = new PlatbyClient();
+                    var dcmHeader = new DcmHeader
+                    {
+                        tenantId = Session.D_Tenant_Id_Externe?.ToString() ?? throw new ArgumentException("nie je zadefinovane D_Tenant_Id_Externe"),
+                        isoId = Session.IsoId,
+                        requestId = WebEas.Context.Current.CurrentCorrelationID.ToString()
+                    };
+                    UpdatePokladnicaDcom(null, new List<PokladnicaView> { result }, client, ref dcmHeader);
+                }
+                catch (WebEasException ex)
+                {
+                    res.DcomError = ex.HasMessageUser ? ex.MessageUser : ex.Message;
+                }
+                
             }
 
-            return result;
+            return res;
         }
 
-        public void DeletePokladnica(DeletePokladnica data)
+        public PokladnicaResult DeletePokladnica(DeletePokladnica data)
         {
             var eSamRezim = GetNastavenieI("reg", "eSAMRezim");
+            var res = new PokladnicaResult();
 
             if (eSamRezim == 1)
             {
-                var pokladnice = GetList(Db.From<PokladnicaView>().Where(x => data.C_Pokladnica_Id.Contains(x.C_Pokladnica_Id)));
-                pokladnice.RemoveAll(x => !x.DCOM.GetValueOrDefault());
-                using var client = new PlatbyClient();
-                var dcmHeader = new DcmHeader
+                try
                 {
-                    tenantId = Session.D_Tenant_Id_Externe?.ToString() ?? throw new ArgumentException("nie je zadefinovane D_Tenant_Id_Externe"),
-                    isoId = Session.IsoId,
-                    requestId = WebEas.Context.Current.CurrentCorrelationID.ToString()
-                };
-                UpdatePokladnicaDcom(null, pokladnice, client, ref dcmHeader, delete: true);
+                    var pokladnice = GetList(Db.From<PokladnicaView>().Where(x => data.C_Pokladnica_Id.Contains(x.C_Pokladnica_Id)));
+                    pokladnice.RemoveAll(x => !x.DCOM.GetValueOrDefault());
+                    using var client = new PlatbyClient();
+                    var dcmHeader = new DcmHeader
+                    {
+                        tenantId = Session.D_Tenant_Id_Externe?.ToString() ?? throw new ArgumentException("nie je zadefinovane D_Tenant_Id_Externe"),
+                        isoId = Session.IsoId,
+                        requestId = WebEas.Context.Current.CurrentCorrelationID.ToString()
+                    };
+                    UpdatePokladnicaDcom(null, pokladnice, client, ref dcmHeader, delete: true);
+                }
+                catch (WebEasException ex)
+                {
+                    res.DcomError = ex.HasMessageUser ? ex.MessageUser : ex.Message;
+                }
+                
             }
 
             Delete<Pokladnica>(data.C_Pokladnica_Id);
             InvalidateTreeCountsForPath("reg-ors-pok");
+            return res;
         }
 
         #endregion
@@ -531,47 +512,68 @@ namespace WebEas.Esam.ServiceInterface.Office.Reg
             return result;
         }
 
-        public BankaUcetView UpdateBankaUcet(UpdateBankaUcet data)
+        public BankaUcetResult UpdateBankaUcet(UpdateBankaUcet data)
         {
             data.IBAN = string.Join("", data.IBAN.Split(default(string[]), StringSplitOptions.RemoveEmptyEntries));
             var result = Update<BankaUcetView>(data);
             SetCislovanie();
 
+            var res = new BankaUcetResult
+            {
+                Record = result
+            };
+
             if (result.DCOM.GetValueOrDefault() && GetNastavenieI("reg", "eSAMRezim") == 1)
             {
-                using var client = new PlatbyClient();
-                var dcmHeader = new DcmHeader
+                try
                 {
-                    tenantId = Session.D_Tenant_Id_Externe?.ToString() ?? throw new ArgumentException("nie je zadefinovane D_Tenant_Id_Externe"),
-                    isoId = Session.IsoId,
-                    requestId = WebEas.Context.Current.CurrentCorrelationID.ToString()
-                };
-                UpdateBankaUcetDcom(null, new List<BankaUcetView> { result }, client, ref dcmHeader);
+                    using var client = new PlatbyClient();
+                    var dcmHeader = new DcmHeader
+                    {
+                        tenantId = Session.D_Tenant_Id_Externe?.ToString() ?? throw new ArgumentException("nie je zadefinovane D_Tenant_Id_Externe"),
+                        isoId = Session.IsoId,
+                        requestId = WebEas.Context.Current.CurrentCorrelationID.ToString()
+                    };
+                    UpdateBankaUcetDcom(null, new List<BankaUcetView> { result }, client, ref dcmHeader);
+                }
+                catch (WebEasException ex)
+                {
+                    res.DcomError = ex.HasMessageUser ? ex.MessageUser : ex.Message;
+                }
             }
 
-            return result;
+            return res;
         }
 
-        public void DeleteBankaUcet(DeleteBankaUcet data)
+        public BankaUcetResult DeleteBankaUcet(DeleteBankaUcet data)
         {
             var eSamRezim = GetNastavenieI("reg", "eSAMRezim");
+            var res = new BankaUcetResult();
 
             if (eSamRezim == 1)
             {
-                var bankaUcty = GetList(Db.From<BankaUcetView>().Where(x => data.C_BankaUcet_Id.Contains(x.C_BankaUcet_Id)));
-                bankaUcty.RemoveAll(x => !x.DCOM.GetValueOrDefault());
-                using var client = new PlatbyClient();
-                var dcmHeader = new DcmHeader
+                try
                 {
-                    tenantId = Session.D_Tenant_Id_Externe?.ToString() ?? throw new ArgumentException("nie je zadefinovane D_Tenant_Id_Externe"),
-                    isoId = Session.IsoId,
-                    requestId = WebEas.Context.Current.CurrentCorrelationID.ToString()
-                };
-                UpdateBankaUcetDcom(null, bankaUcty, client, ref dcmHeader, delete: true);
+                    var bankaUcty = GetList(Db.From<BankaUcetView>().Where(x => data.C_BankaUcet_Id.Contains(x.C_BankaUcet_Id)));
+                    bankaUcty.RemoveAll(x => !x.DCOM.GetValueOrDefault());
+                    using var client = new PlatbyClient();
+                    var dcmHeader = new DcmHeader
+                    {
+                        tenantId = Session.D_Tenant_Id_Externe?.ToString() ?? throw new ArgumentException("nie je zadefinovane D_Tenant_Id_Externe"),
+                        isoId = Session.IsoId,
+                        requestId = WebEas.Context.Current.CurrentCorrelationID.ToString()
+                    };
+                    UpdateBankaUcetDcom(null, bankaUcty, client, ref dcmHeader, delete: true);
+                }
+                catch (WebEasException ex)
+                {
+                    res.DcomError = ex.HasMessageUser ? ex.MessageUser : ex.Message;
+                }
             }
 
             Delete<BankaUcetCis>(data.C_BankaUcet_Id);
             InvalidateTreeCountsForPath("reg-ors-vbu");
+            return res;
         }
 
         #endregion
@@ -598,22 +600,30 @@ namespace WebEas.Esam.ServiceInterface.Office.Reg
         {
             request.DatumDo = CheckESAMStartDate(request.DatumDo);
 
+            string madeLinkedServer = "URBIS";
             int nastavenieISOZdroj = (int)GetNastavenieI("reg", "ISOZdroj");
             string sConnString = GetNastavenieS("reg", "ISOZdrojDatabaza");
+
+            if (nastavenieISOZdroj == 2 && GetNastavenieS("sys", "Environment").Contains("ZPP"))
+            {
+                madeLinkedServer = sConnString.Split('\\')[0].Substring(7);
+                sConnString = ReplaceFirst(sConnString, "URBIS", "10.231.3.");             
+            }
+
             if (request.TypImportu.Contains("reg-str"))
             {
                 LongOperationSetStateMessage(processKey, "Prebieha migrácia stredísk (1/4)");
-                GetCiselnikStrediskoExt(request, nastavenieISOZdroj, sConnString);
+                GetCiselnikStrediskoExt(request, nastavenieISOZdroj, sConnString, madeLinkedServer);
             }
             if (request.TypImportu.Contains("reg-ban"))
             {
                 LongOperationSetStateMessage(processKey, "Prebieha migrácia bankových účtov (2/4)");
-                GetCiselnikBankaUcetExt(request, nastavenieISOZdroj, sConnString);
+                GetCiselnikBankaUcetExt(request, nastavenieISOZdroj, sConnString, madeLinkedServer);
             }
             if (request.TypImportu.Contains("reg-pdk"))
             {
                 LongOperationSetStateMessage(processKey, "Prebieha migrácia pokladníc (3/4)");
-                GetCiselnikPokladnicaExt(request, nastavenieISOZdroj, sConnString);
+                GetCiselnikPokladnicaExt(request, nastavenieISOZdroj, sConnString, madeLinkedServer);
             }
             if (request.TypImportu.Contains("reg-proj"))
             {
@@ -626,7 +636,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Reg
             LongOperationSetStateFinished(processKey, string.Empty, "Migrácia modulu 'Registre' prebehla úspešne.", state: LongOperationState.Done);
         }
 
-        private void GetCiselnikStrediskoExt(MigraciaStavovDto data, int nastavenieISOZdroj, string sConnString)
+        private void GetCiselnikStrediskoExt(MigraciaStavovDto data, int nastavenieISOZdroj, string sConnString, string madeLinkedServer)
         {
             string sSql;
             DateTime datumK = (DateTime)data.DatumDo;
@@ -665,8 +675,9 @@ namespace WebEas.Esam.ServiceInterface.Office.Reg
                             {
                                 if (cn.TableExists("uco_stred" + rok.ToString()))
                                 {
-                                    sSql = Properties.Resources.Urbis_STR.Replace("DB_FROM", cn.Database).Replace("@YEAR", rok.ToString());
+                                    sSql = Properties.Resources.Urbis_STR.Replace("URBIS_LS", madeLinkedServer).Replace("DB_FROM", cn.Database).Replace("@YEAR", rok.ToString());
                                     Db.ExecuteNonQuery(sSql);
+
                                 }
                             }
                             tran.Commit();
@@ -682,7 +693,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Reg
             SetCislovanie();
         }
 
-        private void GetCiselnikPokladnicaExt(MigraciaStavovDto data, int nastavenieISOZdroj, string sConnString)
+        private void GetCiselnikPokladnicaExt(MigraciaStavovDto data, int nastavenieISOZdroj, string sConnString, string madeLinkedServer)
         {
             string sSql;
             DateTime datumK = (DateTime)data.DatumDo;
@@ -721,7 +732,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Reg
                             {
                                 if (cn.TableExists("uco_pokdef" + rok.ToString()))
                                 {
-                                sSql = Properties.Resources.Urbis_POK.Replace("DB_FROM", cn.Database).Replace("@YEAR", rok.ToString());
+                                sSql = Properties.Resources.Urbis_POK.Replace("URBIS_LS", madeLinkedServer).Replace("DB_FROM", cn.Database).Replace("@YEAR", rok.ToString());
                                 Db.ExecuteNonQuery(sSql);
                                 }
                             }
@@ -738,7 +749,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Reg
             SetCislovanie();
         }
 
-        private void GetCiselnikBankaUcetExt(MigraciaStavovDto data, int nastavenieISOZdroj, string sConnString)
+        private void GetCiselnikBankaUcetExt(MigraciaStavovDto data, int nastavenieISOZdroj, string sConnString, string madeLinkedServer)
         {
             DateTime datumK = (DateTime)data.DatumDo;
 
@@ -776,9 +787,9 @@ namespace WebEas.Esam.ServiceInterface.Office.Reg
                             {
                                 if (cn.TableExists("uco_bandef" + rok.ToString()))
                                 {
-                                string sSql = Properties.Resources.Urbis_VBU.Replace("DB_FROM", cn.Database).Replace("@YEAR", rok.ToString());
+                                string sSql = Properties.Resources.Urbis_VBU.Replace("URBIS_LS", madeLinkedServer).Replace("DB_FROM", cn.Database).Replace("@YEAR", rok.ToString());
                                 Db.ExecuteNonQuery(sSql);
-                            }
+                                }
                             }
                             tran.Commit();
                         }
@@ -818,10 +829,16 @@ namespace WebEas.Esam.ServiceInterface.Office.Reg
                     }
                 }
             }
-            else if (nastavenieISOZdroj == 2)
+        }
+
+        private string ReplaceFirst(string text, string search, string replace)
+        {
+            int pos = text.IndexOf(search);
+            if (pos < 0)
             {
-                throw new WebEasException(null, "Funkcia migrácie projektov sa pripravuje.");
+                return text;
             }
+            return text.Substring(0, pos) + replace + text.Substring(pos + search.Length);
         }
 
         #endregion

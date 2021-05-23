@@ -95,12 +95,12 @@ namespace WebEas.Esam.Reports.Rzp.Types
         [System.ComponentModel.DataObject]
         public class ZostavaRzpDennikPol
         {
+            public bool HlavickaPV { get; set; }  // skryvanie FK/Program - nadesignovane priamo v reporte
             public bool Suv { get; set; }
-
             public DateTime DatumUctovania { get; set; }  // Dátum
             public string BiznisEntitaPopis { get; set; } // Doklad
             public int Poradie { get; set; }
-            public string PV { get; set; }
+            public string PV { get; set; }    // P / V
             public string ZD { get; set; }
             public string FK { get; set; }
             public string EK { get; set; }

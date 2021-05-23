@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using WebEas.Esam.ServiceInterface.Office;
 using WebEas.Esam.ServiceModel.Office;
+using WebEas.Esam.ServiceModel.Office.Dto;
 using WebEas.Esam.ServiceModel.Office.Rzp.Types;
 using WebEas.Esam.ServiceModel.Pfe.Dto;
 using WebEas.ServiceInterface;
@@ -24,7 +25,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
     /// <summary>
     /// 
     /// </summary>
-    public partial class PfeService : ServiceBase
+    public class PfeService : ServiceBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PfeService" /> class.
@@ -327,8 +328,8 @@ namespace WebEas.Esam.ServiceInterface.Pfe
 
                         Filter fRights = new Filter("Zamknuta", 1).Or(new Filter("ViewSharing", 1)).Or(new Filter("ViewSharing", 2));
                         Filter filter = (item.Item == expItem.KodPolozky)
-                                        ? new Filter("KodPolozky", item.Item)
-                                        : Filter.AndElements(FilterElement.Eq("KodPolozky", item.Item), fRights);
+                                        ? new Filter("KodPolozky", Pohlad.CleanCode(item.Item))
+                                        : Filter.AndElements(FilterElement.Eq("KodPolozky", Pohlad.CleanCode(item.Item)), fRights);
 
                         //Filter filter = (item.Item == expItem.KodPolozky)
                         //                ? new Filter("KodPolozky", item.Item)
@@ -431,11 +432,6 @@ namespace WebEas.Esam.ServiceInterface.Pfe
             return "OK";
         }
 
-        public object Get(AppStatus.HealthCheckDto request)
-        {
-            return GetHealthCheck(request);
-        }
-
         /// <summary>
         /// Gets the specified request.
         /// </summary>
@@ -455,9 +451,10 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         {
             HierarchyNode node = Repository.GetHierarchyNodeForModule(request.ItemCode);
             var method = Repository.GetType().GetMethod("GetById", new Type[] { typeof(object), typeof(string[]) }).MakeGenericMethod(node.ModelType);
-            var columnsToSelect = new string[] { "C_StavEntity_Id", "C_StavovyPriestor_Id" };
+            var columnsToSelect = new string[] { "C_StavEntity_Id", "C_StavovyPriestor_Id", "PS"};
             object entity = method.Invoke(Repository, new object[] { request.Id, columnsToSelect });
             object idStav = node.ModelType.GetProperty("C_StavEntity_Id").GetValue(entity);
+            object ps = node.ModelType.GetProperty("PS").GetValue(entity);
             object idPriestor;
 
             if (node.ModelType == typeof(RzpView)) // neobsahuje C_StavovyPriestor_Id 
@@ -469,7 +466,14 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                 idPriestor = node.ModelType.GetProperty("C_StavovyPriestor_Id").GetValue(entity);
             }
 
-            return Repository.ListPossibleStates((int)idPriestor, (int)idStav, request.Uctovanie, request.ItemCode);
+            var res = Repository.ListPossibleStates((int)idPriestor, (int)idStav, request.Uctovanie, request.ItemCode);
+
+            if (request.Uctovanie && (int)idStav == (int)StavEntityEnum.NOVY && res.Count() == 1 && res.First().Id == (int)StavEntityEnum.SPRACOVANY)
+            {
+                return Repository.ListPossibleStates((int)idPriestor, (int)StavEntityEnum.SPRACOVANY, request.Uctovanie, request.ItemCode);
+            }
+            
+            return res;
         }
 
         /// <summary>

@@ -42,7 +42,7 @@ namespace WebEas.ServiceModel.Office.Egov.Reg.Types
         [PfeColumn(Text = "_Zmenil", LoadWhenVisible = true)]
         public string ZmenilMeno { get; set; }
 
-        public void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, object masterNodeParameter, string masterNodeKey)
+        public void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, HierarchyNode masterNode)
         {
             if (node.KodRoot != "reg" && model?.Fields != null)
             {

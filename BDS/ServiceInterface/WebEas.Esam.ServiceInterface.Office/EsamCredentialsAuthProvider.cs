@@ -110,6 +110,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                 var authRequest = (Authenticate)authService.Request.Dto;
                 ses.D_Tenant_Id_Externe = Guid.Parse(authRequest.Meta["TenantId"]);
                 ses.UserId = "00000000-0000-0000-0000-000000000002";
+                ses.UserAuthId = "00000000-0000-0000-0000-000000000002";
                 ses.FirstName = "Technicky";
                 ses.LastName = "Ucet";
                 ses.Email = "datalan@email.sk";
@@ -206,6 +207,7 @@ namespace WebEas.Esam.ServiceInterface.Office
 
 
             ses.UserId = user.D_User_Id.ToString();
+            ses.UserAuthId = user.D_User_Id.ToString();
             ses.FirstName = user.FirstName;
             ses.LastName = user.LastName;
             ses.Email = user.Email;

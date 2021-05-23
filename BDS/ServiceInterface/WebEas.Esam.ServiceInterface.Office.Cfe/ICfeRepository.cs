@@ -25,5 +25,6 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
         void UpdateOrsElementPermissions(string[] IDs, byte pravo);
         void RefreshModuleTree(string[] V_Module_Ids);
         void SynchronizeDcomUsers(SynchronizeDcomUsersDto request);
+        void GrantUserPermToDms(Guid tenantId);
     }
 }

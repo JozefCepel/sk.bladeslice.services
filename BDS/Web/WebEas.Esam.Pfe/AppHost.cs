@@ -33,7 +33,7 @@ namespace WebEas.Esam.Pfe
         /// <summary>
         /// Initializes a new instance of the <see cref="AppHost" /> class.
         /// </summary>
-        public AppHost() : base("pfe", typeof(PfeService).Assembly)
+        public AppHost() : base("pfe", typeof(PfeService).Assembly, typeof(PublicService).Assembly)
         {
         }
 
@@ -66,18 +66,20 @@ namespace WebEas.Esam.Pfe
                 AllowJsonpRequests = true
             });
 
+#if !DEBUG
             container.Register<IMessageService>(c => new RedisMqServer(c.Resolve<IRedisClientsManager>()));
             container.Resolve<IMessageService>().RegisterHandler<WebEas.ServiceModel.Dto.LongOperationStatus>(m =>
             {
                 using (var redisClient = base.Resolve<IRedisClientsManager>().GetClient())
                 {
                     var longOperationStatus = m.GetBody();
-                    ProcessLongOperationStatus(longOperationStatus, redisClient);
+                    ProcessLongOperationStatus(longOperationStatus, redisClient, base.Resolve<IServerEvents>());
                 }
                 return null;
             });
 
             container.Resolve<IMessageService>().Start();
+#endif
         }
 
         /// <summary>

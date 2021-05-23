@@ -67,6 +67,15 @@ namespace WebEas.Esam.ServiceModel.Office.Dto
         public decimal DM_CV { get; set; }
 
         [DataMember]
+        public decimal DM_Zak0 { get; set; }
+
+        [DataMember]
+        public decimal DM_Zak1 { get; set; }
+
+        [DataMember]
+        public decimal DM_Zak2 { get; set; }
+
+        [DataMember]
         public decimal DM_DPH1 { get; set; }
 
         [DataMember]
@@ -74,6 +83,15 @@ namespace WebEas.Esam.ServiceModel.Office.Dto
 
         [DataMember]
         public decimal CM_CV { get; set; }
+
+        [DataMember]
+        public decimal CM_Zak0 { get; set; }
+
+        [DataMember]
+        public decimal CM_Zak1 { get; set; }
+
+        [DataMember]
+        public decimal CM_Zak2 { get; set; }
 
         [DataMember]
         public decimal CM_DPH1 { get; set; }
@@ -131,7 +149,13 @@ namespace WebEas.Esam.ServiceModel.Office.Dto
             data.DM_CV = DM_CV;
             data.DM_DPH1 = DM_DPH1;
             data.DM_DPH2 = DM_DPH2;
+            data.DM_Zak0 = DM_Zak0;
+            data.DM_Zak1 = DM_Zak1;
+            data.DM_Zak2 = DM_Zak2;
             data.CM_CV = CM_CV;
+            data.CM_Zak0 = CM_Zak0;
+            data.CM_Zak1 = CM_Zak1;
+            data.CM_Zak2 = CM_Zak2;
             data.CM_DPH1 = CM_DPH1;
             data.CM_DPH2 = CM_DPH2;
             data.C_Lokalita_Id = C_Lokalita_Id;

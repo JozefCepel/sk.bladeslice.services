@@ -46,52 +46,52 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         [PfeColumn(Text = "Dátum dokladu DV", Mandatory = true, RequiredFields = new[] { nameof(C_TypBiznisEntity_Id) })]
         public string DatumDokladuDV { get; set; }
 
-        [PfeColumn(ReadOnly = true)]
         [DataMember]
+        [PfeColumn(Text = "_Cust_StrediskoNaPolozke", ReadOnly = true)]
         public bool Cust_StrediskoNaPolozke { get; set; }
 
-        [PfeColumn(ReadOnly = true)]
         [DataMember]
+        [PfeColumn(Text = "_Cust_ProjektNaPolozke", ReadOnly = true)]
         public bool Cust_ProjektNaPolozke { get; set; }
 
-        [PfeColumn(ReadOnly = true)]
         [DataMember]
+        [PfeColumn(Text = "_Cust_UctKluc1NaPolozke", ReadOnly = true)]
         public bool Cust_UctKluc1NaPolozke { get; set; }
 
-        [PfeColumn(ReadOnly = true)]
         [DataMember]
+        [PfeColumn(Text = "_Cust_UctKluc2NaPolozke", ReadOnly = true)]
         public bool Cust_UctKluc2NaPolozke { get; set; }
 
-        [PfeColumn(ReadOnly = true)]
         [DataMember]
+        [PfeColumn(Text = "_Cust_UctKluc3NaPolozke", ReadOnly = true)]
         public bool Cust_UctKluc3NaPolozke { get; set; }
 
-        [PfeColumn(ReadOnly = true)]
         [DataMember]
+        [PfeColumn(Text = "_Cust_EvidenciaDMS", ReadOnly = true)]
         public bool Cust_EvidenciaDMS { get; set; }
 
-        [PfeColumn(ReadOnly = true)]
         [DataMember]
+        [PfeColumn(Text = "Cust_EvidenciaSystem", ReadOnly = true)]
         public bool Cust_EvidenciaSystem { get; set; }
 
-        [PfeColumn(ReadOnly = true)]
         [DataMember]
+        [PfeColumn(Text = "_Cust_CislovanieJedno", ReadOnly = true)]
         public bool Cust_CislovanieJedno { get; set; }
 
-        [PfeColumn(ReadOnly = true)]
         [DataMember]
+        [PfeColumn(Text = "_Cust_DatumDokladuTU", ReadOnly = true)]
         public bool Cust_DatumDokladuTU { get; set; }
 
-        [PfeColumn(ReadOnly = true)]
         [DataMember]
+        [PfeColumn(Text = "_Cust_DatumDokladuEU", ReadOnly = true)]
         public bool Cust_DatumDokladuEU { get; set; }
 
-        [PfeColumn(ReadOnly = true)]
         [DataMember]
+        [PfeColumn(Text = "_Cust_DatumDokladuDV", ReadOnly = true)]
         public bool Cust_DatumDokladuDV { get; set; }
 
-        [PfeColumn(ReadOnly = true)]
         [DataMember]
+        [PfeColumn(Text = "_Cust_UctovatPolozkovite", ReadOnly = true)]
         public bool Cust_UctovatPolozkovite { get; set; }
 
         //audit stlpce
@@ -103,7 +103,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         [PfeColumn(Text = "Zmenil", Hidden = true, Editable = false, ReadOnly = true, LoadWhenVisible = true)]
         public string ZmenilMeno { get; set; }
 
-        public void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, object masterNodeParameter, string masterNodeKey)
+        public void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, HierarchyNode masterNode)
         {
             if (model.Fields != null)
             {

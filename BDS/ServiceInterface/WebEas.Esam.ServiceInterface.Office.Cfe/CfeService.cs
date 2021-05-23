@@ -33,11 +33,6 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
 
         #region Globalne, ale musia byt v moduloch
 
-        public object Get(AppStatus.HealthCheckDto request)
-        {
-            return GetHealthCheck(request);
-        }
-
         public object Any(ListDto request)
         {
             return base.GetList(request);
@@ -324,6 +319,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
         public UserTenantView Any(CreateUserTenant request)
         {
             var res = Repository.Create<UserTenantView>(request);
+            Repository.GrantUserPermToDms(request.D_Tenant_Id);
             RefreshSessionAndClearCache(request.D_User_Id);
             return res;
         }
@@ -331,6 +327,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
         public UserTenantView Any(UpdateUserTenant request)
         {
             var res = Repository.UpdateTenantUsers(request);  // specialita: UPDATE D_Tenant_Id
+            Repository.GrantUserPermToDms(request.D_Tenant_Id);
             RefreshSessionAndClearCache(request.D_User_Id);
             return res;
         }

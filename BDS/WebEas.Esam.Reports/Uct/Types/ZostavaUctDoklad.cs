@@ -51,50 +51,52 @@ namespace WebEas.Esam.Reports.Uct.Types
             h.UctPolozky = new List<ZostavaUctDennikPol>();
             h.RzpPolozky = new List<ZostavaRzpDennikPol>();
 
-            var p = new ZostavaUctDennikPol();
-            p.StrediskoCaption = h.StrediskoCaption;
-            p.RozvrhUcet = "YYYYYY 11";
-            p.SumaMD = 1000000M;
-            p.SumaDal = 1000000M;
-            h.UctPolozky.Add(p);
+            // -----
+            var u = new ZostavaUctDennikPol();
+            u.StrediskoCaption = h.StrediskoCaption;
+            u.RozvrhUcet = "YYYYYY 11";
+            u.SumaMD = 1000000M;
+            u.SumaDal = 1000000M;
+            h.UctPolozky.Add(u);
 
-            p = new ZostavaUctDennikPol();
-            p.StrediskoCaption = h.StrediskoCaption;
-            p.SumaMD = 200M;
-            h.UctPolozky.Add(p);
+            u = new ZostavaUctDennikPol();
+            u.StrediskoCaption = h.StrediskoCaption;
+            u.SumaMD = 200M;
+            h.UctPolozky.Add(u);
 
-            p = new ZostavaUctDennikPol();
-            p.StrediskoCaption = h.StrediskoCaption;
-            p.RozvrhUcet = "AAAA 11";
-            p.SumaMD = 300M;
-            h.UctPolozky.Add(p);
+            u = new ZostavaUctDennikPol();
+            u.StrediskoCaption = h.StrediskoCaption;
+            u.RozvrhUcet = "AAAA 11";
+            u.SumaMD = 300M;
+            h.UctPolozky.Add(u);
 
-            p = new ZostavaUctDennikPol();
-            p.StrediskoCaption = h.StrediskoCaption;
-            p.RozvrhUcet = "BBBB 11";
-            p.SumaMD = 200M;
-            h.UctPolozky.Add(p);
+            u = new ZostavaUctDennikPol();
+            u.StrediskoCaption = h.StrediskoCaption;
+            u.RozvrhUcet = "BBBB 11";
+            u.SumaMD = 200M;
+            h.UctPolozky.Add(u);
 
-            p = new ZostavaUctDennikPol();
-            p.StrediskoCaption = h.StrediskoCaption;
-            p.Suv = true;
-            p.VS = "Pr.: 1.2.3";
-            p.RozvrhUcet = "suv suv";
-            p.Popis = "123,00 Popis";
-            h.UctPolozky.Add(p);
+            u = new ZostavaUctDennikPol();
+            u.StrediskoCaption = h.StrediskoCaption;
+            u.Suv = true;
+            u.VS = "Pr.: 1.2.3";
+            u.RozvrhUcet = "suv suv";
+            u.Popis = "123,00 Popis";
+            h.UctPolozky.Add(u);
 
-            p = new ZostavaUctDennikPol();
-            p.StrediskoCaption = h.StrediskoCaption;
-            p.RozvrhUcet = "Z21 11";
-            p.SumaMD = 153.45M;
-            p.SumaDal = 35.12M;
-            p.Popis = "Služby spojená s nájmom";
-            p.StrediskoNazov = "Banska Bystrica";
-            p.ProjektNazov = "Project Green";
-            h.UctPolozky.Add(p);
+            u = new ZostavaUctDennikPol();
+            u.StrediskoCaption = h.StrediskoCaption;
+            u.RozvrhUcet = "Z21 11";
+            u.SumaMD = 153.45M;
+            u.SumaDal = 35.12M;
+            u.Popis = "Služby spojená s nájmom";
+            u.StrediskoNazov = "Banska Bystrica";
+            u.ProjektNazov = "Project Green";
+            h.UctPolozky.Add(u);
 
             // -----
             var r = new ZostavaRzpDennikPol();
+            r.HlavickaPV = h.PV;
             r.PV = "P";
             r.ZD = "11GH";
             r.EK = "625001";
@@ -107,10 +109,11 @@ namespace WebEas.Esam.Reports.Uct.Types
             r.Suma = 1000000M;
             r.Popis = "rrr32222";
             r.StrediskoNazov = "chránené pracovisko";
-            p.ProjektNazov = "Projekt 01";
+            r.ProjektNazov = "Projekt 01";
             h.RzpPolozky.Add(r);
 
             r = new ZostavaRzpDennikPol();
+            r.HlavickaPV = h.PV;
             r.ZD = "Z21 E1";
             r.Suma = 153.45M;
             r.Popis = "Služby spojená s nájmom";
@@ -135,50 +138,77 @@ namespace WebEas.Esam.Reports.Uct.Types
             h.Ucel = "Faktúra za dodávku... 12345345";
             h.Suma = 123.45M;
             h.UctPolozky = new List<ZostavaUctDennikPol>();
-            // h.RzpPolozky = new List<ZostavaRzpDennikPol>();
 
-            p = new ZostavaUctDennikPol();
-            p.StrediskoCaption = h.StrediskoCaption;
-            p.RozvrhUcet = "AAAA 22";
-            p.SumaMD = 300M;
-            h.UctPolozky.Add(p);
+            u = new ZostavaUctDennikPol();
+            u.StrediskoCaption = h.StrediskoCaption;
+            u.RozvrhUcet = "AAAA 22";
+            u.SumaMD = 300M;
+            h.UctPolozky.Add(u);
 
-            p = new ZostavaUctDennikPol();
-            p.StrediskoCaption = h.StrediskoCaption;
-            p.RozvrhUcet = "BBBB 22";
-            p.SumaDal = 200M;
-            h.UctPolozky.Add(p);
+            u = new ZostavaUctDennikPol();
+            u.StrediskoCaption = h.StrediskoCaption;
+            u.RozvrhUcet = "BBBB 22";
+            u.SumaDal = 200M;
+            h.UctPolozky.Add(u);
 
-            p = new ZostavaUctDennikPol();
-            p.StrediskoCaption = h.StrediskoCaption;
-            p.Suv = true;
-            p.VS = "Pr.: 1.2.3";
-            p.RozvrhUcet = "suv suv";
-            p.Popis = "123,00 Popis";
-            h.UctPolozky.Add(p);
+            u = new ZostavaUctDennikPol();
+            u.StrediskoCaption = h.StrediskoCaption;
+            u.Suv = true;
+            u.VS = "Pr.: 1.2.3";
+            u.RozvrhUcet = "suv suv";
+            u.Popis = "123,00 Popis";
+            h.UctPolozky.Add(u);
 
-            p = new ZostavaUctDennikPol();
-            p.StrediskoCaption = h.StrediskoCaption;
-            p.RozvrhUcet = "Z21 22";
-            p.SumaMD = 1000000.45M;
-            p.SumaDal = 1000000.12M;
-            p.Popis = "Služby spojená s nájmom";
-            p.StrediskoNazov = "Banska Bystrica";
-            p.ProjektNazov = "Project Green";
-            h.UctPolozky.Add(p);
+            u = new ZostavaUctDennikPol();
+            u.StrediskoCaption = h.StrediskoCaption;
+            u.RozvrhUcet = "Z21 22";
+            u.SumaMD = 1000000.45M;
+            u.SumaDal = 1000000.12M;
+            u.Popis = "Služby spojená s nájmom";
+            u.StrediskoNazov = "Banska Bystrica";
+            u.ProjektNazov = "Project Green";
+            h.UctPolozky.Add(u);
 
             rpt.Hlavicky.Add(h);
 
             // ---------------------------------------------------
 
             h = new ZostavaUctDokladHla();
+            h.PV = true;
             h.Datum = new DateTime(2020, 1, 17);
-            h.DokladCaption = "Interný doklad 2";
+            h.DokladCaption = "Vystavena faktura 2";
             h.DodavatelCaption = "Odberateľ";
             h.StrediskoCaption = rpt.StrediskoCaption;
             h.ViacZaznamov = rpt.ViacZaznamov;
             h.Suma = 1.5M;
-            h.NoDataMsg = "  (skuska mikrofonu)";
+            h.RzpPolozky = new List<ZostavaRzpDennikPol>();
+
+            // -----
+            r = new ZostavaRzpDennikPol();
+            r.HlavickaPV = h.PV;
+            r.PV = "P";
+            r.ZD = "11GH";
+            r.EK = "625001";
+            r.FK = "1401";
+            r.A1 = "123";
+            r.A2 = "123";
+            r.A3 = "123";
+            r.NazovPolozky = "Na nemocenské poistenie";
+            r.ProgramFull = "12.3.5 - Test prvok zo sumárneho pohľadu";
+            r.Suma = 1000000M;
+            r.Popis = "rrr32222";
+            r.StrediskoNazov = "chránené pracovisko";
+            r.ProjektNazov = "Projekt 01";
+            h.RzpPolozky.Add(r);
+
+            r = new ZostavaRzpDennikPol();
+            r.HlavickaPV = h.PV;
+            r.ZD = "Z21 E1";
+            r.Suma = 153.45M;
+            r.Popis = "Služby spojená s nájmom";
+            r.StrediskoNazov = "Banska Bystrica";
+            r.ProjektNazov = "Project Green";
+            h.RzpPolozky.Add(r);
 
             rpt.Hlavicky.Add(h);
 
@@ -191,6 +221,8 @@ namespace WebEas.Esam.Reports.Uct.Types
             h.StrediskoCaption = rpt.StrediskoCaption;
             h.ViacZaznamov = rpt.ViacZaznamov;
             h.Suma = 1.5M;
+            h.NoDataMsg = "  Rozpočtový predpis - vlastna hlaska";
+            h.UctPolozky = new List<ZostavaUctDennikPol>();  // zobraz hlasku
 
             rpt.Hlavicky.Add(h);
         }
@@ -203,9 +235,10 @@ namespace WebEas.Esam.Reports.Uct.Types
         {
             public string DokladCaption { get; set; }     // napr. Dodávateľská faktúra
             public string StrediskoCaption { get; set; }  // kvoli subreportu musi byt
+            public bool PV { get; set; } = false;         // aby sme na reporte vedeli robit designove zmeny (skryvanie FK a Program)
             public bool ViacZaznamov { get; set; }        // aby sme na reporte vedeli robit designove zmeny (mnozne cislo, skryvania atd ... nevieme to tam zratat)
             public string DodavatelCaption { get; set; }  // Dodávateľ, Odberateľ, Meno/Názov
-            public string NoDataMsg { get; set; } = "  (nepotvrdený rozpočet)"; // alebo (nezaúčtovaný)
+            public string NoDataMsg { get; set; } = "  Rozpočtový predpis - nepotvrdený rozpočet"; // moze byt aj "nezaúčtovaný"
             public DateTime Datum { get; set; }           // DatumDokladu
             public string Doklad { get; set; }            // Kód knihy + ‘ ’ + CisloInterne
             public int C_TypBiznisEntity_Id { get; set; }

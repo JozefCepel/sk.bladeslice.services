@@ -15,11 +15,13 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.Serialization;
+using System.ServiceModel;
 using System.Text;
 using System.Text.RegularExpressions;
 using WebEas.Esam.DcomWs.IsoDap;
 using WebEas.Esam.DcomWs.IsoPla;
 using WebEas.Esam.Reports;
+using WebEas.Esam.Reports.Rzp.Types;
 using WebEas.Esam.Reports.Uct.Types;
 using WebEas.Esam.ServiceModel.Office;
 using WebEas.Esam.ServiceModel.Office.Cfe.Types;
@@ -30,6 +32,7 @@ using WebEas.Esam.ServiceModel.Office.Types.Osa;
 using WebEas.Esam.ServiceModel.Office.Types.Reg;
 using WebEas.Esam.ServiceModel.Office.Types.Rzp;
 using WebEas.Esam.ServiceModel.Office.Types.Uct;
+using WebEas.Esam.ServiceModel.Office.Types.Vyk;
 using WebEas.Esam.ServiceModel.Office.Uct.Types;
 using WebEas.ServiceInterface;
 using WebEas.ServiceModel;
@@ -583,6 +586,7 @@ namespace WebEas.Esam.ServiceInterface.Office
             var modul = operationStatus.ProcessKey.Split('!')[0];
             var opId = operationStatus.ProcessKey.Split('!')[1];
             redisClient.SetEntryInHash("RunningLongOperations", modul + "!" + Session.TenantId + "!" + Session.UserId + "!" + opId, operationStatus.ToJson());
+            ServerEvents.NotifySession(Session.Id, operationStatus);
         }
 
 
@@ -682,7 +686,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                     redisClient.RemoveEntryFromHash("RunningLongOperations", modul + "!" + Session.TenantId + "!" + Session.UserId + "!" + opId);
 #if DEBUG
                     //kvoli lokalnemu debugovaniu
-                    EsamAppHostBase.ProcessLongOperationStatus(operationStatus, redisClient);
+                    EsamAppHostBase.ProcessLongOperationStatus(operationStatus, redisClient, ServerEvents);
 #endif
                     return operationStatus;
                 }
@@ -860,7 +864,7 @@ namespace WebEas.Esam.ServiceInterface.Office
             }
             catch (Exception ex)
             {
-                var error = new WebEasException($"Error in operation {request.OperationName} with parameters {WebEas.Core.Log.WebEasNLogExtensions.ToJsonString(request.OperationParameters)}. Process key {request.ProcessKey} and sessionkey {request.SessionId}", ex);
+                var error = new WebEasException($"Error in operation {request.OperationName} with parameters {Core.Log.WebEasNLogExtensions.ToJsonString(request.OperationParameters)}. Process key {request.ProcessKey} and sessionkey {request.SessionId}", ex);
                 LongOperationSetState(request.ProcessKey, error);
             }
             finally
@@ -932,12 +936,12 @@ namespace WebEas.Esam.ServiceInterface.Office
             //var status = GetFromCache<LongOperationStatus>(processKey) ?? new LongOperationStatus(processKey);
             var status = GetOperationStatus(processKey) ?? new LongOperationStatus(processKey);
 
-            status.Message = message;
+            status.Message = message ?? status.Message;
             status.Result = result;
 
             if (status.Result == null)
             {
-                status.Result = message;
+                status.Result = status.Message;
             }
 
             //status.HasAttachement = result is WebEas.Egov.Reports.RendererResult;
@@ -1009,7 +1013,7 @@ namespace WebEas.Esam.ServiceInterface.Office
         /// </summary>
         protected void LongOperationStarted(string processKey, string action)
         {
-            LongOperationSetState(processKey, message: $"Operácia \"{action}\" bola spustená.");
+            LongOperationSetState(processKey, message: $"Operácia \"{action}\" bola spustená.", state: LongOperationState.Running);
         }
 
         /// <summary>
@@ -1251,14 +1255,31 @@ namespace WebEas.Esam.ServiceInterface.Office
                     C_TypBiznisEntity_Id = data.C_TypBiznisEntity_Id,
                 };
             }
-            else
+            else // update
             {
                 be = GetById<BiznisEntita>(data.D_BiznisEntita_Id);
+                if (be.C_TypBiznisEntity_Id == (short)TypBiznisEntityEnum.PDK)
+                {
+                    if (((data.C_TypBiznisEntity_Kniha_Id == (int)TypBiznisEntity_KnihaEnum.Prijmove_pokladnicne_doklady ||
+                          data.C_TypBiznisEntity_Kniha_Id == (int)TypBiznisEntity_KnihaEnum.Terminalove_pokladnicne_doklady) &&
+                          be.C_TypBiznisEntity_Kniha_Id == (int)TypBiznisEntity_KnihaEnum.Vydajove_pokladnicne_doklady) ||
+                        ((be.C_TypBiznisEntity_Kniha_Id == (int)TypBiznisEntity_KnihaEnum.Prijmove_pokladnicne_doklady ||
+                          be.C_TypBiznisEntity_Kniha_Id == (int)TypBiznisEntity_KnihaEnum.Terminalove_pokladnicne_doklady) &&
+                          data.C_TypBiznisEntity_Kniha_Id == (int)TypBiznisEntity_KnihaEnum.Vydajove_pokladnicne_doklady))
+                    {
+                        throw new WebEasValidationException(null, "Zmena dokladu z príjmového na výdajový (a naopak) nie je dovolená.");
+                    }
+                }
             }
 
             if (!create && be.C_StavEntity_Id != (int)StavEntityEnum.NOVY && (data.DM_DPH1 != be.DM_DPH1 || data.DM_DPH2 != be.DM_DPH2))
             {
                 throw new WebEasException($"Zmena DPH je možná iba v stave 'Nový'!");
+            }
+
+            if ((TypBiznisEntityEnum)be.C_TypBiznisEntity_Id == TypBiznisEntityEnum.PPP && data.DatumSplatnosti.GetValueOrDefault().Date > DateTime.Today.AddDays(30))
+            {
+                throw new WebEasValidationException(null, "Dátum splatnosti nesmie byť väčší ako dnešný + 30 dní.");
             }
 
             // spolocne
@@ -1279,17 +1300,31 @@ namespace WebEas.Esam.ServiceInterface.Office
             be.DM_CV = data.DM_CV;
             be.DM_DPH1 = data.DM_DPH1;
             be.DM_DPH2 = data.DM_DPH2;
-            be.DM_Suma = data.DM_Suma;
-            be.DM_Zak0 = data.DM_Zak0;
-            be.DM_Zak1 = data.DM_Zak1;
-            be.DM_Zak2 = data.DM_Zak2;
+
             be.CM_CV = data.CM_CV;
             be.CM_DPH1 = data.CM_DPH1;
             be.CM_DPH2 = data.CM_DPH2;
-            be.CM_Suma = data.CM_Suma;
-            be.CM_Zak0 = data.CM_Zak0;
-            be.CM_Zak1 = data.CM_Zak1;
-            be.CM_Zak2 = data.CM_Zak2;
+
+            if (be.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.PDK)
+            {
+                //Dočasné riešenie (posiela FE) kým nebudú základy DPH počítané z položiek ako je to v CRM dokladoch
+                be.DM_Zak0 = data.DM_Zak0;
+                be.DM_Zak1 = data.DM_Zak1;
+                be.DM_Zak2 = data.DM_Zak2;
+                be.DM_Suma = data.DM_Suma;
+
+                be.CM_Zak0 = data.CM_Zak0;
+                be.CM_Zak1 = data.CM_Zak1;
+                be.CM_Zak2 = data.CM_Zak2;
+                be.CM_Suma = data.CM_Suma;
+            }
+            else
+            {
+                //Rovnako je to nakódene v DB: crm.V_DokladCRM_Sumy a vo FE: Utility.js
+                be.CM_Suma = be.CM_CV + be.CM_DPH1 + be.CM_DPH2 + be.CM_Zak0 + be.CM_Zak1 + be.CM_Zak2;
+                be.DM_Suma = be.DM_CV + be.DM_DPH1 + be.DM_DPH2 + be.DM_Zak0 + be.DM_Zak1 + be.DM_Zak2;
+            }
+
             be.D_Osoba_Id = data.D_Osoba_Id;
             be.C_Mena_Id = (short)MenaEnum.EUR;
             be.KurzECB = 1;
@@ -1333,7 +1368,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                     //be.DatumSplatnosti   - Nastavované zo služby
                     //be.DatumDodania      - Nastavované zo služby
                     be.DatumVDP = be.DatumDokladu;
-                    be.DatumDokladu = SetDatumDokladu(be, tbe);
+                    //be.DatumDokladu = SetDatumDokladu(be, tbe);
                     break;
 
                 case TypBiznisEntityEnum.OFA:
@@ -1342,7 +1377,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                     //be.DatumSplatnosti   - Nastavované zo služby
                     //be.DatumDodania      - Nastavované zo služby
                     be.DatumVDP = be.DatumDokladu;
-                    be.DatumDokladu = SetDatumDokladu(be, tbe);
+                    //be.DatumDokladu = SetDatumDokladu(be, tbe);
                     break;
 
                 case TypBiznisEntityEnum.PDK:
@@ -1354,6 +1389,15 @@ namespace WebEas.Esam.ServiceInterface.Office
                     break;
 
                 case TypBiznisEntityEnum.PPP:
+                    be.DatumPrijatia = be.DatumDokladu;
+                    be.DatumVystavenia = be.DatumDokladu;
+                    be.DatumDodania = null;
+                    be.DatumVDP = null;
+                    if (be.DatumDokladu > be.DatumSplatnosti)
+                    {
+                        be.DatumSplatnosti = be.DatumDokladu;
+                    }
+                    break;
                 case TypBiznisEntityEnum.BAN:
                     be.DatumPrijatia = be.DatumDokladu;
                     be.DatumVystavenia = be.DatumDokladu;
@@ -1454,7 +1498,6 @@ namespace WebEas.Esam.ServiceInterface.Office
                     InvalidateTreeCountsForPath(hierarchyNode.KodPolozky);
                 }
             }
-
             // specificke
             switch ((TypBiznisEntityEnum)be.C_TypBiznisEntity_Id)
             {
@@ -1614,9 +1657,10 @@ namespace WebEas.Esam.ServiceInterface.Office
             return data.D_BiznisEntita_Id;
         }
 
-        public bool PredkontujDoklad(PredkontovatDokladDto dokl, string processKey, out string reportId)
+        public bool PredkontujDoklad(PredkontovatDokladDto dokl, string processKey, out string reportId, bool finishOperation = true)
         {
-            var doklady = GetList(Db.From<BiznisEntitaView>().Where(x => Sql.In(x.D_BiznisEntita_Id, dokl.D_BiznisEntita_Ids)));
+            var doklady = GetList(Db.From<BiznisEntitaView>().Where(x => Sql.In(x.D_BiznisEntita_Id, dokl.D_BiznisEntita_Ids) && x.D_Tenant_Id == Session.TenantIdGuid));
+
             var chybneDokladyUct = new List<(long D_BiznisEntita_Id, string Chyba)>();
             var chybneDokladyRzp = new List<(long D_BiznisEntita_Id, string Chyba)>();
             string msg = null;
@@ -1633,13 +1677,21 @@ namespace WebEas.Esam.ServiceInterface.Office
 
             if (!string.IsNullOrEmpty(reportId))
             {
-                LongOperationSetStateFinished(processKey, string.Empty, "Operácia 'Predkontovať' sa skončila s chybami", state: LongOperationState.Done, reportId: reportId);
+                if (finishOperation)
+                {
+                    LongOperationSetStateFinished(processKey, string.Empty, "Operácia 'Predkontovať' sa skončila s chybami", state: LongOperationState.Done, reportId: reportId);
+                }
+                else
+                {
+                    LongOperationSetStateMessage(processKey, "Operácia 'Predkontovať' sa skončila s chybami");
+                }
+
                 return success;
             }
 
             if (dokl.RzpDennik && !dokl.UctDennik)
             {
-                PredkontujDokladRzp(dokl, out chybneDokladyRzp);
+                PredkontujDokladRzp(dokl, out chybneDokladyRzp, doklady);
                 if (!chybneDokladyRzp.Any())
                 {
                     msg = "Predkontácia do rozpočtu bola úspešne vykonaná.";
@@ -1648,7 +1700,7 @@ namespace WebEas.Esam.ServiceInterface.Office
             }
             else if (!dokl.RzpDennik && dokl.UctDennik)
             {
-                PredkontujDokladUct(dokl, out chybneDokladyUct);
+                PredkontujDokladUct(dokl, out chybneDokladyUct, doklady);
                 if (!chybneDokladyUct.Any())
                 {
                     msg = "Predkontácia do účtovníctva bola úspešne vykonaná.";
@@ -1657,8 +1709,8 @@ namespace WebEas.Esam.ServiceInterface.Office
             }
             else if (dokl.RzpDennik && dokl.UctDennik)
             {
-                PredkontujDokladRzp(dokl, out chybneDokladyRzp);
-                PredkontujDokladUct(dokl, out chybneDokladyUct);
+                PredkontujDokladRzp(dokl, out chybneDokladyRzp, doklady);
+                PredkontujDokladUct(dokl, out chybneDokladyUct, doklady);
 
                 if (!chybneDokladyRzp.Any() && !chybneDokladyUct.Any())
                 {
@@ -1724,19 +1776,26 @@ namespace WebEas.Esam.ServiceInterface.Office
                 SetToCache(string.Concat("Report:", reportId), ret, new TimeSpan(8, 0, 0), useGzipCompression: true);
             }
 
-            if (string.IsNullOrEmpty(reportId))
+            if (finishOperation)
             {
-                LongOperationSetStateFinished(processKey, string.Empty, msg, state: LongOperationState.Done);
+                if (string.IsNullOrEmpty(reportId))
+                {
+                    LongOperationSetStateFinished(processKey, string.Empty, msg, state: LongOperationState.Done);
+                }
+                else
+                {
+                    LongOperationSetStateFinished(processKey, string.Empty, "Operácia 'Predkontovať' sa skončila s chybami", state: LongOperationState.Done, reportId: reportId);
+                }
             }
             else
             {
-                LongOperationSetStateFinished(processKey, string.Empty, "Operácia 'Predkontovať' sa skončila s chybami", state: LongOperationState.Done, reportId: reportId);
+                LongOperationSetStateMessage(processKey, msg);
             }
 
             return success;
         }
 
-        public void PredkontujDokladUct(PredkontovatDokladDto request, out List<(long D_BiznisEntita_Id, string Chyba)> chybneDoklady)
+        private void PredkontujDokladUct(PredkontovatDokladDto request, out List<(long D_BiznisEntita_Id, string Chyba)> chybneDoklady, List<BiznisEntitaView> biznisEntity)
         {
             // Key 1 - nevyhovujuce, 2- viacnasobne, 3 - cent vyr.
             var nevyhovujucePolozky = new List<(long D_BiznisEntita_Id, int Typ, int Poradie)>();
@@ -1744,9 +1803,6 @@ namespace WebEas.Esam.ServiceInterface.Office
 
             using (var transaction = BeginTransaction())
             {
-
-                var biznisEntity = GetList(Db.From<BiznisEntitaView>().
-                    Where(x => Sql.In(x.D_BiznisEntita_Id, request.D_BiznisEntita_Ids)));
 
                 short tbe = biznisEntity.First().C_TypBiznisEntity_Id;
                 bool uhr = (tbe == (short)TypBiznisEntityEnum.BAN ||
@@ -1834,7 +1890,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                 {
                     //Dávam VIEW aby som mal ošetrené zmazané záznamy
                     uhradaParovanie = GetList(Db.From<UhradaParovanieViewHelper>()
-                                              .Where(e => Sql.In(e.D_BiznisEntita_Id_Uhrada, request.D_BiznisEntita_Ids) && e.Rok == biznisEntity.First().Rok));
+                                              .Where(e => Sql.In(e.D_BiznisEntita_Id_Uhrada, request.D_BiznisEntita_Ids) && e.Rok == biznisEntity.First().Rok && e.D_Tenant_Id == Session.TenantIdGuid));
 
                     uctDennikSdkFA = GetList(Db.From<UctDennikViewHelper>()
                                      .Where(e => e.U &&
@@ -1907,7 +1963,8 @@ namespace WebEas.Esam.ServiceInterface.Office
                             case TypBiznisEntityEnum.OOB:
                             case TypBiznisEntityEnum.OZF:
                                 string typBe1 = ((TypBiznisEntityEnum)be.C_TypBiznisEntity_Id).ToString();
-                                var data1 = Db.Select<(string, string, decimal)>($@"SELECT SS AS Item1, KS AS Item2, DM_SumaKUhr AS Item3
+                                string fldKUhr = (typBe1 == "DFA" || typBe1 == "OFA") ? "DM_SumaKUhr" : "DM_Suma";
+                                var data1 = Db.Select<(string, string, decimal)>($@"SELECT SS AS Item1, KS AS Item2, {fldKUhr} AS Item3
                                                                 FROM crm.V_Doklad{typBe1} 
                                                                 WHERE D_Tenant_Id = '{Session.TenantId}' AND D_Doklad{typBe1}_Id = {be.D_BiznisEntita_Id} AND Rok = {be.Rok}").First();
                                 SS = data1.Item1;
@@ -2041,7 +2098,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                                 {
                                     foreach (var def2 in predkontCrmPolozky)
                                     {
-                                        
+
                                         uctDennikList.Add(CreateUctDennikSingleRow(ucty, be, null, null, def2, tbe, kniha, crmPol.C_Stredisko_Id, crmPol.C_Projekt_Id, osobaId, VS, be.DatumDokladu, Math.Round(Math.Abs(crmPol.Mnozstvo * crmPol.DM_Cena), 2, MidpointRounding.AwayFromZero), crmPol.Poradie, Math.Abs(crmPol.Mnozstvo * crmPol.DM_Cena) != crmPol.Mnozstvo * crmPol.DM_Cena, false, false, null, false, ref nevyhovujucePolozky, null));
                                     }
                                 }
@@ -2215,7 +2272,7 @@ namespace WebEas.Esam.ServiceInterface.Office
             }
         }
 
-        public void PredkontujDokladRzp(PredkontovatDokladDto request, out List<(long D_BiznisEntita_Id, string Chyba)> chybneDoklady)
+        private void PredkontujDokladRzp(PredkontovatDokladDto request, out List<(long D_BiznisEntita_Id, string Chyba)> chybneDoklady, List<BiznisEntitaView> biznisEntity)
         {
             // Key 1 - nevyhovujuce, 2- viacnasobne, 3 - cent vyr.
             var nevyhovujucePolozky = new List<(long D_BiznisEntita_Id, int Typ, int Poradie)>();
@@ -2228,9 +2285,6 @@ namespace WebEas.Esam.ServiceInterface.Office
                 List<DokladBANPolViewHelper> dokladBanPol = null;
                 List<DokladCRMPolViewHelper> dokladCrmPol = null;
                 List<UhradaParovanieViewHelper> uhradaParovanie = null;
-
-                var biznisEntity = GetList(Db.From<BiznisEntitaView>().
-                    Where(x => Sql.In(x.D_BiznisEntita_Id, request.D_BiznisEntita_Ids)));
 
                 short tbe = biznisEntity.First().C_TypBiznisEntity_Id;
 
@@ -2338,7 +2392,8 @@ namespace WebEas.Esam.ServiceInterface.Office
                         }
 
                         //Zaúčtovanie sumárnych riadkov
-
+                        var sumRiadky = new List<RzpDennik>();
+                        bool odcitajPolozkyANerozpoctovaneRiadky = true; //Ak je v predkontácii rozpočítanie na percentá, tak neponižujem
                         foreach (var defGrp in predkontacieRzp.Where(p => p.C_Predkontacia_Id == be.C_Predkontacia_Id && !p.Polozka &&
                               !((p.C_Stredisko_Id != null && strediskoId != p.C_Stredisko_Id) ||
                                 (p.C_Projekt_Id != null && projektId != p.C_Projekt_Id) ||
@@ -2369,7 +2424,13 @@ namespace WebEas.Esam.ServiceInterface.Office
                                 {
                                     //Pri položkovitej predkontácii chcem mať sumárne typy na začiatku zoradené podľa predkontácie a potom až položkové
                                     //Pri sumárnej predkontácii chcem mať poradie z predkontácie zachované
-                                    rzpDennikList.Add(CreateRzpDennikSingleRow(rzpPolozky, be, strediskoId, projektId, null, null, def1, null, hodnota, (uctovatPolozkovite ? -10000 : 0) + def1.Poradie));
+                                    var sumRiadok = CreateRzpDennikSingleRow(rzpPolozky, be, strediskoId, projektId, null, null, def1, null, hodnota, (uctovatPolozkovite ? -10000 : 0) + def1.Poradie);
+                                    rzpDennikList.Add(sumRiadok);
+                                    sumRiadky.Add(sumRiadok);
+                                    if (odcitajPolozkyANerozpoctovaneRiadky && def1.Percento != 100)
+                                    {
+                                        odcitajPolozkyANerozpoctovaneRiadky = false;
+                                    }
                                 }
                             }
                         }
@@ -2408,43 +2469,82 @@ namespace WebEas.Esam.ServiceInterface.Office
                                 }
 
                             }
-                        } 
+                        }
                         else if (dokladCrmPol != null)
                         {
-                            foreach (var crmPol in dokladCrmPol.Where(b => b.D_BiznisEntita_Id == be.D_BiznisEntita_Id).OrderBy(x => x.Poradie))
+                            if ((TypBiznisEntityEnum)be.C_TypBiznisEntity_Id != TypBiznisEntityEnum.DFA && (TypBiznisEntityEnum)be.C_TypBiznisEntity_Id != TypBiznisEntityEnum.OFA ||
+                                DM_SumaKUhr != 0)
                             {
-                                //Vyfiltruj riadky predkontácie, ktoré vyhovujú a všetky vygeneruj
-                                var predkontCrmPolozky = predkontacieRzp.Where(
-                                    x => 
-                                    x.Polozka &&
-                                    x.C_Typ_Id == crmPol.C_Typ_Id &&
-                                    x.C_Predkontacia_Id == be.C_Predkontacia_Id &&
-                                    (x.C_Projekt_Id == null || x.C_Projekt_Id == crmPol.C_Projekt_Id));
-
-                                if (predkontCrmPolozky.Count() > 0)
+                                var rzpPolCrm = new List<RzpDennik>();
+                                bool generujKorekciu = true; //Korekciu generujem, keď sú generované všetky riadky
+                                foreach (var crmPol in dokladCrmPol.Where(b => b.D_BiznisEntita_Id == be.D_BiznisEntita_Id).OrderBy(x => x.Poradie))
                                 {
+                                    //Vyfiltruj riadky predkontácie, ktoré vyhovujú a všetky vygeneruj
+                                    var predkontCrmPolozky = predkontacieRzp.Where(
+                                        x =>
+                                        x.Polozka &&
+                                        x.C_Typ_Id == crmPol.C_Typ_Id &&
+                                        x.C_Predkontacia_Id == be.C_Predkontacia_Id &&
+                                        (x.C_Projekt_Id == null || x.C_Projekt_Id == crmPol.C_Projekt_Id));
+
+                                    if (generujKorekciu && predkontCrmPolozky.Count() != 1)
+                                    {
+                                        generujKorekciu = false;
+                                    }
+
                                     foreach (var def2 in predkontCrmPolozky)
                                     {
-                                        rzpDennikList.Add(CreateRzpDennikSingleRow(rzpPolozky, be, strediskoId, projektId, null, null, def2, null, Math.Round(Math.Abs(crmPol.Mnozstvo * crmPol.DM_Cena), 2, MidpointRounding.AwayFromZero), crmPol.Poradie));
+                                        var hodnota = (TypBiznisEntityEnum)be.C_TypBiznisEntity_Id == TypBiznisEntityEnum.DFA || (TypBiznisEntityEnum)be.C_TypBiznisEntity_Id == TypBiznisEntityEnum.OFA
+                                            ? Math.Round(crmPol.DM_SumaSDph.GetValueOrDefault() * (DM_SumaKUhr / be.DM_Suma), 2, MidpointRounding.AwayFromZero)
+                                            : crmPol.DM_SumaSDph.GetValueOrDefault();
+                                        rzpPolCrm.Add(CreateRzpDennikSingleRow(rzpPolozky, be, strediskoId, projektId, null, null, def2, null, hodnota, crmPol.Poradie));
                                     }
-                                }
-                                //TODO: skontrolovat
-                                /*else
-                                {
-                                    if (crmPol.C_Typ_Id != (int)TypEnum.UhradaPohZav)
+                                    //TODO: skontrolovat
+                                    /*else
                                     {
-                                        nevyhovujucePolozky.AddIfNotExists((be.D_BiznisEntita_Id, 1, crmPol.Poradie));
-                                        //Pridám riadok ale bez rzp. položky a programu
-                                        rzpDennikList.Add(CreateRzpDennikSingleRow(rzpPolozky, be, strediskoId, projektId, crmPol, null, null, null, Math.Abs(crmPol.Suma), crmPol.Poradie));
+                                        if (crmPol.C_Typ_Id != (int)TypEnum.UhradaPohZav)
+                                        {
+                                            nevyhovujucePolozky.AddIfNotExists((be.D_BiznisEntita_Id, 1, crmPol.Poradie));
+                                            //Pridám riadok ale bez rzp. položky a programu
+                                            rzpDennikList.Add(CreateRzpDennikSingleRow(rzpPolozky, be, strediskoId, projektId, crmPol, null, null, null, Math.Abs(crmPol.Suma), crmPol.Poradie));
+                                        }
+                                    }
+
+                                    //Párovanie úhrad jednej položky:
+                                    foreach (UhradaParovanieViewHelper uhrPar in uhradaParovanie.Where(b => b.D_DokladBANPol_Id == crmPol.D_DokladBANPol_Id).OrderBy(x => x.Poradie))
+                                    {
+                                        CreateRzpDennikFromParovanieUhrad(rzpDennikList, kniha, predkontacieRzp, rzpPolozky, rzpDennikPredbezne, be, strediskoId, projektId, osobaId, crmPol, uhrPar, ref nevyhovujucePolozky);
+                                    }
+                                    */
+                                }
+
+                                if (generujKorekciu)
+                                {
+                                    if (rzpPolCrm.Any() && ((TypBiznisEntityEnum)be.C_TypBiznisEntity_Id == TypBiznisEntityEnum.DFA || (TypBiznisEntityEnum)be.C_TypBiznisEntity_Id == TypBiznisEntityEnum.OFA))
+                                    {
+                                        var korekcia = DM_SumaKUhr - rzpPolCrm.Sum(x => x.Suma);
+                                        rzpPolCrm.First(x => x.Suma == rzpPolCrm.Max(z => z.Suma)).Suma += korekcia;
                                     }
                                 }
 
-                                //Párovanie úhrad jednej položky:
-                                foreach (UhradaParovanieViewHelper uhrPar in uhradaParovanie.Where(b => b.D_DokladBANPol_Id == crmPol.D_DokladBANPol_Id).OrderBy(x => x.Poradie))
+                                if (odcitajPolozkyANerozpoctovaneRiadky && sumRiadky.Any())
                                 {
-                                    CreateRzpDennikFromParovanieUhrad(rzpDennikList, kniha, predkontacieRzp, rzpPolozky, rzpDennikPredbezne, be, strediskoId, projektId, osobaId, crmPol, uhrPar, ref nevyhovujucePolozky);
+                                    //TODO: v buducnosti ak bude viac sum. riadkov, zohladnit rozdelenie
+                                    foreach (var sumRiadok in sumRiadky)
+                                    {
+                                        //Odpočítam od riadku so SumaKUhrade aj SumaDokladu hodnotu predkontovanú z položiek
+                                        sumRiadok.Suma -= rzpPolCrm.Sum(x => x.Suma);
+
+                                        //Odpočítam od riadku so SumaKUhrade aj SumaDokladu hodnotu riadkov, ktoré sa nemajú rozpočtovať
+                                        sumRiadok.Suma -= dokladCrmPol.Where(b => b.D_BiznisEntita_Id == be.D_BiznisEntita_Id && b.RzpDefinicia == -1).Sum(x => x.DM_SumaSDph.GetValueOrDefault());
+                                        if (sumRiadok.Suma == 0)
+                                        {
+                                            rzpDennikList.Remove(sumRiadok);
+                                        }
+                                    }
                                 }
-                                */
+
+                                rzpDennikList.AddRange(rzpPolCrm);
                             }
                         }
                         else if (uhradaParovanie != null) //Pokladňa a Vzájomné zápočty IND
@@ -2874,7 +2974,8 @@ namespace WebEas.Esam.ServiceInterface.Office
 
             if (predkontRow == null || (predkontRow.C_UctRozvrh_Id_MD == null && predkontRow.C_UctRozvrh_Id_Dal == null)) //navrhni stranu
             {
-                if ((TypBiznisEntity_KnihaEnum)kniha == TypBiznisEntity_KnihaEnum.Prijmove_pokladnicne_doklady)
+                if ((TypBiznisEntity_KnihaEnum)kniha == TypBiznisEntity_KnihaEnum.Prijmove_pokladnicne_doklady ||
+                    (TypBiznisEntity_KnihaEnum)kniha == TypBiznisEntity_KnihaEnum.Terminalove_pokladnicne_doklady)
                 {
                     md = uhrPar.C_Typ_Id == (int)TypEnum.UhradaDFA || uhrPar.C_Typ_Id == (int)TypEnum.UhradaDZF ||
                          uhrPar.C_Typ_Id == (int)TypEnum.DobropisDFA || uhrPar.C_Typ_Id == (int)TypEnum.ZalohyPoskytnute;
@@ -3087,8 +3188,8 @@ namespace WebEas.Esam.ServiceInterface.Office
             if (uctZauctovanie)
             {
                 LongOperationSetStateMessage(processKey, "Prebieha kontrola účtovania v účtovnom denníku");
-                var uctovneDenniky = GetList(Db.From<UctDennik>().Where(x => Sql.In(x.D_BiznisEntita_Id, doklady.Select(x => x.D_BiznisEntita_Id))).And(Filter.NotDeleted().ToString()));
-                var uctovneRozvrhy = GetList(Db.From<UctRozvrh>().Where(x => Sql.In(x.C_UctRozvrh_Id, uctovneDenniky.Select(x => x.C_UctRozvrh_Id).Distinct())).And(Filter.NotDeleted().ToString()));
+                var uctovneDenniky = GetList(Db.From<UctDennik>().Where(x => Sql.In(x.D_BiznisEntita_Id, doklady.Select(x => x.D_BiznisEntita_Id)) && x.D_Tenant_Id == Session.TenantIdGuid).And(Filter.NotDeleted().ToString()));
+                var uctovneRozvrhy = GetList(Db.From<UctRozvrh>().Where(x => Sql.In(x.C_UctRozvrh_Id, uctovneDenniky.Select(x => x.C_UctRozvrh_Id).Distinct()) && x.D_Tenant_Id == Session.TenantIdGuid).And(Filter.NotDeleted().ToString()));
                 var strediska = GetList(Db.From<StrediskoCis>().Where(x => Sql.In(x.C_Stredisko_Id, uctovneDenniky.Select(x => x.C_Stredisko_Id).Distinct())).And(Filter.NotDeleted().ToString()));
 
                 //CHECK-51
@@ -3167,7 +3268,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                     .Where(x => x.Rozdiel != 0)
                     )
                 {
-                    chybneDoklady.Add((MdDalRozdiel.Key, $"Strana 'Má dať' sa nerovná strane 'Dal' (Rozdiel: { MdDalRozdiel.Rozdiel })"));
+                    chybneDoklady.Add((MdDalRozdiel.Key, $"Strana 'Má dať' sa nerovná strane 'Dal' (Rozdiel: { MdDalRozdiel.Rozdiel:N2})"));
                 }
 
                 //CHECK-89, CHECK-90
@@ -3312,8 +3413,8 @@ namespace WebEas.Esam.ServiceInterface.Office
             if (rzpZauctovanie)
             {
                 LongOperationSetStateMessage(processKey, "Prebieha kontrola účtovania v rozpočtovom denníku");
-                var rozpoctovyDennik = GetList(Db.From<RzpDennik>().Where(x => Sql.In(x.D_BiznisEntita_Id, doklady.Select(x => x.D_BiznisEntita_Id))).And(Filter.NotDeleted().ToString()));
-                var rozpoctovePolozky = GetList(Db.From<RzpPol>().Where(x => Sql.In(x.C_RzpPol_Id, rozpoctovyDennik.Select(x => x.C_RzpPol_Id).Distinct())).And(Filter.NotDeleted().ToString()));
+                var rozpoctovyDennik = GetList(Db.From<RzpDennik>().Where(x => Sql.In(x.D_BiznisEntita_Id, doklady.Select(x => x.D_BiznisEntita_Id)) && x.D_Tenant_Id == Session.TenantIdGuid).And(Filter.NotDeleted().ToString()));
+                var rozpoctovePolozky = GetList(Db.From<RzpPol>().Where(x => Sql.In(x.C_RzpPol_Id, rozpoctovyDennik.Select(x => x.C_RzpPol_Id).Distinct()) && x.D_Tenant_Id == Session.TenantIdGuid).And(Filter.NotDeleted().ToString()));
                 var rzpComb = Db.Select<(long C_RzpPol_Id, long? D_Program_Id, int Rok)>("SELECT DISTINCT C_RzpPol_Id, D_Program_Id, Rok FROM rzp.V_RzpCombinations cmb WHERE cmb.C_RzpPol_Id IN (@zrpPolId) AND cmb.Rok IN (@rok)",
                                       new { zrpPolId = rozpoctovePolozky.Select(z => z.C_RzpPol_Id).Distinct(), rok = doklady.Select(x => x.Rok) });
 
@@ -3364,7 +3465,12 @@ namespace WebEas.Esam.ServiceInterface.Office
                         {
                             if (!rzpComb.Any(x => x.Rok == doklad.Rok && x.C_RzpPol_Id == rzpDen.C_RzpPol_Id))
                             {
-                                chybPrijPol.Add(rzpDen.Poradie);
+                                var be = doklady.Single(d => d.D_BiznisEntita_Id == rzpDen.D_BiznisEntita_Id);
+                                //PS doklady za minulé roky nemusia byť v zozname kombinácií
+                                if (!be.PS || eSAMStart == null || be.Rok >= eSAMStart.Value.Year)
+                                {
+                                    chybPrijPol.Add(rzpDen.Poradie);
+                                }
                             }
                         }
                         else if (rzpDen.D_Program_Id != null) //Nevyplnený program na výdajovom riadku sa rieši vyššie a tu už riešim iba s vyplneným
@@ -3506,9 +3612,17 @@ namespace WebEas.Esam.ServiceInterface.Office
                             kontrolovanaSuma -= sumaZal;
                         }
 
+                        //DTLNESAMINT-722
+                        var nerozpoctovePolozky = GetList(Db.From<DokladCRMPolViewHelper>().Where(x => x.D_BiznisEntita_Id == dokl.D_BiznisEntita_Id && x.RzpDefinicia == -1).Select(x => new { x.DM_SumaSDph }));
+                        if (nerozpoctovePolozky.Any())
+                        {
+                            //ratame aj s DPH, kedze DM_Suma je uz aj s DPH
+                            kontrolovanaSuma -= nerozpoctovePolozky.Sum(x => x.DM_SumaSDph.GetValueOrDefault());
+                        }
+
                         if (suma != kontrolovanaSuma)
                         {
-                            chybneDoklady.Add((rzpDenGrp.Key, $"Suma zaúčtovania do rozpočtu sa nerovná sume dokladu. Rozdiel {suma - kontrolovanaSuma} €"));
+                            chybneDoklady.Add((rzpDenGrp.Key, $"Suma zaúčtovania do rozpočtu sa nerovná sume dokladu. Rozdiel {suma - kontrolovanaSuma:N2} €"));
                         }
                     }
                 }
@@ -3523,6 +3637,10 @@ namespace WebEas.Esam.ServiceInterface.Office
                         {
                             //OK - PS doklady BAN a PDK nesmú mať záznamy
                         }
+                        else if (dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.PDK && Db.Count<UhradaParovanieViewHelper>(x => x.D_BiznisEntita_Id_Uhrada == dokl.D_BiznisEntita_Id && x.RzpDefinicia != -1) == 0)
+                        {
+                            //DTLNESAMINT-722
+                        }
                         else if (dokl.PS && (dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.DFA ||
                                         dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.DZF ||
                                         dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.OFA ||
@@ -3530,6 +3648,21 @@ namespace WebEas.Esam.ServiceInterface.Office
                                         eSAMStart != null && dokl.Rok < eSAMStart.Value.Year)
                         {
                             //OK - Povolenie potvrdenia rozpočtu dokladov minulých rokov aj bez záznamov
+                        }
+                        else if ((dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.DFA ||
+                                        dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.DZF ||
+                                        dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.DZM ||
+                                        dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.DOB ||
+                                        dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.DCP ||
+                                        dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.OFA ||
+                                        dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.DOL ||
+                                        dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.OZM ||
+                                        dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.OOB ||
+                                        dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.OCP ||
+                                        dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.OZF) &&
+                                        Db.Count<DokladCRMPolViewHelper>(x => x.D_BiznisEntita_Id == dokl.D_BiznisEntita_Id && x.RzpDefinicia != -1) == 0)
+                        {
+                            //DTLNESAMINT-722
                         }
                         else
                         {
@@ -3612,7 +3745,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                 {
                     var uhrady = GetList(Db
                         .From<UhradaParovanieViewHelper>()
-                        .Where(x => Sql.In(x.D_BiznisEntita_Id_Predpis, fakturyUhrada))
+                        .Where(x => Sql.In(x.D_BiznisEntita_Id_Predpis, fakturyUhrada) && x.D_Tenant_Id == Session.TenantIdGuid)
                         .Select(x => new { x.D_BiznisEntita_Id_Predpis, x.CisloInterne }));
 
                     foreach (var uhr in uhrady.GroupBy(x => x.D_BiznisEntita_Id_Predpis))
@@ -3625,7 +3758,7 @@ namespace WebEas.Esam.ServiceInterface.Office
 
         public void SkontrolujZauctovanie(SkontrolovatZauctovanieDto dokl, string processKey)
         {
-            var biznisEntita = GetList(Db.From<BiznisEntita>().Where(x => Sql.In(x.D_BiznisEntita_Id, dokl.D_BiznisEntita_Ids)));
+            var biznisEntita = GetList(Db.From<BiznisEntita>().Where(x => Sql.In(x.D_BiznisEntita_Id, dokl.D_BiznisEntita_Ids) && x.D_Tenant_Id == Session.TenantIdGuid));
             var chybneDoklady = SkontrolovatZauctovanieDokladu(biznisEntita.First().C_TypBiznisEntity_Id, biznisEntita, 1, dokl.RzpDennik, false, dokl.UctDennik, false, processKey, out string reportId);
 
             LongOperationSetStateFinished(processKey, string.Empty, $"Operácia 'Skontrolovať zaúčtovanie' sa skončila {(!chybneDoklady.Any() ? "úspešne" : "neúspešne")}.", state: LongOperationState.Done, reportId: reportId);
@@ -3710,19 +3843,19 @@ namespace WebEas.Esam.ServiceInterface.Office
 
                 var uhrady = Db.Select(Db
                        .From<UhradaParovanieViewHelper>()
-                       .Where(x => Sql.In(x.D_BiznisEntita_Id_Uhrada, biznisEntita.Select(z => z.D_BiznisEntita_Id))));
+                       .Where(x => Sql.In(x.D_BiznisEntita_Id_Uhrada, biznisEntita.Select(z => z.D_BiznisEntita_Id)) && x.D_Tenant_Id == Session.TenantIdGuid));
 
                 var osobyUhrady = Db.Select(Db
                        .From<OsobaView>()
                        .Where(x => Sql.In(x.D_Osoba_Id, uhrady.Where(x => x.D_Osoba_Id.HasValue).Select(z => z.D_Osoba_Id)))
                        .Select(x => x.D_Osoba_Id));
 
-                var polozkyBanHrady = new List<DokladBANPolViewHelper>();
+                var polozkyBankUhrady = new List<DokladBANPolViewHelper>();
                 if (uhrady.Any(x => x.D_DokladBANPol_Id.HasValue))
                 {
-                    polozkyBanHrady = GetList(Db
+                    polozkyBankUhrady = GetList(Db
                         .From<DokladBANPolViewHelper>()
-                        .Where(x => Sql.In(x.D_DokladBANPol_Id, uhrady.Where(x => x.D_DokladBANPol_Id.HasValue).Select(x => x.D_DokladBANPol_Id)))
+                        .Where(x => Sql.In(x.D_DokladBANPol_Id, uhrady.Where(x => x.D_DokladBANPol_Id.HasValue).Select(x => x.D_DokladBANPol_Id)) && x.D_Tenant_Id == Session.TenantIdGuid)
                         .Select(x => new { x.Poradie, x.D_DokladBANPol_Id }));
                 }
 
@@ -3754,7 +3887,7 @@ namespace WebEas.Esam.ServiceInterface.Office
 
                     if (typBiznisEntityId == (short)TypBiznisEntityEnum.BAN)
                     {
-                        foreach (var polBan in polozkyBanHrady.Where(x => uhrOsoba.Select(x => x.D_DokladBANPol_Id).Contains(x.D_DokladBANPol_Id)))
+                        foreach (var polBan in polozkyBankUhrady.Where(x => uhrOsoba.Select(x => x.D_DokladBANPol_Id).Contains(x.D_DokladBANPol_Id)))
                         {
                             chybneDoklady.Add((uhrOsoba.Key, $"V položke výpisu (pč. { polBan.Poradie }) a položke párovania úhrad (pč. { uhrOsoba.Where(x => x.D_DokladBANPol_Id == polBan.D_DokladBANPol_Id).Select(x => x.Poradie).Join(",")}) je neplatná osoba"));
                         }
@@ -3822,7 +3955,7 @@ namespace WebEas.Esam.ServiceInterface.Office
 
                     if (typBiznisEntityId == (short)TypBiznisEntityEnum.BAN)
                     {
-                        foreach (var polBan in polozkyBanHrady.Where(x => uhrDap.Select(x => x.D_DokladBANPol_Id).Contains(x.D_DokladBANPol_Id)))
+                        foreach (var polBan in polozkyBankUhrady.Where(x => uhrDap.Select(x => x.D_DokladBANPol_Id).Contains(x.D_DokladBANPol_Id)))
                         {
                             if (bezVymeru.Any())
                             {
@@ -3857,7 +3990,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                     var doklBan = GetList(sqlExp.Select(x => new { x.D_BiznisEntita_Id, x.DM_Debet, x.DM_Kredit, x.PocetPol, x.DatumDokladu }));
 
                     var polozkyBan = GetList(Db.From<DokladBANPolViewHelper>()
-                        .Where(x => Sql.In(x.D_BiznisEntita_Id, biznisEntita.Select(z => z.D_BiznisEntita_Id)))
+                        .Where(x => Sql.In(x.D_BiznisEntita_Id, biznisEntita.Select(z => z.D_BiznisEntita_Id)) && x.D_Tenant_Id == Session.TenantIdGuid)
                         .Select(x => new { x.D_BiznisEntita_Id, x.D_DokladBANPol_Id, x.Poradie, x.DatumPohybu, x.C_Typ_Id, x.Suma }));
 
                     #endregion
@@ -4002,11 +4135,24 @@ namespace WebEas.Esam.ServiceInterface.Office
             {
                 SpracovatZauctovatDoklad(biznisEntita, idNewState, false, false, processKey, out msgNeodoslanePolozky);
             }
-
+            if (idTBE == (short)TypBiznisEntityEnum.PDK && idNewState == (int)StavEntityEnum.SPRACOVANY)
+            {
+                foreach (var be in biznisEntita)
+                {
+                    UpdatePdkPopis(be.D_BiznisEntita_Id, false);
+                }
+            }
 
             if (!string.IsNullOrEmpty(reportId))
             {
-                LongOperationSetStateFinished(processKey, string.Empty, $"Operácia 'Spracovať' sa skončila neúspešne.", state: LongOperationState.Done, reportId: reportId);
+                if (finishOperation)
+                {
+                    LongOperationSetStateFinished(processKey, string.Empty, "Operácia 'Spracovať' sa skončila neúspešne.", state: LongOperationState.Done, reportId: reportId);
+                }
+                else
+                {
+                    LongOperationSetStateMessage(processKey, "Operácia 'Spracovať' sa skončila neúspešne.");
+                }
             }
             else
             {
@@ -4221,9 +4367,10 @@ namespace WebEas.Esam.ServiceInterface.Office
                                 var be = biznisEntita.Single(x => x.D_BiznisEntita_Id == dokladPdk.D_BiznisEntita_Id);
                                 var prvaPolozka = prepojenePolozky.First(x => x.D_BiznisEntita_Id_Uhrada == dokladPdk.D_BiznisEntita_Id);
 
-                                bool? typBiznisEntityKniha = dokladPdk.C_TypBiznisEntity_Kniha_Id == (int)TypBiznisEntity_KnihaEnum.Prijmove_pokladnicne_doklady
-                                    ? true
-                                    : (dokladPdk.C_TypBiznisEntity_Kniha_Id == (int)TypBiznisEntity_KnihaEnum.Vydajove_pokladnicne_doklady ? false : (bool?)null);
+                                bool? typBiznisEntityKniha = (dokladPdk.C_TypBiznisEntity_Kniha_Id == (int)TypBiznisEntity_KnihaEnum.Prijmove_pokladnicne_doklady ||
+                                                              dokladPdk.C_TypBiznisEntity_Kniha_Id == (int)TypBiznisEntity_KnihaEnum.Terminalove_pokladnicne_doklady)
+                                                           ? true
+                                                           : (dokladPdk.C_TypBiznisEntity_Kniha_Id == (int)TypBiznisEntity_KnihaEnum.Vydajove_pokladnicne_doklady ? false : (bool?)null);
 
                                 var paymentRecord = new SetPaymentRecord
                                 {
@@ -4594,7 +4741,19 @@ namespace WebEas.Esam.ServiceInterface.Office
             if (bookOfInternalAccountingDocuments.Any())
             {
                 LongOperationSetStateMessage(processKey, "Zaslanie nových stredísk/kníh interných dokladov do DCOM-u");
-                client.setBooksOfInternalAccountingDocuments(ref dcmHeader, new ReqSetBooksOfInternalAccountingDocumentsList { requestRecords = bookOfInternalAccountingDocuments.ToArray(), recordCount = bookOfInternalAccountingDocuments.Count });
+                try
+                {
+                    client.setBooksOfInternalAccountingDocuments(ref dcmHeader, new ReqSetBooksOfInternalAccountingDocumentsList { requestRecords = bookOfInternalAccountingDocuments.ToArray(), recordCount = bookOfInternalAccountingDocuments.Count });
+                }
+                catch (FaultException<WebEas.Esam.DcomWs.IsoPla.ResErr> e)
+                {
+                    throw new WebEasSoapException(null, e?.Detail?.errorMessage ?? e.Message, e, bookOfInternalAccountingDocuments);
+                }
+                catch (Exception e)
+                {
+                    throw new WebEasSoapException(null, "Synchronizácia voči DCOMu bola neúspešná.", e, bookOfInternalAccountingDocuments);
+                }
+
 
                 foreach (var str in GetList<StrediskoCis>(x => stredisko.Select(z => z.C_Stredisko_Id).Contains(x.C_Stredisko_Id)))
                 {
@@ -4624,7 +4783,19 @@ namespace WebEas.Esam.ServiceInterface.Office
             if (bankAccountRecords.Any())
             {
                 LongOperationSetStateMessage(processKey, "Zaslanie nových bankových účtov do DCOM-u");
-                client.setBankAccounts(ref dcmHeader, new ReqSetBankAccountsList { requestRecords = bankAccountRecords.ToArray(), recordCount = bankAccountRecords.Count });
+
+                try
+                {
+                    client.setBankAccounts(ref dcmHeader, new ReqSetBankAccountsList { requestRecords = bankAccountRecords.ToArray(), recordCount = bankAccountRecords.Count });
+                }
+                catch (FaultException<WebEas.Esam.DcomWs.IsoPla.ResErr> e)
+                {
+                    throw new WebEasSoapException(null, e?.Detail?.errorMessage ?? e.Message, e, bankAccountRecords);
+                }
+                catch (Exception e)
+                {
+                    throw new WebEasSoapException(null, "Synchronizácia voči DCOMu bola neúspešná.", e, bankAccountRecords);
+                }
 
                 foreach (var banucet in GetList<BankaUcetCis>(x => bankaUcet.Select(z => z.C_BankaUcet_Id).Contains(x.C_BankaUcet_Id)))
                 {
@@ -4653,7 +4824,18 @@ namespace WebEas.Esam.ServiceInterface.Office
             if (cashBookRecords.Any())
             {
                 LongOperationSetStateMessage(processKey, "Zaslanie nových pokladníc do DCOM-u");
-                client.setCashBooks(ref dcmHeader, new ReqSetCashBooksList { requestRecords = cashBookRecords.ToArray(), recordCount = cashBookRecords.Count });
+                try
+                {
+                    client.setCashBooks(ref dcmHeader, new ReqSetCashBooksList { requestRecords = cashBookRecords.ToArray(), recordCount = cashBookRecords.Count });
+                }
+                catch (FaultException<WebEas.Esam.DcomWs.IsoPla.ResErr> e)
+                {
+                    throw new WebEasSoapException(null, e?.Detail?.errorMessage ?? e.Message, e, cashBookRecords);
+                }
+                catch (Exception e)
+                {
+                    throw new WebEasSoapException(null, "Synchronizácia voči DCOMu bola neúspešná.", e, cashBookRecords);
+                }
 
                 foreach (var pokl in GetList<Pokladnica>(x => pokladnica.Select(z => z.C_Pokladnica_Id).Contains(x.C_Pokladnica_Id)))
                 {
@@ -4667,11 +4849,89 @@ namespace WebEas.Esam.ServiceInterface.Office
         {
             var biznisEntita = GetList(Db.From<BiznisEntita>().Where(x => Sql.In(x.D_BiznisEntita_Id, dokl.Ids)));
             reportId = null;
+            var reportsId = new List<string>();
+            string msg;
 
             if (!biznisEntita.Any())
             {
                 LongOperationSetStateFinished(processKey, string.Empty, "Neboli nájdené žiadne doklady na zaúčtovanie/odúčtovanie.", state: LongOperationState.Done);
                 return false;
+            }
+
+            if (biznisEntita.Any(x => x.C_StavEntity_Id == (int)StavEntityEnum.NOVY))
+            {
+                SpracujDoklad(new SpracovatDokladDto
+                {
+                    Ids = biznisEntita.Where(x => x.C_StavEntity_Id == (int)StavEntityEnum.NOVY).Select(x => x.D_BiznisEntita_Id).ToArray()
+                }, processKey, out reportId, finishOperation: false);
+            }
+
+            biznisEntita = GetList(Db.From<BiznisEntita>().Where(x => Sql.In(x.D_BiznisEntita_Id, dokl.Ids)));
+            if (!biznisEntita.Any(x => x.C_StavEntity_Id == (int)StavEntityEnum.SPRACOVANY) && !reportId.IsNullOrEmpty())
+            {
+                LongOperationSetStateFinished(processKey, null, null, state: LongOperationState.Failed, reportId: reportId);
+                return false;
+            }
+            else
+            {
+                if (!reportId.IsNullOrEmpty())
+                {
+                    reportsId.Add(reportId);
+                }
+            }
+
+            var crmDoklady = new List<TypBiznisEntityEnum>()
+                {
+                    TypBiznisEntityEnum.DFA,
+                    TypBiznisEntityEnum.DZF,
+                    TypBiznisEntityEnum.DZM,
+                    TypBiznisEntityEnum.DOB,
+                    TypBiznisEntityEnum.DCP,
+                    TypBiznisEntityEnum.DDP,
+                    TypBiznisEntityEnum.OFA,
+                    TypBiznisEntityEnum.DOL,
+                    TypBiznisEntityEnum.OZF,
+                    TypBiznisEntityEnum.OZM,
+                    TypBiznisEntityEnum.OOB,
+                    TypBiznisEntityEnum.OCP,
+                    TypBiznisEntityEnum.ODP
+                };
+
+            var spracovaneDoklady = biznisEntita.Where(x => x.C_StavEntity_Id == (int)StavEntityEnum.SPRACOVANY && (!x.PS || crmDoklady.Contains((TypBiznisEntityEnum)x.C_TypBiznisEntity_Id)));
+            if (spracovaneDoklady.Any())
+            {
+                var predkonUct = Db.Select(Db.From<UctDennikViewHelper>().Where(e => Sql.In(e.D_BiznisEntita_Id, spracovaneDoklady.Select(x => x.D_BiznisEntita_Id))).SelectDistinct(x => x.D_BiznisEntita_Id));
+                var predkonRzp = Db.Select(Db.From<RzpDennikViewHelper>().Where(e => Sql.In(e.D_BiznisEntita_Id, spracovaneDoklady.Select(x => x.D_BiznisEntita_Id))).SelectDistinct(x => x.D_BiznisEntita_Id));
+
+                if (spracovaneDoklady.Any(x => !predkonUct.Any(z => z.D_BiznisEntita_Id == x.D_BiznisEntita_Id)))
+                {
+                    PredkontujDoklad(new PredkontovatDokladDto
+                    {
+                        D_BiznisEntita_Ids = spracovaneDoklady.Where(x => !predkonUct.Any(z => z.D_BiznisEntita_Id == x.D_BiznisEntita_Id)).Select(x => x.D_BiznisEntita_Id).Distinct().ToArray(),
+                        UctDennik = true,
+                        VymazatZaznamy = false
+                    }, null, out reportId);
+
+                    if (!reportId.IsNullOrEmpty())
+                    {
+                        reportsId.Add(reportId);
+                    }
+                }
+
+                if (spracovaneDoklady.Any(x => !predkonRzp.Any(z => z.D_BiznisEntita_Id == x.D_BiznisEntita_Id)))
+                {
+                    PredkontujDoklad(new PredkontovatDokladDto
+                    {
+                        D_BiznisEntita_Ids = spracovaneDoklady.Where(x => !predkonRzp.Any(z => z.D_BiznisEntita_Id == x.D_BiznisEntita_Id)).Select(x => x.D_BiznisEntita_Id).Distinct().ToArray(),
+                        RzpDennik = true,
+                        VymazatZaznamy = false
+                    }, null, out reportId);
+
+                    if (!reportId.IsNullOrEmpty())
+                    {
+                        reportsId.Add(reportId);
+                    }
+                }
             }
 
             if (biznisEntita.Any(
@@ -4681,7 +4941,23 @@ namespace WebEas.Esam.ServiceInterface.Office
                 x.C_StavEntity_Id != (int)StavEntityEnum.ZAUCTOVANY_RZP &&
                 x.C_StavEntity_Id != (int)StavEntityEnum.ZAUCTOVANY_UCT))
             {
-                throw new WebEasValidationException(null, "Výber obsahuje doklady, ktoré nemajú povolený stav na zaúčtovanie/odúčtovanie. Operáciu nie je možné vykonať!");
+                msg = "Výber obsahuje doklady, ktoré nemajú povolený stav na zaúčtovanie/odúčtovanie. Operáciu nie je možné vykonať!";
+                string repId = null;
+                if (reportsId.Any())
+                {
+                    repId = reportsId.Join(",");
+                }
+
+                if (finishOperation)
+                {
+                    LongOperationSetStateFinished(processKey, null, msg, state: LongOperationState.Failed, reportId: repId);
+                }
+                else
+                {
+                    LongOperationSetStateMessage(processKey, msg, reportId: repId);
+                }
+
+                return false;
             }
 
             var idOldState = biznisEntita.First().C_StavEntity_Id;
@@ -4773,7 +5049,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                 SpracovatZauctovatDoklad(biznisEntita, idNewState, uctZauctovanie, uctOductovanie, processKey, out string msgNeodoslanePolozky);
             }
 
-            string msg;
+
             string op = oductovanie ? "odúčtova" : "zaúčtova";
             bool allOK;
 
@@ -4874,12 +5150,12 @@ namespace WebEas.Esam.ServiceInterface.Office
                                             DM_DPH2 = DM_DPH2_Dynamic,
                                             DM_Suma = DM_Suma_Dynamic
                                         WHERE D_BiznisEntita_Id = @be_Id AND Rok = @rok AND D_Tenant_Id = @tenantId AND 
-                                               (DM_Zak0 = DM_Zak_0_Dynamic OR
-                                                DM_Zak1 = DM_Zak_1_Dynamic OR
-                                                DM_Zak2 = DM_Zak_2_Dynamic OR
-                                                DM_DPH1 = DM_DPH1_Dynamic OR
-                                                DM_DPH2 = DM_DPH2_Dynamic OR
-                                                DM_Suma = DM_Suma_Dynamic)
+                                               (DM_Zak0 <> DM_Zak_0_Dynamic OR
+                                                DM_Zak1 <> DM_Zak_1_Dynamic OR
+                                                DM_Zak2 <> DM_Zak_2_Dynamic OR
+                                                DM_DPH1 <> DM_DPH1_Dynamic OR
+                                                DM_DPH2 <> DM_DPH2_Dynamic OR
+                                                DM_Suma <> DM_Suma_Dynamic)
                                         ", new { be_Id, rok, tenantId = Session.TenantId });
                 }
                 else
@@ -4892,6 +5168,85 @@ namespace WebEas.Esam.ServiceInterface.Office
                     transaction.Commit();
                 }
             }
+        }
+
+        protected void UpdatePdkPopis(long be_Id, bool forceUpdate)
+        {
+            try
+            {
+                string popDAP, pozDAP, popFAK, pozFAK;
+
+                BiznisEntita be = GetById<BiznisEntita>(be_Id, nameof(BiznisEntitaView.Popis));
+                DokladPDK pdk = GetById<DokladPDK>(be_Id, nameof(BiznisEntitaView.Poznamka));
+
+                if (be.Popis.IsNullOrEmpty() || pdk.Poznamka.IsNullOrEmpty() || forceUpdate)
+                {
+                    var uhrady = GetList(Db.From<UhradaParovanieViewHelper>().
+                        Select(x => new { x.D_BiznisEntita_Id_Predpis, x.D_VymerPol_Id, x.VS, x.C_Typ_Id, x.Rok_Predpis, x.Rozhodnutie, x.CisloVymer, x.DruhDane, x.DruhDaneNazov, x.DM_Cena, x.TypBiznisEntityKod_Predpis, x.TypBiznisEntityNazov_Predpis, x.Popis_Predpis, x.CisloExterne_Predpis, x.CisloInterne_Predpis }).
+                        Where(x => x.D_BiznisEntita_Id_Uhrada == be_Id));
+
+                    if (be.Popis.IsNullOrEmpty() || forceUpdate) // Popis
+                    {
+                        popDAP = uhrady.Where(x => x.D_VymerPol_Id.GetValueOrDefault() > 0).OrderBy(x => x.Rozhodnutie).Select(x => x.DruhDane + " vs " + x.VS).Distinct().Join(" ; ");
+                        popFAK = uhrady.Where(x => x.D_BiznisEntita_Id_Predpis.GetValueOrDefault() > 0).OrderBy(x => x.C_Typ_Id).ThenBy(x => x.Rok_Predpis).Select(x => x.TypBiznisEntityKod_Predpis + " vs " + x.VS).Distinct().Join(" ; ");
+                        if (popDAP != "" && popFAK != "") popDAP += " ; ";
+                        popDAP += popFAK;
+                        if (popDAP != "")
+                        {
+                            popDAP = "Platba za " + ((uhrady.Where(x => x.D_VymerPol_Id.GetValueOrDefault() > 0).Count() > 0) ? "DaP: " : "faktúry: ") + popDAP;
+                            be.Popis = popDAP;
+                            UpdateData(be);
+                        }
+                    }
+                    if (pdk.Poznamka.IsNullOrEmpty() || forceUpdate) // Poznamka
+                    {
+                        pozDAP = uhrady.Where(x => x.D_VymerPol_Id.GetValueOrDefault() > 0)
+                                       .OrderBy(x => x.Rozhodnutie)
+                                       .GroupBy(x => new { x.Rozhodnutie, x.DruhDaneNazov, x.CisloVymer })
+                                       .Select(x => x.Key.Rozhodnutie + " " + x.Key.DruhDaneNazov + " Σ " + x.Sum(y => y.DM_Cena).ToString("N2") + " € (č. " + x.Key.CisloVymer + ")")
+                                       .Join(" ; ");
+                        pozFAK = uhrady.Where(x => x.D_BiznisEntita_Id_Predpis.GetValueOrDefault() > 0)
+                                       .OrderBy(x => x.C_Typ_Id)
+                                       .ThenBy(x => x.Rok_Predpis)
+                                       .GroupBy(x => new { x.Rok_Predpis, x.TypBiznisEntityNazov_Predpis, x.Popis_Predpis, x.CisloExterne_Predpis, x.CisloInterne_Predpis})
+                                       .Select(x => x.Key.Rok_Predpis + " " + x.Key.TypBiznisEntityNazov_Predpis + ": " + x.Key.Popis_Predpis + " Σ " + x.Sum(y => y.DM_Cena).ToString("N2") + " € (č. " + (x.Key.CisloExterne_Predpis ?? x.Key.CisloInterne_Predpis) + ")")
+                                       .Join(" ; ");
+                        if (pozDAP != "" && pozFAK != "") pozDAP += " ; ";
+                        pozDAP += pozFAK;
+                        if (pozDAP != "")
+                        {
+                            pdk.Poznamka = pozDAP;
+                            UpdateData(pdk);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                throw new WebEasException(null, "Nepodarilo sa aktualizovať pole Popis a Poznámku v hlavičke dokladu!", e);
+            }
+        }
+
+        public virtual object CopyDoklad(CopyDokladDto request)
+        {
+            var noveDoklady = new Dictionary<long, DokladINDView>();
+
+            //hlavicky
+            foreach (var id in request.D_BiznisEntita_Id)
+            {
+                var pdk = GetById<DokladINDView>(id);
+                var dokl = pdk.ConvertTo<CreateDokladINDDto>();
+                dokl.DatumDokladu = DateTime.Today;
+                dokl.DatumVystavenia = DateTime.Today;
+                dokl.DatumPrijatia = DateTime.Today;
+                dokl.DatumDodania = DateTime.Today;
+                dokl.CisloInterne = null;
+                dokl.VS = null;
+                dokl.CisloExterne = null;
+                noveDoklady.Add(id, CreateDokladIND(dokl));
+            }
+
+            return noveDoklady.Values;
         }
 
         #endregion
@@ -4940,85 +5295,53 @@ namespace WebEas.Esam.ServiceInterface.Office
 
         #region Reports
 
-        /// <summary>
-        /// Renders the multi PDF.
-        /// </summary>
-        /// <param name="format">The format.</param>
-        /// <param name="data">The data.</param>
-        /// <returns></returns>
-        public void RenderMultiPdf(string processKey, RendererFormatType format, List<IReportData> data, string nazovSuboru = "")
+        public void RenderPdf(string processKey, List<IReportData> data, bool finish, bool spojitReporty, out List<KeyValuePair<string, string>> rptInfo)
         {
-            Hashtable deviceInfo = null;
+            rptInfo = new List<KeyValuePair<string, string>>();
             if (data == null || data.Count == 0)
             {
                 throw new ArgumentNullException("Report data cannot be empty");
             }
-
-            using var book = new Telerik.Reporting.ReportBook();
-            int i = 0;
-            do
+            var book = new Telerik.Reporting.ReportBook();
+            var rpts = GetReport(data);
+            foreach (var rpt in rpts)
             {
-                IReportData item = data[i];
-                Type t = item.GetType();
-                var list = new List<IReportData> { item };
-
-                while (((i + 1) < data.Count) && (t == data[i + 1].GetType()))
+                if (!spojitReporty) book.ReportSources.Clear();
+                var irs = new Telerik.Reporting.InstanceReportSource
                 {
-                    i++;
-                    list.Add(data[i]);
-                }
-                i++;
-                var rpts = GetReport(t, list);
-                foreach (var rpt in rpts)
-                {
-                    var irs = new Telerik.Reporting.InstanceReportSource
-                    {
-                        ReportDocument = rpt.TelerikReport
-                    };
-                    // book.DocumentName = rpt.DocumentName; JP: mozme pouzit v buducnosti ak by nam chybalo meno
-                    book.ReportSources.Add(irs);
-
-                    deviceInfo = new Hashtable();
-                    if (rpts.Count > 0)
-                    {
-                        if (rpts[0] is IReportInfo info)
-                        {
-                            var sAuthor = info.DocumentAuthor;
-                            string sDocName;
-                            if (sAuthor.IsNullOrEmpty()) sAuthor = Session.TenantName;
-                            deviceInfo.Add("DocumentAuthor", RemoveDiacritics(sAuthor));
-                            deviceInfo.Add("DocumentSubject", RemoveDiacritics(info.DocumentSubject));
-                            deviceInfo.Add("DocumentKeywords", RemoveDiacritics(info.DocumentKeywords));
-                            if (format.ToString() == "Csv")
-                            {
-                                deviceInfo.Add("WriteBOM", true);
-                                deviceInfo.Add("NoHeader", true);
-                            }
-                            if (nazovSuboru != "")
-                            {
-                                sDocName = nazovSuboru;
-                            }
-                            else if (book.ReportSources.Count == 1)
-                            {
-                                sDocName = info.DocumentTitle;
-                            }
-                            else
-                            {
-                                sDocName = "Hromadná tlač";
-                            }
-                            deviceInfo.Add("DocumentTitle", RemoveDiacritics(sDocName));
-                            book.DocumentName = RemoveDiacritics(sDocName).Replace(" ", "_").Replace("?", "_") + DateTime.Now.ToString("_yyyyMMdd_HHmm");
-                            // deviceInfo.Add("ComplianceLevel", "PDF/A-1b");
-                        }
-                    }
-                }
+                    ReportDocument = rpt.TelerikReport
+                };
+                book.ReportSources.Add(irs);
+                if (!spojitReporty) FinishPdf(ref book, rpt, ref rptInfo);
             }
-            while (i < data.Count);
+            if (spojitReporty) FinishPdf(ref book, rpts[0] , ref rptInfo);
+            if (finish)
+            {
+                var multiple = rptInfo.Count() > 1;
+                LongOperationSetStateFinished(processKey, string.Empty, $"Zostav{(multiple ? "y" : "a")} '{rptInfo.Select(x => x.Key).Join(", ")}' bol{(multiple ? "i" : "a")} úspešne vygenerovan{(multiple ? "é" : "á")}", state: LongOperationState.Done, reportId: rptInfo.Select(x => x.Value).Join(","));
+            }
+        }
 
-            var result = Render(format, book, deviceInfo);
+        private void FinishPdf(ref Telerik.Reporting.ReportBook book, EsamReport rpt, ref List<KeyValuePair<string, string>> rptInfo)
+        {
+            string sDocName = "";
+            var deviceInfo = new Hashtable();
+            if (rpt is IReportInfo info) // zoberieme info z prveho reportu
+            {
+                var sAuthor = info.DocumentAuthor;
+                if (sAuthor.IsNullOrEmpty()) sAuthor = Session.TenantName;
+                deviceInfo.Add("DocumentAuthor", RemoveDiacritics(sAuthor));
+                deviceInfo.Add("DocumentSubject", RemoveDiacritics(info.DocumentSubject));
+                deviceInfo.Add("DocumentKeywords", RemoveDiacritics(info.DocumentKeywords));
+                sDocName = info.DocumentTitle; // rpt.DocumentName; JP: mozme pouzit v buducnosti ak by nam chybalo meno
+                deviceInfo.Add("DocumentTitle", RemoveDiacritics(sDocName));
+                book.DocumentName = RemoveDiacritics(sDocName).Replace(" ", "_").Replace("?", "_") + DateTime.Now.ToString("_yyyyMMdd_HHmm");
+                // deviceInfo.Add("ComplianceLevel", "PDF/A-1b");
+            }
+            var result = Render(RendererFormatType.Pdf, book, deviceInfo);
             var reportId = Guid.NewGuid().ToString();
             SetToCache(string.Concat("Report:", reportId), result, new TimeSpan(8, 0, 0), useGzipCompression: true);
-            LongOperationSetStateFinished(processKey, string.Empty, $"Zostava '{book.DocumentName}' bola úspešne vygenerovaná", state: LongOperationState.Done, reportId: reportId);
+            rptInfo.Add(new KeyValuePair<string, string>(sDocName, reportId));
         }
 
         public string RemoveDiacritics(string sText)
@@ -5416,10 +5739,9 @@ namespace WebEas.Esam.ServiceInterface.Office
             return result;
         }
 
-        public void RenderCsv(string processKey, List<KeyValuePair<string, string>> listFileData, Encoding enc = null)
+        public void RenderCsv(string processKey, List<KeyValuePair<string, string>> listFileData, Encoding enc, bool finish, out List<KeyValuePair<string, string>> rptInfo)
         {
-            var reportIds = new List<string>();
-
+            rptInfo = new List<KeyValuePair<string, string>>();
             foreach (var item in listFileData)
             {
                 var result = new RendererResult
@@ -5433,32 +5755,37 @@ namespace WebEas.Esam.ServiceInterface.Office
                 result.DocumentBytes = enc.GetBytes(item.Value);
                 var reportId = Guid.NewGuid().ToString();
                 SetToCache(string.Concat("Report:", reportId), result, new TimeSpan(8, 0, 0), useGzipCompression: true);
-                reportIds.Add(reportId);
+                rptInfo.Add(new KeyValuePair<string, string>(item.Key, reportId));
             }
-            var multiple = listFileData.Count() > 1;
-            LongOperationSetStateFinished(processKey, string.Empty, $"Csv súbor{(multiple ? "y" : string.Empty)} '{listFileData.Select(x => x.Key + ".csv").Join(", ")}' bol{(multiple ? "i" : string.Empty)} úspešne vygenerovan{(multiple ? "é" : "ý")}", state: LongOperationState.Done, reportId: reportIds.Join(","));
+            if (finish)
+            {
+                var multiple = rptInfo.Count() > 1;
+                LongOperationSetStateFinished(processKey, string.Empty, $"Csv súbor{(multiple ? "y" : string.Empty)} '{rptInfo.Select(x => x.Key).Join(", ")}' bol{(multiple ? "i" : string.Empty)} úspešne vygenerovan{(multiple ? "é" : "ý")}", state: LongOperationState.Done, reportId: rptInfo.Select(x => x.Value).Join(","));
+            }
         }
 
-        public virtual List<EsamReport> GetReport<T>(Type type, List<T> data) where T : IReportData
+        public virtual List<EsamReport> GetReport<T>(List<T> data) where T : IReportData
         {
             var ret = new List<EsamReport>();
 
-            if (type == typeof(ZostavaUctDoklad))
+            foreach (var d in data)
             {
-                var rpt = GetTelerikReport(ReportsEnum.UctDokladReport);
-                rpt.SetDocumentProperties("Účtovný doklad", "účet, doklad");
-                var ds = data.OfType<ZostavaUctDoklad>().First();
-                rpt.TelerikReport.DataSource = ds;
+                if (d.GetType() == typeof(ZostavaUctDoklad))
+                {
+                    var rpt = GetTelerikReport(ReportsEnum.UctDokladReport);
+                    rpt.SetDocumentProperties("Účtovný doklad", "účet, doklad");
+                    rpt.TelerikReport.DataSource = d;
 
-                //SubReport subRpt = rpt.TelerikReport.Items.Find("subReport1", true).First() as SubReport;
-                //var x = subRpt.ReportSource as UriReportSource;
-                //x.Uri = "bin/Reports/" + x.Uri;
-                ret.Add(rpt);
+                    //SubReport subRpt = rpt.TelerikReport.Items.Find("subReport1", true).First() as SubReport;
+                    //var x = subRpt.ReportSource as UriReportSource;
+                    //x.Uri = "bin/Reports/" + x.Uri;
+                    ret.Add(rpt);
+                }
             }
 
             if (ret.Count == 0) // len nech zahuci pokial nemas zadefinovany report
             {
-                throw new NotImplementedException(string.Format("Type {0} is not implemented", type));
+                throw new NotImplementedException(string.Format("Type {0} is not implemented", data.GetType()));
             }
             return ret;
         }
@@ -5473,8 +5800,12 @@ namespace WebEas.Esam.ServiceInterface.Office
             zostava.ViacZaznamov = (rptParams.Ids.Count() > 1);
             foreach (var id in rptParams.Ids)
             {
-                // musim si zavolat info z BE lebo ak by nemali riadky tak nevytvorim ani hlavicku a tu cheme v kazdom pripade zobrazit
-                var be = GetById<BiznisEntitaView>(id);
+                // Najskor plnime z BE. Ak by neexitovali riadky tak nevytvorim ani hlavicku a tu chceme v kazdom pripade vytvorit
+                var be = GetById<BiznisEntitaView>(id, nameof(BiznisEntitaView.DatumDokladu), nameof(BiznisEntitaView.TypBiznisEntityNazov),
+                                                       nameof(BiznisEntitaView.BiznisEntitaPopis), nameof(BiznisEntitaView.FormatMenoSort),
+                                                       nameof(BiznisEntitaView.StrediskoNazov), nameof(BiznisEntitaView.ProjektNazov),
+                                                       nameof(BiznisEntitaView.Popis), nameof(BiznisEntitaView.DM_Suma),
+                                                       nameof(BiznisEntitaView.C_TypBiznisEntity_Id), nameof(BiznisEntitaView.C_TypBiznisEntity_Kniha_Id));
                 // hlavicka
                 var h = new ZostavaUctDokladHla();
                 h.Datum = be.DatumDokladu;
@@ -5499,18 +5830,40 @@ namespace WebEas.Esam.ServiceInterface.Office
                     case (int)TypBiznisEntityEnum.OOB:
                     case (int)TypBiznisEntityEnum.OZM:
                     case (int)TypBiznisEntityEnum.OZF:
+                        h.PV = true;
                         h.DodavatelCaption = "Dodávateľ";
                         break;
                     default:  // BAN, PDK, IND
+                        if (be.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.PDK)
+                            h.PV = !(be.C_TypBiznisEntity_Kniha_Id == (int)TypBiznisEntity_KnihaEnum.Vydajove_pokladnicne_doklady); //  Pri/Ter = True
                         h.DodavatelCaption = "Meno/Názov";
-                        h.NoDataMsg = "  (nezaúčtovaný)";
+                        h.NoDataMsg = "  Rozpočtový predpis - nezaúčtovaný";
                         break;
                 }
-                h.UctPolozky = new List<ZostavaUctDennikPol>();
-                h.RzpPolozky = new List<ZostavaRzpDennikPol>();
-                // Uct polozky
+                h.UctPolozky = GetUctPolozky(id, be.C_TypBiznisEntity_Id);
+                h.RzpPolozky = GetRzpPolozky(id, h.PV);
+                // finalize
+                zostava.Hlavicky.Add(h);
+            }
+
+            rptData.Add(zostava);
+
+            return rptData;
+        }
+
+        public List<ZostavaUctDennikPol> GetUctPolozky(long idBE, short typBE)
+        {
+            List<ZostavaUctDennikPol> lst = null;  // POZOR !!! rozdelujeme ci je NULL alebo ci len neobsahuje zaznamy
+
+            if (typBE == (int)TypBiznisEntityEnum.DFA ||
+                typBE == (int)TypBiznisEntityEnum.OFA ||
+                typBE == (int)TypBiznisEntityEnum.BAN ||
+                typBE == (int)TypBiznisEntityEnum.PDK ||
+                typBE == (int)TypBiznisEntityEnum.IND)
+            {
+                lst = new List<ZostavaUctDennikPol>();
                 var filter = new Filter();
-                filter.AndEq(nameof(UctDennikRptHelper.D_BiznisEntita_Id), id);
+                filter.AndEq(nameof(UctDennikRptHelper.D_BiznisEntita_Id), idBE);
                 filter.AndEq(nameof(UctDennikRptHelper.U), true); // + Zauctovane
                 var data1 = GetList<UctDennikRptHelper>(filter);
                 foreach (var row in data1)
@@ -5529,44 +5882,46 @@ namespace WebEas.Esam.ServiceInterface.Office
                         StrediskoNazov = row.StrediskoNazov,
                         ProjektNazov = row.ProjektNazov
                     };
-                    h.UctPolozky.Add(r);
+                    lst.Add(r);
                 };
-                // Rzp polozky
-                filter = new Filter();
-                filter.AndEq(nameof(UctDennikRptHelper.D_BiznisEntita_Id), id);
-                filter.AndEq(nameof(RzpDennikViewHelper.R), true); // + Zauctovane
-                var data2 = GetList<RzpDennikViewHelper>(filter);
-                foreach (var row in data2)
+            };
+            return lst;
+        }
+
+        public List<ZostavaRzpDennikPol> GetRzpPolozky(long idBE, bool hlaPV)
+        {
+            var lst = new List<ZostavaRzpDennikPol>();
+
+            var filter = new Filter();
+            filter.AndEq(nameof(UctDennikRptHelper.D_BiznisEntita_Id), idBE);
+            filter.AndEq(nameof(RzpDennikViewHelper.R), true); // + Zauctovane
+            var data2 = GetList<RzpDennikViewHelper>(filter);
+            foreach (var row in data2)
+            {
+                var r = new ZostavaRzpDennikPol()
                 {
-                    var r = new ZostavaRzpDennikPol()
-                    {
-                        Suv = row.D_RzpDennik_Id < 0,
-                        DatumUctovania = row.DatumDokladu,
-                        BiznisEntitaPopis = row.BiznisEntitaPopis,
-                        Poradie = row.Poradie,
-                        PV = row.PrijemVydajText,
-                        ZD = row.ZdrojKod,
-                        FK = row.FK,
-                        EK = row.EK,
-                        A1 = row.A1,
-                        A2 = row.A2,
-                        A3 = row.A3,
-                        NazovPolozky = row.RzpPolNazov,
-                        ProgramFull = row.ProgramFull,
-                        Suma = row.D_RzpDennik_Id < 0 ? null : (decimal?)row.Suma,
-                        Popis = row.Popis,
-                        StrediskoNazov = row.StrediskoNazov,
-                        ProjektNazov = row.ProjektNazov
-                    };
-                    h.RzpPolozky.Add(r);
+                    HlavickaPV = hlaPV,
+                    Suv = row.D_RzpDennik_Id < 0,
+                    DatumUctovania = row.DatumDokladu,
+                    BiznisEntitaPopis = row.BiznisEntitaPopis,
+                    Poradie = row.Poradie,
+                    PV = row.PrijemVydajText,
+                    ZD = row.ZdrojKod,
+                    FK = row.FK,
+                    EK = row.EK,
+                    A1 = row.A1,
+                    A2 = row.A2,
+                    A3 = row.A3,
+                    NazovPolozky = row.RzpPolNazov,
+                    ProgramFull = row.ProgramFull,
+                    Suma = row.D_RzpDennik_Id < 0 ? null : (decimal?)row.Suma,
+                    Popis = row.Popis,
+                    StrediskoNazov = row.StrediskoNazov,
+                    ProjektNazov = row.ProjektNazov
                 };
-                // finalize
-                zostava.Hlavicky.Add(h);
-            }
-
-            rptData.Add(zostava);
-
-            return rptData;
+                lst.Add(r);
+            };
+            return lst;
         }
 
         public EsamReport GetTelerikReport(ReportsEnum report)
@@ -5662,13 +6017,19 @@ namespace WebEas.Esam.ServiceInterface.Office
         public void RptSetOwner(RptHead zostava)
         {
             TenantSimpleView ti = GetList(Db.From<TenantSimpleView>().Select().Where(tu => tu.D_Tenant_Id == Session.TenantIdGuid)).FirstOrDefault();
+            zostava.D_PO_Osoba_Id = ti.D_PO_Osoba_Id;
             zostava.Nazov = ti.MenoObchodne;
             zostava.ICO = ti.ICO;
+            zostava.IcDph = ti.IcDph;
+            zostava.Dic = ti.Dic;
             zostava.Obec = ti.AdresaObec;
             zostava.Ulica = ti.AdresaUlicaCislo;
             zostava.OrganizaciaTyp_Id = ti.C_OrganizaciaTyp_Id;
             zostava.OrganizaciaTyp = ti.OrganizaciaTypNazov;
             zostava.PSC = ti.AdresaPSC;
+            zostava.Telefon = ti.Telefon;
+            zostava.Fax = ti.Fax;
+            zostava.Mail = ti.Email;
             zostava.Vytlacil = Session.DisplayName;
             zostava.StrediskoCaption = GetNastavenieS("reg", "OrjNazovJC");
         }
@@ -5679,6 +6040,85 @@ namespace WebEas.Esam.ServiceInterface.Office
             if (txtObj.Any())
             {
                 (txtObj.First() as Telerik.Reporting.TextBox).Value = sText;
+            }
+        }
+
+        #endregion
+
+        #region Vykazy
+
+        public void UlozitDoHistorie(UlozitDoHistorieDto request)
+        {
+            using var transaction = BeginTransaction();
+            try
+            {
+                if (request.C_VykazDruh_Id == 0)
+                {
+                    var vykazDruh = Db.Single(Db.From<VykazDruhHelper>().Where(x => x.Kod == request.KodPolozky.Substring(request.KodPolozky.LastIndexOf('-') + 1)).Select(x => x.C_VykazDruh_Id));
+                    if (vykazDruh == null)
+                    {
+                        throw new WebEasValidationException(null, "Neznámy kód výkazu!");
+                    }
+                    request.C_VykazDruh_Id = vykazDruh.C_VykazDruh_Id;
+                }
+                if (request.Rok > 0 && request.Obdobie > 0)
+                {
+                    var pocet = Db.Scalar<int>("SELECT count(D_Vykaz_Id) FROM [vyk].[D_Vykaz] where Rok = @rok and Obdobie = @obdobie",
+                                                new { rok = request.Rok, obdobie = request.Obdobie});
+                    if (request.RISSAM) // moze byt vzdy iba jeden
+                    {
+                        Db.ExecuteNonQuery("UPDATE vyk.D_Vykaz SET RISSAM = 0 WHERE C_VykazDruh_Id = @druh AND Rok = @Rok AND Obdobie = @Obdobie AND RISSAM = 1",
+                                            new { druh = request.C_VykazDruh_Id, request.Rok, request.Obdobie });
+                    }
+                    var hla = new VykazHelper
+                    {
+                        Rok = request.Rok,
+                        Obdobie = request.Obdobie,
+                        Popis = request.Popis,
+                        RISSAM = request.RISSAM,
+                        Poradie = pocet + 1,
+                        Datum = DateTime.Now,
+                        C_VykazDruh_Id = request.C_VykazDruh_Id
+                    };
+                    var idHla = InsertData(hla);
+                    var data = Db.SqlList<Fin1PolBaseHelper>("SELECT * FROM [rzp].[F_Fin112] (@Rok, @Obdobie)", new { Rok = request.Rok, Obdobie = request.Obdobie });
+                    foreach (var item in data)
+                    {
+                        var pol = new VykazFin112Helper
+                        {
+                            D_Vykaz_Id = idHla,
+                            D_Tenant_Id = item.D_Tenant_Id,
+                            Provizorium = item.Provizorium,
+                            PrijemVydaj = item.PrijemVydaj,
+                            Cast = item.Cast,
+                            C_RzpTyp_Id = item.C_RzpTyp_Id,
+                            DruhRzp = item.DruhRzp,
+                            ZdrojKod = item.ZdrojKod,
+                            ProgramKod = item.ProgramKod,
+                            FKOddiel = item.FKOddiel,
+                            FKSkupina = item.FKSkupina,
+                            FKTrieda = item.FKTrieda,
+                            FKPodtrieda = item.FKPodtrieda,
+                            FK = item.FK,
+                            EKPolozka = item.EKPolozka,
+                            EKPodpolozka = item.EKPodpolozka,
+                            EK = item.EK,
+                            EKNazov = item.EKNazov,
+                            RzpSchvaleny = item.RzpSchvaleny,
+                            RzpZmeny = item.RzpZmeny,
+                            RzpUpraveny = item.RzpUpraveny,
+                            RzpOcakavany = item.RzpOcakavany,
+                            RzpSkutocnost = item.RzpSkutocnost
+                        };
+                        InsertData(pol);
+                    }
+                    transaction.Commit();
+                }
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                throw ex;
             }
         }
 
@@ -5987,7 +6427,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                 new HierarchyNode("hlk", "Hlavná kniha", uctHlavnaKniha, icon: HierarchyNodeIconCls.Book, crossModulItem: true)
                 {
                     DialogTyp = DialogTypEnum.HlavnaKniha.ToString(),
-                    SelectionMode = PfeSelection.Multi,
+                    SelectionMode = PfeSelection.Single,
                     Actions = new List<NodeAction>
                     {
                         new NodeAction(NodeActionType.MenuButtonsAll)
@@ -6005,7 +6445,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                     LayoutDependencies = new List<LayoutDependency>
                     {
                         LayoutDependency.OneToMany("all-prh-uctd", "D_Hlk_Guid", "Účt.denník"),
-                        LayoutDependency.OneToMany("all-prh-rzpd", "D_Hlk_Guid", "Rozp.denník")
+                        LayoutDependency.OneToMany("all-prh-rzpd!rzp", "D_Hlk_Guid", "Rozp.denník")
                     }
                 },
                 new HierarchyNode<DummyCombo>("obu", "Obraty účtov *", null, icon: HierarchyNodeIconCls.ChartBar, crossModulItem: true)
@@ -6094,7 +6534,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                         {
                             return "<zvoľte stredisko a zatlačte refresh>";
                         }
-                        replaceStr = stredisko.Substring(0, charLen);
+                        replaceStr = stredisko.Length < charLen ? stredisko.PadLeft(charLen, '0') : stredisko.Substring(0, charLen);
                         break;
                     case "POK":
                         charLen = int.Parse(match.Groups[2].Value);
@@ -6102,7 +6542,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                         {
                             return "<zvoľte pokladnicu a zatlačte refresh>";
                         }
-                        replaceStr = pokladnica.Substring(0, charLen);
+                        replaceStr = pokladnica.Length < charLen ? pokladnica.PadLeft(charLen, '0') : pokladnica.Substring(0, charLen);
                         break;
                     case "VBU":
                         charLen = int.Parse(match.Groups[2].Value);
@@ -6110,11 +6550,11 @@ namespace WebEas.Esam.ServiceInterface.Office
                         {
                             return "<zvoľte bank. účet a zatlačte refresh>";
                         }
-                        replaceStr = bankUcet.Substring(0, charLen);
+                        replaceStr = bankUcet.Length < charLen ? bankUcet.PadLeft(charLen, '0') : bankUcet.Substring(0, charLen);
                         break;
                     case "ZAM":
                         charLen = int.Parse(match.Groups[2].Value);
-                        replaceStr = Session.EvidCisloZam.Substring(0, charLen);
+                        replaceStr = Session.EvidCisloZam.Length < charLen ? Session.EvidCisloZam.PadLeft(charLen, '0') : Session.EvidCisloZam.Substring(0, charLen);
                         break;
                     case "R":
                         charLen = 1;
@@ -6338,8 +6778,8 @@ namespace WebEas.Esam.ServiceInterface.Office
             newVS = OneMatch(newVS, raiseValidityError, @"[[{](R|RR|RRRR)(\d*)[]}]", "", "", "", "", datumDokladu.Year.ToString(), ref likeSqlTmp, "Nepodarilo sa vygenerovať variabilný symbol. Skontrolujte nastavenie číselného radu (rok)!");
 
             //PV
-            newCisloInterne = OneMatch(newCisloInterne, raiseValidityError, @"[[{](PV)(\d*)[]}]", "PV", "", "", "", (biznisEntita.C_TypBiznisEntity_Kniha_Id == (int)TypBiznisEntity_KnihaEnum.Prijmove_pokladnicne_doklady) ? "P" : "V", ref likeSql, "Nepodarilo sa vygenerovať číslo dokladu. Skontrolujte nastavenie číselného radu (príjem/výdaj)!");
-            newVS = OneMatch(newVS, raiseValidityError, @"[[{](PV)(\d*)[]}]", "PV", "", "", "", (biznisEntita.C_TypBiznisEntity_Kniha_Id == (int)TypBiznisEntity_KnihaEnum.Prijmove_pokladnicne_doklady) ? "P" : "V", ref likeSqlTmp, "Nepodarilo sa vygenerovať variabilný symbol. Skontrolujte nastavenie číselného radu (príjem/výdaj)!");
+            newCisloInterne = OneMatch(newCisloInterne, raiseValidityError, @"[[{](PV)(\d*)[]}]", "PV", "", "", "", (biznisEntita.C_TypBiznisEntity_Kniha_Id == (int)TypBiznisEntity_KnihaEnum.Prijmove_pokladnicne_doklady || biznisEntita.C_TypBiznisEntity_Kniha_Id == (int)TypBiznisEntity_KnihaEnum.Terminalove_pokladnicne_doklady) ? "P" : "V", ref likeSql, "Nepodarilo sa vygenerovať číslo dokladu. Skontrolujte nastavenie číselného radu (príjem/výdaj)!");
+            newVS = OneMatch(newVS, raiseValidityError, @"[[{](PV)(\d*)[]}]", "PV", "", "", "", (biznisEntita.C_TypBiznisEntity_Kniha_Id == (int)TypBiznisEntity_KnihaEnum.Prijmove_pokladnicne_doklady || biznisEntita.C_TypBiznisEntity_Kniha_Id == (int)TypBiznisEntity_KnihaEnum.Terminalove_pokladnicne_doklady) ? "P" : "V", ref likeSqlTmp, "Nepodarilo sa vygenerovať variabilný symbol. Skontrolujte nastavenie číselného radu (príjem/výdaj)!");
 
             if (newCisloInterne.StartsWith("<zvoľte"))
             {
@@ -6420,5 +6860,67 @@ namespace WebEas.Esam.ServiceInterface.Office
 
         #endregion
 
+        #region Vytvoriť plat. príkaz
+
+        public void GeneratePolozkyPPP(GeneratePolozkyPPPDto request, string processKey)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region BiznisEntita_Zaloha
+        public BiznisEntita_ZalohaView CreateBiznisEntita_Zaloha(BiznisEntita_ZalohaDto data)
+        {
+            BiznisEntita_Zaloha par;
+            par = data.ConvertToEntity();
+            var be = GetById<BiznisEntita>(data.D_BiznisEntita_Id_FA);
+            if (be != null) par.Rok = be.Rok; // zober rok z dokladu
+            InsertData(par);
+            UpdateZalohaInHead(be.D_BiznisEntita_Id, be.C_TypBiznisEntity_Id, be?.Rok ?? par.Rok);
+            var result = GetById<BiznisEntita_ZalohaView>(par.D_BiznisEntita_Zaloha_Id);
+            return result;
+        }
+
+        public BiznisEntita_ZalohaView UpdateBiznisEntita_Zaloha(BiznisEntita_ZalohaDto data)
+        {
+            BiznisEntita_Zaloha par;
+            par = data.ConvertToEntity();
+            var be = GetById<BiznisEntita>(data.D_BiznisEntita_Id_FA);
+            if (be != null) par.Rok = be.Rok; // zober rok z dokladu
+            UpdateData(par);
+            UpdateZalohaInHead(be.D_BiznisEntita_Id, be.C_TypBiznisEntity_Id, be?.Rok ?? par.Rok);
+            var result = GetById<BiznisEntita_ZalohaView>(par.D_BiznisEntita_Zaloha_Id);
+            return result;
+        }
+
+        public void UpdateZalohaInHead(long id, int typ, short rok)
+        {
+            var zalPol = GetList(Db.From<BiznisEntita_ZalohaView>().Select(x => new { x.DM_Cena, x.VS }). //View  berie iba platne zaznamy
+                Where(e => e.D_BiznisEntita_Id_FA == id && e.Rok == rok));   //Rok je filtrovaný iba kvôli performance na partícii
+
+            //foreach (var zal in zalPol)
+            //{
+            //    suma += zal.DM_Cena;
+            //    if (cislo != "") cislo += ", ";
+            //    cislo += zal.VS;
+            //}
+
+            decimal suma = zalPol.Sum(x => x.DM_Cena);
+            string cislo = zalPol.OrderBy(o => o.VS).Select(x => x.VS).Distinct().Join(", ");
+
+            if (typ == (int)TypBiznisEntityEnum.DFA)
+            {
+                Db.ExecuteNonQuery("UPDATE crm.D_DokladDFA set DM_SumaZal = @suma, CisloFAK = @cislo WHERE D_DokladDFA_Id = @id", new { suma, cislo, id });
+            }
+            else if (typ == (int)TypBiznisEntityEnum.OFA)
+            {
+                Db.ExecuteNonQuery("UPDATE crm.D_DokladOFA set DM_SumaZal = @suma, CisloFAK = @cislo WHERE D_DokladOFA_Id = @id", new { suma, cislo, id });
+            }
+
+            // na FE sa potom refreshne master grid
+        }
+
+        #endregion
     }
 }

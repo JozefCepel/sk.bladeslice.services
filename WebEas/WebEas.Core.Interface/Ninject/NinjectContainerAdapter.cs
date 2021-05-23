@@ -67,8 +67,8 @@ namespace WebEas.Core.Ninject
                         HostFilter = host => "Der3dsTR6_56ff@{0}".Fmt(host)
 #endif
                     }.Start()).InSingletonScope();
-                    kernel.Bind<ICacheClient>().ToMethod(c => c.Kernel.Get<IRedisClientsManager>().GetCacheClient()).InSingletonScope();
-                    kernel.Bind<IRedisClient>().ToMethod(c => c.Kernel.Get<IRedisClientsManager>().GetClient()).InSingletonScope();
+                    //kernel.Bind<ICacheClient>().ToMethod(c => c.Kernel.Get<IRedisClientsManager>().GetCacheClient()).InSingletonScope();
+                    //kernel.Bind<IRedisClient>().ToMethod(c => c.Kernel.Get<IRedisClientsManager>().GetClient()).InSingletonScope();
                 }
                 else
                 {
@@ -80,9 +80,12 @@ namespace WebEas.Core.Ninject
                     //kernel.Bind<IRedisClient>().ToMethod(c => c.Kernel.Get<IRedisClientsManager>().GetClient()).InSingletonScope();
 
                     kernel.Bind<IRedisClientsManager>().ToMethod(c => new RedisManagerPool(RedisUri)).InSingletonScope();
-                    kernel.Bind<ICacheClient>().ToMethod(c => c.Kernel.Get<IRedisClientsManager>().GetCacheClient()).InSingletonScope();
-                    kernel.Bind<IRedisClient>().ToMethod(c => c.Kernel.Get<IRedisClientsManager>().GetClient()).InSingletonScope();
+                    //kernel.Bind<ICacheClient>().ToMethod(c => c.Kernel.Get<IRedisClientsManager>().GetCacheClient()).InSingletonScope();
+                    //kernel.Bind<IRedisClient>().ToMethod(c => c.Kernel.Get<IRedisClientsManager>().GetClient()).InSingletonScope();
                 }
+
+                kernel.Bind<IServerEvents>().ToMethod(c => new RedisServerEvents(c.Kernel.Get<IRedisClientsManager>())).InSingletonScope();
+                kernel.Get<IServerEvents>().Start();
             }
             else
             {

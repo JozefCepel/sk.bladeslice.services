@@ -50,11 +50,11 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         [PfeColumn(Text = "Zmenil", Hidden = true, Editable = false, ReadOnly = true, LoadWhenVisible = true)]
         public string ZmenilMeno { get; set; }
 
-        public void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, object masterNodeParameter, string masterNodeKey)
+        public void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, HierarchyNode masterNode)
         {
             if (model.Fields != null)
             {
-                model.Fields.First(p => p.Name == nameof(StrediskoNazov)).Text = ((IRepositoryBase)repository).GetNastavenieS("reg", "OrjNazovJC");
+                model.Fields.First(p => p.Name == nameof(StrediskoNazov)).Text = repository.GetNastavenieS("reg", "OrjNazovJC");
             }
         }
     }

@@ -9,8 +9,7 @@ namespace WebEas.AppStatus
     /// 
     /// </summary>
     [DataContract]
-    [Route("/v1/app-status", "GET")]
-    [Route("/v1/app-status/{Scope}", "GET")]
+    [Route("/app-status", "GET")]
     [Api("Stav aplikácie")]
     public class HealthCheckDto
     {

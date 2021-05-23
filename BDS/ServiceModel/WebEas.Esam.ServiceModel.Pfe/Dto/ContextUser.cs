@@ -53,6 +53,9 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
         public long FilterRok { get; set; }
 
         [DataMember]
-        public List<string> Roles { get; set; }
+        public string AccountingPeriod { get; set; }
+
+        [DataMember]
+        public List<string> Roles { get; set; }        
     }
 }

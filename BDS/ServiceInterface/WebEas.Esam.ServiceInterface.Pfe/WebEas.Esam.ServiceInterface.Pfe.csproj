@@ -77,6 +77,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IPfeRepository.cs" />
+    <Compile Include="MaintenanceService.cs" />
     <Compile Include="PfeRepository.cs" />
     <Compile Include="PfeService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -121,7 +122,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="ServiceStack">
-      <Version>5.10.2</Version>
+      <Version>5.11.0</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

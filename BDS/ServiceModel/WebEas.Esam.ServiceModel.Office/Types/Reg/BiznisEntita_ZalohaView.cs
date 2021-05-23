@@ -34,7 +34,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         }
 
         [DataMember]
-        [PfeColumn(Text = "S", Editable = false, ReadOnly = true, Tooltip = "Spracované")]
+        [PfeColumn(Text = "S", Editable = false, ReadOnly = true, Tooltip = "Spracovaná faktúra")]
         public bool? S_FA { get; set; }
         
         [DataMember]
@@ -48,7 +48,8 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         [DataMember]
         [PfeColumn(Text = "Typ", RequiredFields = new[] { nameof(C_TypBiznisEntity_Id_FA)})]
         [PfeCombo(typeof(TypView), IdColumn = nameof(C_Typ_Id), ComboIdColumn = nameof(TypView.C_Typ_Id), ComboDisplayColumn = nameof(TypView.Nazov),
-                  AdditionalWhereSql = "(C_Typ_Id = 12) OR (@C_TypBiznisEntity_Id_FA = 2 AND C_Typ_Id IN (105, 115)) OR (@C_TypBiznisEntity_Id_FA = 3 AND C_Typ_Id IN (106, 116))", CustomSortSqlExp = "Nazov")]
+            AdditionalWhereSql = "(C_Typ_Id = 12) OR (@C_TypBiznisEntity_Id_FA = 2 AND C_Typ_Id IN (105, 115)) OR (@C_TypBiznisEntity_Id_FA = 3 AND C_Typ_Id IN (106, 116))",
+            CustomSortSqlExp = "Nazov")]
         public string TypNazov { get; set; }
 
         // je aj dole v tabulke (pretazeny stlpec)
@@ -62,12 +63,20 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         public new string VS { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Záloha", Xtype = PfeXType.Link)] //Kvoli URL - LoadWhenVisible = False
+        [PfeColumn(Text = "Faktúra", Xtype = PfeXType.Link, ReadOnly = true)] //Kvoli URL - LoadWhenVisible = False
+        public string BiznisEntitaPopis_FA { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "_URL_FA", Editable = false, ReadOnly = true)] //FE má custom úpravu, žze hľadá k PfeXType.Link - field URL_FA
+        public string URL_FA { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "Záloha", Xtype = PfeXType.Link, ReadOnly = true)] //Kvoli URL - LoadWhenVisible = False
         public string BiznisEntitaPopis_ZF { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_URL", Editable = false, ReadOnly = true)] //Natvrdo v kóde hľadá k PfeXType.Link - field URL
-        public string URL { get; set; }
+        [PfeColumn(Text = "_URL_ZF", Editable = false, ReadOnly = true)] //FE má custom úpravu, žze hľadá k PfeXType.Link - field URL_FA
+        public string URL_ZF { get; set; }
 
         //audit stlpce
         [DataMember]
@@ -103,7 +112,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
             return res;
         }
 
-        public void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, object masterNodeParameter, string masterNodeKey)
+        public void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, HierarchyNode masterNode)
         {
             if (model.Fields != null)
             {
@@ -124,6 +133,14 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
 
                 #endregion
 
+                #region Akcie
+
+                if (masterNode.Kod == "dzf" || masterNode.Kod == "ozf" || masterNode.Kod == "zal")
+                {
+                    node.Actions.RemoveAll(x => x.ActionType != NodeActionType.ReadList);
+                }
+
+                #endregion
             }
         }
 

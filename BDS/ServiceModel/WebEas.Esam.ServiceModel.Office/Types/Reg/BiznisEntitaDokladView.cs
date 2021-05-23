@@ -10,6 +10,7 @@ using WebEas.Esam.ServiceModel.Office.Types.Osa;
 using WebEas.Esam.ServiceModel.Office.Types.Uct;
 using WebEas.ServiceModel;
 using WebEas.ServiceModel.Office.Egov.Reg.Types;
+using WebEas.ServiceModel.Reg.Types;
 
 namespace WebEas.Esam.ServiceModel.Office.Types.Reg
 {
@@ -37,15 +38,16 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         public string Kniha { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Doklad", Hidden = true, Editable = false, ReadOnly = true, Xtype = PfeXType.Link)] //LoadWhenVisible = false - musí byť zobrazené kvôli radeniu v gride
+        [PfeColumn(Text = "Doklad", ReadOnly = true, Xtype = PfeXType.Link)] //LoadWhenVisible = false - musí byť zobrazené kvôli radeniu v gride
         public string BiznisEntitaPopis { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_URL", Editable = false, ReadOnly = true)] //Natvrdo v kóde hľadá k PfeXType.Link - field URL
+        [PfeColumn(Text = "_URL", ReadOnly = true)] //Natvrdo v kóde hľadá k PfeXType.Link - field URL
         public string URL { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Stav", Editable = false, DefaultValue = "Nový")]
+        [PfeColumn(Text = "Stav", Editable = false)]
+        [PfeCombo(typeof(StavEntityView), IdColumn = nameof(C_StavEntity_Id), AdditionalWhereSql = "bude nastavené neskôr v ComboCustomize")]
         public string StavNazov { get; set; }
 
         [DataMember]
@@ -83,12 +85,21 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
 
         [DataMember] //Ponechávam combo ale nie kvôli BAN
         [PfeColumn(Text = "Bank. účet", RequiredFields = new[] { nameof(DatumDokladu) })] //ISNULL(@DatumDokladu, GetDate()) - kvôli ribbon filtru
-        [PfeCombo(typeof(BankaUcetView), IdColumn = nameof(C_BankaUcet_Id), ComboDisplayColumn = nameof(BankaUcetView.Nazov), AdditionalWhereSql = "ISNULL(@DatumDokladu, GetDate()) BETWEEN PlatnostOd AND ISNULL(PlatnostDo, '2100-01-01')")]
+        [PfeCombo(typeof(BankaUcetView),
+            IdColumn = nameof(C_BankaUcet_Id),
+            ComboDisplayColumn = nameof(BankaUcetView.Nazov),
+            AdditionalWhereSql = "ISNULL(@DatumDokladu, GetDate()) BETWEEN PlatnostOd AND ISNULL(PlatnostDo, '2100-01-01')",
+            AdditionalFields = new[] { nameof(BankaUcetView.DatumZostatok), nameof(BankaUcetView.DM_Zostatok) },
+            Tpl = "{value};t:n,a:r{DM_Zostatok};t:d{DatumZostatok}")]
         public string BankaUcetNazov { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Pokladnica", ReadOnly = true, Editable = false)]
         public string PokladnicaNazov { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "_PokladnicaKod", Hidden = true, ReadOnly = true, Editable = false)]
+        public string PokladnicaKod { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Projekt", RequiredFields = new[] { nameof(DatumDokladu) })]
@@ -158,6 +169,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         [DataMember]
         [PfeColumn(Text = "Fakturačná adresa", RequiredFields = new[] { nameof(D_Osoba_Id) })]
         [PfeCombo(typeof(AdresaComboView), IdColumn = nameof(D_ADR_Adresa_Id), ComboDisplayColumn = nameof(AdresaComboView.AdresaCombo),
+            AdditionalWhereSql = "D_Osoba_Id = @D_Osoba_Id",
             CustomSortSqlExp = nameof(AdresaComboView.C_ADR_Typ_Id) + " ASC, " + nameof(AdresaComboView.AdresaCombo) + " ASC")]
         public string Adresa { get; set; }
 
@@ -166,7 +178,11 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         [PfeCombo(typeof(PredkontaciaCombo), IdColumn = nameof(C_Predkontacia_Id), ComboDisplayColumn = nameof(PredkontaciaCombo.Nazov))]
         public string Predkontacia { get; set; }
 
-        public void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, object masterNodeParameter, string masterNodeKey)
+        [DataMember]
+        [PfeColumn(Text = "DMS súbor", Editable = false)]
+        public string SuborNazov { get; set; }
+
+        public void CustomizeModel(PfeDataModel model, IWebEasRepositoryBase repository, HierarchyNode node, string filter, HierarchyNode masterNode)
         {
             const int Dni14 = 14;
             var vztah = FakturaciaVztahEnum.NEURCENE;
@@ -330,14 +346,50 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
             else if (typBiznisEntity == TypBiznisEntityEnum.PDK)
             {
                 //Stredisko - Zobrazené a nepovinné - DEFAULT
-                model.Fields.First(p => p.Name == nameof(StrediskoNazov)).Text = ((IRepositoryBase)repository).GetNastavenieS("reg", "OrjNazovJC");
+                model.Fields.First(p => p.Name == nameof(StrediskoNazov)).Text = repository.GetNastavenieS("reg", "OrjNazovJC");
             }
             else
             {
                 model.Fields.First(p => p.Name == nameof(C_Stredisko_Id)).Mandatory = true;
                 model.Fields.First(p => p.Name == nameof(StrediskoNazov)).Mandatory = true; //asi zbytocne, berie sa z ID
-                model.Fields.First(p => p.Name == nameof(StrediskoNazov)).Text = ((IRepositoryBase)repository).GetNastavenieS("reg", "OrjNazovJC");
+                model.Fields.First(p => p.Name == nameof(StrediskoNazov)).Text = repository.GetNastavenieS("reg", "OrjNazovJC");
             }
+            #endregion
+
+            #region Nastavenie - Adresa
+            //OUT: DZM, DOB, DDP, OFA, DOL, OZF, OCP
+            // IN: DFA, DZF, DCP, OZM, OOB, ODP
+            if (typBiznisEntity == TypBiznisEntityEnum.BAN || typBiznisEntity == TypBiznisEntityEnum.IND)
+            {
+                model.Fields.First(p => p.Name == nameof(Adresa)).Text = "_Adresa";
+            }
+            else if (typBiznisEntity == TypBiznisEntityEnum.PDK)
+            {
+                model.Fields.First(p => p.Name == nameof(Adresa)).Text = "Adresa";
+            }
+            else if (typBiznisEntity == TypBiznisEntityEnum.DOL || typBiznisEntity == TypBiznisEntityEnum.ODP)
+            {
+                model.Fields.First(p => p.Name == nameof(Adresa)).Text = "Adresa dodania";
+            }
+            else if (typBiznisEntity == TypBiznisEntityEnum.OFA || typBiznisEntity == TypBiznisEntityEnum.OZF || typBiznisEntity == TypBiznisEntityEnum.OCP ||
+                     typBiznisEntity == TypBiznisEntityEnum.DZM || typBiznisEntity == TypBiznisEntityEnum.DOB || typBiznisEntity == TypBiznisEntityEnum.DDP)
+            {
+                model.Fields.First(p => p.Name == nameof(Adresa)).Text = "Korešp. adresa";
+            }
+            else
+            {
+                //IN doklady - viď hore
+                //Default nastavená v modeli je "Fakturačná adresa"
+            }
+            #endregion
+
+            #region DMS Subor
+
+            if (typBiznisEntity != TypBiznisEntityEnum.BAN && typBiznisEntity != TypBiznisEntityEnum.PPP)
+            {
+                model.Fields.First(p => p.Name == nameof(SuborNazov)).Text = "_DMS súbor";
+            }
+
             #endregion
 
             switch (typBiznisEntity)
@@ -361,19 +413,6 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                     model.Fields.First(p => p.Name == nameof(CisloInterne)).Text = "Číslo dokladu";
                     model.Fields.First(p => p.Name == nameof(CisloExterne)).Text = "_CisloExterne";
 
-                    model.Fields.First(p => p.Name == nameof(DM_CV)).Text = "_DM_CV";
-                    model.Fields.First(p => p.Name == nameof(DM_Zak0)).Text = "_DM_Zak0";
-                    model.Fields.First(p => p.Name == nameof(DM_Zak1)).Text = "_DM_Zak1";
-                    model.Fields.First(p => p.Name == nameof(DM_Zak2)).Text = "_DM_Zak2";
-                    model.Fields.First(p => p.Name == nameof(DM_DPH1)).Text = "_DM_DPH1";
-                    model.Fields.First(p => p.Name == nameof(DM_DPH2)).Text = "_DM_DPH2";
-
-                    model.Fields.First(p => p.Name == nameof(CM_CV)).Text = "_CM_CV";
-                    model.Fields.First(p => p.Name == nameof(CM_Zak0)).Text = "_CM_Zak0";
-                    model.Fields.First(p => p.Name == nameof(CM_Zak1)).Text = "_CM_Zak1";
-                    model.Fields.First(p => p.Name == nameof(CM_Zak2)).Text = "_CM_Zak2";
-                    model.Fields.First(p => p.Name == nameof(CM_DPH1)).Text = "_CM_DPH1";
-                    model.Fields.First(p => p.Name == nameof(CM_DPH2)).Text = "_CM_DPH2";
                     #endregion
 
                     #region Default hodnoty
@@ -385,12 +424,12 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                     break;
                 case TypBiznisEntityEnum.DFA:
                     #region Skryvanie
-                    model.Fields.First(p => p.Name == nameof(DatumDokladu)).Text = "_DatumDokladu";
+                    //model.Fields.First(p => p.Name == nameof(DatumDokladu)).Text = "_DatumDokladu";
+                    model.Fields.First(p => p.Name == nameof(DatumDokladu)).Tooltip = "Referenčný dátum dokladu, zaúčtovania";
                     #endregion
 
                     #region Zmena textu
                     model.Fields.First(p => p.Name == nameof(CisloExterne)).Text = "Číslo faktúry";
-                    model.Fields.First(p => p.Name == nameof(Adresa)).Text = "Korešp. adresa";
                     #endregion
 
                     #region Povinnosti
@@ -415,7 +454,8 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                     break;
                 case TypBiznisEntityEnum.OFA:
                     #region Skryvanie
-                    model.Fields.First(p => p.Name == nameof(DatumDokladu)).Text = "_DatumDokladu";
+                    //model.Fields.First(p => p.Name == nameof(DatumDokladu)).Text = "_DatumDokladu";
+                    model.Fields.First(p => p.Name == nameof(DatumDokladu)).Tooltip = "Referenčný dátum dokladu, zaúčtovania";
                     model.Fields.First(p => p.Name == nameof(DatumPrijatia)).Text = "_DatumPrijatia";
 
                     model.Fields.First(p => p.Name == nameof(CisloExterne)).Text = "_CisloExterne";
@@ -452,7 +492,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                     #region Zmena textu
                     model.Fields.First(p => p.Name == nameof(CisloExterne)).Text = "Číslo PD";
                     model.Fields.First(p => p.Name == nameof(Popis)).Text = "Účel";
-                    model.Fields.First(p => p.Name == nameof(OsobaKontaktKomu)).Text = "Príjemca meno";
+                    //model.Fields.First(p => p.Name == nameof(OsobaKontaktKomu)).Text = ; //Mení sa validátorom, v GRIDE je default: "Kontaktná osoba"
                     #endregion
 
                     #region Default hodnoty
@@ -485,20 +525,6 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                     model.Fields.First(p => p.Name == nameof(DatumSplatnosti)).Text = "_DatumSplatnosti";
                     model.Fields.First(p => p.Name == nameof(DatumDodania)).Text = "_DatumDodania";
 
-                    model.Fields.First(p => p.Name == nameof(DM_CV)).Text = "_DM_CV";
-                    model.Fields.First(p => p.Name == nameof(DM_Zak0)).Text = "_DM_Zak0";
-                    model.Fields.First(p => p.Name == nameof(DM_Zak1)).Text = "_DM_Zak1";
-                    model.Fields.First(p => p.Name == nameof(DM_Zak2)).Text = "_DM_Zak2";
-                    model.Fields.First(p => p.Name == nameof(DM_DPH1)).Text = "_DM_DPH1";
-                    model.Fields.First(p => p.Name == nameof(DM_DPH2)).Text = "_DM_DPH2";
-
-                    model.Fields.First(p => p.Name == nameof(CM_CV)).Text = "_CM_CV";
-                    model.Fields.First(p => p.Name == nameof(CM_Zak0)).Text = "_CM_Zak0";
-                    model.Fields.First(p => p.Name == nameof(CM_Zak1)).Text = "_CM_Zak1";
-                    model.Fields.First(p => p.Name == nameof(CM_Zak2)).Text = "_CM_Zak2";
-                    model.Fields.First(p => p.Name == nameof(CM_DPH1)).Text = "_CM_DPH1";
-                    model.Fields.First(p => p.Name == nameof(CM_DPH2)).Text = "_CM_DPH2";
-
                     #endregion
 
                     #region Zmena textu
@@ -523,7 +549,6 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
 
                     #region Zmena textu
                     model.Fields.First(p => p.Name == nameof(DatumDodania)).Text = "Požadovaný dátum dodania";
-                    model.Fields.First(p => p.Name == nameof(Adresa)).Text = "Korešp. adresa";
                     model.Fields.First(p => p.Name == nameof(CisloExterne)).Text = "Číslo dopytu";
                     #endregion
 
@@ -554,7 +579,6 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
 
                     #region Zmena textu
                     model.Fields.First(p => p.Name == nameof(DatumDodania)).Text = "Požadovaný dátum dodania";
-                    model.Fields.First(p => p.Name == nameof(Adresa)).Text = "Korešp. adresa";
                     #endregion
 
                     #region Default hodnoty
@@ -582,7 +606,6 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                     #region Zmena textu
                     model.Fields.First(p => p.Name == nameof(DatumVystavenia)).Text = "Dátum vypracovania";
                     model.Fields.First(p => p.Name == nameof(DatumDodania)).Text = "Platná do";
-                    model.Fields.First(p => p.Name == nameof(Adresa)).Text = "Korešp. adresa";
                     #endregion
 
                     #region Default hodnoty
@@ -606,7 +629,6 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                     #region Zmena textu
                     model.Fields.First(p => p.Name == nameof(DatumDodania)).Text = "Platná do";
                     model.Fields.First(p => p.Name == nameof(CisloExterne)).Text = "Číslo cenovej ponuky";
-                    model.Fields.First(p => p.Name == nameof(Adresa)).Text = "Korešp. adresa";
                     #endregion
 
                     #region Default hodnoty
@@ -765,8 +787,6 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
 
                     #region Zmena textu
                     model.Fields.First(p => p.Name == nameof(CisloExterne)).Text = "Číslo zálohy";
-                    model.Fields.First(p => p.Name == nameof(OsobaKontaktKomu)).Text = "Prevzal";
-                    model.Fields.First(p => p.Name == nameof(Adresa)).Text = "Korešp. adresa";
                     #endregion
 
                     #region Default hodnoty
@@ -792,28 +812,16 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                     model.Fields.First(p => p.Name == nameof(LokalitaNazov)).Text = "_LokalitaNazov";
                     model.Fields.First(p => p.Name == nameof(DatumPrijatia)).Text = "_DatumPrijatia";
                     model.Fields.First(p => p.Name == nameof(DatumVystavenia)).Text = "_DatumVystavenia";
-                    model.Fields.First(p => p.Name == nameof(DatumSplatnosti)).Text = "_DatumSplatnosti";
                     model.Fields.First(p => p.Name == nameof(DatumDodania)).Text = "_DatumDodania";
-
-                    model.Fields.First(p => p.Name == nameof(DM_CV)).Text = "_DM_CV";
-                    model.Fields.First(p => p.Name == nameof(DM_Zak0)).Text = "_DM_Zak0";
-                    model.Fields.First(p => p.Name == nameof(DM_Zak1)).Text = "_DM_Zak1";
-                    model.Fields.First(p => p.Name == nameof(DM_Zak2)).Text = "_DM_Zak2";
-                    model.Fields.First(p => p.Name == nameof(DM_DPH1)).Text = "_DM_DPH1";
-                    model.Fields.First(p => p.Name == nameof(DM_DPH2)).Text = "_DM_DPH2";
-
-                    model.Fields.First(p => p.Name == nameof(CM_CV)).Text = "_CM_CV";
-                    model.Fields.First(p => p.Name == nameof(CM_Zak0)).Text = "_CM_Zak0";
-                    model.Fields.First(p => p.Name == nameof(CM_Zak1)).Text = "_CM_Zak1";
-                    model.Fields.First(p => p.Name == nameof(CM_Zak2)).Text = "_CM_Zak2";
-                    model.Fields.First(p => p.Name == nameof(CM_DPH1)).Text = "_CM_DPH1";
-                    model.Fields.First(p => p.Name == nameof(CM_DPH2)).Text = "_CM_DPH2";
-
                     model.Fields.First(p => p.Name == nameof(CisloExterne)).Text = "_CisloExterne";
                     #endregion
 
                     #region Default hodnoty
                     model.Fields.First(p => p.Name == nameof(C_TypBiznisEntity_Kniha_Id)).DefaultValue = (int)TypBiznisEntity_KnihaEnum.Platobne_prikazy;
+                    #endregion
+
+                    #region Povinnosti
+                    model.Fields.First(p => p.Name == nameof(DatumSplatnosti)).Mandatory = true;
                     #endregion
                     break;
                 case TypBiznisEntityEnum.DOL:
@@ -827,7 +835,6 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
 
                     #region Zmena textu
                     model.Fields.First(p => p.Name == nameof(OsobaKontaktKomu)).Text = "Prevzal";
-                    model.Fields.First(p => p.Name == nameof(Adresa)).Text = "Adresa dodania";
                     #endregion
 
                     #region Default hodnoty
@@ -853,6 +860,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
             {
                 // zobrazoval to ako "Korespondecnu adresu" z BE aj ked je to z DMS a je to skryte (2 polia s rovnakym nazvom)
                 model.Fields.First(p => p.Name == nameof(Adresa)).Text = "_Adresa";
+                node.Actions.RemoveAll(x => x.ActionType == NodeActionType.MenuButtonsAll && x.MenuButtons.Any(z => z.ActionType == NodeActionType.FullTextSearch));
             }
             else
             {
@@ -885,7 +893,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                     });
                 }
 
-                List<string> disblFieldZau = new List<string>() { "Predkontacia", "Popis", "OsobaKontaktKomu", "PodpisalMeno", "PodpisalFunkcia" };
+                List<string> disblFieldZau = new() { "Predkontacia", "Popis", "OsobaKontaktKomu", "PodpisalMeno", "PodpisalFunkcia" };
 
                 foreach (PfeColumnAttribute col in model.Fields.Where(f => !f.Text.StartsWith("_") && f.Editable && disblFieldZau.Contains(f.Name) &&
                                                                           (!f.ReadOnly || f.Xtype == PfeXType.Combobox || f.Xtype == PfeXType.SearchFieldSS || f.Xtype == PfeXType.SearchFieldMS)))
@@ -911,25 +919,27 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
 
                 #region Disable - Kniha
 
-                var kniha = model.Fields.FirstOrDefault(p => p.Name == nameof(Kniha));
-                if (kniha != null)
+                if (typBiznisEntity != TypBiznisEntityEnum.PDK)
                 {
-                    kniha.Validator ??= new PfeValidator { Rules = new List<PfeRule>() };
-
-                    kniha.Validator.Rules.Add(new PfeRule
+                    var kniha = model.Fields.FirstOrDefault(p => p.Name == nameof(Kniha));
+                    if (kniha != null)
                     {
-                        ValidatorType = PfeValidatorType.Disable,
-                        Condition = new List<PfeFilterAttribute>
-                    {
-                        new PfeFilterAttribute
+                        kniha.Validator ??= new PfeValidator { Rules = new List<PfeRule>() };
+                        kniha.Validator.Rules.Add(new PfeRule
                         {
-                            Field = nameof(DatumVytvorenia),
-                            ComparisonOperator = "ne",
-                            Value = null,
-                            LogicOperator = "AND"
-                        }
+                            ValidatorType = PfeValidatorType.Disable,
+                            Condition = new List<PfeFilterAttribute>
+                            {
+                                new PfeFilterAttribute
+                                {
+                                    Field = nameof(DatumVytvorenia),
+                                    ComparisonOperator = "ne",
+                                    Value = null,
+                                    LogicOperator = "AND"
+                                }
+                            }
+                        });
                     }
-                    });
                 }
 
                 #endregion
@@ -1042,20 +1052,6 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
 
                 #region Akcie
 
-                var changeStateDtoTypeName = $"WebEas.Esam.ServiceModel.Office.{node.KodRoot}.Dto.ChangeStateDto, WebEas.Esam.ServiceModel.Office.{node.KodRoot}";
-                var changeStateDtoType = Type.GetType(changeStateDtoTypeName, false, true);
-                if (changeStateDtoType == null)
-                {
-                    throw new NotImplementedException(string.Concat("Typ {ChangeStateDto} sa nepodarilo nájsť. ChangeStateDto musí byt naimplementovaný v (Namespace, Assembly Name): ", changeStateDtoTypeName));
-                }
-
-                // TODO: Role budu riesene zvlast na kod polozky cez CFE
-                var zmenaStavuAction = new NodeAction(NodeActionType.ZmenaStavu, changeStateDtoType) { IdField = "D_BiznisEntita_Id" };
-                if (!node.Actions.Any(x => x.ActionType == NodeActionType.ZmenaStavu))
-                {
-                    node.Actions.Add(zmenaStavuAction);
-                }
-
                 var menuButtAdd = node.Actions.FirstOrDefault(x => x.ActionType == NodeActionType.MenuButtonsAll && x.Caption == "Pridať");
                 if (menuButtAdd != null)
                 {
@@ -1073,38 +1069,126 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
 
                 #region Synchronizacia
 
-                if (typBiznisEntity == TypBiznisEntityEnum.DFA || typBiznisEntity == TypBiznisEntityEnum.OFA || typBiznisEntity == TypBiznisEntityEnum.DZF || typBiznisEntity == TypBiznisEntityEnum.OZF || typBiznisEntity == TypBiznisEntityEnum.DOB || typBiznisEntity == TypBiznisEntityEnum.OOB || typBiznisEntity == TypBiznisEntityEnum.DZM)
+                var isoZdroj = repository.GetNastavenieI("reg", "ISOZdroj");
+                var isoZdrojNazov = repository.GetNastavenieS("reg", "ISOZdrojNazov");
+                if (isoZdroj > 0 && repository.Session.Roles.Where(w => w.Contains("REG_MIGRATOR")).Any() && model.Type != PfeModelType.Form)
                 {
-                    int isoZdroj = (int)((IRepositoryBase)repository).GetNastavenieI("reg", "ISOZdroj");
-                    var isoZdrojNazov = ((IRepositoryBase)repository).GetNastavenieS("reg", "ISOZdrojNazov");
-                    if (isoZdroj > 0 && repository.Session.Roles.Where(w => w.Contains("REG_MIGRATOR")).Any())
+                    //node.Actions.RemoveAll(x => x.ActionType == NodeActionType.MenuButtonsAll && x.Caption == "Pridať"); 21.2. - akcie chcem mať
+                    if (node.Actions.Any(x => x.ActionType == NodeActionType.MenuButtonsAll))
                     {
-                        //node.Actions.RemoveAll(x => x.ActionType == NodeActionType.MenuButtonsAll && x.Caption == "Pridať"); 21.2. - akcie chcem mať
-                        if (node.Actions.Any(x => x.ActionType == NodeActionType.MenuButtonsAll))
+                        var polozkaMenuAll = node.Actions.Where(x => x.ActionType == NodeActionType.MenuButtonsAll && x.Caption == "ISO").FirstOrDefault();
+                        if (polozkaMenuAll != null)
                         {
-                            var polozkaMenuAll = node.Actions.Where(x => x.ActionType == NodeActionType.MenuButtonsAll && x.Caption == "ISO").FirstOrDefault();
-                            if (polozkaMenuAll != null)
-                            {
-                                polozkaMenuAll.Caption = isoZdrojNazov;
-                            }
-                            //node.Actions.RemoveAll(x => x.ActionType == NodeActionType.Change);
-                            //node.Actions.RemoveAll(x => x.ActionType == NodeActionType.Update); Tuto akciu ponechám
-                            //node.Actions.RemoveAll(x => x.ActionType == NodeActionType.Delete);
+                            polozkaMenuAll.Caption = isoZdrojNazov;
                         }
+                        //node.Actions.RemoveAll(x => x.ActionType == NodeActionType.Change);
+                        //node.Actions.RemoveAll(x => x.ActionType == NodeActionType.Update); Tuto akciu ponechám
+                        //node.Actions.RemoveAll(x => x.ActionType == NodeActionType.Delete);
                     }
-                    else
-                    {
-                        node.Actions.RemoveAll(x => x.ActionType == NodeActionType.MenuButtonsAll && x.Caption == "ISO");
-                    }
+                }
+                else
+                {
+                    node.Actions.RemoveAll(x => x.ActionType == NodeActionType.MenuButtonsAll && x.Caption == "ISO");
                 }
 
                 #endregion
 
             }
 
-            #region DphRezim
+            #region DphRezim a sumačné stĺpce
 
-            int dphRezim = (int)((IRepositoryBase)repository).GetNastavenieI("reg", "RezimDph");
+            if (typBiznisEntity == TypBiznisEntityEnum.IND || typBiznisEntity == TypBiznisEntityEnum.BAN || typBiznisEntity == TypBiznisEntityEnum.PPP)
+            {
+                model.Fields.First(p => p.Name == nameof(DM_CV)).Text = "_DM_CV";
+                model.Fields.First(p => p.Name == nameof(DM_Zak0)).Text = "_DM_Zak0";
+                model.Fields.First(p => p.Name == nameof(DM_Zak1)).Text = "_DM_Zak1";
+                model.Fields.First(p => p.Name == nameof(DM_Zak2)).Text = "_DM_Zak2";
+                model.Fields.First(p => p.Name == nameof(DM_DPH1)).Text = "_DM_DPH1";
+                model.Fields.First(p => p.Name == nameof(DM_DPH2)).Text = "_DM_DPH2";
+
+                model.Fields.First(p => p.Name == nameof(CM_CV)).Text = "_CM_CV";
+                model.Fields.First(p => p.Name == nameof(CM_Zak0)).Text = "_CM_Zak0";
+                model.Fields.First(p => p.Name == nameof(CM_Zak1)).Text = "_CM_Zak1";
+                model.Fields.First(p => p.Name == nameof(CM_Zak2)).Text = "_CM_Zak2";
+                model.Fields.First(p => p.Name == nameof(CM_DPH1)).Text = "_CM_DPH1";
+                model.Fields.First(p => p.Name == nameof(CM_DPH2)).Text = "_CM_DPH2";
+
+                model.Fields.First(p => p.Name == nameof(DM_CV)).ReadOnly = true;
+                model.Fields.First(p => p.Name == nameof(DM_Zak0)).ReadOnly = true;
+                model.Fields.First(p => p.Name == nameof(DM_Zak1)).ReadOnly = true;
+                model.Fields.First(p => p.Name == nameof(DM_Zak2)).ReadOnly = true;
+                model.Fields.First(p => p.Name == nameof(DM_DPH1)).ReadOnly = true;
+                model.Fields.First(p => p.Name == nameof(DM_DPH2)).ReadOnly = true;
+
+                model.Fields.First(p => p.Name == nameof(CM_CV)).ReadOnly = true;
+                model.Fields.First(p => p.Name == nameof(CM_Zak0)).ReadOnly = true;
+                model.Fields.First(p => p.Name == nameof(CM_Zak1)).ReadOnly = true;
+                model.Fields.First(p => p.Name == nameof(CM_Zak2)).ReadOnly = true;
+                model.Fields.First(p => p.Name == nameof(CM_DPH1)).ReadOnly = true;
+                model.Fields.First(p => p.Name == nameof(CM_DPH2)).ReadOnly = true;
+            }
+            else if (typBiznisEntity == TypBiznisEntityEnum.PDK)
+            {
+                //Needitovateľné a počítané v UpdateDmSumaDokl
+                model.Fields.First(p => p.Name == nameof(DM_Suma)).ReadOnly = true;
+                model.Fields.First(p => p.Name == nameof(DM_Zak0)).ReadOnly = true;
+                model.Fields.First(p => p.Name == nameof(CM_Suma)).ReadOnly = true;
+                model.Fields.First(p => p.Name == nameof(CM_Zak0)).ReadOnly = true;
+
+                model.Fields.First(p => p.Name == nameof(DM_Suma)).Editable = false;
+                model.Fields.First(p => p.Name == nameof(DM_Zak0)).Editable = false;
+                model.Fields.First(p => p.Name == nameof(CM_Suma)).Editable = false;
+                model.Fields.First(p => p.Name == nameof(CM_Zak0)).Editable = false;
+
+                //Dočane editovateľné
+                model.Fields.First(p => p.Name == nameof(DM_Zak1)).ReadOnly = false;
+                model.Fields.First(p => p.Name == nameof(DM_Zak2)).ReadOnly = false;
+                model.Fields.First(p => p.Name == nameof(CM_Zak1)).ReadOnly = false;
+                model.Fields.First(p => p.Name == nameof(CM_Zak2)).ReadOnly = false;
+
+                //editovateľné
+                model.Fields.First(p => p.Name == nameof(DM_CV)).ReadOnly = false;
+                model.Fields.First(p => p.Name == nameof(DM_DPH1)).ReadOnly = false;
+                model.Fields.First(p => p.Name == nameof(DM_DPH2)).ReadOnly = false;
+
+                model.Fields.First(p => p.Name == nameof(CM_CV)).ReadOnly = false;
+                model.Fields.First(p => p.Name == nameof(CM_DPH1)).ReadOnly = false;
+                model.Fields.First(p => p.Name == nameof(CM_DPH2)).ReadOnly = false;
+            }
+            else
+            {
+                //Needitovateľné a počítané v UpdateDmSumaDokl
+                model.Fields.First(p => p.Name == nameof(DM_Suma)).ReadOnly = true;
+                model.Fields.First(p => p.Name == nameof(DM_Zak0)).ReadOnly = true;
+                model.Fields.First(p => p.Name == nameof(DM_Zak1)).ReadOnly = true;
+                model.Fields.First(p => p.Name == nameof(DM_Zak2)).ReadOnly = true;
+
+                model.Fields.First(p => p.Name == nameof(DM_Suma)).Editable = false;
+                model.Fields.First(p => p.Name == nameof(DM_Zak0)).Editable = false;
+                model.Fields.First(p => p.Name == nameof(DM_Zak1)).Editable = false;
+                model.Fields.First(p => p.Name == nameof(DM_Zak2)).Editable = false;
+
+                model.Fields.First(p => p.Name == nameof(CM_Suma)).ReadOnly = true;
+                model.Fields.First(p => p.Name == nameof(CM_Zak0)).ReadOnly = true;
+                model.Fields.First(p => p.Name == nameof(CM_Zak1)).ReadOnly = true;
+                model.Fields.First(p => p.Name == nameof(CM_Zak2)).ReadOnly = true;
+
+                model.Fields.First(p => p.Name == nameof(CM_Suma)).Editable = false;
+                model.Fields.First(p => p.Name == nameof(CM_Zak0)).Editable = false;
+                model.Fields.First(p => p.Name == nameof(CM_Zak1)).Editable = false;
+                model.Fields.First(p => p.Name == nameof(CM_Zak2)).Editable = false;
+
+                //editovateľné
+                model.Fields.First(p => p.Name == nameof(DM_CV)).ReadOnly = false;
+                model.Fields.First(p => p.Name == nameof(DM_DPH1)).ReadOnly = false;
+                model.Fields.First(p => p.Name == nameof(DM_DPH2)).ReadOnly = false;
+
+                model.Fields.First(p => p.Name == nameof(CM_CV)).ReadOnly = false;
+                model.Fields.First(p => p.Name == nameof(CM_DPH1)).ReadOnly = false;
+                model.Fields.First(p => p.Name == nameof(CM_DPH2)).ReadOnly = false;
+            }
+
+            int dphRezim = (int)repository.GetNastavenieI("reg", "RezimDph");
 
             if (dphRezim.In(0, 1))
             {
@@ -1125,6 +1209,11 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                     model.Fields.First(p => p.Name == nameof(DM_Zak2)).Text = "_DM_Zak2";
                     model.Fields.First(p => p.Name == nameof(DM_DPH1)).Text = "_DM_DPH1";
                     model.Fields.First(p => p.Name == nameof(DM_DPH2)).Text = "_DM_DPH2";
+
+                    model.Fields.First(p => p.Name == nameof(DM_Zak1)).ReadOnly = true;
+                    model.Fields.First(p => p.Name == nameof(DM_Zak2)).ReadOnly = true;
+                    model.Fields.First(p => p.Name == nameof(DM_DPH1)).ReadOnly = true;
+                    model.Fields.First(p => p.Name == nameof(DM_DPH2)).ReadOnly = true;
                 }
             }
 

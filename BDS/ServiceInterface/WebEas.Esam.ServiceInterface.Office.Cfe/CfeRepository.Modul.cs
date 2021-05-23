@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using WebEas.Esam.ServiceModel.Office;
 using WebEas.Esam.ServiceModel.Office.Cfe.Dto;
 using WebEas.Esam.ServiceModel.Office.Cfe.Types;
 using WebEas.Esam.ServiceModel.Office.Types.Cfe;

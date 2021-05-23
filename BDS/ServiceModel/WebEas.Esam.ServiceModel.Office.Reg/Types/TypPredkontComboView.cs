@@ -26,9 +26,12 @@ namespace WebEas.Esam.ServiceModel.Office.Reg.Types
         [DataMember]
         public short? Poradie { get; set; }
 
+        [DataMember]
+        public string PolozkaText { get; set; }
+
         public void ComboCustomize(IWebEasRepositoryBase repository, string column, string kodPolozky, ref PfeComboAttribute comboAttribute)
         {
-            int dphRezim = (int)((IRepositoryBase)repository).GetNastavenieI("reg", "RezimDph");
+            int dphRezim = (int)repository.GetNastavenieI("reg", "RezimDph");
 
             if (dphRezim == 0)
             {

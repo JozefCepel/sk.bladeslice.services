@@ -14,7 +14,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Osa
         public string IdentifikatorOsoby { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Meno / Názov", ReadOnly = true, Editable = false)]
+        [PfeColumn(Text = "Osoba", ReadOnly = true, Editable = false)]
         public string FormatMenoSort { get; set; }
 
         [DataMember]

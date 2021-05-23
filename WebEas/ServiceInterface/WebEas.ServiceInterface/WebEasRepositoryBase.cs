@@ -64,6 +64,40 @@ namespace WebEas.ServiceInterface
 
         #region List
 
+        private T GetById<T>(object id, Expression<Func<T, bool>> expression, params string[] columns) where T : class
+        {
+            if (id == null && expression == null)
+            {
+                return null;
+            }
+
+            var primaryKeyName = typeof(T).GetPrimaryKeyName();
+            var cols = new List<string>(columns ?? new string[] { });
+            if (cols.Any() && !cols.Contains(primaryKeyName))
+            {
+                cols.Add(primaryKeyName);
+            }
+
+            if (expression == null)
+            {
+                if (cols.Any())
+                {
+                    return GetList(Db.From<T>().Where(string.Concat(primaryKeyName, " = {0}"), id).Select(cols.ToArray()).Limit(1)).FirstOrDefault();
+                }
+
+                return GetList<T>(new Filter(primaryKeyName, id)).FirstOrDefault();
+            }
+            else
+            {
+                if (cols.Any())
+                {
+                    return GetList(Db.From<T>().Where(expression).Select(cols.ToArray()).Limit(1)).FirstOrDefault();
+                }
+
+                return GetList(expression).FirstOrDefault();
+            }
+        }
+
         /// <summary>
         /// Gets entity by Id.
         /// </summary>
@@ -72,25 +106,18 @@ namespace WebEas.ServiceInterface
         /// <returns>The data or null if not found</returns>
         public T GetById<T>(object id, params string[] columns) where T : class
         {
-            if (id == null)
-            {
-                return null;
-            }
+            return GetById<T>(id, null, columns);
+        }
 
-            var primaryKeyName = typeof(T).GetPrimaryKeyName();
-            if (columns != null && columns.Any())
-            {
-                var cols = new List<string>(columns);
-                if (!cols.Contains(primaryKeyName))
-                {
-                    cols.Add(primaryKeyName);
-                }
-
-                return GetList(Db.From<T>().Where(string.Concat(primaryKeyName, " = {0}"), id).Select(cols.ToArray()).Limit(1)).FirstOrDefault();
-            }
-
-            var data = GetList<T>(new Filter(primaryKeyName, id));
-            return data.FirstOrDefault();
+        /// <summary>
+        /// Gets entity by Id.
+        /// </summary>
+        /// <param name="expression">where expression</param>
+        /// <param name="columns">if specified, returns only with selected columns</param>
+        /// <returns>The data or null if not found</returns>
+        public T GetById<T>(Expression<Func<T, bool>> expression, params string[] columns) where T : class
+        {
+            return GetById(null, expression, columns);
         }
 
         /// <summary>

@@ -25,7 +25,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
 
         [DataMember]
         [PfeColumn(Text = "Kód", Mandatory = true)]
-        [StringLength(2, 30)]
+        [StringLength(30)]
         public string Kod { get; set; }
 
         [DataMember]

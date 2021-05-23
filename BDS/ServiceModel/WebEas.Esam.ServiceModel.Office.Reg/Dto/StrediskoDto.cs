@@ -18,7 +18,7 @@ namespace WebEas.Esam.ServiceModel.Office.Reg.Dto
     [Route("/UpdateStredisko", "PUT")]
     [Api("Stredisko")]
     [DataContract]
-    public class UpdateStredisko : StrediskoDto, IReturn<StrediskoView>
+    public class UpdateStredisko : StrediskoDto, IReturn<StrediskoResult>
     {
         [PrimaryKey]
         [DataMember(IsRequired = true)]
@@ -29,7 +29,7 @@ namespace WebEas.Esam.ServiceModel.Office.Reg.Dto
     [Route("/DeleteStredisko", "DELETE")]
     [Api("Stredisko")]
     [DataContract]
-    public class DeleteStredisko
+    public class DeleteStredisko : IReturn<StrediskoResult>
     {
         [DataMember(IsRequired = true)]
         public int[] C_Stredisko_Id { get; set; }
@@ -41,6 +41,16 @@ namespace WebEas.Esam.ServiceModel.Office.Reg.Dto
     [DataContract]
     public class GetListStredisko : IReturn<List<StrediskoView>>
     {
+    }
+
+    [DataContract]
+    public class StrediskoResult
+    {
+        [DataMember]
+        public StrediskoView Record { get; set; }
+
+        [DataMember]
+        public string DcomError { get; set; }
     }
 
 

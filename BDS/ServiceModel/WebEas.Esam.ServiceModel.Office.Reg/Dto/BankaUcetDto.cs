@@ -17,7 +17,7 @@ namespace WebEas.Esam.ServiceModel.Office.Reg.Dto
     [Route("/UpdateBankaUcet", "PUT")]
     [Api("BankaUcet")]
     [DataContract]
-    public class UpdateBankaUcet : BankaUcetDto, IReturn<BankaUcetView>
+    public class UpdateBankaUcet : BankaUcetDto, IReturn<BankaUcetResult>
     {
         [PrimaryKey]
         [DataMember(IsRequired = true)]
@@ -28,10 +28,20 @@ namespace WebEas.Esam.ServiceModel.Office.Reg.Dto
     [Route("/DeleteBankaUcet", "DELETE")]
     [Api("BankaUcet")]
     [DataContract]
-    public class DeleteBankaUcet
+    public class DeleteBankaUcet : IReturn<BankaUcetResult>
     {
         [DataMember(IsRequired = true)]
         public int[] C_BankaUcet_Id { get; set; }
+    }
+
+    [DataContract]
+    public class BankaUcetResult
+    {
+        [DataMember]
+        public BankaUcetView Record { get; set; }
+
+        [DataMember]
+        public string DcomError { get; set; }
     }
 
     #region DTO
