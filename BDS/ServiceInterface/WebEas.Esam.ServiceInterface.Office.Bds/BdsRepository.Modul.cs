@@ -100,6 +100,10 @@ namespace WebEas.Esam.ServiceInterface.Office.Bds
                                 new HierarchyNode<STSView>("itm", "Stock moves", null, icon : HierarchyNodeIconCls.History)
                                 {
                                 }
+                            },
+                            LayoutDependencies = new List<LayoutDependency>
+                            {
+                                LayoutDependency.OneToMany("bds-skl-sts-itm", "K_SKL_0;K_TYP_0;K_TSK_0;KOD;SN;SARZA","Stock moves")
                             }
                         }
                     }

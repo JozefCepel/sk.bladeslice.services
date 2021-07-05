@@ -31,7 +31,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     public class DeleteD_VYD_0
     {
         [DataMember(IsRequired = true)]
-        public int D_VYD_0 { get; set; }
+        public int[] D_VYD_0 { get; set; }
     }
 
     #region DTO

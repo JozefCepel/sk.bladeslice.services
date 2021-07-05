@@ -51,7 +51,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Types
 
         [DataMember]
         [PfeCombo(typeof(PrijemVydajCombo), IdColumn = "PV")]
-        [PfeColumn(Text = "P/V", Tooltip = "Či ide o príjmovú alebo výdajovú položku")]
+        [PfeColumn(Text = "R/E", Tooltip = "Receipt or expense item")]
         [Ignore]
         public string PrijemVydajText
         {

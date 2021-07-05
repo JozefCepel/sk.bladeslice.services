@@ -216,7 +216,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Reg
                                     new NodeAction(NodeActionType.MenuButtonsAll)
                                     {
                                         ActionIcon = NodeActionIcons.Plus,
-                                        Caption = "Pridať",
+                                        Caption = "Add",
                                         MenuButtons = new List<NodeAction>()
                                         {
                                             new NodeAction(NodeActionType.Create, typeof(CreateProjekt)),
@@ -452,10 +452,10 @@ namespace WebEas.Esam.ServiceInterface.Office.Reg
                                         //SelectionMode = PfeSelection.Multi,
                                         Actions = new List<NodeAction>
                                         {
-                                            new NodeAction(NodeActionType.Change, null, "Upraviť (SysAdmin)"),
-                                            new NodeAction(NodeActionType.Delete, typeof(DeleteTypBiznisEntity_ParovanieDef), "Zmazať (SysAdmin)"),
+                                            new NodeAction(NodeActionType.Change, null, "Edit (SysAdmin)"),
+                                            new NodeAction(NodeActionType.Delete, typeof(DeleteTypBiznisEntity_ParovanieDef), "Delete (SysAdmin)"),
                                             new NodeAction(NodeActionType.Update, typeof(UpdateTypBiznisEntity_ParovanieDef))
-                                        }.AddMenuButtonsAll(NodeActionType.Create, typeof(CreateTypBiznisEntity_ParovanieDef), "Pridať", "Nový záznam (SysAdmin)")
+                                        }.AddMenuButtonsAll(NodeActionType.Create, typeof(CreateTypBiznisEntity_ParovanieDef), "Add", "New record (SysAdmin)")
                                     }
                                 },
                                 LayoutDependencies = new List<LayoutDependency>

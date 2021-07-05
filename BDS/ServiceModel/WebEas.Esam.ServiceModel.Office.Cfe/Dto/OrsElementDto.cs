@@ -32,7 +32,7 @@ namespace WebEas.Esam.ServiceModel.Office.Cfe.Dto
     //public class DeleteOrsElement
     //{
     //    [DataMember(IsRequired = true)]
-    //    public long C_OrsElement_Id { get; set; }
+    //    public long[] C_OrsElement_Id { get; set; }
     //}
 
     #region DTO

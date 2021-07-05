@@ -36,9 +36,8 @@ namespace WebEas.Esam.ServiceModel.Office
         {
             return kod switch
             {
-                1 => "P",
-                2 => "V",
-                0 => "",
+                0 => "R",
+                1 => "E",
                 _ => kod + "-",
             };
         }

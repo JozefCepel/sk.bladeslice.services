@@ -1052,7 +1052,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
 
                 #region Akcie
 
-                var menuButtAdd = node.Actions.FirstOrDefault(x => x.ActionType == NodeActionType.MenuButtonsAll && x.Caption == "Pridať");
+                var menuButtAdd = node.Actions.FirstOrDefault(x => x.ActionType == NodeActionType.MenuButtonsAll && x.Caption == "Add");
                 if (menuButtAdd != null)
                 {
                     menuButtAdd.MenuButtons.Add(new NodeAction(NodeActionType.DKL_NastavPS) { Url = "/office/reg/DKLNastavPS" });

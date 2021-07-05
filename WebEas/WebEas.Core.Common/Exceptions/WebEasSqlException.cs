@@ -96,16 +96,16 @@ namespace WebEas
                 switch (this.ErrorType)
                 {
                     case WebEasSqlKnownErrorType.UniqueKey:
-                        this.MessageUser = "Nie je možné vložiť duplicitný záznam!";
+                        this.MessageUser = "Unable to save duplicite record!"; //Nie je možné vložiť duplicitný záznam
                         break;
                     case WebEasSqlKnownErrorType.ForeignKey:
-                        this.MessageUser = "Neexistuje nadväzujúci záznam!";
+                        this.MessageUser = "Connected record does not exist!"; //Neexistuje nadväzujúci záznam
                         break;
                     case WebEasSqlKnownErrorType.Timeout:
-                        this.MessageUser = "Databáza je zaneprázdnená, skúste akciu zopakovať za 2 minúty.";
+                        this.MessageUser = "Database is busy, try to repeat the action in a while.";
                         break;
                     default:
-                        this.MessageUser = "Nastala chyba pri ukladaní záznamu";
+                        this.MessageUser = "Unable to save data";
                         break;
                 }
             }

@@ -32,7 +32,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     public class DeleteD_PRI_0
     {
         [DataMember(IsRequired = true)]
-        public int D_PRI_0 { get; set; }
+        public int[] D_PRI_0 { get; set; }
     }
 
     #region DTO

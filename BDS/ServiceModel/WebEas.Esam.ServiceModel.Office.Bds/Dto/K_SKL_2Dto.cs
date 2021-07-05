@@ -31,7 +31,7 @@ namespace WebEas.Esam.ServiceModel.Office.Bds.Dto
     public class DeleteK_SKL_2
     {
         [DataMember(IsRequired = true)]
-        public int K_SKL_2 { get; set; }
+        public int[] K_SKL_2 { get; set; }
     }
 
     #region DTO

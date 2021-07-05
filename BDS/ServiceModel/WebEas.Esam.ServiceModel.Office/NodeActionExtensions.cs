@@ -13,14 +13,14 @@ namespace WebEas.Esam.ServiceModel.Office
         /// </summary>
         /// <returns></returns>
         public static List<NodeAction> AddMenuButtonsAll(this List<NodeAction> list, NodeActionType type, Type actionType,
-            string folderCaption = "Pridať", string buttonCaption = "", PfeSelection pfeSelection = PfeSelection.Single, NodeActionIcons actionIcon = NodeActionIcons.Default)
+            string folderCaption = "Add", string buttonCaption = "", PfeSelection pfeSelection = PfeSelection.Single, NodeActionIcons actionIcon = NodeActionIcons.Default)
         {
             if (list.Where(f => f.Caption == folderCaption).Count() == 0)
             {
                 NodeAction na;
                 na = new NodeAction(NodeActionType.MenuButtonsAll)
                 {
-                    ActionIcon = (folderCaption == "Pridať") ? NodeActionIcons.Plus : actionIcon,
+                    ActionIcon = (folderCaption == "Add") ? NodeActionIcons.Plus : actionIcon,
                     Caption = folderCaption,
                     MenuButtons = new List<NodeAction>()
                     {
