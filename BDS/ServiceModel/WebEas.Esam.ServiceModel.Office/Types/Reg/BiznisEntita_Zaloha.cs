@@ -18,7 +18,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
 
         [DataMember]
         [PfeColumn(Text = "_D_BiznisEntita_Id_FA")] // faktúra
-        public long? D_BiznisEntita_Id_FA { get; set; }
+        public long D_BiznisEntita_Id_FA { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "_D_BiznisEntita_Id_ZF")] // zálohova faktúra

@@ -1,4 +1,5 @@
 ﻿using ServiceStack.DataAnnotations;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using WebEas.ServiceModel;
 
@@ -27,7 +28,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Uct
         [PfeColumn(Text = "C_TypBiznisEntity_Kniha_Id")]
         public int C_TypBiznisEntity_Kniha_Id { get; set; }
 
-        public void ComboCustomize(IWebEasRepositoryBase repository, string column, string kodPolozky, ref PfeComboAttribute comboAttribute)
+        public void ComboCustomize(IWebEasRepositoryBase repository, string column, string kodPolozky, Dictionary<string, string> requiredFields, ref PfeComboAttribute comboAttribute)
         {
             comboAttribute.CustomSortSqlExp = nameof(Poradie);
         }

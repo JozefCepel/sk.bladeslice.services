@@ -96,6 +96,10 @@ namespace WebEas.ServiceModel.Dto
         [DataMember]
         [ApiMember(Name = "Take", DataType = "int")]
         public int Take { get; set; }
+
+        [DataMember]
+        [ApiMember(Name = "CountOperations", DataType = "bool")]
+        public bool CountOperations { get; set; }
     }
 
     //[Route("/RunningLongOperationsWithRecords/{OperationName}", "GET")]
@@ -448,5 +452,12 @@ namespace WebEas.ServiceModel.Dto
     {
         public long Tenant { get; set; }
         public long User { get; set; }
+    }
+
+    public class LongOperationListResult
+    {
+        public long? Tenant { get; set; }
+        public long? User { get; set; }
+        public List<LongOperationStatus> Records { get; set; }
     }
 }

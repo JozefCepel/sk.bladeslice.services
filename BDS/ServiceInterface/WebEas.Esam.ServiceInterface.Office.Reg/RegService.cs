@@ -89,7 +89,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Reg
 
         public object Get(LongOperationListDto request)
         {
-            return Repository.LongOperationList(request.PerTenant, request.Skip, request.Take);
+            return Repository.LongOperationList(request);
         }
 
         #endregion
@@ -435,7 +435,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Reg
                 var zal = Repository.Db.Select(Repository.Db.From<BiznisEntita_ZalohaView>().Select(x => new {x.D_BiznisEntita_Id_FA, x.C_TypBiznisEntity_Id_FA, x.Rok}).Where(x => x.D_BiznisEntita_Zaloha_Id == id)).FirstOrDefault();
                 // Chceme HardDelete
                 Repository.Db.Delete<BiznisEntita_Zaloha>(e => e.D_BiznisEntita_Zaloha_Id == id);
-                Repository.UpdateZalohaInHead(zal.D_BiznisEntita_Id_FA ?? 0, zal.C_TypBiznisEntity_Id_FA ?? 0, zal.Rok);
+                Repository.UpdateZalohaInHead(zal.D_BiznisEntita_Id_FA, zal.C_TypBiznisEntity_Id_FA ?? 0, zal.Rok);
             }
         }
 

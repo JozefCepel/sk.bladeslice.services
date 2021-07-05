@@ -64,6 +64,16 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DevelopCrm|AnyCPU'">
+    <OutputPath>bin\DevelopCrm\</OutputPath>
+    <DefineConstants>TRACE;DEVELOP</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -101,7 +111,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Types\CfeDummyView.cs" />
     <Compile Include="Types\Modul.cs" />
-    <Compile Include="Types\OrganizaciaTypDetail.cs" />
     <Compile Include="Types\OrsElementTypePermissionView.cs" />
     <Compile Include="Types\OrganizaciaTyp.cs" />
     <Compile Include="Types\OrganizaciaTypView.cs" />

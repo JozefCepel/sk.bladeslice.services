@@ -102,6 +102,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Properties\PublishProfiles\DevelopCrmProfile.pubxml" />
     <None Include="Properties\PublishProfiles\DevelopProfile.pubxml" />
     <None Include="Properties\PublishProfiles\ITPProfile.pubxml" />
     <None Include="Properties\PublishProfiles\ProdProfile.pubxml" />
@@ -110,6 +111,9 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
     <None Include="Web.Develop.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.DevelopCrm.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
     <None Include="Web.ITP.config">
@@ -174,6 +178,17 @@
     <Optimize>true</Optimize>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DevelopCrm|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;DEVELOP</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />

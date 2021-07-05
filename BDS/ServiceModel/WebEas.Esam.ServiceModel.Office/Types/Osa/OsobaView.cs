@@ -1,4 +1,5 @@
 ﻿using ServiceStack.DataAnnotations;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using WebEas.ServiceModel;
@@ -162,7 +163,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Osa
         [PfeColumn(Text = "Zmenil", Hidden = true, Editable = false, ReadOnly = true, LoadWhenVisible = true)]
         public string ZmenilMeno { get; set; }
 
-        public void ComboCustomize(IWebEasRepositoryBase repository, string column, string kodPolozky, ref PfeComboAttribute comboAttribute)
+        public void ComboCustomize(IWebEasRepositoryBase repository, string column, string kodPolozky, Dictionary<string, string> requiredFields, ref PfeComboAttribute comboAttribute)
         {
             if (column.ToLower() == "idformatmeno" || column.ToLower() == "adresatpsidlo")
             {
@@ -192,6 +193,12 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Osa
                 if (kodPolozky.Contains("fin-pok-pdk") && !kodPolozky.Contains("!"))
                 {
                     comboAttribute.AdditionalWhereSql += (!string.IsNullOrEmpty(comboAttribute.AdditionalWhereSql) ? " AND " : string.Empty) + nameof(Zakaznik) + " = 1";
+                }
+
+                if (requiredFields != null && requiredFields.ContainsKey("E_TypFakturacie_Id"))
+                {
+                    var typFakturacieId = byte.Parse(requiredFields["E_TypFakturacie_Id"]);
+                    comboAttribute.AdditionalWhereSql += Helpers.GetTypFakturacieFilterSql(typFakturacieId);
                 }
             }
         }

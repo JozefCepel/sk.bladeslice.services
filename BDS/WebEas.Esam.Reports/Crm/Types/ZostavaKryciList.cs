@@ -254,7 +254,7 @@ namespace WebEas.Esam.Reports.Crm.Types
             get { return "<strong>Účel: </strong>" + Ucel; }
         }
         public string Zauctoval { get; set; }
-        public DateTime DatDokladu { get; set; }
+        public DateTime? DatDokladu { get; set; }
         // Data
         public List<ZostavaUctDennikPol> UctPolozky { get; set; }
 
@@ -262,13 +262,5 @@ namespace WebEas.Esam.Reports.Crm.Types
 
         public List<ZostavaTextaciaPol> TxtPolozky { get; set; }
 
-        [System.ComponentModel.DataObject]
-        public class ZostavaTextaciaPol
-        {
-            public string Text { get; set; }
-            public string Vykonal { get; set; }
-            public DateTime? Datum { get; set; }
-            public bool PismoTucne { get; set; }
-        }
     }
 }

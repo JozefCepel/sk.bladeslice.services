@@ -123,6 +123,9 @@ namespace WebEas.Esam.ServiceModel.Office.Dto
         [DataMember]
         public int Cislo { get; set; }
 
+        [DataMember]
+        public bool T { get; set; }
+
         /// <summary>
         /// Binds to BiznisEntita.
         /// </summary>
@@ -166,6 +169,7 @@ namespace WebEas.Esam.ServiceModel.Office.Dto
             data.D_OsobaKontakt_Id_Komu = D_OsobaKontakt_Id_Komu;
             data.OsobaKontaktKomu = OsobaKontaktKomu;
             data.D_ADR_Adresa_Id = D_ADR_Adresa_Id;
+            data.T = T;
         }
     }
     #endregion

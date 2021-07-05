@@ -25,12 +25,10 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Uct
 
         [DataMember]
         [PfeColumn(Text = "_D_DokladBANPol_Id")]
-        [PfeIgnore] //Na FE sa to neposiela. Plní sa iba predkontáciou. Pomocný field pre Súvzťažnosti.
         public long? D_DokladBANPol_Id { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "_D_UhradaParovanie_Id")]
-        [PfeIgnore] //Na FE sa to neposiela. Plní sa iba predkontáciou. Pomocný field pre Súvzťažnosti.
         public long? D_UhradaParovanie_Id { get; set; }
 
         [DataMember]

@@ -1,7 +1,5 @@
 ﻿using ServiceStack.DataAnnotations;
-using System;
 using System.Runtime.Serialization;
-using WebEas.Esam.ServiceModel.Office.Types.Reg;
 using WebEas.ServiceModel;
 
 namespace WebEas.Esam.ServiceModel.Office.Types.Crm
@@ -88,10 +86,5 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Crm
         [DataMember]
         [PfeColumn(Text = "_C_UctKluc3_Id")]
         public long? C_UctKluc3_Id { get; set; }
-
-        [DataMember]
-        [PfeColumn(Text = "_C_ZdrojTransferCis_Id")]
-        public int? C_ZdrojTransferCis_Id { get; set; }
-
     }
 }

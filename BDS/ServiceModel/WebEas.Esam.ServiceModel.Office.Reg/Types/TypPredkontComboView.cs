@@ -1,4 +1,5 @@
 ﻿using ServiceStack.DataAnnotations;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using WebEas.ServiceModel;
 
@@ -29,7 +30,7 @@ namespace WebEas.Esam.ServiceModel.Office.Reg.Types
         [DataMember]
         public string PolozkaText { get; set; }
 
-        public void ComboCustomize(IWebEasRepositoryBase repository, string column, string kodPolozky, ref PfeComboAttribute comboAttribute)
+        public void ComboCustomize(IWebEasRepositoryBase repository, string column, string kodPolozky, Dictionary<string, string> requiredFields, ref PfeComboAttribute comboAttribute)
         {
             int dphRezim = (int)repository.GetNastavenieI("reg", "RezimDph");
 

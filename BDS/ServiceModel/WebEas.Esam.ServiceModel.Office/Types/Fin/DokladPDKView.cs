@@ -15,6 +15,28 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Fin
     public class DokladPDKView : BiznisEntitaDokladView, IPfeCustomize, IBaseView
     {
         [DataMember]
+        [PfeColumn(Text = "Suma dokladu", Tooltip = "Ručne zadaná celková suma dokladu. Po zadaní nenulovej hodnoty sa na novom doklade automaticky vytvorí položka so zvoleným typom na uvedenú sumu.")]
+        public decimal? CM_SumaDoklad { get; set; }
+
+        [DataMember]
+        [Ignore]
+        [PfeColumn(Text = "_C_Typ_Id_First")]
+        public int? C_Typ_Id_First { get; set; }
+
+        [DataMember]
+        [Ignore]
+        [PfeColumn(Text = "Typ položky", Xtype = PfeXType.SearchFieldSS, RequiredFields = new[] { nameof(C_TypBiznisEntity_Id), nameof(C_TypBiznisEntity_Kniha_Id) }, Tooltip = "Po vyplnení sa v doklade vytvorí položka so zvoleným typom a sumou")]
+        [PfeCombo(typeof(TypBiznisEntityTypView),
+            ComboDisplayColumn = nameof(TypBiznisEntityTypView.TypNazov),
+            ComboIdColumn = nameof(TypBiznisEntityTypView.C_Typ_Id), IdColumn = nameof(C_Typ_Id_First),
+            AdditionalWhereSql = "C_TypBiznisEntity_Id = @C_TypBiznisEntity_Id AND " +
+                                "(C_TypBiznisEntity_Kniha_Id = @C_TypBiznisEntity_Kniha_Id OR C_TypBiznisEntity_Kniha_Id IS NULL) AND " +
+                                "C_Typ_Id NOT BETWEEN 1001 AND 1007 AND C_Typ_Id NOT BETWEEN 103 AND 110 AND " +
+                                "Polozka = 1",
+            CustomSortSqlExp = nameof(TypBiznisEntityTypView.Poradie))]
+        public string TypFirstNazov { get; set; }
+
+        [DataMember]
         [Ignore] //Stĺpec potrebný na prepojenie Master/Detail - ak majú fieldy rovnaké meno, tak môžem dať do prepojenia aj Rok
         [PfeColumn(Text = "_D_BiznisEntita_Id_Uhrada")]
         public long D_BiznisEntita_Id_Uhrada => D_BiznisEntita_Id;
@@ -70,6 +92,14 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Fin
         public string DokladVyhotovil { get; set; }
 
         [DataMember]
+        [PfeColumn(Text = "_VyhotovilTelefon", Editable = false, ReadOnly = true)]
+        public string VyhotovilTelefon { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "_VyhotovilEmail", Editable = false, ReadOnly = true)]
+        public string VyhotovilEmail { get; set; }
+
+        [DataMember]
         [PfeColumn(Text = "_D_User_Id_Podpisal")]
         public Guid? D_User_Id_Podpisal { get; set; }
 
@@ -95,6 +125,10 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Fin
         public bool DCOM { get; set; }
 
         [DataMember]
+        [PfeColumn(Text = "Poznámka", Hidden = true, Xtype = PfeXType.Textarea)]
+        public new string Poznamka { get; set; } // tu mame neobmedzenu dlzku (dvojicka: v TAB pre DB kontrolu + vo VIEW pre FE)
+
+        [DataMember]
         [PfeColumn(Text = "Vytvoril", Hidden = true, Editable = false, ReadOnly = true, LoadWhenVisible = true)]
         public string VytvorilMeno { get; set; }
 
@@ -111,11 +145,14 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Fin
             base.CustomizeModel(model, repository, node, filter, masterNode);
             if (model.Fields != null)
             {
+                Helpers.AddCMSumaDoklad_Validator(repository, model.Fields.FirstOrDefault(p => p.Name == nameof(CM_SumaDoklad)), true);
+                Helpers.AddTypFirstNazov_Validator(model.Fields.FirstOrDefault(p => p.Name == nameof(TypFirstNazov)), model.Type);
+
                 var eSAMRezim = repository.GetNastavenieI("reg", "eSAMRezim");
                 var isoZdroj = repository.GetNastavenieI("reg", "ISOZdroj");
                 var isoZdrojNazov = repository.GetNastavenieS("reg", "ISOZdrojNazov");
 
-                if (node != null && node.Parameter != null)
+                if (node != null && node.Parameter != null && node.KodRoot != "dms")
                 {
                     var pokladnica = ((IRepositoryBase)repository).GetById<Pokladnica>(node.Parameter, nameof(Pokladnica.Terminalova));
                     var actions = node.Actions.Where(x => x.MenuButtons != null).SelectMany(x => x.MenuButtons);

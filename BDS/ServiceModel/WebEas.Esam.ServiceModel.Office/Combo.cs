@@ -161,7 +161,7 @@ namespace WebEas.Esam.ServiceModel.Office
 
         public List<IComboResult> GetComboList(string[] requestFields, string value)
         {
-            short[] list = new short[] { 0, 1, 2, 3, 4 };
+            short[] list = new short[] { 0, 2, 3, 4 }; //1, 
             return list.Select(a => new ComboResult() { Id = a.ToString(), Value = GetText(a) }).ToList<IComboResult>();
         }
 
@@ -170,10 +170,10 @@ namespace WebEas.Esam.ServiceModel.Office
             return kod switch
             {
                 0 => "<žiadny>",           // none
-                1 => "FA",                 // faktúry
-                2 => "FA; ZF",             // faktúry, zálohové faktúry
-                3 => "FA; ZF; OB, ZM",     // faktúry, zálohové faktúry, objednávky, zmluvy
-                4 => "FA, ZF; OB, ZM; CP", // faktúry, zálohové faktúry, objednávky, zmluvy, cenové ponuky
+                //1 => "FA",                 // faktúry (táto hodnota už nie je na FE podporovaná, ale tu môže byť)
+                2 => "FA, ZF",             // faktúry, zálohové faktúry
+                3 => "FA, ZF; OB, ZM",     // faktúry, zálohové faktúry; objednávky, zmluvy
+                4 => "FA, ZF; OB, ZM; CP", // faktúry, zálohové faktúry; objednávky, zmluvy; cenové ponuky
                 _ => kod + " (?)"
             };
         }
@@ -446,7 +446,7 @@ namespace WebEas.Esam.ServiceModel.Office
 
         public List<IComboResult> GetComboList(string[] requestFields, string value)
         {
-            char[] list = new char[] { 'K', 'D' };
+            char[] list = new char[] { 'K', 'S' ,'D' };
             return list.Select(a => new ComboResult() { Id = a.ToString(), Value = GetText(a) }).ToList<IComboResult>();
         }
 
@@ -455,6 +455,7 @@ namespace WebEas.Esam.ServiceModel.Office
             switch (kod)
             {
                 case 'K': return "Krátkodobý";
+                case 'S': return "Strednodobý";
                 case 'D': return "Dlhodobý";
                 default: return null;
             }
@@ -564,36 +565,6 @@ namespace WebEas.Esam.ServiceModel.Office
                 case (int)FakturaciaVztahEnum.DOD: return "dodávateľ";
                 case (int)FakturaciaVztahEnum.ODB: return "odberateľ";
                 case (int)FakturaciaVztahEnum.DOD_ODB: return "dodávateľ aj odberateľ";
-                default: return null;
-            }
-        }
-    }
-
-    [DataContract]
-    public class TypPOCombo : IStaticCombo
-    {
-        [DataMember]
-        public string Nazov { get; set; }
-
-        public string KodPolozky { get; set; }
-
-        public IWebEasRepositoryBase Repository { get; set; }
-
-        public Dictionary<string, string> RequiredFields { get; set; }
-
-        public List<IComboResult> GetComboList(string[] requestFields, string value)
-        {
-            byte[] list = new byte[] { 1, 2, 3 };
-            return list.Select(a => new ComboResult() { Id = a.ToString(), Value = GetText(a) }).ToList<IComboResult>();
-        }
-
-        public static string GetText(byte? kod)
-        {
-            switch (kod)
-            {
-                case 1: return "Poisťovňa";
-                case 2: return "Poskytovateľ ZS";
-                case 3: return "Zdrav. zariadenie";
                 default: return null;
             }
         }
@@ -806,11 +777,11 @@ namespace WebEas.Esam.ServiceModel.Office
                 vyberPz = typ == (int)TypEnum.UhradaDFA || typ == (int)TypEnum.UhradaOFA || typ == (int)TypEnum.UhradaDZF || typ == (int)TypEnum.UhradaOZF;
                 if (vyberPz)
                 {
-                    comboValueWhere = $" AND VyberPZSearchField COLLATE Latin1_general_CI_AI LIKE '%{value}%'";
+                    comboValueWhere = $" AND VyberPZSearchField COLLATE Latin1_general_CI_AI LIKE '%{value.TrimStart('0')}%'";
                 }
                 else
                 {
-                    comboValueWhere = $" AND VS COLLATE Latin1_general_CI_AI LIKE '%{value}%'";
+                    comboValueWhere = $" AND VS COLLATE Latin1_general_CI_AI LIKE '%{value.TrimStart('0')}%'";
                 }
             }
 
@@ -922,7 +893,7 @@ namespace WebEas.Esam.ServiceModel.Office
             return null;
         }
 
-        public void ComboCustomize(IWebEasRepositoryBase repository, string column, string kodPolozky, ref PfeComboAttribute comboAttribute)
+        public void ComboCustomize(IWebEasRepositoryBase repository, string column, string kodPolozky, Dictionary<string, string> requiredFields, ref PfeComboAttribute comboAttribute)
         {
             if (column.ToLower() == "vs" && kodPolozky == "fin-pol-par")
             {

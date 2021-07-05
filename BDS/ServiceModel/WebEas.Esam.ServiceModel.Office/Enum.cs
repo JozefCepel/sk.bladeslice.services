@@ -73,7 +73,7 @@ namespace WebEas.Esam.ServiceModel.Office
         Bankove_vypisy = 8,
         Pokladnicne_doklady = 50,
         ExtDoklady_DaP = 61,
-        ExtDoklady_MJT = 62,
+        ExtDoklady_MAJ = 62,
         ExtDoklady_MZD = 63,
         ExtDoklady_SKL = 64,
     }
@@ -117,6 +117,8 @@ namespace WebEas.Esam.ServiceModel.Office
         UhradaOZF = 106,
         DobropisDFA = 107,
         DobropisOFA = 108,
+        DobropisDZF = 109,
+        DobropisOZF = 110,
         ZalohyPoskytnute = 115,
         ZalohyPrijate = 116,
         Text = 121,
@@ -174,27 +176,29 @@ namespace WebEas.Esam.ServiceModel.Office
     public enum DialogTypEnum
     {
         [Description("-")] //(bez dialógu)
-        BezDialogu = 0,
+        BezDialogu,
         [Description("BdsWarehouse")]
-        BdsWarehouse = 41,
+        BdsWarehouse,
         [Description("ReportVykazF112")]
-        ReportVykazF112 = 1,
+        ReportVykazF112,
         [Description("VykUct1")] //"Obdobie od" je disablované
-        VykUct1 = 2,
+        VykUct1,
         [Description("VykUct2")] //"Obdobie od" je enablované
-        VykUct2 = 3,
+        VykUct2,
         [Description("VykUct3")] //"Obdobie od-do" je skryté. Ráta sa od 1-12 za celý rok
-        VykUct3 = 4,
+        VykUct3,
         [Description("UctDennik")]
-        UctDennik = 11,
+        UctDennik,
         [Description("RzpDennik")]
-        RzpDennik = 12,
+        RzpDennik,
         [Description("HlavnaKniha")]
-        HlavnaKniha = 13,
+        HlavnaKniha,
         [Description("PrehladRzp")]
-        PrehladRzp = 14,
+        PrehladRzp,
+        [Description("PrehladFa")]
+        PrehladFa,
         [Description("Dph")]
-        Dph = 51,
+        Dph,
     }
 
     public enum VykazDruhEnum // Doplnaj si podla potreby
@@ -219,10 +223,18 @@ namespace WebEas.Esam.ServiceModel.Office
 
     public enum ParovanieDefEnum // Doplnaj si podla potreby
     {
+        DDP_DCP = 1,
+        DCP_DOB = 2,
+        DCP_DZM = 3,
         DOB_DFA = 4,
         DZM_DFA = 6,
+        OCP_OOB = 7,
+        OCP_OZM = 8,
         OOB_OFA = 9,
         OZM_OFA = 11,
+        DOL_OFA = 12,
+        DOL_OZF = 13,
+        ODP_OCP = 14,
         DOB_DZF = 15,
         DZM_DZF = 16,
         OOB_OZF = 17,

@@ -287,5 +287,8 @@ namespace WebEas.ServiceModel
         [DataMember]
         public const string Percent = "fa fa-percent";
 
+        [DataMember]
+        public const string Audible = "fab fa-audible";
+
     }
 }

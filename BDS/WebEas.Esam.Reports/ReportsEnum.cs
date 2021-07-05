@@ -12,7 +12,9 @@
 
         #region CRM
 
+        DokladReport,
         KryciListReport,
+        KnihaFakturReport,
 
         #endregion
 
@@ -41,7 +43,12 @@
     {
         DFA = 2,  // Dodavatelska Faktura
         OFA = 3,  // Odberatelska Faktura
+        DDP = 10, // Dodavatelsky Dopyt
+        OCP = 11, // Odberatelska Cenova Ponuka
+        DOB = 14, // Dodavatelska Objednavka
+        OZM = 15, // Odberatelska Zmluva
         OZF = 17, // Odberatelska Zalohova Faktura
         DZF = 18, // Dodavatelska Zalohova Faktura
+        DOL = 20  // Dodaci List
     }
 }

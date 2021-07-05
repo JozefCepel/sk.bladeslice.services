@@ -64,6 +64,16 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DevelopCrm|AnyCPU'">
+    <OutputPath>bin\DevelopCrm\</OutputPath>
+    <DefineConstants>TRACE;DEVELOP</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -80,9 +90,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dto\BiznisEntita_ZalohaDto.cs" />
+    <Compile Include="Dto\ContextChangedDto.cs" />
     <Compile Include="Dto\CopyDokladDto.cs" />
     <Compile Include="Dto\DokladINDDto.cs" />
-    <Compile Include="Dto\GeneratePolozkyPPP.cs" />
     <Compile Include="Dto\ReportGenerationDto.cs" />
     <Compile Include="Dto\ReportHlaKnihaDto.cs" />
     <Compile Include="Dto\ReportKnihaDto.cs" />
@@ -109,9 +119,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PossibleStatesResult.cs" />
     <Compile Include="Types\Cfe\Combos\UserComboView.cs" />
+    <Compile Include="Types\Cfe\OrganizaciaTypDetail.cs" />
     <Compile Include="Types\Cfe\TenantSimpleView.cs" />
     <Compile Include="Types\Crm\AdresaComboView.cs" />
     <Compile Include="Types\Crm\DokladCRMPolViewHelper.cs" />
+    <Compile Include="Types\Crm\FaHelperExt.cs" />
     <Compile Include="Types\Crm\FaHelper.cs" />
     <Compile Include="Types\Dap\VymerPolViewHelper.cs" />
     <Compile Include="Types\Fin\DokladBAN.cs" />
@@ -122,6 +134,7 @@
     <Compile Include="Types\Fin\DokladBANView.cs" />
     <Compile Include="Types\Fin\DokladPDK.cs" />
     <Compile Include="Types\Fin\DokladPDKView.cs" />
+    <Compile Include="Types\Fin\UhradaParovanieFaViewHelper.cs" />
     <Compile Include="Types\Fin\UhradaParovanieViewHelper.cs" />
     <Compile Include="Types\Cfe\ModulUserView.cs" />
     <Compile Include="Types\Cfe\OrsElement.cs" />
@@ -162,6 +175,10 @@
     <Compile Include="Types\Reg\StatView.cs" />
     <Compile Include="Types\Reg\StrediskoCis.cs" />
     <Compile Include="Types\Reg\StrediskoView.cs" />
+    <Compile Include="Types\Reg\Textacia.cs" />
+    <Compile Include="Types\Reg\TextaciaPol.cs" />
+    <Compile Include="Types\Reg\TextaciaPolView.cs" />
+    <Compile Include="Types\Reg\TextaciaView.cs" />
     <Compile Include="Types\Reg\Typ.cs" />
     <Compile Include="Types\Reg\SkupinaPredkont.cs" />
     <Compile Include="Types\Reg\TypBiznisEntity.cs" />
@@ -191,6 +208,8 @@
     <Compile Include="Types\Uct\DokladINDView.cs" />
     <Compile Include="Types\Uct\PredkontaciaCombo.cs" />
     <Compile Include="Types\Uct\PredkontaciaUctViewHelper.cs" />
+    <Compile Include="Types\Uct\Transfer.cs" />
+    <Compile Include="Types\Uct\TransferCis.cs" />
     <Compile Include="Types\Uct\UctDennikRptHelper.cs" />
     <Compile Include="Types\Uct\UctDennikViewHelper.cs" />
     <Compile Include="Types\Uct\UctDennik.cs" />

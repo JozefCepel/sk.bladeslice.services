@@ -72,6 +72,7 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
     /// RS 3 - Získanie existujúcich pohľadov pre kód položky
     /// </summary>
     [Route("/pohlady/{KodPolozky}", "GET")]
+    [Route("/pohlady/{KodPolozky}/{All}", "GET")]
     [Api("Získanie existujúcich pohľadov pre kód položky")]
     [DataContract]
     public class ListPohlady
@@ -79,15 +80,21 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
         [ApiMember(Name = "KodPolozky", Description = "Kód položky", DataType = "string", IsRequired = true)]
         [DataMember]
         public string KodPolozky { get; set; }
+
+        [ApiMember(Name = "All", Description = "Vráť všetky pohľady aj pre usera bez ModuleAdmin", DataType = "bool", IsRequired = false)]
+        [DataMember]
+        public bool? All { get; set; }
     }
 
     /// <summary>
     /// RS 3 - Získanie existujúcich pohľadov pre kód položky
     /// </summary>
+    [Route("/pohladyWithDefault", "GET")]
     [Route("/pohladyWithDefault/{KodPolozky}", "GET")]
     [Route("/pohladyWithDefault/{KodPolozky}/{Id}", "GET")]
     [Route("/pohladyWithDefault/{KodPolozky}/{Id}/{Browser}/{KodPolozkyModulu}", "GET")]
-    [Api("Získanie existujúcich pohľadov pre kód položky")]    
+    [Route("/pohladyWithDefault/{KodPolozky}/{Id}/{Browser}/{KodPolozkyModulu}/{All}", "GET")]
+    [Api("Získanie existujúcich pohľadov pre kód položky")]
     [DataContract]
     public class ListPohladyWithDefault
     {
@@ -106,6 +113,10 @@ namespace WebEas.Esam.ServiceModel.Pfe.Dto
         [ApiMember(Name = "KodPolozkyModulu", Description = "Kod polozky aktualneho modulu na FE", DataType = "string", IsRequired = false)]
         [DataMember]
         public string KodPolozkyModulu { get; set; }
+
+        [ApiMember(Name = "All", Description = "Vráť všetky pohľady aj pre usera bez ModuleAdmin", DataType = "bool", IsRequired = false)]
+        [DataMember] //Napr. "pohladyWithDefault/rzp-evi-zmena/-135?All=true"
+        public bool? All { get; set; }
 
         [DataMember(Name = "filters")]
         public string Filter { get; set; }

@@ -54,6 +54,7 @@ namespace WebEas.ServiceModel
         /// <value>The poznamka.</value>
         [DataMember]
         [PfeColumn(Text = "Note", Hidden = true, Xtype = PfeXType.Textarea)]
+        [StringLength(512)]
         public string Poznamka { get; set; }
 
         /// <summary>

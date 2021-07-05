@@ -35,12 +35,8 @@ namespace WebEas.Esam.Reports.Uct.Types
             kniha.Filtre = new List<ZostavaFilter>();
             kniha.Polozky = new List<ZostavaHlaKniha.ZostavaHlaKnihaPol>();
 
-            var f1 = new ZostavaFilter();
-            f1.Filter = "Zakaznik = Dezko";
-            kniha.Filtre.Add(f1);
-            var f2 = new ZostavaFilter();
-            f2.Filter = "Datum = 90.99.2099";
-            kniha.Filtre.Add(f2);
+            kniha.Filtre.Add(new ZostavaFilter("Zakaznik = Dezko"));
+            kniha.Filtre.Add(new ZostavaFilter("Datum = 90.99.2099"));
 
             var p = new ZostavaHlaKniha.ZostavaHlaKnihaPol();
             p.Radenie = "2";

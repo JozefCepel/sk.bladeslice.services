@@ -387,6 +387,13 @@ namespace WebEas.ServiceInterface
                 selectedFields = ServiceStack.Text.JsonSerializer.DeserializeFromString<List<string>>(resultColumnsWithData);
             }
 
+            if (selectedFields != null && (selectedFields.Contains("SumaMD_Suv") || selectedFields.Contains("SumaDal_Suv")))
+            {
+                selectedFields.AddIfNotExists("SumaMD");
+                selectedFields.AddIfNotExists("SumaDal");
+                selectedFields.AddIfNotExists("D_UctDennik_Id");
+            }
+
             #endregion
 
             #region FilterRok
@@ -1366,7 +1373,7 @@ namespace WebEas.ServiceInterface
 
                         if (modelObject is IPfeCustomizeCombo)
                         {
-                            ((IPfeCustomizeCombo)modelObject).ComboCustomize(this, col, kodPolozky, ref attribute);
+                            ((IPfeCustomizeCombo)modelObject).ComboCustomize(this, col, kodPolozky, requiredFields, ref attribute);
                         }
                     }
                 }

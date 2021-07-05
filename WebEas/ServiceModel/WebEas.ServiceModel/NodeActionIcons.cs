@@ -24,6 +24,9 @@ namespace WebEas.ServiceModel
         [EnumMember(Value = "0xf067")]
         Plus,
 
+        [EnumMember(Value = "0xf100")]
+        AngleDoubleLeft,
+
         [EnumMember(Value = "0xf101")]
         AngleDoubleRight,
 

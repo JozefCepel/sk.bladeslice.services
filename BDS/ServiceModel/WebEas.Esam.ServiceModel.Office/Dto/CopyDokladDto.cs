@@ -1,5 +1,6 @@
 ﻿using ServiceStack;
 using System.Runtime.Serialization;
+using WebEas.ServiceModel;
 
 namespace WebEas.Esam.ServiceModel.Office.Dto
 {
@@ -13,5 +14,11 @@ namespace WebEas.Esam.ServiceModel.Office.Dto
 
         [DataMember]
         public short? CielTyp { get; set; }
+
+        [DataMember]
+        public short? RefLeft { get; set; }
+
+        [DataMember]
+        public short? RefRight { get; set; }
     }
 }
