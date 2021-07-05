@@ -21,7 +21,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         public byte TypId { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "Sadzba DPH", Mandatory = true)]
+        [PfeColumn(Text = "Sadzba DPH", Mandatory = true, Format = "{value}| %")]
         public byte DPH { get; set; }
 
         [DataMember]

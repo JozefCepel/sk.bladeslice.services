@@ -117,7 +117,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
 
         public object Get(LongOperationListDto request)
         {
-            return Repository.LongOperationList(request.PerTenant, request.Skip, request.Take);
+            return Repository.LongOperationList(request);
         }
 
         #endregion
@@ -285,33 +285,12 @@ namespace WebEas.Esam.ServiceInterface.Office.Cfe
                 var allSessions = Cache.GetAll<ServiceModel.Office.EsamSession>(sessionKeys);
                 foreach (var ses in allSessions.Where(x => x.Value.UserIdGuid == userId))
                 {
+                    Repository.Cache.Remove($"sessions:{ses.Value.Id}:pfe:UserTenants");
                     if (ses.Value.AdminLevel != AdminLevel.SysAdmin)
                     {
+                        ServerEvents.NotifySession(ses.Value.Id, new ServiceModel.Office.Dto.ContextChangedDto { Changed = true });
                         Request.RemoveSession(ses.Value.Id);
                     }
-                    
-                    Repository.Cache.Remove($"sessions:{ses.Value.Id}:pfe:UserTenants");
-
-                    //TODO: ak budeme cez server events poslat na FE info o zmene tenantovi, pouzit tento kod na zmenu session
-                    /*
-                    
-                    var actualuserTenants = Repository.GetList<UserTenantView>(x => x.D_User_Id == userId).Select(x => x.D_Tenant_Id).ToList();
-                    var session = ses.Value;
-                    if (!actualuserTenants.Any())
-                    {
-                        Request.RemoveSession(session.Id);
-                        continue;
-                    }
-
-                    if (actualuserTenants.Any() && !actualuserTenants.Contains(session.TenantIdGuid.Value))
-                    {
-                        session.TenantId = actualuserTenants.First().ToString();
-                    }
-
-                    EsamAppHostBase.CustomCredentialsAuthProvider.SetUserTenantSession(ref session, this);
-                    Request.SaveSession(session);
-
-                    Repository.Cache.Remove($"sessions:{session.Id}:pfe:UserTenants");*/
                 }
             }
         }

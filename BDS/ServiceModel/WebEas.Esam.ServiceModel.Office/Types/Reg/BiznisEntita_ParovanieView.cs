@@ -152,14 +152,14 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                         ParovanieSearchFieldDef(TypBiznisEntityEnum.DZF, "crm-dod-dzf", nameof(C_TypBiznisEntity_Id_1), nameof(BiznisEntitaPopis_1)),
                         ParovanieSearchFieldDef(TypBiznisEntityEnum.DOB, "crm-dod-dob", nameof(C_TypBiznisEntity_Id_1), nameof(BiznisEntitaPopis_1)),
                         ParovanieSearchFieldDef(TypBiznisEntityEnum.DZM, "crm-dod-dzm", nameof(C_TypBiznisEntity_Id_1), nameof(BiznisEntitaPopis_1)),
-                        // ParovanieSearchFieldDef(TypBiznisEntityEnum.DCP, "crm-dod-dcp", nameof(C_TypBiznisEntity_Id_1), nameof(BiznisEntitaPopis_1)),
-                        // ParovanieSearchFieldDef(TypBiznisEntityEnum.DDP, "crm-dod-ddp", nameof(C_TypBiznisEntity_Id_1), nameof(BiznisEntitaPopis_1)),
+                        ParovanieSearchFieldDef(TypBiznisEntityEnum.DCP, "crm-dod-dcp", nameof(C_TypBiznisEntity_Id_1), nameof(BiznisEntitaPopis_1)),
+                        ParovanieSearchFieldDef(TypBiznisEntityEnum.DDP, "crm-dod-ddp", nameof(C_TypBiznisEntity_Id_1), nameof(BiznisEntitaPopis_1)),
                         ParovanieSearchFieldDef(TypBiznisEntityEnum.OFA, "crm-odb-ofa", nameof(C_TypBiznisEntity_Id_1), nameof(BiznisEntitaPopis_1)),
                         ParovanieSearchFieldDef(TypBiznisEntityEnum.OZF, "crm-odb-ozf", nameof(C_TypBiznisEntity_Id_1), nameof(BiznisEntitaPopis_1)),
                         ParovanieSearchFieldDef(TypBiznisEntityEnum.OOB, "crm-odb-oob", nameof(C_TypBiznisEntity_Id_1), nameof(BiznisEntitaPopis_1)),
                         ParovanieSearchFieldDef(TypBiznisEntityEnum.OZM, "crm-odb-ozm", nameof(C_TypBiznisEntity_Id_1), nameof(BiznisEntitaPopis_1)),
-                        // ParovanieSearchFieldDef(TypBiznisEntityEnum.OCP, "crm-odb-ocp", nameof(C_TypBiznisEntity_Id_1), nameof(BiznisEntitaPopis_1)),
-                        // ParovanieSearchFieldDef(TypBiznisEntityEnum.ODP, "crm-odb-odp", nameof(C_TypBiznisEntity_Id_1), nameof(BiznisEntitaPopis_1)),
+                        ParovanieSearchFieldDef(TypBiznisEntityEnum.OCP, "crm-odb-ocp", nameof(C_TypBiznisEntity_Id_1), nameof(BiznisEntitaPopis_1)),
+                        ParovanieSearchFieldDef(TypBiznisEntityEnum.ODP, "crm-odb-odp", nameof(C_TypBiznisEntity_Id_1), nameof(BiznisEntitaPopis_1)),
                     };
             }
 

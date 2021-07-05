@@ -23,9 +23,9 @@ namespace WebEas.Esam.ServiceInterface.Office.Reg
             {
                 Children = new List<HierarchyNode>
                 {
-                    new HierarchyNode("ors", "Organizačná štruktúra")
+                    new HierarchyNode("ors", "Definície")
                     {
-                        #region Organizačná štruktúra
+                        #region Definície
 
                         Children = new List<HierarchyNode>
                         {
@@ -197,7 +197,7 @@ namespace WebEas.Esam.ServiceInterface.Office.Reg
                             }
                         }
 
-                        #endregion Organizačná štruktúra
+                        #endregion Definície
                     },
                     new HierarchyNode("cis", "Číselníky")
                     {

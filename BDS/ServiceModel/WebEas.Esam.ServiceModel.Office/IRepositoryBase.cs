@@ -38,7 +38,7 @@ namespace WebEas.Esam.ServiceModel.Office
         LongOperationStatus LongOperationStatus(string processKey);
         object LongOperationResult(string processKey);
         LongOperationStatus LongOperationCancel(string processKey, bool notRemove);
-        List<LongOperationStatus> LongOperationList(bool perTenant, int skip, int take);
+        LongOperationListResult LongOperationList(LongOperationListDtoBase request);
 
         #endregion
 
@@ -57,7 +57,7 @@ namespace WebEas.Esam.ServiceModel.Office
         string FormatujUcet(string ucet, string fmt);
 
         void OdstranitFormatovanieUctuFiltra(string ucet, ref Filter filter);
-        object CopyDoklad(CopyDokladDto request);
+        PostResultResponse<BiznisEntitaDokladView> CopyDoklad(CopyDokladDto request);
         BiznisEntita_ZalohaView CreateBiznisEntita_Zaloha(BiznisEntita_ZalohaDto data);
         BiznisEntita_ZalohaView UpdateBiznisEntita_Zaloha(BiznisEntita_ZalohaDto data);
     }

@@ -1,4 +1,5 @@
 ﻿using ServiceStack.DataAnnotations;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using WebEas.ServiceModel.Office.Egov.Reg.Types;
 
@@ -66,7 +67,7 @@ namespace WebEas.ServiceModel.Reg.Types
         [PfeColumn(Text = "Povinný dokument")]
         public bool PovinnyDokument { get; set; }
 
-        public void ComboCustomize(IWebEasRepositoryBase repository, string column, string kodPolozky, ref PfeComboAttribute comboAttribute)
+        public void ComboCustomize(IWebEasRepositoryBase repository, string column, string kodPolozky, Dictionary<string, string> requiredFields, ref PfeComboAttribute comboAttribute)
         {
             if (column.ToLower() == "StavNazov".ToLower() && (kodPolozky.StartsWith("crm-dod-")) || kodPolozky.StartsWith("crm-odb-"))
             {

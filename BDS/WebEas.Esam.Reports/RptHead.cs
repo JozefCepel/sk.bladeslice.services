@@ -32,9 +32,20 @@ namespace WebEas.Esam.Reports
         {
             get { return Nazov + " (" + Sidlo + ")"; }
         }
+        public long RezimDph { get; set; }
+        public bool PlatcaDph
+        {
+            get { return RezimDph == 2 || RezimDph == 4; }  // 0 = neplatca; 1 = neplatca s evidenciou DPH na došlých dokladoch; 2 = mesačný platca; 4 = štvrťročný platca
+        }
         public List<ZostavaFilter> Filtre { get; set; }
 
         // ---------------------------------
-
+        public string Formatuj(string text, bool bold, int size = 0)
+        {
+            var s = text;
+            if (size > 0) s = "<span style =\"font - size: " + size + "pt\">" + text + "</span>";
+            if (bold) s = "<strong>" + s + "</strong>";
+            return s;
+        }
     }
 }

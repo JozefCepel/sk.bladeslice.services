@@ -34,12 +34,31 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
             IdColumn = nameof(C_TypBiznisEntity_Kniha_Id),
             ComboDisplayColumn = nameof(TypBiznisEntity_KnihaView.Kod),
             FilterByOrsPravo = true,
-            AdditionalWhereSql = "C_TypBiznisEntity_Id = @C_TypBiznisEntity_Id AND C_TypBiznisEntity_Kniha_Id NOT IN (61,62,63,64)")]
+            AdditionalWhereSql = "C_TypBiznisEntity_Id = @C_TypBiznisEntity_Id AND C_TypBiznisEntity_Kniha_Id NOT IN (61,62,63,64)",
+            Tpl = "{value};{Nazov}",
+            AdditionalFields = new[] { nameof(TypBiznisEntity_KnihaView.Nazov) }
+            )]
         public string Kniha { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "Doklad", ReadOnly = true, Xtype = PfeXType.Link)] //LoadWhenVisible = false - musí byť zobrazené kvôli radeniu v gride
         public string BiznisEntitaPopis { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "_CisloInternePovodne", ReadOnly = true, LoadWhenVisible = true)] //LoadWhenVisible - volá sa iba kvôli reportu
+        public string CisloInternePovodne { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "_Pôvodný", ReadOnly = true, LoadWhenVisible = true)] //LoadWhenVisible sa pri PDK zmení na False. Pre ostatné doklady ho nepotrebujeme
+        public bool? Povodny { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "_Súvisiaci doklad", ReadOnly = true, Xtype = PfeXType.Link)]
+        public string BiznisEntitaPopisSuvisiaci { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "_URL_BiznisEntitaPopisSuvisiaci", ReadOnly = true)] //Natvrdo v kóde hľadá k PfeXType.Link - field URL
+        public string URL_BiznisEntitaPopisSuvisiaci { get; set; }
 
         [DataMember]
         [PfeColumn(Text = "_URL", ReadOnly = true)] //Natvrdo v kóde hľadá k PfeXType.Link - field URL
@@ -282,6 +301,17 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
             }
             #endregion
 
+
+            #region Nastavenie - editovateľnosti T na základe práva
+
+            bool crmSupervisor = repository.Session.HasRole((typBiznisEntity == TypBiznisEntityEnum.PDK || typBiznisEntity == TypBiznisEntityEnum.BAN || typBiznisEntity == TypBiznisEntityEnum.PPP) ? "FIN_SUPERVISOR" : "CRM_SUPERVISOR");
+            if (!crmSupervisor)
+            {
+                model.Fields.First(p => p.Name == nameof(T)).Editable = false;
+            }
+
+            #endregion
+
             #region Nastavenie - ProjektNazov
             if (typBiznisEntity == TypBiznisEntityEnum.PPP || typBiznisEntity == TypBiznisEntityEnum.BAN)
             {
@@ -359,7 +389,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
             #region Nastavenie - Adresa
             //OUT: DZM, DOB, DDP, OFA, DOL, OZF, OCP
             // IN: DFA, DZF, DCP, OZM, OOB, ODP
-            if (typBiznisEntity == TypBiznisEntityEnum.BAN || typBiznisEntity == TypBiznisEntityEnum.IND)
+            if (typBiznisEntity == TypBiznisEntityEnum.BAN || typBiznisEntity == TypBiznisEntityEnum.PPP || typBiznisEntity == TypBiznisEntityEnum.IND)
             {
                 model.Fields.First(p => p.Name == nameof(Adresa)).Text = "_Adresa";
             }
@@ -372,7 +402,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                 model.Fields.First(p => p.Name == nameof(Adresa)).Text = "Adresa dodania";
             }
             else if (typBiznisEntity == TypBiznisEntityEnum.OFA || typBiznisEntity == TypBiznisEntityEnum.OZF || typBiznisEntity == TypBiznisEntityEnum.OCP ||
-                     typBiznisEntity == TypBiznisEntityEnum.DZM || typBiznisEntity == TypBiznisEntityEnum.DOB || typBiznisEntity == TypBiznisEntityEnum.DDP)
+                     typBiznisEntity == TypBiznisEntityEnum.OZM || typBiznisEntity == TypBiznisEntityEnum.DOB || typBiznisEntity == TypBiznisEntityEnum.DDP) //DZM
             {
                 model.Fields.First(p => p.Name == nameof(Adresa)).Text = "Korešp. adresa";
             }
@@ -492,6 +522,9 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                     #region Zmena textu
                     model.Fields.First(p => p.Name == nameof(CisloExterne)).Text = "Číslo PD";
                     model.Fields.First(p => p.Name == nameof(Popis)).Text = "Účel";
+                    model.Fields.First(p => p.Name == nameof(Povodny)).Text = "Stornovaný";
+                    model.Fields.First(p => p.Name == nameof(Povodny)).LoadWhenVisible = false;
+                    model.Fields.First(p => p.Name == nameof(BiznisEntitaPopisSuvisiaci)).Text = "Súvisiaci doklad";
                     //model.Fields.First(p => p.Name == nameof(OsobaKontaktKomu)).Text = ; //Mení sa validátorom, v GRIDE je default: "Kontaktná osoba"
                     #endregion
 
@@ -700,7 +733,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                     model.Fields.First(p => p.Name == nameof(D_Osoba_Id)).Mandatory = true; //Mandatory v combe ide na ID pole
                     #endregion
                     break;
-                case TypBiznisEntityEnum.OZM:
+                case TypBiznisEntityEnum.DZM: //OZM
                     #region Skryvanie
                     model.Fields.First(p => p.Name == nameof(DatumDokladu)).Text = "_DatumDokladu";
                     #endregion
@@ -717,7 +750,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                     model.Fields.First(p => p.Name == nameof(DatumVystavenia)).DefaultValue = DateTime.Today;
                     model.Fields.First(p => p.Name == nameof(DatumSplatnosti)).DefaultValue = DateTime.Today;
                     model.Fields.First(p => p.Name == nameof(DatumDodania)).DefaultValue = DateTime.Today;
-                    model.Fields.First(p => p.Name == nameof(C_TypBiznisEntity_Kniha_Id)).DefaultValue = (int)TypBiznisEntity_KnihaEnum.Odberatelske_zmluvy;
+                    model.Fields.First(p => p.Name == nameof(C_TypBiznisEntity_Kniha_Id)).DefaultValue = (int)TypBiznisEntity_KnihaEnum.Dodavatelske_zmluvy;
                     #endregion
 
                     #region Povinnosti
@@ -729,7 +762,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                     model.Fields.First(p => p.Name == nameof(CisloExterne)).Mandatory = true;
                     #endregion
                     break;
-                case TypBiznisEntityEnum.DZM:
+                case TypBiznisEntityEnum.OZM: //DZM
                     #region Skryvanie
                     model.Fields.First(p => p.Name == nameof(DatumDokladu)).Text = "_DatumDokladu";
                     model.Fields.First(p => p.Name == nameof(DatumPrijatia)).Text = "_DatumPrijatia";
@@ -747,7 +780,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                     model.Fields.First(p => p.Name == nameof(DatumVystavenia)).DefaultValue = DateTime.Today;
                     model.Fields.First(p => p.Name == nameof(DatumSplatnosti)).DefaultValue = DateTime.Today;
                     model.Fields.First(p => p.Name == nameof(DatumDodania)).DefaultValue = DateTime.Today;
-                    model.Fields.First(p => p.Name == nameof(C_TypBiznisEntity_Kniha_Id)).DefaultValue = (int)TypBiznisEntity_KnihaEnum.Dodavatelske_zmluvy;
+                    model.Fields.First(p => p.Name == nameof(C_TypBiznisEntity_Kniha_Id)).DefaultValue = (int)TypBiznisEntity_KnihaEnum.Odberatelske_zmluvy;
                     #endregion
 
                     #region Povinnosti
@@ -855,12 +888,21 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
             }
 
             #endregion
-
             if (node.KodPolozky.StartsWith("dms"))
             {
                 // zobrazoval to ako "Korespondecnu adresu" z BE aj ked je to z DMS a je to skryte (2 polia s rovnakym nazvom)
                 model.Fields.First(p => p.Name == nameof(Adresa)).Text = "_Adresa";
-                node.Actions.RemoveAll(x => x.ActionType == NodeActionType.MenuButtonsAll && x.MenuButtons.Any(z => z.ActionType == NodeActionType.FullTextSearch));
+
+                if (masterNode.KodRoot.Equals("dms"))
+                {
+                    //V DMS nedovoľ pridávanie príloh priamo cez DMS modul
+                    node.Actions.RemoveAll(x => x.ActionType == NodeActionType.MenuButtonsAll && x.MenuButtons.Any(z => z.ActionType == NodeActionType.Create));
+                }
+                else
+                {
+                    //V CRM, FIN, UCT nedovoľ FulTextSearch
+                    node.Actions.RemoveAll(x => x.ActionType == NodeActionType.MenuButtonsAll && x.MenuButtons.Any(z => z.ActionType == NodeActionType.FullTextSearch));
+                }
             }
             else
             {
@@ -869,7 +911,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                 #region Disable polí - na základe stavu
 
                 List<string> enblField = new List<string>() { "Predkontacia", "Popis", "Poznamka",
-                                                              "OsobaKontaktKomu", "Web", "DovodUkoncenia",
+                                                              "Web", "DovodUkoncenia", //"OsobaKontaktKomu", - odstránené 29.6.2021
                                                               "CisloOBJ", "CisloDOL", "CisloZML", "CisloFAK",
                                                               "PodpisalMeno", "PodpisalFunkcia" };
 
@@ -893,7 +935,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                     });
                 }
 
-                List<string> disblFieldZau = new() { "Predkontacia", "Popis", "OsobaKontaktKomu", "PodpisalMeno", "PodpisalFunkcia" };
+                List<string> disblFieldZau = new() { "Predkontacia", "Popis", "PodpisalMeno", "PodpisalFunkcia" }; //"OsobaKontaktKomu", - odstránené 29.6.2021
 
                 foreach (PfeColumnAttribute col in model.Fields.Where(f => !f.Text.StartsWith("_") && f.Editable && disblFieldZau.Contains(f.Name) &&
                                                                           (!f.ReadOnly || f.Xtype == PfeXType.Combobox || f.Xtype == PfeXType.SearchFieldSS || f.Xtype == PfeXType.SearchFieldMS)))
@@ -1062,7 +1104,6 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                         menuButtAdd.MenuButtons.Add(new NodeAction(NodeActionType.DKL_NastavCislo) { Url = "/office/reg/DKLNastavCislo" });
                         menuButtAdd.MenuButtons.Add(new NodeAction(NodeActionType.DKL_VyberCislo) { Url = "/office/reg/DKLVyberCislo" });
                     }
-
                 }
 
                 #endregion
@@ -1195,7 +1236,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
                 var hideColumns = typBiznisEntity switch
                 {
                     TypBiznisEntityEnum.DFA or TypBiznisEntityEnum.DZF or
-                    TypBiznisEntityEnum.ODP or TypBiznisEntityEnum.OOB or TypBiznisEntityEnum.OZM or
+                    TypBiznisEntityEnum.ODP or TypBiznisEntityEnum.OOB or TypBiznisEntityEnum.DZM or //OZM
                     TypBiznisEntityEnum.DCP or
                     TypBiznisEntityEnum.PDK => dphRezim != 1,
                     _ => true,
@@ -1222,7 +1263,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
 
         public void ApplyOrsPravoToAccesFlags()
         {
-            if (OrsPravo < (int)Pravo.Upravovat) AccessFlag &= (long)(~(NodeActionFlag.Update | NodeActionFlag.Change | NodeActionFlag.ZmenaStavu));
+            if (OrsPravo < (int)Pravo.Upravovat) AccessFlag &= (long)(~(NodeActionFlag.Update | NodeActionFlag.Change | NodeActionFlag.ZmenaStavu | NodeActionFlag.SpracovatDoklad | NodeActionFlag.PredkontovatSkontrolovat | NodeActionFlag.VyberPZ | NodeActionFlag.ZauctovatDoklad | NodeActionFlag.MigraciaPociatocnehoStavu | NodeActionFlag.ImportMesacnychPohybov | NodeActionFlag.AutomatickeSparovanieUhrad));
             if (OrsPravo < (int)Pravo.Full) AccessFlag &= (long)(~NodeActionFlag.Delete);
         }
 

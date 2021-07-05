@@ -1189,7 +1189,7 @@ namespace WebEas.ServiceModel
 
                         if (modelObject is IPfeCustomizeCombo o)
                         {
-                            o.ComboCustomize(repository, defCol.Name, node.KodPolozky, ref combo);
+                            o.ComboCustomize(repository, defCol.Name, node.KodPolozky, new Dictionary<string, string>(), ref combo);
                         }
                     }
                 }

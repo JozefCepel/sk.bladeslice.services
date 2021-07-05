@@ -10,7 +10,7 @@ namespace WebEas.Esam.ServiceModel.Office.Dto
     public class BiznisEntita_ZalohaDto : BaseDto<BiznisEntita_Zaloha>
     {
         [DataMember]
-        public long? D_BiznisEntita_Id_FA { get; set; }
+        public long D_BiznisEntita_Id_FA { get; set; }
 
         // virtualny, hodnota z neho sa rozdeluje do D_BiznisEntita_Id_ZF / D_DokladBANPol_Id / D_UhradaParovanie_Id
         [DataMember]

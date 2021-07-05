@@ -13,7 +13,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
     /// </summary>
     public partial interface IPfeRepository : IRepositoryBase
     {
-        IList<PohladList> GetPohlady(string kodPolozky, bool browser);
+        IList<PohladList> GetPohlady(string kodPolozky, bool all);
 
         object GetPohlad(GetPohlad request);
 

@@ -154,11 +154,16 @@ namespace WebEas.Esam.ServiceInterface.Office
 
         public static void ProcessLongOperationStatus(LongOperationStatus longOperationStatus, IRedisClient redisClient, IServerEvents serverEvents)
         {
-            //TODO: HASH NIEJE SORTOVANY, odstranit podla datumu
             var hashId = string.Concat("LongOperationStatus:", longOperationStatus.ProcessKey.Split('!')[0], ":", longOperationStatus.TenantId);
-            redisClient.SetEntryInHash(hashId, string.Concat(longOperationStatus.UserId, "!", longOperationStatus.ProcessKey), longOperationStatus.ToJson());
-            var keys = redisClient.GetHashKeys(hashId);
-            serverEvents.NotifyChannel(longOperationStatus.TenantId, new LongOperationStatusCount { Tenant = keys.Count, User = keys.Count(x => x.StartsWith(longOperationStatus.UserId)) });
+            var setId = string.Concat("LongOperationStatus:Keys:", longOperationStatus.ProcessKey.Split('!')[0], ":", longOperationStatus.TenantId);
+            var processKey = string.Concat(longOperationStatus.UserId, "!", longOperationStatus.ProcessKey);
+
+            redisClient.SetEntryInHash(hashId, processKey, longOperationStatus.ToJson());
+            redisClient.AddItemToSortedSet(setId, processKey, longOperationStatus.Changed);
+            redisClient.AddItemToSortedSet(string.Concat(setId, ":", longOperationStatus.UserId), processKey, longOperationStatus.Changed);
+
+            var keys = redisClient.GetAllItemsFromSortedSet(setId);
+            serverEvents.NotifyChannel(longOperationStatus.TenantId + ":" + longOperationStatus.ProcessKey.Split('!')[0], new LongOperationStatusCount { Tenant = keys.Count, User = keys.Count(x => x.StartsWith(longOperationStatus.UserId)) });
         }
     }
 }

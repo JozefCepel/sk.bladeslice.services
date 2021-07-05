@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using WebEas.Esam.ServiceModel.Office.Osa;
+using WebEas.Esam.ServiceModel.Office.Types.Cfe;
 using WebEas.Esam.ServiceModel.Office.Types.Osa;
 using WebEas.ServiceModel;
 

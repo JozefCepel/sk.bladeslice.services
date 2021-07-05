@@ -52,7 +52,7 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
             if (OrsPravo < (int)Pravo.Full) AccessFlag &= (long)(~NodeActionFlag.Delete);
         }
 
-        public void ComboCustomize(IWebEasRepositoryBase repository, string column, string kodPolozky, ref PfeComboAttribute comboAttribute)
+        public void ComboCustomize(IWebEasRepositoryBase repository, string column, string kodPolozky, Dictionary<string, string> requiredFields, ref PfeComboAttribute comboAttribute)
         {
             if (kodPolozky.Equals("fin-bnk-ban") || kodPolozky.Equals("fin-bnk-ppp"))
                 comboAttribute.FilterByOrsPravo = true;

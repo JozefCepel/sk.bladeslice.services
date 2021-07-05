@@ -28,6 +28,9 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Crm
         public int Poradie { get; set; }
 
         [DataMember]
+        public string Nazov { get; set; }
+
+        [DataMember]
         public int? C_Stredisko_Id { get; set; }
 
         [DataMember]
@@ -56,5 +59,8 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Crm
 
         [DataMember]
         public decimal? DM_SumaSDph { get; set; }
+
+        [DataMember]
+        public string CrmPol_Popis { get; set; }
     }
 }

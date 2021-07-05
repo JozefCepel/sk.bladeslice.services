@@ -1,8 +1,7 @@
 ﻿using ServiceStack;
 using ServiceStack.DataAnnotations;
-using System;
 using System.Runtime.Serialization;
-using WebEas.Esam.ServiceModel.Office.Reg.Types;
+using WebEas.Esam.ServiceModel.Office.Types.Reg;
 using WebEas.ServiceModel;
 
 namespace WebEas.Esam.ServiceModel.Office.Reg.Dto

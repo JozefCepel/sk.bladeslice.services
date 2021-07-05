@@ -21,7 +21,6 @@ using System.Text.RegularExpressions;
 using WebEas.Esam.DcomWs.IsoDap;
 using WebEas.Esam.DcomWs.IsoPla;
 using WebEas.Esam.Reports;
-using WebEas.Esam.Reports.Rzp.Types;
 using WebEas.Esam.Reports.Uct.Types;
 using WebEas.Esam.ServiceModel.Office;
 using WebEas.Esam.ServiceModel.Office.Cfe.Types;
@@ -586,7 +585,7 @@ namespace WebEas.Esam.ServiceInterface.Office
             var modul = operationStatus.ProcessKey.Split('!')[0];
             var opId = operationStatus.ProcessKey.Split('!')[1];
             redisClient.SetEntryInHash("RunningLongOperations", modul + "!" + Session.TenantId + "!" + Session.UserId + "!" + opId, operationStatus.ToJson());
-            ServerEvents.NotifySession(Session.Id, operationStatus);
+            ServerEvents.NotifySession(Session.Id, operationStatus, channel: Session.TenantId + ":" + modul);
         }
 
 
@@ -810,33 +809,45 @@ namespace WebEas.Esam.ServiceInterface.Office
         }
 
         //LIST
-        public List<LongOperationStatus> LongOperationList(bool perTenant, int skip, int take)
+        public LongOperationListResult LongOperationList(LongOperationListDtoBase request)
         {
-            //TODO: HASH NIEJE SORTOVANY, nemozem pouzit skip a take. Dopracovat
             var operationStatusHashId = string.Concat("LongOperationStatus:", ActualModul, ":", Session.TenantId);
-            var redisKeys = new List<KeyValuePair<string, string>>();
+            var operationSetId = string.Concat("LongOperationStatus:Keys:", ActualModul, ":", Session.TenantId);
+            var redisKeys = new List<string>();
             var list = new List<LongOperationStatus>();
 
             using var redisClient = RedisManager.GetClient();
 
-            var runningOperationsPattern = perTenant ? ActualModul + "!" + Session.TenantId + "!*" : ActualModul + "!" + Session.TenantId + "!" + Session.UserId + "!*";
-            var runningOperationsList = redisClient.ScanAllHashEntries("RunningLongOperations", runningOperationsPattern).Take(take);
+            var runningOperationsPattern = request.PerTenant ? ActualModul + "!" + Session.TenantId + "!*" : ActualModul + "!" + Session.TenantId + "!" + Session.UserId + "!*";
+            var runningOperationsList = redisClient.ScanAllHashEntries("RunningLongOperations", runningOperationsPattern);
 
-            if (perTenant)
+            if (request.PerTenant)
             {
-                redisKeys.AddRange(redisClient.ScanAllHashEntries(operationStatusHashId).Take(take - runningOperationsList.Count()));
+                redisKeys.AddRange(redisClient.GetRangeFromSortedSetByHighestScore(operationSetId, 0, long.MaxValue, request.Skip, request.Take - runningOperationsList.Count()));
             }
             else
             {
-                redisKeys.AddRange(redisClient.ScanAllHashEntries(operationStatusHashId, Session.UserId + "!*").Take(take - runningOperationsList.Count()));
+                redisKeys.AddRange(redisClient.GetRangeFromSortedSetByHighestScore(string.Concat(operationSetId, ":", Session.UserId), 0, long.MaxValue, request.Skip, request.Take - runningOperationsList.Count()));
             }
 
             if (redisKeys.Any())
             {
-                list.AddRange(redisKeys.Select(x => x.Value.FromJson<LongOperationStatus>()).Union(runningOperationsList.Any() ? runningOperationsList.Select(x => x.Value.FromJson<LongOperationStatus>()) : new List<LongOperationStatus>()).OrderByDescending(x => x.Changed));
+                list.AddRange(redisClient.GetValuesFromHash(operationStatusHashId, redisKeys.ToArray()).Select(x => x.FromJson<LongOperationStatus>()).Union(runningOperationsList.Any() ? runningOperationsList.Select(x => x.Value.FromJson<LongOperationStatus>()) : new List<LongOperationStatus>()).OrderByDescending(x => x.Changed));
             }
 
-            return list;
+            var response = new LongOperationListResult
+            {
+                Records = list
+            };
+
+            if (request.CountOperations)
+            {
+                var totalKeys = redisClient.GetHashKeys(operationStatusHashId);
+                response.Tenant = totalKeys.Count();
+                response.User = totalKeys.Count(x => x.StartsWith(Session.UserId));
+            }
+
+            return response;
         }
 
         protected void ExecuteLongOperation(LongOperationStartDtoBase request)
@@ -860,12 +871,12 @@ namespace WebEas.Esam.ServiceInterface.Office
             }
             catch (WebEasValidationException ex)
             {
-                LongOperationSetState(request.ProcessKey, ex);
+                LongOperationSetErrorState(request.ProcessKey, ex);
             }
             catch (Exception ex)
             {
                 var error = new WebEasException($"Error in operation {request.OperationName} with parameters {Core.Log.WebEasNLogExtensions.ToJsonString(request.OperationParameters)}. Process key {request.ProcessKey} and sessionkey {request.SessionId}", ex);
-                LongOperationSetState(request.ProcessKey, error);
+                LongOperationSetErrorState(request.ProcessKey, error);
             }
             finally
             {
@@ -878,11 +889,11 @@ namespace WebEas.Esam.ServiceInterface.Office
             throw new WebEasException($"Long operation with the name {request.OperationName} is not implemented", "Operácia nie je implementovaná!");
         }
 
-        protected void LongOperationSetState(string processKey, WebEasException ex)
+        protected void LongOperationSetErrorState(string processKey, WebEasException ex, string reportId = null)
         {
             if (string.IsNullOrEmpty(processKey))
             {
-                throw ex;
+                return;
             }
 
             //var status = GetFromCache<LongOperationStatus>(processKey) ?? new LongOperationStatus(processKey);
@@ -902,6 +913,7 @@ namespace WebEas.Esam.ServiceInterface.Office
             status.CorrId = WebEas.Context.Current.CurrentCorrelationID;
             status.State = LongOperationState.Failed;
             status.Changed = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            status.ReportId = reportId ?? status.ReportId;
             //SetToCache(processKey, status, new TimeSpan(DaysTTLLongTime, 0, 0));
             SetRunningOperationStatus(status);
             Log.Error(ex);
@@ -1327,6 +1339,7 @@ namespace WebEas.Esam.ServiceInterface.Office
 
             be.D_Osoba_Id = data.D_Osoba_Id;
             be.C_Mena_Id = (short)MenaEnum.EUR;
+            be.T = data.T;
             be.KurzECB = 1;
             be.KurzBanka = 1;
             be.C_Predkontacia_Id = data.C_Predkontacia_Id;
@@ -1509,7 +1522,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                 case TypBiznisEntityEnum.DOB:
                 case TypBiznisEntityEnum.DDP:
                 case TypBiznisEntityEnum.OCP:
-                case TypBiznisEntityEnum.DZM:
+                case TypBiznisEntityEnum.OZM: //DZM
                 case TypBiznisEntityEnum.PPP:
                 case TypBiznisEntityEnum.DOL:
                     be.CisloExterne = null;
@@ -1527,7 +1540,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                 case TypBiznisEntityEnum.ODP:
                 case TypBiznisEntityEnum.DCP:
                 case TypBiznisEntityEnum.OOB:
-                case TypBiznisEntityEnum.OZM:
+                case TypBiznisEntityEnum.DZM: //OZM
                     //be.CisloExterne - ukladám to čo príde zo služby
                     be.VS = null;
                     break;
@@ -1800,11 +1813,20 @@ namespace WebEas.Esam.ServiceInterface.Office
             // Key 1 - nevyhovujuce, 2- viacnasobne, 3 - cent vyr.
             var nevyhovujucePolozky = new List<(long D_BiznisEntita_Id, int Typ, int Poradie)>();
             chybneDoklady = new List<(long D_BiznisEntita_Id, string Chyba)>();
+            short tbe = biznisEntity.First().C_TypBiznisEntity_Id;
+
+            if (tbe != (short)TypBiznisEntityEnum.IND &&
+                tbe != (short)TypBiznisEntityEnum.DFA &&
+                tbe != (short)TypBiznisEntityEnum.OFA &&
+                tbe != (short)TypBiznisEntityEnum.BAN &&
+                tbe != (short)TypBiznisEntityEnum.PDK)
+            {
+                throw new WebEasValidationException(null, "Predkontácia do účtovníctva je dostupná iba pre doklady IND, BAN, PDK, DFA, OFA !");
+            }
 
             using (var transaction = BeginTransaction())
             {
 
-                short tbe = biznisEntity.First().C_TypBiznisEntity_Id;
                 bool uhr = (tbe == (short)TypBiznisEntityEnum.BAN ||
                             tbe == (short)TypBiznisEntityEnum.PDK ||
                             tbe == (short)TypBiznisEntityEnum.IND);
@@ -1824,12 +1846,12 @@ namespace WebEas.Esam.ServiceInterface.Office
                     return;
                 }
 
-                List<UctDennik> uctDennikList = new List<UctDennik>();
-                List<UctDennikViewHelper> uctDennikSdkFA = new List<UctDennikViewHelper>();
+                var uctDennikList = new List<UctDennik>();
+                var uctDennikSdkFA = new List<UctDennikViewHelper>();
                 List<DokladBANPolViewHelper> dokladBanPol = null;
                 List<DokladCRMPolViewHelper> dokladCrmPol = null;
                 List<UhradaParovanieViewHelper> uhradaParovanie = null;
-                List<BiznisEntita_ZalohaView> zalohyFaktury = null;
+                var zalohyFaktury = new List<BiznisEntita_ZalohaView>();
 
                 // nacitanie nastavenia "UctovatPolozkovite"
                 bool uctovatPolozkovite = GetTypBiznisEntityNastavView().Where(x => x.C_TypBiznisEntity_Id == tbe).FirstOrDefault()?.UctovatPolozkovite ?? false;
@@ -1942,6 +1964,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                         int? pokladnicaId = (tbe == (short)TypBiznisEntityEnum.PDK) ? be.C_Pokladnica_Id : null;
                         int? bankaUcetId = (tbe == (short)TypBiznisEntityEnum.BAN) ? be.C_BankaUcet_Id : null;
                         long? osobaId = (tbe != (short)TypBiznisEntityEnum.BAN && tbe != (short)TypBiznisEntityEnum.IND) ? be.D_Osoba_Id : null;
+                        short? osobaTypId = (tbe != (short)TypBiznisEntityEnum.BAN && tbe != (short)TypBiznisEntityEnum.IND) ? be.C_OsobaTyp_Id : null;
                         int kniha = be.C_TypBiznisEntity_Kniha_Id;
 
                         string VS = be.VS;
@@ -1952,7 +1975,25 @@ namespace WebEas.Esam.ServiceInterface.Office
                         decimal DM_Debet = 0;
                         DateTime? datSplat = be.DatumSplatnosti;
 
-                        var predkontacieUct = predkontacieUctAll.Where(k => k.C_TypBiznisEntity_Kniha_Id == null || k.C_TypBiznisEntity_Kniha_Id == kniha).ToList();
+                        List<PredkontaciaUctViewHelper> predkontacieUct;
+
+                        if ((tbe == (short)TypBiznisEntityEnum.BAN || tbe == (short)TypBiznisEntityEnum.IND || tbe == (short)TypBiznisEntityEnum.PDK))
+                        {
+                            predkontacieUct = predkontacieUctAll.Where(
+                                k =>
+                                (k.C_TypBiznisEntity_Kniha_Id == null || k.C_TypBiznisEntity_Kniha_Id == kniha)
+                                ).ToList();
+                        }
+                        else
+                        {
+                            predkontacieUct = predkontacieUctAll.Where(
+                                k =>
+                                (k.C_TypBiznisEntity_Kniha_Id == null || k.C_TypBiznisEntity_Kniha_Id == kniha) &&
+                                (k.D_Osoba_Id == null || k.D_Osoba_Id == osobaId) &&
+                                (k.C_OsobaTyp_Id == null || k.C_OsobaTyp_Id == osobaTypId) &&
+                                (k.C_Lokalita_Id == null || k.C_Lokalita_Id == be.C_Lokalita_Id)
+                                ).ToList();
+                        }
 
                         switch ((TypBiznisEntityEnum)be.C_TypBiznisEntity_Id)
                         {
@@ -2011,16 +2052,16 @@ namespace WebEas.Esam.ServiceInterface.Office
 
                         //Zaúčtovanie sumárnych riadkov
                         foreach (var defGrp in predkontacieUct.Where(p => p.C_Predkontacia_Id == be.C_Predkontacia_Id && !p.Polozka &&
-                              !((p.C_Stredisko_Id != null && strediskoId != p.C_Stredisko_Id) ||
-                                (p.C_Pokladnica_Id != null && pokladnicaId != p.C_Pokladnica_Id) ||
-                                (p.C_BankaUcet_Id != null && bankaUcetId != p.C_BankaUcet_Id) ||
-                                (p.C_Projekt_Id != null && projektId != p.C_Projekt_Id) ||
-                                (p.D_Osoba_Id != null && osobaId != p.D_Osoba_Id) ||
-                                (p.KS != null && KS != p.KS) ||
-                                (p.SS != null && SS != p.SS) ||
-                                (p.VS != null && VS != p.VS) ||
-                                (p.C_Lokalita_Id != null && be.C_Lokalita_Id != p.C_Lokalita_Id) ||
-                                (p.C_OsobaTyp_Id != null && be.C_OsobaTyp_Id != p.C_OsobaTyp_Id)))
+                              !((p.C_Stredisko_Id != null && p.C_Stredisko_Id != strediskoId) ||
+                                (p.C_Pokladnica_Id != null && p.C_Pokladnica_Id != pokladnicaId) ||
+                                (p.C_BankaUcet_Id != null && p.C_BankaUcet_Id != bankaUcetId) ||
+                                (p.C_Projekt_Id != null && p.C_Projekt_Id != projektId) ||
+                                (p.D_Osoba_Id != null && osobaId != p.D_Osoba_Id) ||                //Filtrujem duplicitne kvôli uhradovým dokladom. Tie nefiltrujú vopred
+                                (p.C_OsobaTyp_Id != null && be.C_OsobaTyp_Id != p.C_OsobaTyp_Id) || //Filtrujem duplicitne kvôli uhradovým dokladom. Tie nefiltrujú vopred
+                                (p.C_Lokalita_Id != null && be.C_Lokalita_Id != p.C_Lokalita_Id) || //Filtrujem duplicitne kvôli uhradovým dokladom. Tie nefiltrujú vopred
+                                (p.KS != null && p.KS != KS) ||
+                                (p.SS != null && p.SS != SS) ||
+                                (p.VS != null && p.VS != VS)))
                             .GroupBy(x => x.C_Typ_Id))
                         {
                             var tmp = new List<(long D_BiznisEntita_Id, int Typ, int Poradie)>(); //Nebudeme informovať o duplicite pri sumačných typoch
@@ -2028,15 +2069,15 @@ namespace WebEas.Esam.ServiceInterface.Office
 
                             predkonGrp = defGrp.Where(x => x.C_UctRozvrh_Id_MD != null).ToList();
                             VyberPodlaPriorityUct(ref tmp, predkonGrp, 2, 0, be.D_BiznisEntita_Id);
-                            CreateSumacneZau(ref nevyhovujucePolozky, tbe, uctDennikList, uctovatPolozkovite, ucty, be, strediskoId, projektId, osobaId, kniha, ref VS, DM_SumaKUhr, DM_Kredit, DM_Debet, datSplat, predkonGrp, zalohyFaktury);
+                            CreateSumacneZau(ref nevyhovujucePolozky, tbe, uctDennikList, uctovatPolozkovite, ucty, be, strediskoId, projektId, osobaId, kniha, ref VS, DM_SumaKUhr, DM_Kredit, DM_Debet, datSplat, predkonGrp, zalohyFaktury.Where(x => x.D_BiznisEntita_Id_FA == be.D_BiznisEntita_Id).ToList());
 
                             predkonGrp = defGrp.Where(x => x.C_UctRozvrh_Id_Dal != null).ToList();
                             VyberPodlaPriorityUct(ref tmp, predkonGrp, 2, 0, be.D_BiznisEntita_Id);
-                            CreateSumacneZau(ref nevyhovujucePolozky, tbe, uctDennikList, uctovatPolozkovite, ucty, be, strediskoId, projektId, osobaId, kniha, ref VS, DM_SumaKUhr, DM_Kredit, DM_Debet, datSplat, predkonGrp, zalohyFaktury);
+                            CreateSumacneZau(ref nevyhovujucePolozky, tbe, uctDennikList, uctovatPolozkovite, ucty, be, strediskoId, projektId, osobaId, kniha, ref VS, DM_SumaKUhr, DM_Kredit, DM_Debet, datSplat, predkonGrp, zalohyFaktury.Where(x => x.D_BiznisEntita_Id_FA == be.D_BiznisEntita_Id).ToList());
 
                             predkonGrp = defGrp.Where(x => x.C_UctRozvrh_Id_MD == null && x.C_UctRozvrh_Id_Dal == null).ToList();
                             VyberPodlaPriorityUct(ref tmp, predkonGrp, 2, 0, be.D_BiznisEntita_Id);
-                            CreateSumacneZau(ref nevyhovujucePolozky, tbe, uctDennikList, uctovatPolozkovite, ucty, be, strediskoId, projektId, osobaId, kniha, ref VS, DM_SumaKUhr, DM_Kredit, DM_Debet, datSplat, predkonGrp, zalohyFaktury);
+                            CreateSumacneZau(ref nevyhovujucePolozky, tbe, uctDennikList, uctovatPolozkovite, ucty, be, strediskoId, projektId, osobaId, kniha, ref VS, DM_SumaKUhr, DM_Kredit, DM_Debet, datSplat, predkonGrp, zalohyFaktury.Where(x => x.D_BiznisEntita_Id_FA == be.D_BiznisEntita_Id).ToList());
 
                         }
 
@@ -2084,11 +2125,12 @@ namespace WebEas.Esam.ServiceInterface.Office
                             {
                                 //Vyfiltruj riadky predkontácie, ktoré vyhovujú a všetky vygeneruj
                                 var predkontCrmPolozky = predkontacieUct.Where(
-                                    x => x.Polozka &&
-                                    x.C_Predkontacia_Id == be.C_Predkontacia_Id &&
+                                    x =>
+                                    x.Polozka &&
                                     x.C_Typ_Id == crmPol.C_Typ_Id &&
-                                    (x.C_Stredisko_Id == null || x.C_Stredisko_Id == crmPol.C_Stredisko_Id) &&
-                                    (x.C_Projekt_Id == null || x.C_Projekt_Id == crmPol.C_Projekt_Id) &&
+                                    x.C_Predkontacia_Id == be.C_Predkontacia_Id &&
+                                    (x.C_Stredisko_Id == null || x.C_Stredisko_Id == (crmPol.C_Stredisko_Id ?? strediskoId)) &&
+                                    (x.C_Projekt_Id == null || x.C_Projekt_Id == (crmPol.C_Projekt_Id ?? projektId)) &&
                                     (x.SadzbaDph_Id == -1 ||x.SadzbaDph_Id == platneDph.First(x => x.DPH == crmPol.DPH).C_DPHSadzba_Id) &&
                                     (x.KS == null || x.KS == KS) &&
                                     (x.SS == null || x.SS == SS) &&
@@ -2098,8 +2140,14 @@ namespace WebEas.Esam.ServiceInterface.Office
                                 {
                                     foreach (var def2 in predkontCrmPolozky)
                                     {
-
-                                        uctDennikList.Add(CreateUctDennikSingleRow(ucty, be, null, null, def2, tbe, kniha, crmPol.C_Stredisko_Id, crmPol.C_Projekt_Id, osobaId, VS, be.DatumDokladu, Math.Round(Math.Abs(crmPol.Mnozstvo * crmPol.DM_Cena), 2, MidpointRounding.AwayFromZero), crmPol.Poradie, Math.Abs(crmPol.Mnozstvo * crmPol.DM_Cena) != crmPol.Mnozstvo * crmPol.DM_Cena, false, false, null, false, ref nevyhovujucePolozky, null));
+                                        uctDennikList.Add(CreateUctDennikSingleRow(ucty, be, null, null, def2, tbe, kniha,
+                                            (crmPol.C_Stredisko_Id ?? strediskoId),
+                                            (crmPol.C_Projekt_Id ?? projektId),
+                                            osobaId, VS, be.DatumDokladu,
+                                            Math.Round(Math.Abs(crmPol.Mnozstvo * crmPol.DM_Cena), 2, MidpointRounding.AwayFromZero),
+                                            crmPol.Poradie,
+                                            Math.Abs(crmPol.Mnozstvo * crmPol.DM_Cena) != crmPol.Mnozstvo * crmPol.DM_Cena,
+                                            false, false, null, false, ref nevyhovujucePolozky, null));
                                     }
                                 }
 
@@ -2130,6 +2178,14 @@ namespace WebEas.Esam.ServiceInterface.Office
                             }
                         }
 
+
+                        //transfery
+                        CreateUctDennikTransfer(be, uctDennikList,
+                            dokladCrmPol?.Where(b => b.D_BiznisEntita_Id == be.D_BiznisEntita_Id),
+                            uhradaParovanie?.Where(b => b.D_BiznisEntita_Id_Uhrada == be.D_BiznisEntita_Id),
+                            dokladBanPol?.Where(b => b.D_BiznisEntita_Id == be.D_BiznisEntita_Id)
+                            );
+
                         //finalne zoradenie
                         uctDennikList = uctDennikList.OrderBy(d => d.Poradie).ToList();
                         for (int i = 0; i < uctDennikList.Count; i++)
@@ -2142,6 +2198,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                         {
                             Create(dennik);
                         }
+
                         uctDennikList.Clear();
                     }
 
@@ -2365,11 +2422,29 @@ namespace WebEas.Esam.ServiceInterface.Office
                         int? strediskoId = be.C_Stredisko_Id;
                         long? projektId = be.C_Projekt_Id;
                         long? osobaId = (tbe != (short)TypBiznisEntityEnum.BAN && tbe != (short)TypBiznisEntityEnum.IND) ? be.D_Osoba_Id : null;
+                        short? osobaTypId = (tbe != (short)TypBiznisEntityEnum.BAN && tbe != (short)TypBiznisEntityEnum.IND) ? be.C_OsobaTyp_Id : null;
                         int kniha = be.C_TypBiznisEntity_Kniha_Id;
 
                         decimal DM_SumaKUhr = 0;
 
-                        var predkontacieRzp = predkontacieRzpAll.Where(k => k.C_TypBiznisEntity_Kniha_Id == null || k.C_TypBiznisEntity_Kniha_Id == kniha).ToList();
+                        List<PredkontaciaRzpViewHelper> predkontacieRzp;
+
+                        if ((tbe == (short)TypBiznisEntityEnum.BAN || tbe == (short)TypBiznisEntityEnum.IND || tbe == (short)TypBiznisEntityEnum.PDK))
+                        {
+                            predkontacieRzp = predkontacieRzpAll.Where(
+                            k =>
+                            (k.C_TypBiznisEntity_Kniha_Id == null || k.C_TypBiznisEntity_Kniha_Id == kniha)
+                            ).ToList();
+                        }
+                        else
+                        {
+                            predkontacieRzp = predkontacieRzpAll.Where(
+                            k =>
+                            (k.C_TypBiznisEntity_Kniha_Id == null || k.C_TypBiznisEntity_Kniha_Id == kniha) &&
+                            (k.D_Osoba_Id == null || k.D_Osoba_Id == osobaId) &&
+                            (k.C_OsobaTyp_Id == null || k.C_OsobaTyp_Id == osobaTypId)
+                            ).ToList();
+                        }
 
                         switch ((TypBiznisEntityEnum)be.C_TypBiznisEntity_Id)
                         {
@@ -2394,11 +2469,14 @@ namespace WebEas.Esam.ServiceInterface.Office
                         //Zaúčtovanie sumárnych riadkov
                         var sumRiadky = new List<RzpDennik>();
                         bool odcitajPolozkyANerozpoctovaneRiadky = true; //Ak je v predkontácii rozpočítanie na percentá, tak neponižujem
-                        foreach (var defGrp in predkontacieRzp.Where(p => p.C_Predkontacia_Id == be.C_Predkontacia_Id && !p.Polozka &&
-                              !((p.C_Stredisko_Id != null && strediskoId != p.C_Stredisko_Id) ||
-                                (p.C_Projekt_Id != null && projektId != p.C_Projekt_Id) ||
-                                (p.D_Osoba_Id != null && osobaId != p.D_Osoba_Id) ||
-                                (p.C_OsobaTyp_Id != null && be.C_OsobaTyp_Id != p.C_OsobaTyp_Id)))
+                        foreach (var defGrp in predkontacieRzp.Where(
+                            p =>
+                            !p.Polozka &&
+                            p.C_Predkontacia_Id == be.C_Predkontacia_Id &&
+                            !((p.C_Stredisko_Id != null && p.C_Stredisko_Id != strediskoId) ||
+                              (p.C_Projekt_Id != null && p.C_Projekt_Id != projektId) ||
+                              (p.D_Osoba_Id != null && osobaId != p.D_Osoba_Id) ||                 //Filtrujem duplicitne kvôli uhradovým dokladom. Tie nefiltrujú vopred
+                              (p.C_OsobaTyp_Id != null && be.C_OsobaTyp_Id != p.C_OsobaTyp_Id)))   //Filtrujem duplicitne kvôli uhradovým dokladom. Tie nefiltrujú vopred
                             .GroupBy(x => x.C_Typ_Id))
                         {
                             var predkonGrp = defGrp.ToList();
@@ -2442,7 +2520,8 @@ namespace WebEas.Esam.ServiceInterface.Office
                             {
                                 //Vyfiltruj riadky predkontácie, ktoré vyhovujú a všetky vygeneruj
                                 var predkontBanPolozky = predkontacieRzp.Where(x => (x.Polozka && x.C_Typ_Id == banPol.C_Typ_Id && x.C_Predkontacia_Id == be.C_Predkontacia_Id &&
-                                                                                     (x.C_Projekt_Id == null || x.C_Projekt_Id == banPol.C_Projekt_Id)
+                                                                                     (x.C_Projekt_Id == null || x.C_Projekt_Id == banPol.C_Projekt_Id) &&
+                                                                                     (x.C_Stredisko_Id == null || x.C_Stredisko_Id == banPol.C_Stredisko_Id)
                                                                                     )
                                                                               );
                                 if (predkontBanPolozky.Count() > 0)
@@ -2465,9 +2544,12 @@ namespace WebEas.Esam.ServiceInterface.Office
                                 //Párovanie úhrad jednej položky:
                                 foreach (UhradaParovanieViewHelper uhrPar in uhradaParovanie.Where(b => b.D_DokladBANPol_Id == banPol.D_DokladBANPol_Id).OrderBy(x => x.Poradie))
                                 {
-                                    CreateRzpDennikFromParovanieUhrad(rzpDennikList, kniha, predkontacieRzp, rzpPolozky, rzpDennikPredbezne, be, strediskoId, projektId, osobaId, banPol, uhrPar, ref nevyhovujucePolozky);
+                                    bool vynimka = PovolitVynimkuZauctovaniaRzp(uhrPar);
+                                    if (!vynimka)
+                                    {
+                                        CreateRzpDennikFromParovanieUhrad(rzpDennikList, kniha, predkontacieRzp, rzpPolozky, rzpDennikPredbezne, be, strediskoId, projektId, osobaId, banPol, uhrPar, ref nevyhovujucePolozky);
+                                    }
                                 }
-
                             }
                         }
                         else if (dokladCrmPol != null)
@@ -2485,7 +2567,8 @@ namespace WebEas.Esam.ServiceInterface.Office
                                         x.Polozka &&
                                         x.C_Typ_Id == crmPol.C_Typ_Id &&
                                         x.C_Predkontacia_Id == be.C_Predkontacia_Id &&
-                                        (x.C_Projekt_Id == null || x.C_Projekt_Id == crmPol.C_Projekt_Id));
+                                        (x.C_Stredisko_Id == null || x.C_Stredisko_Id == (crmPol.C_Stredisko_Id ?? strediskoId)) &&
+                                        (x.C_Projekt_Id == null || x.C_Projekt_Id == (crmPol.C_Projekt_Id ?? projektId)));
 
                                     if (generujKorekciu && predkontCrmPolozky.Count() != 1)
                                     {
@@ -2497,7 +2580,10 @@ namespace WebEas.Esam.ServiceInterface.Office
                                         var hodnota = (TypBiznisEntityEnum)be.C_TypBiznisEntity_Id == TypBiznisEntityEnum.DFA || (TypBiznisEntityEnum)be.C_TypBiznisEntity_Id == TypBiznisEntityEnum.OFA
                                             ? Math.Round(crmPol.DM_SumaSDph.GetValueOrDefault() * (DM_SumaKUhr / be.DM_Suma), 2, MidpointRounding.AwayFromZero)
                                             : crmPol.DM_SumaSDph.GetValueOrDefault();
-                                        rzpPolCrm.Add(CreateRzpDennikSingleRow(rzpPolozky, be, strediskoId, projektId, null, null, def2, null, hodnota, crmPol.Poradie));
+                                        rzpPolCrm.Add(CreateRzpDennikSingleRow(rzpPolozky, be,
+                                            (crmPol.C_Stredisko_Id ?? strediskoId),
+                                            (crmPol.C_Projekt_Id ?? projektId),
+                                            null, null, def2, null, hodnota, crmPol.Poradie));
                                     }
                                     //TODO: skontrolovat
                                     /*else
@@ -2613,6 +2699,40 @@ namespace WebEas.Esam.ServiceInterface.Office
             }
         }
 
+
+        /// <summary>
+        /// Výnimka má vyriešiť prípad, že na uhrádzanom doklade (DFA, DZF, OFA, OZF) sa nachádzajú položky s nerozpočtovanými typmi (RzpDefinicia=-1) a teda neexistuje záznam v RZPDenníku uhrádzaného dokladu
+        /// </summary>
+        /// <param name="uhradaParovanie"> uhradaParovanie za dany doklad </param>
+        /// <returns></returns>
+        private bool PovolitVynimkuZauctovaniaRzp(UhradaParovanieViewHelper uhradaParovanie)
+        {
+            var uhradyFa = new List<TypEnum>
+                                {
+                                    TypEnum.UhradaDFA,
+                                    TypEnum.UhradaOFA,
+                                    TypEnum.UhradaDZF,
+                                    TypEnum.UhradaOZF,
+                                };
+
+            bool result = false;
+            if (uhradaParovanie.D_BiznisEntita_Id_Predpis.HasValue && uhradyFa.Contains((TypEnum)uhradaParovanie.C_Typ_Id))
+            {
+                var aktRzpDennik = GetList(Db.From<RzpDennikViewHelper>().Where(x => Sql.In(x.D_BiznisEntita_Id, uhradaParovanie.D_BiznisEntita_Id_Predpis) && x.D_Tenant_Id == Session.TenantIdGuid));
+
+                if (!aktRzpDennik.Any())
+                {
+                    var crmPol = GetList(Db.From<DokladCRMPolViewHelper>().Where(e => Sql.In(e.D_BiznisEntita_Id, uhradaParovanie.D_BiznisEntita_Id_Predpis) && e.RzpDefinicia == -1));
+                    if (crmPol.Any())
+                    {
+                        result = true;
+                    }
+                }
+            }
+
+            return result;
+        }
+
         private static void CreateUctDennikFromParovanieUhrad(List<UctDennik> uctDennikList, List<UctRozvrh> ucty,
                                                               List<PredkontaciaUctViewHelper> predkontacieUct,
                                                               List<UctDennikViewHelper> uctDennikSdkFA,
@@ -2652,10 +2772,9 @@ namespace WebEas.Esam.ServiceInterface.Office
                 predkontacieUctRow = predkontacieUct.Where(x => x.Polozka && x.C_Predkontacia_Id == be.C_Predkontacia_Id && x.C_Typ_Id == uhrPar.C_Typ_Id &&
                     (x.C_BankaUcet_Id == null || tbe != (short)TypBiznisEntityEnum.BAN || x.C_BankaUcet_Id == bankaUcetId) &&
                     (x.C_Pokladnica_Id == null || tbe != (short)TypBiznisEntityEnum.PDK || x.C_Pokladnica_Id == pokladnicaId) &&
-                    (x.C_Stredisko_Id == null || x.C_Stredisko_Id == (uhrPar?.C_Stredisko_Id ?? banPol?.C_Stredisko_Id ?? strediskoId)) &&
-                    (x.C_Projekt_Id == null || x.C_Projekt_Id == (uhrPar?.C_Projekt_Id ?? banPol?.C_Projekt_Id ?? projektId)) &&
+                    (x.C_Stredisko_Id == null || x.C_Stredisko_Id == (uhrPar.C_Stredisko_Id ?? banPol?.C_Stredisko_Id ?? strediskoId)) &&
+                    (x.C_Projekt_Id == null || x.C_Projekt_Id == (uhrPar.C_Projekt_Id ?? banPol?.C_Projekt_Id ?? projektId)) &&
                     (x.C_Lokalita_Id == null || x.C_Lokalita_Id == be.C_Lokalita_Id) && //Beriem z BE
-                    (x.C_Projekt_Id == null || x.C_Projekt_Id == (uhrPar.C_Projekt_Id ?? banPol?.C_Projekt_Id)) &&
                     (x.D_Osoba_Id == null || x.D_Osoba_Id == (uhrPar.D_Osoba_Id ?? osobaId)) &&
                     (x.C_OsobaTyp_Id == null || x.C_OsobaTyp_Id == uhrPar.C_OsobaTyp_Id) &&
                     (x.C_Druh_Id == null || x.C_Druh_Id == uhrPar.C_Druh_Id) &&
@@ -2764,6 +2883,42 @@ namespace WebEas.Esam.ServiceInterface.Office
                     continue;
                 }
 
+                if (predkontSource.Any(x => x.C_TypBiznisEntity_Kniha_Id == null) && predkontSource.Any(x => x.C_TypBiznisEntity_Kniha_Id != null))
+                {
+                    predkontSource.RemoveAll(x => x.C_TypBiznisEntity_Kniha_Id == null);
+                    continue;
+                }
+
+                if (predkontSource.Any(x => x.C_Pokladnica_Id == null) && predkontSource.Any(x => x.C_Pokladnica_Id != null))
+                {
+                    predkontSource.RemoveAll(x => x.C_Pokladnica_Id == null);
+                    continue;
+                }
+
+                if (predkontSource.Any(x => x.C_BankaUcet_Id == null) && predkontSource.Any(x => x.C_BankaUcet_Id != null))
+                {
+                    predkontSource.RemoveAll(x => x.C_BankaUcet_Id == null);
+                    continue;
+                }
+
+                if (predkontSource.Any(x => x.C_Stredisko_Id == null) && predkontSource.Any(x => x.C_Stredisko_Id != null))
+                {
+                    predkontSource.RemoveAll(x => x.C_Stredisko_Id == null);
+                    continue;
+                }
+
+                if (predkontSource.Any(x => x.C_Projekt_Id == null) && predkontSource.Any(x => x.C_Projekt_Id != null))
+                {
+                    predkontSource.RemoveAll(x => x.C_Projekt_Id == null);
+                    continue;
+                }
+
+                if (predkontSource.Any(x => x.C_Lokalita_Id == null) && predkontSource.Any(x => x.C_Lokalita_Id != null))
+                {
+                    predkontSource.RemoveAll(x => x.C_Lokalita_Id == null);
+                    continue;
+                }
+
                 if (predkontSource.Any(x => x.VS == null) && predkontSource.Any(x => x.VS != null))
                 {
                     predkontSource.RemoveAll(x => x.VS == null);
@@ -2779,12 +2934,6 @@ namespace WebEas.Esam.ServiceInterface.Office
                 if (predkontSource.Any(x => x.KS == null) && predkontSource.Any(x => x.KS != null))
                 {
                     predkontSource.RemoveAll(x => x.KS == null);
-                    continue;
-                }
-
-                if (predkontSource.Any(x => x.C_TypBiznisEntity_Kniha_Id == null) && predkontSource.Any(x => x.C_TypBiznisEntity_Kniha_Id != null))
-                {
-                    predkontSource.RemoveAll(x => x.C_TypBiznisEntity_Kniha_Id == null);
                     continue;
                 }
 
@@ -2810,7 +2959,7 @@ namespace WebEas.Esam.ServiceInterface.Office
 
             //Vyfiltruj riadky predkontácie, ktoré vyhovujú a všetky vygeneruj
             var predkontPolPar = predkontacieRzp.Where(x => x.Polozka && x.C_Predkontacia_Id == be.C_Predkontacia_Id && x.C_Typ_Id == uhrPar.C_Typ_Id &&
-                        (x.C_Stredisko_Id == null || x.C_Stredisko_Id == (uhrPar?.C_Stredisko_Id ?? banPol?.C_Stredisko_Id ?? strediskoId)) &&
+                        (x.C_Stredisko_Id == null || x.C_Stredisko_Id == (uhrPar.C_Stredisko_Id ?? banPol?.C_Stredisko_Id ?? strediskoId)) &&
                         (x.C_Projekt_Id == null || x.C_Projekt_Id == (uhrPar.C_Projekt_Id ?? banPol?.C_Projekt_Id ?? projektId)) &&
                         (x.D_Osoba_Id == null || x.D_Osoba_Id == (uhrPar.D_Osoba_Id ?? osobaId)) &&
                         (x.C_OsobaTyp_Id == null || x.C_OsobaTyp_Id == uhrPar.C_OsobaTyp_Id) &&
@@ -2936,6 +3085,18 @@ namespace WebEas.Esam.ServiceInterface.Office
                     continue;
                 }
 
+                if (predkontSource.Any(x => x.C_Stredisko_Id == null) && predkontSource.Any(x => x.C_Stredisko_Id != null))
+                {
+                    predkontSource.RemoveAll(x => x.C_Stredisko_Id == null);
+                    continue;
+                }
+
+                if (predkontSource.Any(x => x.C_Projekt_Id == null) && predkontSource.Any(x => x.C_Projekt_Id != null))
+                {
+                    predkontSource.RemoveAll(x => x.C_Projekt_Id == null);
+                    continue;
+                }
+
                 if (predkontSource.Count() > 1)
                 {
                     nevyhovujucePolozky.AddIfNotExists((D_BiznisEntita_Id, typ, poradie));
@@ -2965,66 +3126,73 @@ namespace WebEas.Esam.ServiceInterface.Office
                                                           List<UctDennikViewHelper> uctDennikSdkFA,
                                                           //List<UctDennikViewHelper> uctDennikDap,
                                                           bool pridajNevyhovujuce,
-                                                          ref List<(long D_BiznisEntita_Id, int Typ, int Poradie)> nevyhovujucePolozky, string explicitPopis)
+                                                          ref List<(long D_BiznisEntita_Id, int Typ, int Poradie)> nevyhovujucePolozky, string explicitPopis,
+                                                          bool? stranaMd = null, UctRozvrh ucet = null)
         {
             bool md = true;
             bool hladajSdkUcet = (uhrPar?.C_Typ_Id == (int)TypEnum.UhradaOFA || uhrPar?.C_Typ_Id == (int)TypEnum.UhradaDFA ||
                                   uhrPar?.C_Typ_Id == (int)TypEnum.DobropisOFA || uhrPar?.C_Typ_Id == (int)TypEnum.DobropisDFA) && !rozdiel;
             bool SdkUcetNajdeny = false;
 
-            if (predkontRow == null || (predkontRow.C_UctRozvrh_Id_MD == null && predkontRow.C_UctRozvrh_Id_Dal == null)) //navrhni stranu
+            if (!stranaMd.HasValue)
             {
-                if ((TypBiznisEntity_KnihaEnum)kniha == TypBiznisEntity_KnihaEnum.Prijmove_pokladnicne_doklady ||
-                    (TypBiznisEntity_KnihaEnum)kniha == TypBiznisEntity_KnihaEnum.Terminalove_pokladnicne_doklady)
+                if (predkontRow == null || (predkontRow.C_UctRozvrh_Id_MD == null && predkontRow.C_UctRozvrh_Id_Dal == null)) //navrhni stranu
                 {
-                    md = uhrPar.C_Typ_Id == (int)TypEnum.UhradaDFA || uhrPar.C_Typ_Id == (int)TypEnum.UhradaDZF ||
-                         uhrPar.C_Typ_Id == (int)TypEnum.DobropisDFA || uhrPar.C_Typ_Id == (int)TypEnum.ZalohyPoskytnute;
-                }
-                else if ((TypBiznisEntity_KnihaEnum)kniha == TypBiznisEntity_KnihaEnum.Vydajove_pokladnicne_doklady)
-                {
-                    md = uhrPar.C_Typ_Id != (int)TypEnum.UhradaOFA && uhrPar.C_Typ_Id != (int)TypEnum.UhradaOZF &&
-                         uhrPar.C_Typ_Id != (int)TypEnum.DobropisOFA || uhrPar.C_Typ_Id == (int)TypEnum.ZalohyPrijate;
-                }
-                else if ((TypBiznisEntityEnum)tbe == TypBiznisEntityEnum.OFA)
-                {
-                    md = predkontRow.C_Typ_Id == (int)TypEnum.SumaDokladu || predkontRow.C_Typ_Id == (int)TypEnum.ZalohaVSZalohy;
-                }
-                else if ((TypBiznisEntityEnum)tbe == TypBiznisEntityEnum.DFA)
-                {
-                    md = predkontRow.C_Typ_Id != (int)TypEnum.SumaDokladu && predkontRow.C_Typ_Id != (int)TypEnum.ZalohaVSZalohy;
-                }
-                else if ((TypBiznisEntityEnum)tbe == TypBiznisEntityEnum.IND ||
-                         (TypBiznisEntityEnum)tbe == TypBiznisEntityEnum.BAN)
-                {
-                    md = otoceneZnamienko;
+                    if ((TypBiznisEntity_KnihaEnum)kniha == TypBiznisEntity_KnihaEnum.Prijmove_pokladnicne_doklady ||
+                        (TypBiznisEntity_KnihaEnum)kniha == TypBiznisEntity_KnihaEnum.Terminalove_pokladnicne_doklady)
+                    {
+                        md = uhrPar.C_Typ_Id == (int)TypEnum.UhradaDFA || uhrPar.C_Typ_Id == (int)TypEnum.UhradaDZF ||
+                             uhrPar.C_Typ_Id == (int)TypEnum.DobropisDFA || uhrPar.C_Typ_Id == (int)TypEnum.ZalohyPoskytnute;
+                    }
+                    else if ((TypBiznisEntity_KnihaEnum)kniha == TypBiznisEntity_KnihaEnum.Vydajove_pokladnicne_doklady)
+                    {
+                        md = uhrPar.C_Typ_Id != (int)TypEnum.UhradaOFA && uhrPar.C_Typ_Id != (int)TypEnum.UhradaOZF &&
+                             uhrPar.C_Typ_Id != (int)TypEnum.DobropisOFA || uhrPar.C_Typ_Id == (int)TypEnum.ZalohyPrijate;
+                    }
+                    else if ((TypBiznisEntityEnum)tbe == TypBiznisEntityEnum.OFA)
+                    {
+                        md = predkontRow.C_Typ_Id == (int)TypEnum.SumaDokladu || predkontRow.C_Typ_Id == (int)TypEnum.ZalohaVSZalohy;
+                    }
+                    else if ((TypBiznisEntityEnum)tbe == TypBiznisEntityEnum.DFA)
+                    {
+                        md = predkontRow.C_Typ_Id != (int)TypEnum.SumaDokladu && predkontRow.C_Typ_Id != (int)TypEnum.ZalohaVSZalohy;
+                    }
+                    else if ((TypBiznisEntityEnum)tbe == TypBiznisEntityEnum.IND ||
+                             (TypBiznisEntityEnum)tbe == TypBiznisEntityEnum.BAN)
+                    {
+                        md = otoceneZnamienko;
+                    }
+                    else
+                    {
+                        md = true;
+                    }
+
+                    if (rozdiel)
+                    {
+                        md = !rozdielIsZisk;
+                    }
                 }
                 else
                 {
-                    md = true;
-                }
-
-                if (rozdiel)
-                {
-                    md = !rozdielIsZisk;
+                    md = (predkontRow.C_UctRozvrh_Id_MD != null);
+                    //!rozdiel <alebo> predkontRow.C_Typ_Id != (int)TypEnum.CentVyrovnaniePreplatok && predkontRow.C_Typ_Id != (int)TypEnum.CentVyrovnanieNedoplatok
+                    if (banPol != null && !rozdiel)
+                    {
+                        //Debetné položky BAN sa účtujú na MD kladnou hodnotou; na DAL zápornou hodnotou
+                        //Kreditné položky BAN sa účtujú na MD zápornou hodnotou; na DAL kladnou hodnotou
+                        if (md && !otoceneZnamienko || !md && otoceneZnamienko)
+                        {
+                            otoceneZnamienko = !otoceneZnamienko;
+                            val *= (-1);
+                        }
+                    }
                 }
             }
             else
             {
-                md = (predkontRow.C_UctRozvrh_Id_MD != null);
-                //!rozdiel <alebo> predkontRow.C_Typ_Id != (int)TypEnum.CentVyrovnaniePreplatok && predkontRow.C_Typ_Id != (int)TypEnum.CentVyrovnanieNedoplatok
-                if (banPol != null && !rozdiel)
-                {
-                    //Debetné položky BAN sa účtujú na MD kladnou hodnotou; na DAL zápornou hodnotou
-                    //Kreditné položky BAN sa účtujú na MD zápornou hodnotou; na DAL kladnou hodnotou
-                    if (md && !otoceneZnamienko || !md && otoceneZnamienko)
-                    {
-                        otoceneZnamienko = !otoceneZnamienko;
-                        val *= (-1);
-                    }
-                }
+                md = stranaMd.Value;
             }
 
-            UctRozvrh ucet = null;
 
             //Nepodporujeme zápis na obe strany
             if (ucty != null && predkontRow != null && (predkontRow.C_UctRozvrh_Id_MD != null || predkontRow.C_UctRozvrh_Id_Dal != null))
@@ -3141,6 +3309,105 @@ namespace WebEas.Esam.ServiceInterface.Office
                 D_DokladBANPol_Id = uhrPar?.D_DokladBANPol_Id ?? banPol?.D_DokladBANPol_Id,
                 D_UhradaParovanie_Id = uhrPar?.D_UhradaParovanie_Id
             };
+        }
+
+        private void CreateUctDennikTransfer(BiznisEntitaView be, List<UctDennik> uctDennikList, IEnumerable<DokladCRMPolViewHelper> crmPolozky, IEnumerable<UhradaParovanieViewHelper> uhradaParovanie, IEnumerable<DokladBANPolViewHelper> dokladBanPol)
+        {
+            var nevyhovujucePolozky = new List<(long D_BiznisEntita_Id, int Typ, int Poradie)>();
+            var poradie = uctDennikList.Any() ? (uctDennikList.Max(x => x.Poradie) + 1) : 1;
+            var transfery = GetList<Transfer>(new Filter(FilterElement.Eq("D_BiznisEntita_Id", be.D_BiznisEntita_Id)).AndNotDeleted());
+
+            // DFA - predpis:
+            if (be.C_TypBiznisEntity_Id == (short)TypBiznisEntityEnum.DFA && crmPolozky != null)
+            {
+                
+                foreach (var transfer in transfery.Where(x => x.UctovatSVydavkom == false))
+                {
+                    var transferCis = GetById<TransferCis>(transfer.C_TransferCis_Id);
+                    var ucty = GetList<UctRozvrh>(new Filter(FilterElement.In("C_UctRozvrh_Id", new[]
+                    {
+                        transferCis.C_UctRozvrh_Id_MD,
+                        transferCis.C_UctRozvrh_Id_Dal
+                    }.Where(x => x.HasValue).Select(x => x.Value))).AndNotDeleted());
+
+                    foreach (var ucet in ucty)
+                    {
+                        bool md = ucet.C_UctRozvrh_Id == transferCis.C_UctRozvrh_Id_MD;
+                        var crmPol = crmPolozky.Single(x => x.D_DokladCRMPol_Id == transfer.D_DokladCRMPol_Id);
+                        uctDennikList.Add(CreateUctDennikSingleRow(null, be, null, null, null,
+                                                                   be.C_TypBiznisEntity_Id,
+                                                                   be.C_TypBiznisEntity_Kniha_Id,
+                                                                   (crmPol.C_Stredisko_Id ?? be.C_Stredisko_Id),
+                                                                   (crmPol.C_Projekt_Id ?? be.C_Projekt_Id),
+                                                                   be.D_Osoba_Id, be.VS, be.DatumDokladu,
+                                                                   transfer.DM_Suma, poradie++,
+                                                                   false, false, false, null, false, ref nevyhovujucePolozky,
+                                                                   null, stranaMd: md, ucet: ucet));
+                    }
+                }
+            }
+
+            // DFA – úhrada
+            if ((be.C_TypBiznisEntity_Id == (short)TypBiznisEntityEnum.BAN || be.C_TypBiznisEntity_Id == (short)TypBiznisEntityEnum.PDK || be.C_TypBiznisEntity_Id == (short)TypBiznisEntityEnum.IND) && (dokladBanPol != null || uhradaParovanie != null))
+            {
+                foreach (var transfer in transfery
+                    .Where(x => x.D_BiznisEntita_Id == be.D_BiznisEntita_Id &&
+                    (dokladBanPol == null || dokladBanPol.Any(z => z.D_DokladBANPol_Id == x.D_DokladBANPol_Id)) &&
+                    x.D_UhradaParovanie_Id == null))
+                {
+                    var transferCis = GetById<TransferCis>(transfer.C_TransferCis_Id);
+                    var ucty = GetList<UctRozvrh>(new Filter(FilterElement.In("C_UctRozvrh_Id", new[]
+                    {
+                        transferCis.C_UctRozvrh_Id_MD,
+                        transferCis.C_UctRozvrh_Id_Dal
+                    }.Where(x => x.HasValue).Select(x => x.Value))).AndNotDeleted());
+
+                    foreach (var ucet in ucty)
+                    {
+                        bool md = ucet.C_UctRozvrh_Id == transferCis.C_UctRozvrh_Id_MD;
+                        var banPol = dokladBanPol?.Single(x => x.D_DokladBANPol_Id == transfer.D_DokladBANPol_Id);
+                        uctDennikList.Add(CreateUctDennikSingleRow(null, be, banPol, null, null,
+                                                                   be.C_TypBiznisEntity_Id,
+                                                                   be.C_TypBiznisEntity_Kniha_Id,
+                                                                   (banPol?.C_Stredisko_Id ?? be.C_Stredisko_Id),
+                                                                   (banPol?.C_Projekt_Id ?? be.C_Projekt_Id),
+                                                                   be.D_Osoba_Id, be.VS, be.DatumDokladu,
+                                                                   transfer.DM_Suma * -1, poradie++,
+                                                                   false, false, false, null, false, ref nevyhovujucePolozky,
+                                                                   null, stranaMd: md, ucet: ucet));
+                    }
+                }
+
+
+                if (uhradaParovanie != null && uhradaParovanie.Any(x => x.D_BiznisEntita_Id_Predpis.HasValue))
+                {
+                    var uhrTransfery = GetList<Transfer>(new Filter(FilterElement.In("D_BiznisEntita_Id", uhradaParovanie.Where(x => x.D_BiznisEntita_Id_Predpis.HasValue).Select(x => x.D_BiznisEntita_Id_Predpis.Value))).AndNotDeleted());
+                    foreach (var transfer in uhrTransfery.Where(x => x.UctovatSVydavkom == true))
+                    {
+                        var transferCis = GetById<TransferCis>(transfer.C_TransferCis_Id);
+                        var ucty = GetList<UctRozvrh>(new Filter(FilterElement.In("C_UctRozvrh_Id", new[]
+                        {
+                        transferCis.C_UctRozvrh_Id_MD,
+                        transferCis.C_UctRozvrh_Id_Dal
+                    }.Where(x => x.HasValue).Select(x => x.Value))).AndNotDeleted());
+
+                        foreach (var ucet in ucty)
+                        {
+                            bool md = ucet.C_UctRozvrh_Id == transferCis.C_UctRozvrh_Id_MD;
+                            var banPol = dokladBanPol.SingleOrDefault(x => x.D_DokladBANPol_Id == transfer.D_DokladBANPol_Id);
+                            uctDennikList.Add(CreateUctDennikSingleRow(null, be, banPol, null, null,
+                                                                       be.C_TypBiznisEntity_Id,
+                                                                       be.C_TypBiznisEntity_Kniha_Id,
+                                                                       (banPol?.C_Stredisko_Id ?? be.C_Stredisko_Id),
+                                                                       (banPol?.C_Projekt_Id ?? be.C_Projekt_Id),
+                                                                       be.D_Osoba_Id, be.VS, be.DatumDokladu,
+                                                                       transfer.DM_Suma, poradie++,
+                                                                       false, false, false, null, false, ref nevyhovujucePolozky,
+                                                                       null, stranaMd: md, ucet: ucet));
+                        }
+                    }
+                }
+            }
         }
 
         private static RzpDennik CreateRzpDennikSingleRow(List<RzpPol> rzpPolozky, BiznisEntitaView be, int? strediskoId, long? projektId,
@@ -3354,11 +3621,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                     var uctDenVymerPol = uctovneDenniky.Where(x => x.D_BiznisEntita_Id == dokl.D_BiznisEntita_Id && x.D_VymerPol_Id.HasValue);
                     if (dokl.C_TypBiznisEntity_Kniha_Id == (int)TypBiznisEntity_KnihaEnum.Externe_doklady_DaP && uctDenVymerPol.Any())
                     {
-                        var vymerPolozky = GetList(Db
-                            .From<ServiceModel.Office.Types.Dap.VymerPolViewHelper>()
-                            .Where(x => Sql.In(x.D_VymerPol_Id, uctDenVymerPol.Select(x => x.D_VymerPol_Id)))
-                            .Select(x => new { x.D_VymerPol_Id, x.ZauctovanieSuma, x.Suma }));
-
+                        var vymerPolozky = Db.SqlList<ServiceModel.Office.Types.Dap.VymerPolViewHelper>("SELECT D_VymerPol_Id, ZauctovanieSuma, Suma FROM dap.V_VymerPol WHERE D_VymerPol_Id IN ( SELECT D_VymerPol_Id FROM uct.D_UctDennik WHERE D_BiznisEntita_Id = @beId AND D_VymerPol_Id IS NOT NULL AND DatumPlatnosti is null)", new { beId = dokl.D_BiznisEntita_Id });
                         var chybnePolSuma = vymerPolozky.Where(x => uctDenVymerPol.Single(z => x.D_VymerPol_Id == z.D_VymerPol_Id).SumaMD != x.Suma - x.ZauctovanieSuma.GetValueOrDefault());
                         if (chybnePolSuma.Any())
                         {
@@ -3500,6 +3763,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                 }
 
                 //CHECK-76
+                var dokladysVynimkouNaZauctovanieRzp = new List<long>();
                 if (idTBE == (short)TypBiznisEntityEnum.BAN || idTBE == (short)TypBiznisEntityEnum.PDK)
                 {
                     foreach (var be in doklady)
@@ -3539,24 +3803,60 @@ namespace WebEas.Esam.ServiceInterface.Office
                             }
                         }
 
-                        var uhradaParovanie = Db.Select(Db.From<UhradaParovanieViewHelper>().Where(x => x.D_BiznisEntita_Id_Uhrada == be.D_BiznisEntita_Id)
-                                                                                            .Select(x => new { x.D_UhradaParovanie_Id, x.C_TypBiznisEntity_Kniha_Id, x.RzpDefinicia, x.DM_Cena, x.DM_Rozdiel, x.Poradie }));
-                        if (uhradaParovanie.Any())
+                        var uhradaParovanie = Db.Select(Db.From<UhradaParovanieViewHelper>()
+                            .Where(x => x.D_BiznisEntita_Id_Uhrada == be.D_BiznisEntita_Id)
+                            .Select(x => new
+                            {
+                                x.D_UhradaParovanie_Id,
+                                x.C_TypBiznisEntity_Kniha_Id,
+                                x.RzpDefinicia,
+                                x.DM_Cena,
+                                x.DM_Rozdiel,
+                                x.Poradie,
+                                x.C_Typ_Id,
+                                x.D_BiznisEntita_Id_Predpis,
+                                x.D_DokladBANPol_Id
+                            }));
+
+                        if (uhradaParovanie.Any() || idTBE == (short)TypBiznisEntityEnum.BAN)
                         {
+                            var banPolozky = new List<DokladBANPolViewHelper>();
+
+                            if (idTBE == (short)TypBiznisEntityEnum.BAN)
+                            {
+                                banPolozky = Db.Select(Db.From<DokladBANPolViewHelper>()
+                                    .Where(x => x.D_BiznisEntita_Id == be.D_BiznisEntita_Id)
+                                    .Select(x => new { x.D_DokladBANPol_Id, x.C_TypBiznisEntity_Kniha_Id, x.RzpDefinicia, x.Suma, x.Poradie }));
+                            }
+
                             foreach (var uhr in uhradaParovanie.Where(x => x.RzpDefinicia != -1).OrderBy(x => x.Poradie))
                             {
-                                IEnumerable<RzpDennik> rzpDenForUhr = rozpoctovyDennik.Where(x => x.D_UhradaParovanie_Id == uhr.D_UhradaParovanie_Id);
-                                SkontrolujZauctovaniePolozky((TypBiznisEntity_KnihaEnum)uhr.C_TypBiznisEntity_Kniha_Id, rzpDenForUhr, uhr.DM_Cena + uhr.DM_Rozdiel, $"Riadok párovania úhrad {uhr.Poradie}");
-                            }
-                        }
+                                var rzpDenForUhr = rozpoctovyDennik.Where(x => x.D_UhradaParovanie_Id == uhr.D_UhradaParovanie_Id);
+                                var vynimka = PovolitVynimkuZauctovaniaRzp(uhr);
+                                if (!vynimka)
+                                {
+                                    var popis = $"Riadok párovania úhrad {uhr.Poradie}";
 
-                        if (idTBE == (short)TypBiznisEntityEnum.BAN)
-                        {
-                            var banPolozka = Db.Select(Db.From<DokladBANPolViewHelper>().Where(x => x.D_BiznisEntita_Id == be.D_BiznisEntita_Id)
-                                                                                        .Select(x => new { x.D_DokladBANPol_Id, x.C_TypBiznisEntity_Kniha_Id, x.RzpDefinicia, x.Suma, x.Poradie }));
-                            if (banPolozka.Any())
+                                    if (banPolozky.Any())
+                                    {
+                                        var banPol = banPolozky.FirstOrDefault(x => x.D_DokladBANPol_Id == uhr.D_DokladBANPol_Id);
+                                        if (banPol != null)
+                                        {
+                                            popis = string.Concat(popis, $", položka bankového výpisu {banPol.Poradie}");
+                                        }
+                                    }
+                                    SkontrolujZauctovaniePolozky((TypBiznisEntity_KnihaEnum)uhr.C_TypBiznisEntity_Kniha_Id, rzpDenForUhr, uhr.DM_Cena + uhr.DM_Rozdiel, popis);
+                                }
+                                else
+                                {
+                                    dokladysVynimkouNaZauctovanieRzp.AddIfNotExists(be.D_BiznisEntita_Id);
+                                    break;
+                                }
+                            }
+
+                            if (banPolozky.Any())
                             {
-                                foreach (var banPol in banPolozka.Where(x => x.RzpDefinicia != -1).OrderBy(x => x.Poradie))
+                                foreach (var banPol in banPolozky.Where(x => x.RzpDefinicia != -1).OrderBy(x => x.Poradie))
                                 {
                                     IEnumerable<RzpDennik> rzpDenForBanPol = rozpoctovyDennik.Where(x => x.D_DokladBANPol_Id == banPol.D_DokladBANPol_Id);
                                     SkontrolujZauctovaniePolozky((TypBiznisEntity_KnihaEnum)banPol.C_TypBiznisEntity_Kniha_Id, rzpDenForBanPol, banPol.Suma, $"Položka bankového výpisu {banPol.Poradie}");
@@ -3632,7 +3932,11 @@ namespace WebEas.Esam.ServiceInterface.Office
                     //CHECK-78
                     if (!rozpoctovyDennik.Any(x => x.D_BiznisEntita_Id == dokl.D_BiznisEntita_Id) && dokl.DM_Suma != 0 && dokl.C_TypBiznisEntity_Kniha_Id != (int)TypBiznisEntity_KnihaEnum.Externe_doklady_DaP)
                     {
-                        if (dokl.PS && (dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.PDK ||
+                        if (dokladysVynimkouNaZauctovanieRzp.Contains(dokl.D_BiznisEntita_Id))
+                        {
+                            //tieto doklady nekontrolujeme
+                        }
+                        else if (dokl.PS && (dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.PDK ||
                                         dokl.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.BAN))
                         {
                             //OK - PS doklady BAN a PDK nesmú mať záznamy
@@ -4106,6 +4410,12 @@ namespace WebEas.Esam.ServiceInterface.Office
                 CheckUhradyPriZmeneStavu(biznisEntita, ref chybneDoklady, "spracovanie dokladu"); //Využijem tiež túto metódu, ale nepoužijem naplnené chyby, lebo nie je podpora pre výpis do súboru
             }
 
+            var dokladyNaSpracovanie = biznisEntita.Where(x => !chybneDoklady.Any(z => x.D_BiznisEntita_Id == z.D_BiznisEntita_Id));
+            if (dokladyNaSpracovanie.Any())
+            {
+                SpracovatZauctovatDoklad(dokladyNaSpracovanie.ToList(), idNewState, false, false, processKey, out msgNeodoslanePolozky);
+            }
+
             if (chybneDoklady.Any())
             {
                 reportId = Guid.NewGuid().ToString();
@@ -4131,10 +4441,7 @@ namespace WebEas.Esam.ServiceInterface.Office
 
                 SetToCache(string.Concat("Report:", reportId), ret, new TimeSpan(8, 0, 0), useGzipCompression: true);
             }
-            else
-            {
-                SpracovatZauctovatDoklad(biznisEntita, idNewState, false, false, processKey, out msgNeodoslanePolozky);
-            }
+
             if (idTBE == (short)TypBiznisEntityEnum.PDK && idNewState == (int)StavEntityEnum.SPRACOVANY)
             {
                 foreach (var be in biznisEntita)
@@ -4145,13 +4452,18 @@ namespace WebEas.Esam.ServiceInterface.Office
 
             if (!string.IsNullOrEmpty(reportId))
             {
+                string msg = "Operácia 'Spracovať' sa skončila neúspešne.";
+                if (dokladyNaSpracovanie.Any())
+                {
+                    msg = $"{chybneDoklady.GroupBy(x => x.D_BiznisEntita_Id).Count()} z {biznisEntita.Count()} dokladov sa nepodarilo spracovať'";
+                }
                 if (finishOperation)
                 {
-                    LongOperationSetStateFinished(processKey, string.Empty, "Operácia 'Spracovať' sa skončila neúspešne.", state: LongOperationState.Done, reportId: reportId);
+                    LongOperationSetStateFinished(processKey, string.Empty, msg, state: LongOperationState.Done, reportId: reportId);
                 }
                 else
                 {
-                    LongOperationSetStateMessage(processKey, "Operácia 'Spracovať' sa skončila neúspešne.");
+                    LongOperationSetStateMessage(processKey, msg);
                 }
             }
             else
@@ -4881,21 +5193,47 @@ namespace WebEas.Esam.ServiceInterface.Office
             }
 
             var crmDoklady = new List<TypBiznisEntityEnum>()
-                {
-                    TypBiznisEntityEnum.DFA,
-                    TypBiznisEntityEnum.DZF,
-                    TypBiznisEntityEnum.DZM,
-                    TypBiznisEntityEnum.DOB,
-                    TypBiznisEntityEnum.DCP,
-                    TypBiznisEntityEnum.DDP,
-                    TypBiznisEntityEnum.OFA,
-                    TypBiznisEntityEnum.DOL,
-                    TypBiznisEntityEnum.OZF,
-                    TypBiznisEntityEnum.OZM,
-                    TypBiznisEntityEnum.OOB,
-                    TypBiznisEntityEnum.OCP,
-                    TypBiznisEntityEnum.ODP
-                };
+            {
+                TypBiznisEntityEnum.DFA,
+                TypBiznisEntityEnum.DZF,
+                TypBiznisEntityEnum.DZM,
+                TypBiznisEntityEnum.DOB,
+                TypBiznisEntityEnum.DCP,
+                //TypBiznisEntityEnum.DDP,
+                TypBiznisEntityEnum.OFA,
+                //TypBiznisEntityEnum.DOL,
+                TypBiznisEntityEnum.OZF,
+                TypBiznisEntityEnum.OZM,
+                TypBiznisEntityEnum.OOB,
+                TypBiznisEntityEnum.OCP,
+                //TypBiznisEntityEnum.ODP
+            };
+
+            var uctDoklady = new List<TypBiznisEntityEnum>()
+            {
+                TypBiznisEntityEnum.BAN,
+                TypBiznisEntityEnum.PDK,
+                TypBiznisEntityEnum.IND,
+                TypBiznisEntityEnum.DFA,
+                TypBiznisEntityEnum.OFA
+            };
+
+            var rzpDoklady = new List<TypBiznisEntityEnum>()
+            {
+                TypBiznisEntityEnum.BAN,
+                TypBiznisEntityEnum.PDK,
+                TypBiznisEntityEnum.IND,
+                TypBiznisEntityEnum.DFA,
+                TypBiznisEntityEnum.DZF,
+                TypBiznisEntityEnum.DZM,
+                TypBiznisEntityEnum.DOB,
+                TypBiznisEntityEnum.DCP,
+                TypBiznisEntityEnum.OFA,
+                TypBiznisEntityEnum.OZF,
+                TypBiznisEntityEnum.OZM,
+                TypBiznisEntityEnum.OOB,
+                TypBiznisEntityEnum.OCP
+            };
 
             var spracovaneDoklady = biznisEntita.Where(x => x.C_StavEntity_Id == (int)StavEntityEnum.SPRACOVANY && (!x.PS || crmDoklady.Contains((TypBiznisEntityEnum)x.C_TypBiznisEntity_Id)));
             if (spracovaneDoklady.Any())
@@ -4903,7 +5241,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                 var predkonUct = Db.Select(Db.From<UctDennikViewHelper>().Where(e => Sql.In(e.D_BiznisEntita_Id, spracovaneDoklady.Select(x => x.D_BiznisEntita_Id))).SelectDistinct(x => x.D_BiznisEntita_Id));
                 var predkonRzp = Db.Select(Db.From<RzpDennikViewHelper>().Where(e => Sql.In(e.D_BiznisEntita_Id, spracovaneDoklady.Select(x => x.D_BiznisEntita_Id))).SelectDistinct(x => x.D_BiznisEntita_Id));
 
-                if (spracovaneDoklady.Any(x => !predkonUct.Any(z => z.D_BiznisEntita_Id == x.D_BiznisEntita_Id)))
+                if (spracovaneDoklady.Any(x => !predkonUct.Any(z => z.D_BiznisEntita_Id == x.D_BiznisEntita_Id) && uctDoklady.Contains((TypBiznisEntityEnum)x.C_TypBiznisEntity_Id)))
                 {
                     PredkontujDoklad(new PredkontovatDokladDto
                     {
@@ -4918,7 +5256,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                     }
                 }
 
-                if (spracovaneDoklady.Any(x => !predkonRzp.Any(z => z.D_BiznisEntita_Id == x.D_BiznisEntita_Id)))
+                if (spracovaneDoklady.Any(x => !predkonRzp.Any(z => z.D_BiznisEntita_Id == x.D_BiznisEntita_Id) && rzpDoklady.Contains((TypBiznisEntityEnum)x.C_TypBiznisEntity_Id)))
                 {
                     PredkontujDoklad(new PredkontovatDokladDto
                     {
@@ -5004,7 +5342,6 @@ namespace WebEas.Esam.ServiceInterface.Office
                 }
             }
 
-
             if ((idTBE == (short)TypBiznisEntityEnum.BAN ||
                  idTBE == (short)TypBiznisEntityEnum.PDK ||
                  idTBE == (short)TypBiznisEntityEnum.IND ||
@@ -5024,10 +5361,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                 if (uctovneDenniky.Any(x => x.D_VymerPol_Id.HasValue))
                 {
                     podlaDatumuPravoplatnosti = GetTypBiznisEntityNastav(TypBiznisEntityEnum.DAP, LokalitaEnum.TU) == "DatumPravoplatnosti";
-                    vymerPolozky = GetList(Db
-                                .From<ServiceModel.Office.Types.Dap.VymerPolViewHelper>()
-                                .Where(x => Sql.In(x.D_VymerPol_Id, uctovneDenniky.Where(x => x.D_VymerPol_Id.HasValue).Select(x => x.D_VymerPol_Id)))
-                                .Select(x => new { x.D_VymerPol_Id, x.DatumPravoplatnosti, x.DatumVyrubenia }));
+                    vymerPolozky = Db.SqlList<ServiceModel.Office.Types.Dap.VymerPolViewHelper>("SELECT D_VymerPol_Id, DatumPravoplatnosti, DatumVyrubenia FROM dap.V_VymerPol WHERE D_VymerPol_Id IN ( SELECT D_VymerPol_Id FROM uct.D_UctDennik WHERE D_BiznisEntita_Id IN (@beId) AND D_VymerPol_Id IS NOT NULL AND DatumPlatnosti is null)", new { beId = biznisEntita.Select(x => x.D_BiznisEntita_Id) });
                 }
 
                 foreach (var uctDen in uctovneDenniky)
@@ -5065,7 +5399,15 @@ namespace WebEas.Esam.ServiceInterface.Office
 
             if (finishOperation)
             {
-                LongOperationSetStateFinished(processKey, string.Empty, msg, state: LongOperationState.Done, reportId: reportId);
+                if (allOK)
+                {
+                    LongOperationSetStateFinished(processKey, string.Empty, msg, state: LongOperationState.Done, reportId: reportId);
+                }
+                else
+                {
+                    LongOperationSetErrorState(processKey, new WebEasValidationException(null, msg), reportId: reportId);
+                }
+                
             }
             else
             {
@@ -5227,7 +5569,7 @@ namespace WebEas.Esam.ServiceInterface.Office
             }
         }
 
-        public virtual object CopyDoklad(CopyDokladDto request)
+        public virtual PostResultResponse<BiznisEntitaDokladView> CopyDoklad(CopyDokladDto request)
         {
             var noveDoklady = new Dictionary<long, DokladINDView>();
 
@@ -5244,9 +5586,30 @@ namespace WebEas.Esam.ServiceInterface.Office
                 dokl.VS = null;
                 dokl.CisloExterne = null;
                 noveDoklady.Add(id, CreateDokladIND(dokl));
-            }
 
-            return noveDoklady.Values;
+                var uctDennik = GetList<UctDennik>(new Filter(FilterElement.Eq("D_BiznisEntita_Id", id)).AndNotDeleted());
+                foreach (var uctden in uctDennik)
+                {
+                    uctden.Rok = noveDoklady[id].Rok;
+                    uctden.DatumUctovania = noveDoklady[id].DatumDokladu;
+                    uctden.D_BiznisEntita_Id = noveDoklady[id].D_BiznisEntita_Id;
+                    InsertData(uctden);
+                }
+
+                var rzpDennik = GetList<RzpDennik>(new Filter(FilterElement.Eq("D_BiznisEntita_Id", id)).AndNotDeleted());
+                foreach (var rzpden in rzpDennik)
+                {
+                    rzpden.Rok = noveDoklady[id].Rok;
+                    rzpden.D_BiznisEntita_Id = noveDoklady[id].D_BiznisEntita_Id;
+                    InsertData(rzpden);
+                }
+
+            }
+            return new PostResultResponse<BiznisEntitaDokladView>
+            {
+                Records = noveDoklady.Values.ToArray(),
+                UrlLink = noveDoklady.Values.FirstOrDefault()?.URL
+            };
         }
 
         #endregion
@@ -5271,7 +5634,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                 int kniha;
 
                 if (code == "uct-evi-exd-dap") kniha = (int)TypBiznisEntity_KnihaEnum.Externe_doklady_DaP;
-                else if (code == "uct-evi-exd-mjt") kniha = (int)TypBiznisEntity_KnihaEnum.Externe_doklady_majetok;
+                else if (code == "uct-evi-exd-maj") kniha = (int)TypBiznisEntity_KnihaEnum.Externe_doklady_majetok;
                 else if (code == "uct-evi-exd-mzd") kniha = (int)TypBiznisEntity_KnihaEnum.Externe_doklady_mzdy;
                 else if (code == "uct-evi-exd-skl") kniha = (int)TypBiznisEntity_KnihaEnum.Externe_doklady_sklad;
                 else kniha = (int)TypBiznisEntity_KnihaEnum.Interne_doklady;
@@ -5831,7 +6194,7 @@ namespace WebEas.Esam.ServiceInterface.Office
                     case (int)TypBiznisEntityEnum.OZM:
                     case (int)TypBiznisEntityEnum.OZF:
                         h.PV = true;
-                        h.DodavatelCaption = "Dodávateľ";
+                        h.DodavatelCaption = "Odberateľ";
                         break;
                     default:  // BAN, PDK, IND
                         if (be.C_TypBiznisEntity_Id == (int)TypBiznisEntityEnum.PDK)
@@ -5924,6 +6287,69 @@ namespace WebEas.Esam.ServiceInterface.Office
             return lst;
         }
 
+        public List<ZostavaTextaciaPol> GetTextaciaPolozky(long typBE, int knihaBE, short rok, DateTime datDokladu)
+        {
+            var lst = new List<ZostavaTextaciaPol>();
+
+            var hla = GetTextacia(Session.TenantIdGuid, typBE, knihaBE, rok);
+            if (hla is null)
+            {
+                hla = GetTextacia(Session.TenantIdGuid, typBE, null, rok);
+                if (hla is null)
+                {
+                    hla = GetTextacia(Session.TenantIdGuid, null, null, rok);
+                    if (hla is null)
+                    {
+                        hla = GetTextacia(null, typBE, knihaBE, rok);
+                        if (hla is null)
+                        {
+                            hla = GetTextacia(null, typBE, null, rok);
+                            if (hla is null)
+                            {
+                                hla = GetTextacia(null, null, null, rok);
+                            }
+                        }
+                    }
+                }
+            }
+            if (hla is not null)
+            {
+                var filter = new Filter();
+                filter.AndEq(nameof(TextaciaPolView.C_Textacia_Id), hla.C_Textacia_Id);
+                var data3 = GetList<TextaciaPolView>(filter).OrderBy(x => x.Poradie);
+                foreach (var row in data3)
+                {
+                    var r = new ZostavaTextaciaPol()
+                    {
+                        Text = row.Text,
+                        Vykonal = row.Vykonal,
+                        Datum = row.Datum,
+                        PismoTucne = row.PismoTucne.GetValueOrDefault()
+                    };
+                    if (r.Datum == null)
+                    {
+                        if (row.DatumTyp == 1) r.Datum = DateTime.Now.Date; // aktuálny dátum
+                        else if (row.DatumTyp == 2) r.Datum = datDokladu;   // dátum dokladu
+                    }
+                    lst.Add(r);
+                };
+            };
+            return lst;
+        }
+
+        private TextaciaView GetTextacia(Guid? tenant, long? typBE, int? knihaBE, short rok)
+        {
+            var filter = new Filter();
+
+            filter.AndEq(nameof(TextaciaView.D_Tenant_Id), tenant);
+            filter.AndEq(nameof(TextaciaView.C_TypBiznisEntity_Id), typBE);
+            filter.AndEq(nameof(TextaciaView.C_TypBiznisEntity_Kniha_Id), knihaBE);
+            filter.And(FilterElement.LessThanOrEq(nameof(TextaciaView.RokOd), rok));
+            filter.And(new Filter(FilterElement.Eq(nameof(TextaciaView.RokDo), null)).Or(FilterElement.GreaterThanOrEq(nameof(TextaciaView.RokDo), rok)));
+            var hla = GetList<TextaciaView>(filter).FirstOrDefault();
+            return hla;
+        }
+
         public EsamReport GetTelerikReport(ReportsEnum report)
         {
             //zatial takto, neskor budeme tahat z DMS
@@ -5989,25 +6415,20 @@ namespace WebEas.Esam.ServiceInterface.Office
         public List<ZostavaFilter> RptSetFiltre(string data, bool toOneLine)
         {
             var flt = new List<ZostavaFilter>();
-            ZostavaFilter fp;
 
             if (!data.IsNullOrEmpty())
             {
                 if (toOneLine)
                 {
                     string sTmp = data.Replace("&", "    ");
-                    fp = new ZostavaFilter();
-                    fp.Filter = sTmp.Trim();
-                    flt.Add(fp);
+                    flt.Add(new ZostavaFilter(sTmp.Trim()));
                 }
                 else
                 {
                     string[] ar = data.Split(new string[] { "&" }, StringSplitOptions.RemoveEmptyEntries);
                     for (int i = 0; i < ar.Length; i++)
                     {
-                        fp = new ZostavaFilter();
-                        fp.Filter = ar[i].Trim();
-                        flt.Add(fp);
+                        flt.Add(new ZostavaFilter(ar[i].Trim()));
                     }
                 }
             }
@@ -6032,6 +6453,7 @@ namespace WebEas.Esam.ServiceInterface.Office
             zostava.Mail = ti.Email;
             zostava.Vytlacil = Session.DisplayName;
             zostava.StrediskoCaption = GetNastavenieS("reg", "OrjNazovJC");
+            zostava.RezimDph = GetNastavenieI("reg", "RezimDph");
         }
 
         public void SetRptText(string textBox, string sText, Telerik.Reporting.Report rpt)
@@ -6856,15 +7278,6 @@ namespace WebEas.Esam.ServiceInterface.Office
             {
                 filterElementInputSearch.Value = filterElementInputSearch.Value.ToString().Replace(" ", "").Replace(".", "").Replace("-", "").Replace("/", "");
             }
-        }
-
-        #endregion
-
-        #region Vytvoriť plat. príkaz
-
-        public void GeneratePolozkyPPP(GeneratePolozkyPPPDto request, string processKey)
-        {
-            throw new NotImplementedException();
         }
 
         #endregion

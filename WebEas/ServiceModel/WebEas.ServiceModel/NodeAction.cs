@@ -212,6 +212,12 @@ namespace WebEas.ServiceModel
         public bool Hidden { get; set; }
 
         /// <summary>
+        /// Oddelovacia ciara, ak je zadefinovaná ako "-", tak bude bez textu, inak s textom separátora
+        /// </summary>
+        [DataMember(Name = "sep")]
+        public string Separator { get; set; }
+
+        /// <summary>
         /// Serves as a hash function for a particular type.
         /// </summary>
         /// <returns>A hash code for the current object.</returns>
@@ -225,6 +231,7 @@ namespace WebEas.ServiceModel
                 result = result * 23 + ((this.CustomName != null) ? this.CustomName.GetHashCode() : 0);
                 result = result * 23 + ((this.Url != null) ? this.Url.GetHashCode() : 0);
                 result = result * 23 + ((this.CustomActionType != null) ? this.CustomActionType.GetHashCode() : 0);
+                result = result * 23 + ((this.Separator != null) ? this.Separator.GetHashCode() : 0);
                 result = result * 23 + this.Hidden.GetHashCode();
                 return result;
             }
@@ -248,6 +255,7 @@ namespace WebEas.ServiceModel
                    Equals(this.CustomName, other.CustomName) &&
                    Equals(this.Url, other.Url) &&
                    Equals(this.CustomActionType, other.CustomActionType) &&
+                   Equals(this.Separator, other.Separator) &&
                    Equals(this.Hidden, other.Hidden);
         }
 
@@ -290,6 +298,7 @@ namespace WebEas.ServiceModel
                 Path = this.Path,
                 SelectionMode = this.SelectionMode,
                 url = this.url,
+                Separator = this.Separator,
                 Hidden = this.Hidden
             };
 
@@ -384,9 +393,13 @@ namespace WebEas.ServiceModel
                 case NodeActionType.ReportPoklDoklad:
                 case NodeActionType.PrintReportPoklDoklad:
                 case NodeActionType.ViewReportPoklDoklad:
+                case NodeActionType.ReportDoklad:
+                case NodeActionType.PrintReportDoklad:
+                case NodeActionType.ViewReportDoklad:
                 case NodeActionType.ReportKryciList:
                 case NodeActionType.PrintReportKryciList:
                 case NodeActionType.ViewReportKryciList:
+                //case NodeActionType.ReportKnihaFaktur - chceme stale viditelne, nezavisi od stavu
                     accessFlag = NodeActionFlag.Tlac;
                     break;
 
@@ -495,6 +508,11 @@ namespace WebEas.ServiceModel
         public bool ShouldSerializeHidden()
         {
             return Hidden;
+        }
+
+        public bool ShouldSerializeSeparator()
+        {
+            return !string.IsNullOrEmpty(Separator);
         }
     }
 }

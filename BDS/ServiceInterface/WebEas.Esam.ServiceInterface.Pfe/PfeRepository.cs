@@ -418,6 +418,9 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                         {
                             FillLayoutPagesTitle(layout);
                             RemovePredkontRzpForExtIND(layout, current);
+#if DEVELOPCRM
+                            RemoveUctRzpForDevelopCrm(layout, current);
+#endif
                         }
                     }
 
@@ -689,9 +692,9 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// </summary>
         /// <param name="kodPolozky">Kód položky</param>
         /// <returns>Pohlad</returns>
-        public IList<PohladList> GetPohlady(string kodPolozky, bool browser)
+        public IList<PohladList> GetPohlady(string kodPolozky, bool all)
         {
-            return GetCacheOptimizedTenant(string.Format("pfe:pohl:{0}:{1}:{2}", kodPolozky, Session.UserId, browser ? 1 : 0), () =>
+            return GetCacheOptimizedTenant(string.Format("pfe:pohl:{0}:{1}:{2}", kodPolozky, Session.UserId, all ? 1 : 0), () =>
             {
                 string pouzivatelId = Session.UserId;
                 Guid? tenantId = Session.TenantIdGuid;
@@ -710,7 +713,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                 {
                     string sflt = "";
                     //Admin vidi aj subpohlady. Normalny uradnici nevidia tie, ktore su pouzite na nejakych LAYOUT-och
-                    if (Session.AdminLevel != AdminLevel.SysAdmin && !browser)
+                    if (Session.AdminLevel != AdminLevel.SysAdmin && !all)
                     {
                         sflt = "D_Pohlad_Id NOT IN ( " + Environment.NewLine +
                                 "  SELECT DISTINCT p.D_Pohlad_Id FROM pfe.D_Pohlad p, pfe.D_Pohlad lay " + Environment.NewLine +
@@ -1170,7 +1173,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         }
 
         /// <summary>
-        /// Pre externé IND - DAP, MJT, MZD odstraňuje tab s predkontáciou RZP
+        /// Pre externé IND - DAP, MAJ, MZD odstraňuje tab s predkontáciou RZP
         /// </summary>
         /// <param name="layout">The current layout.</param>
         /// <returns>Modified layout's pages</re
@@ -1193,6 +1196,29 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                 RemovePredkontRzpForExtIND(layout.Other, current);
             }
 
+            return layout;
+        }
+
+        /// <summary>
+        /// Odstránenie podgridov účtovníctva a Rozpočtu pre DEVELOPCRM režim
+        /// </summary>
+        /// <param name="layout">The current layout.</param>
+        /// <returns>Modified layout's pages</re
+        public PfeLayout RemoveUctRzpForDevelopCrm(PfeLayout layout, HierarchyNode current)
+        {
+            if (layout.Other == null || current == null) return layout;
+
+            if (layout.Other.Pages != null && layout.Other.Pages.Count > 0)
+            {
+                layout.Other.Pages.RemoveAll(x => x.CustomTitle != null && x.CustomTitle.StartsWith("Rozpoč") || x.Title.StartsWith("Rozpoč"));
+                layout.Other.Pages.RemoveAll(x => x.CustomTitle != null && x.CustomTitle.StartsWith("Účtov") || x.Title.StartsWith("Účtov"));
+                layout.Other.Pages.RemoveAll(x => x.CustomTitle != null && x.CustomTitle.StartsWith("Predkont") || x.Title.StartsWith("Predkont"));
+                layout.Other.Pages.RemoveAll(x => x.CustomTitle != null && x.CustomTitle.StartsWith("Úhrady") || x.Title.StartsWith("Úhrady"));
+                layout.Other.Pages.RemoveAll(x => x.CustomTitle != null && x.CustomTitle.StartsWith("Skutočné") || x.Title.StartsWith("Skutočné"));
+                layout.Other.Pages.RemoveAll(x => x.CustomTitle != null && x.CustomTitle.StartsWith("Preúčt") || x.Title.StartsWith("Preúčt"));
+                return layout;
+            }
+            RemoveUctRzpForDevelopCrm(layout.Other, current);
             return layout;
         }
 

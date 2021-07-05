@@ -21,6 +21,10 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         public long? D_BiznisEntita_Id_Externe { get; set; }
 
         [DataMember]
+        [PfeColumn(Hidden = true, Hideable = false, Description = "Id biznisentity z pôvodného záznamu (storno dokladu, dobropis...)")]
+        public long? D_BiznisEntita_Id_Povodne { get; set; }
+
+        [DataMember]
         [PfeColumn(Text = "_C_TypBiznisEntity_Id")]
         public short C_TypBiznisEntity_Id { get; set; }
 
@@ -181,7 +185,11 @@ namespace WebEas.Esam.ServiceModel.Office.Types.Reg
         public bool PS { get; set; }
 
         [DataMember]
-        [PfeColumn(Text = "_Lokalita", DefaultValue = 1)]
+        [PfeColumn(Text = "T", DefaultValue = false, Tooltip = "Na doklade bola spustená tlač zostavy. Hodnotu môže na nespracovanom doklade manuálne zmeniť používateľ s právom 'Supervízor'")]
+        public bool T { get; set; }
+
+        [DataMember]
+        [PfeColumn(Text = "_Lokalita", DefaultValue = (int)LokalitaEnum.TU)]
         public byte C_Lokalita_Id { get; set; }
 
         [DataMember]

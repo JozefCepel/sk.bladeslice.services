@@ -63,7 +63,10 @@ namespace WebEas.Esam.Pfe
                 EnableFeatures = Feature.All.Remove(this.disableFeatures),
 #endif
                 DefaultContentType = MimeTypes.Json,
-                AllowJsonpRequests = true
+                AllowJsonpRequests = true,
+#if DEVELOPCRM
+                WebHostUrl = "https://esam-crm.datalan.sk/esam/api/pfe"
+#endif
             });
 
 #if !DEBUG

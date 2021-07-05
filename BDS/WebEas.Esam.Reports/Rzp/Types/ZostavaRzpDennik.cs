@@ -26,12 +26,8 @@ namespace WebEas.Esam.Reports.Rzp.Types
             dennik.Filtre = new List<ZostavaFilter>();
             dennik.Polozky = new List<ZostavaRzpDennik.ZostavaRzpDennikPol>();
 
-            var f1 = new ZostavaFilter();
-            f1.Filter = "Zakaznik = Dezko";
-            dennik.Filtre.Add(f1);
-            var f2 = new ZostavaFilter();
-            f2.Filter = "Datum = 90.99.2099";
-            dennik.Filtre.Add(f2);
+            dennik.Filtre.Add(new ZostavaFilter("Zakaznik = Dezko"));
+            dennik.Filtre.Add(new ZostavaFilter("Datum = 90.99.2099"));
 
             var p = new ZostavaRzpDennik.ZostavaRzpDennikPol();
             p.DatumUctovania = new DateTime(2020, 1, 17);

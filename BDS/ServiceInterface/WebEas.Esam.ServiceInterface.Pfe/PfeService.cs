@@ -171,7 +171,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// <returns></returns>
         public object Get(ListPohlady request)
         {
-            return Repository.GetPohlady(request.KodPolozky, false);
+            return Repository.GetPohlady(request.KodPolozky, request.All ?? false);
         }
 
         /// <summary>
@@ -181,7 +181,7 @@ namespace WebEas.Esam.ServiceInterface.Pfe
         /// <returns></returns>
         public object Get(ListPohladyWithDefault request)
         {
-            var pohlady = Repository.GetPohlady(request.KodPolozky, request.Browser ?? false);
+            var pohlady = Repository.GetPohlady(request.KodPolozky, (request.Browser ?? false) || (request.All ?? false));
 
             int idPohladu = 0;
             if (request.Id.HasValue && request.Id != 0 && pohlady.Any(nav => nav.Id == request.Id.Value))
@@ -716,13 +716,14 @@ namespace WebEas.Esam.ServiceInterface.Pfe
                             Request.RemoveSession(ses.Value.Id);
                         }
                     }
-
+                    ServerEvents.NotifySession(session.Id, new ContextChangedDto { Changed = true });
                     return new { Response = new { TenantId = request.TenantId.ToString().ToUpper(), Changed = true, tenantIdActual } };
                 }
 
                 session.TenantId = request.TenantId.ToString();
                 EsamCredentialsAuthProvider.SetUserTenantSession(ref session, this);
                 Request.SaveSession(session);
+                ServerEvents.NotifySession(session.Id, new ContextChangedDto { Changed = true });
                 return new { Response = new { TenantId = request.TenantId.ToString().ToUpper(), Changed = true, tenantIdActual } };
             }
         }

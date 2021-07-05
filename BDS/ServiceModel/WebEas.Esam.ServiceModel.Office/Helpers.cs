@@ -10,6 +10,111 @@ namespace WebEas.Esam.ServiceModel.Office
 {
     public class Helpers
     {
+        private static PfeSearchFieldDefinition OsoSearchFieldDefinition()
+        {
+            return new PfeSearchFieldDefinition
+            {
+                Code = "osa-oso",
+                NameField = "D_Osoba_Id",
+                DisplayField = "IdFormatMeno"
+            };
+        }
+
+        public static void AddCMSumaDoklad_Validator(IWebEasRepositoryBase repository, PfeColumnAttribute cmSumaDoklad, bool pdk = false)
+        {
+            if (cmSumaDoklad != null)
+            {
+                bool crmSupervisor = repository.Session.HasRole(pdk ? "FIN_SUPERVISOR" : "CRM_SUPERVISOR");
+
+                cmSumaDoklad.Validator ??= new PfeValidator { Rules = new List<PfeRule>() };
+
+                if (crmSupervisor)
+                {
+                    cmSumaDoklad.Validator.Rules.Add(new PfeRule
+                    {
+                        ValidatorType = PfeValidatorType.Disable,
+                        Condition = new List<PfeFilterAttribute>
+                            {
+                                new PfeFilterAttribute
+                                {
+                                    Field = "C_StavEntity_Id",
+                                    ComparisonOperator = "ne",
+                                    Value = (int)StavEntityEnum.NOVY
+                                }
+                            }
+                    });
+                }
+                else
+                {
+                    cmSumaDoklad.Validator.Rules.Add(new PfeRule
+                    {
+                        ValidatorType = PfeValidatorType.Disable,
+                        Condition = new List<PfeFilterAttribute>
+                            {
+                                new PfeFilterAttribute
+                                {
+                                    Field = "DatumVytvorenia",
+                                    ComparisonOperator = "ne",
+                                    Value = null
+                                }
+                            }
+                    });
+                }
+            }
+        }
+
+        public static void AddTypFirstNazov_Validator(PfeColumnAttribute typFirstNazov, PfeModelType Type)
+        {
+            if (typFirstNazov != null)
+            {
+
+                if (Type != PfeModelType.Form)
+                {
+                    typFirstNazov.Text = "_TypFirstNazov";
+                }
+                else
+                {
+                    typFirstNazov.Validator ??= new PfeValidator { Rules = new List<PfeRule>() };
+
+                    typFirstNazov.Validator.Rules.Add(new PfeRule
+                    {
+                        ValidatorType = PfeValidatorType.Visible,
+                        Condition = new List<PfeFilterAttribute>
+                        {
+                            new PfeFilterAttribute
+                            {
+                                Field = "DatumVytvorenia",
+                                ComparisonOperator = "eq",
+                                Value = null
+                            }
+                        }
+                    });
+                }
+            }
+        }
+
+        public static void AddBUPartner_Validator(PfeColumnAttribute buPartner)
+        {
+            if (buPartner != null)
+            {
+                buPartner.Validator ??= new PfeValidator { Rules = new List<PfeRule>() };
+
+                buPartner.Validator.Rules.Add(new PfeRule
+                {
+                    ValidatorType = PfeValidatorType.SetMandatory,
+                    Condition = new List<PfeFilterAttribute>
+                        {
+                            new PfeFilterAttribute
+                            {
+                                Field = "FormaUhrady",
+                                ComparisonOperator = "eq",
+                                Value = 1
+                            }
+                        }
+                });
+            }
+        }
+
         public static List<PfeSearchFieldDefinition> AddAdresaTPSidlo_SearchFieldDefinition(FakturaciaVztahEnum showOnlyOdbDod)
         {
             var fld = new PfeSearchFieldDefinition
@@ -33,12 +138,7 @@ namespace WebEas.Esam.ServiceModel.Office
 
         public static List<PfeSearchFieldDefinition> AddIdFormatMeno_SearchFieldDefinition(FakturaciaVztahEnum showOnlyOdbDod)
         {
-            var fld = new PfeSearchFieldDefinition
-            {
-                Code = "osa-oso",
-                NameField = "D_Osoba_Id",
-                DisplayField = "IdFormatMeno"
-            };
+            var fld = OsoSearchFieldDefinition();
             if (showOnlyOdbDod > 0)
             {
                 fld.AdditionalFilterSql = $"C_FakturaciaVztah_Id IN ({(int)showOnlyOdbDod}, {(int)FakturaciaVztahEnum.DOD_ODB})";
@@ -48,6 +148,36 @@ namespace WebEas.Esam.ServiceModel.Office
             {
                 fld
             };
+        }
+
+        public static List<PfeSearchFieldDefinition> AddIdFormatMeno_SearchFieldDefinition(byte typFakturacieId)
+        {
+            var fld = OsoSearchFieldDefinition();
+            fld.AdditionalFilterSql = GetTypFakturacieFilterSql(typFakturacieId);
+
+            return new List<PfeSearchFieldDefinition>
+            {
+                fld
+            };
+        }
+
+        public static string GetTypFakturacieFilterSql(byte typFakturacieId)
+        {
+            string result = null;
+            if (typFakturacieId == 1)
+            {
+                result = "Dodavatel = 1";
+            }
+            else if (typFakturacieId == 2)
+            {
+                result = "Odberatel = 1";
+            }
+            else if (typFakturacieId == 3)
+            {
+                result = "(Dodavatel = 1 OR Odberatel = 1)";
+            }
+
+            return result;
         }
 
         public static List<WebEas.ServiceModel.Types.IComboResult> DescriptionToComboResult<T>(bool idAsEnumMemberValue = false) where T : Enum
@@ -112,6 +242,27 @@ namespace WebEas.Esam.ServiceModel.Office
                 }
             }
             return data;
+        }
+
+        public static List<TypEnum> GetUhradoveTypy()
+        {
+            return new List<TypEnum>
+            {
+                TypEnum.UhradaDFA,
+                TypEnum.UhradaOFA,
+                TypEnum.UhradaDZF,
+                TypEnum.UhradaOZF,
+                TypEnum.DobropisDFA,
+                TypEnum.DobropisOFA,
+                TypEnum.DobropisDZF,
+                TypEnum.DobropisOZF,
+                TypEnum.DaPUhradaDane,
+                TypEnum.DaPUhradaPokutyZaOneskorenie,
+                TypEnum.DaPUhradaUrokuZOmeskania,
+                TypEnum.DaPUhradaPokuty,
+                TypEnum.DaPUhradaPokutyZaDodatocnePodanie,
+                TypEnum.DaPUhradaUrokuZOdlozeniaSplatok
+            };
         }
     }
 }
